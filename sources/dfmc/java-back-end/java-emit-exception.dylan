@@ -74,10 +74,10 @@ end;
 
 
 define constant $java-throwable-class-name$ = java-lang ("Throwable");
-define constant $java-throwable-class-sig$  = classsig ($java-throwable-class-name$);
+// define constant $java-throwable-class-sig$  = classsig ($java-throwable-class-name$);
 
 define constant $java-string-class-name$ = java-lang ("String");
-define constant $java-string-class-sig$  = classsig ($java-string-class-name$);
+// define constant $java-string-class-sig$  = classsig ($java-string-class-name$);
 
 
 define constant $dylanexception-signal-method$ =

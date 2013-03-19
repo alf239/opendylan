@@ -111,10 +111,10 @@ define method java-lib-name (n :: <&class>) => (str :: <byte-string>)
   result
 end;
 
-define function java-classname (cls :: <&class>) => (uniq :: <unique-string>)
-//  format-out ("java-classname on %s\n", as (<byte-string>, cls.^debug-name));
-  concatenate (java-lib-name (cls), "/",  java-name-mangle (cls.^debug-name)).uniq
-end;
+// define function java-classname (cls :: <&class>) => (uniq :: <unique-string>)
+// //  format-out ("java-classname on %s\n", as (<byte-string>, cls.^debug-name));
+//   concatenate (java-lib-name (cls), "/",  java-name-mangle (cls.^debug-name)).uniq
+// end;
 
 define function java-lang (cname :: <byte-string>) => (uniq :: <unique-string>)
   concatenate ("java/lang/", cname).uniq
@@ -136,7 +136,7 @@ define constant  $dylan-object-class-name$ = dylan-lang ("<object>");
 define constant  $dylan-object-class-sig$ = classsig ($dylan-object-class-name$);
 
 define constant  $dylan-class-class-name$ = dylan-lang ("<class>");
-define constant  $dylan-class-class-sig$ = classsig ($dylan-class-class-name$);
+// define constant  $dylan-class-class-sig$ = classsig ($dylan-class-class-name$);
 
 define constant  $dylan-boolean-class-name$ = dylan-lang ("<boolean>");
 define constant  $dylan-boolean-class-sig$ = classsig ($dylan-boolean-class-name$);
@@ -163,29 +163,29 @@ define constant  $dylan-sequence-class-name$ = dylan-lang ("<sequence>");
 define constant  $dylan-sequence-class-sig$ = classsig ($dylan-sequence-class-name$);
 
 define constant  $dylan-function-class-name$ = dylan-lang ("<function>");
-define constant  $dylan-function-class-sig$ = classsig ($dylan-function-class-name$);
+// define constant  $dylan-function-class-sig$ = classsig ($dylan-function-class-name$);
 
 define constant  $dylan-method-class-name$ = dylan-lang ("<method>");
-define constant  $dylan-method-class-sig$ = classsig ($dylan-method-class-name$);
+// define constant  $dylan-method-class-sig$ = classsig ($dylan-method-class-name$);
 
 define constant  $dylan-generic-function-class-name$ = dylan-lang ("<generic-function>");
-define constant  $dylan-generic-function-class-sig$ = classsig ($dylan-generic-function-class-name$);
+// define constant  $dylan-generic-function-class-sig$ = classsig ($dylan-generic-function-class-name$);
 
 define constant  $dylan-symbol-class-name$ = dylan-lang ("<symbol>");
-define constant  $dylan-symbol-class-sig$ = classsig ($dylan-symbol-class-name$);
+// define constant  $dylan-symbol-class-sig$ = classsig ($dylan-symbol-class-name$);
 
 define constant  $dylanexception-class-name$ = dylan-lang ("dylancondition");
-define constant  $dylanexception-class-sig$ = classsig ($dylanexception-class-name$);
+// define constant  $dylanexception-class-sig$ = classsig ($dylanexception-class-name$);
 
 define constant  $dylan-type-class-name$ = dylan-lang ("<type>");
 define constant  $dylan-type-class-sig$ = classsig ($dylan-type-class-name$);
 
 define constant  $dylan-thread-class-name$ = dylan-lang ("dylanthread");
-define constant  $dylan-thread-class-sig$ = classsig ($dylan-thread-class-name$);
+// define constant  $dylan-thread-class-sig$ = classsig ($dylan-thread-class-name$);
 
-define constant  $dylan-simple-vector-sig$ = arraysig ($dylan-object-class-sig$);
+// define constant  $dylan-simple-vector-sig$ = arraysig ($dylan-object-class-sig$);
 
-define constant  $dylan-type-vector-sig$ = arraysig ($dylan-type-class-sig$);
+// define constant  $dylan-type-vector-sig$ = arraysig ($dylan-type-class-sig$);
 
 
 // define constant  $java-iep-fixed-args$ = 4;  // not used

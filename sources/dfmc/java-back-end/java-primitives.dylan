@@ -21,7 +21,7 @@ define class <primitive-descriptor> (<object>)
 end class;
 */
 
-define constant $default-primitive-descriptor = make(<primitive-descriptor>, emitter: emit-primitive-call);
+// define constant $default-primitive-descriptor = make(<primitive-descriptor>, emitter: emit-primitive-call);
 
 /* not needed?
 define macro &primitive-descriptor-definer
@@ -34,7 +34,7 @@ end macro;
 */
 
 define method emitter (primitive :: <&primitive>)
-  primitive.primitive-descriptor-getter(current-back-end()).emitter
+  // primitive.primitive-descriptor-getter(current-back-end()).emitter
 end method;
 
 /* from back-end???

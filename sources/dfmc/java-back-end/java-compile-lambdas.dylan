@@ -202,13 +202,13 @@ define function java-model-environment
     end
   end;
   // don't forget closure variables!!
-  if (instance? (env, <closure-lexical-environment>))
-    for (temp in env.closure)
-      if (temp.closed-over? & ~ (member? (temp, closure-set)))
-        closure-set := pair (temp, closure-set)
-      end
-    end
-  end;
+  // if (instance? (env, <closure-lexical-environment>))
+  //   for (temp in env.closure)
+  //     if (temp.closed-over? & ~ (member? (temp, closure-set)))
+  //       closure-set := pair (temp, closure-set)
+  //     end
+  //   end
+  // end;
 
   let  new-slots = #();
   let  prev-seen = already-seen;

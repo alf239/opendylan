@@ -152,10 +152,10 @@ define method find-java-class-for-thing (thing :: <&class>)
   end
 end;
 
-define method find-java-class-for-thing (thing == <&integer>)
-  error ("**** believed wrong method for matching <integer> - %s\n", thing);
-  $dylan-class-<integer>$
-end;
+// define method find-java-class-for-thing (thing == <&integer>)
+//   error ("**** believed wrong method for matching <integer> - %s\n", thing);
+//   $dylan-class-<integer>$
+// end;
 
 define method find-java-class-for-thing (thing == <&boolean>)
   error ("**** believed wrong method for matching <boolean> - %s\n", thing);
@@ -266,51 +266,51 @@ define method find-java-class-for-thing (thing :: <library>)
 end;
 
 define method find-java-class-for-thing (thing :: <&library>)
-  let  dname = thing.^namespace-name;
-  unless (dname)
-    dname := thing.^debug-name
-  end;
-  unless (dname)
-    my-break (thing)
-  end;
-  let  name =  java-name-mangle (concatenate (as (<string>, dname), "-library"));
-  let  package = if (dname == #"dylan")
-                   $dylan-java-hierarchy-package-base$
-                 else
-                   $dylan-java-hierarchy-package-base2$
-                 end;
-  if (thing.model-creator == *current-be-library*.namespace-definition)
-    format-out ("*** MAKING concrete class for <&library> %s\n", thing);
-    make (<java-concrete-class>,
-          class-name:   name,
-          package:      package,
-          super:        $dylan-class-<library>$,
-          represents:   thing,
-          library:      thing)
-  else
-    format-out ("*** reference from %s to other library %s\n", *current-be-library*, thing);
-    my-break (pair (thing, *current-be-library*));
-    format-out ("*** MAKING stub class for <&library> %s\n", thing);
-    make (<java-stub-class>, class-name: name, package: package, super: $dylan-class-<library>$)
-  end
+  // let  dname = thing.^namespace-name;
+  // unless (dname)
+  //   dname := thing.^debug-name
+  // end;
+  // unless (dname)
+  //   my-break (thing)
+  // end;
+  // let  name =  java-name-mangle (concatenate (as (<string>, dname), "-library"));
+  // let  package = if (dname == #"dylan")
+  //                  $dylan-java-hierarchy-package-base$
+  //                else
+  //                  $dylan-java-hierarchy-package-base2$
+  //                end;
+  // if (thing.model-creator == *current-be-library*.namespace-definition)
+  //   format-out ("*** MAKING concrete class for <&library> %s\n", thing);
+  //   make (<java-concrete-class>,
+  //         class-name:   name,
+  //         package:      package,
+  //         super:        $dylan-class-<library>$,
+  //         represents:   thing,
+  //         library:      thing)
+  // else
+  //   format-out ("*** reference from %s to other library %s\n", *current-be-library*, thing);
+  //   my-break (pair (thing, *current-be-library*));
+  //   format-out ("*** MAKING stub class for <&library> %s\n", thing);
+  //   make (<java-stub-class>, class-name: name, package: package, super: $dylan-class-<library>$)
+  // end
 end;
 
 define method find-java-class-for-thing (thing :: <&module>)
-  let  dname = thing.^namespace-name;
-  let  name =  java-name-mangle (concatenate (as (<string>, dname), "-module"));
-  let  package = if (dname == #"dylan")
-                   $dylan-java-hierarchy-package-base$
-                 else
-                   $dylan-java-hierarchy-package-base2$
-                 end;
-  if (thing.^home-library == *current-be-library*. /*private-*/ namespace-model)
-    format-out ("*** Finding stub class for <&module> %s\n", thing);
-    java-class-for-thing (*current-be-library*)
-  else
-    format-out ("*** reference from %s to other library %s\n", *current-be-library*, thing);
-    format-out ("*** Making stub class for <&module> %s\n", thing);
-    make (<java-stub-class>, class-name: name, package: package, super: $dylan-class-<module>$)
-  end
+  // let  dname = thing.^namespace-name;
+  // let  name =  java-name-mangle (concatenate (as (<string>, dname), "-module"));
+  // let  package = if (dname == #"dylan")
+  //                  $dylan-java-hierarchy-package-base$
+  //                else
+  //                  $dylan-java-hierarchy-package-base2$
+  //                end;
+  // if (thing.^home-library == *current-be-library*. /*private-*/ namespace-model)
+  //   format-out ("*** Finding stub class for <&module> %s\n", thing);
+  //   java-class-for-thing (*current-be-library*)
+  // else
+  //   format-out ("*** reference from %s to other library %s\n", *current-be-library*, thing);
+  //   format-out ("*** Making stub class for <&module> %s\n", thing);
+  //   make (<java-stub-class>, class-name: name, package: package, super: $dylan-class-<module>$)
+  // end
 end;
 
 
@@ -397,27 +397,27 @@ define method java-type-for-specializer (spec :: <&union>) => (java-type :: <jav
 end;
 
 define function specialized-ep-full-type (fun :: <&function>, iep? :: <boolean>, this?) => (spec :: <java-function-type>)
-  let est-funtype  = type-estimate-function-from-signature (fun.^function-signature, fun.^object-class, #f, body: fun.body);
-//  my-break (est-funtype);
-  let  argtypes = est-funtype.type-estimate-requireds;
-  let  restypes = est-funtype.type-estimate-values;
-  let  fn = compose (java-type-for-specializer, curry (as, <&type>));
-  let  atypes = map (fn, argtypes);
-//  my-break (atypes);
-  let  rtypes = map (fn, type-estimate-fixed-values (restypes));
-//  my-break (rtypes);
-  if (rtypes.empty?)
-    rtypes := vector ($java-void-type$)
-  end;
-//  let argtypes = specialized-ep-arg-type-internal (fun.parameters, iep?);
-  if (this?)
-    if (this? == #t)
-      error ("whhopps")
-    end;
-    apply (meth-type, rtypes.first, this?, atypes)
-  else
-    apply (meth-type, rtypes.first, atypes)
-  end
+//   let est-funtype  = type-estimate-function-from-signature (fun.^function-signature, fun.^object-class, #f, body: fun.body);
+// //  my-break (est-funtype);
+//   let  argtypes = est-funtype.type-estimate-requireds;
+//   let  restypes = est-funtype.type-estimate-values;
+//   let  fn = compose (java-type-for-specializer, curry (as, <&type>));
+//   let  atypes = map (fn, argtypes);
+// //  my-break (atypes);
+//   let  rtypes = map (fn, type-estimate-fixed-values (restypes));
+// //  my-break (rtypes);
+//   if (rtypes.empty?)
+//     rtypes := vector ($java-void-type$)
+//   end;
+// //  let argtypes = specialized-ep-arg-type-internal (fun.parameters, iep?);
+//   if (this?)
+//     if (this? == #t)
+//       error ("whhopps")
+//     end;
+//     apply (meth-type, rtypes.first, this?, atypes)
+//   else
+//     apply (meth-type, rtypes.first, atypes)
+//   end
 end;
 
 

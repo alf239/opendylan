@@ -88,7 +88,7 @@ end;
 define function java-mangler (name :: <string>, module :: <module>.false-or)
   let  back-end  =  current-back-end() | $dummy-java-back-end;
   if (~ module)
-    module := back-end.current-module
+    // module := back-end.current-module
   end;
   let  mangler = mangler-reset (back-end.mangler);
   if (module)

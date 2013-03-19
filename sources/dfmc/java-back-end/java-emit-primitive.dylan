@@ -982,9 +982,9 @@ end;
 
 define generic java-class-for-slot (type) => (jc :: <java-type>);
 
-define method java-class-for-slot (type :: <&integer>) => (jc :: <java-type>)
-  $java-int-type$
-end;
+// define method java-class-for-slot (type :: <&integer>) => (jc :: <java-type>)
+//   $java-int-type$
+// end;
 define method java-class-for-slot (type :: <&single-float>) => (jc :: <java-type>)
   $java-float-type$
 end;

@@ -19,8 +19,8 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 
 define variable xep-invokers = #f;
-define variable mep-invokers = #f;
-define variable iep-invokers = #f;
+// define variable mep-invokers = #f;
+// define variable iep-invokers = #f;
 
 define sealed generic dylan-invoke-method (call :: <function-call>, funct, argc :: <integer>)
  => (spec :: <java-method-spec>);
@@ -153,8 +153,8 @@ define constant $dylan-class-<library>$ =
   predefined-dylan-internal-class ("<library>", $dylan-class-<object>$);
 define constant $dylan-class-<module>$ =
   predefined-dylan-internal-class ("<module>",  $dylan-class-<object>$);
-define constant $dylan-class-<closure>$ =
-  predefined-dylan-internal-class ("<closure>", $java/lang/Object$);
+// define constant $dylan-class-<closure>$ =
+//   predefined-dylan-internal-class ("<closure>", $java/lang/Object$);
 
 define constant $dylan-class-<boolean>$ =
   predefined-dylan-class ("<boolean>", $dylan-class-<object>$);
@@ -178,12 +178,12 @@ define constant $dylan-class-<single-float>$ =
   predefined-dylan-class ("<single-float>", $dylan-class-<float>$);
 define constant $dylan-class-<double-float>$ =
   predefined-dylan-class ("<double-float>", $dylan-class-<float>$);
-define constant $dylan-class-<complex-integer>$ =
-  predefined-dylan-class ("<complex-integer>", $dylan-class-<complex>$);
-define constant $dylan-class-<complex-single-float>$ =
-  predefined-dylan-class ("<complex-single-float>", $dylan-class-<complex>$);
-define constant $dylan-class-<complex-double-float>$ =
-  predefined-dylan-class ("<complex-double-float>", $dylan-class-<complex>$);
+// define constant $dylan-class-<complex-integer>$ =
+//   predefined-dylan-class ("<complex-integer>", $dylan-class-<complex>$);
+// define constant $dylan-class-<complex-single-float>$ =
+//   predefined-dylan-class ("<complex-single-float>", $dylan-class-<complex>$);
+// define constant $dylan-class-<complex-double-float>$ =
+//   predefined-dylan-class ("<complex-double-float>", $dylan-class-<complex>$);
 
 define constant $dylan-class-<character>$ =
   predefined-dylan-class ("<character>", $dylan-class-<object>$);
@@ -208,8 +208,8 @@ define constant $dylan-class-<vector>$ =
   predefined-dylan-class ("<vector>", $dylan-class-<array>$);
 define constant $dylan-class-<byte-string>$ =
   predefined-dylan-class ("<byte-string>", $dylan-class-<string>$, $dylan-class-<vector>$);
-define constant $dylan-class-<unicode-string>$ =
-  predefined-dylan-class ("<unicode-string>", $dylan-class-<string>$, $dylan-class-<vector>$);
+// define constant $dylan-class-<unicode-string>$ =
+//   predefined-dylan-class ("<unicode-string>", $dylan-class-<string>$, $dylan-class-<vector>$);
 define constant $dylan-class-<simple-vector>$ =
   predefined-dylan-class ("<simple-vector>", $dylan-class-<vector>$);
 define constant $dylan-class-<simple-object-vector>$ =
@@ -511,9 +511,9 @@ define method guess-value-type (o :: <&class>)
   $dylan-class-<class>$
 end;
 
-define method java-type-for (o)
-  $dylan-class-<object>$
-end;
+// define method java-type-for (o)
+//   $dylan-class-<object>$
+// end;
 
 define method java-type-for (o :: <&class>)
   java-class-for-thing (o)
@@ -539,17 +539,17 @@ define method java-rep (bnd :: <module-binding>) => (thing)
 end;
 
 
-define constant $rev-pair-func$ =
-  meth-spec ($dylan-class-<pair>$,
-             "Jrev_pair",
-             meth-type ($dylan-class-<pair>$,
-                        $dylan-class-<list>$,
-                        $dylan-class-<object>$),
-             j-invokestatic);
+// define constant $rev-pair-func$ =
+//   meth-spec ($dylan-class-<pair>$,
+//              "Jrev_pair",
+//              meth-type ($dylan-class-<pair>$,
+//                         $dylan-class-<list>$,
+//                         $dylan-class-<object>$),
+//              j-invokestatic);
 
 
 
-define sealed generic java-name-generate (o) => (uniq :: <unique-string>);
+// define sealed generic java-name-generate (o) => (uniq :: <unique-string>);
 
 define method java-name-generate (s :: <unique-string>) => (uniq :: <unique-string>)
   s

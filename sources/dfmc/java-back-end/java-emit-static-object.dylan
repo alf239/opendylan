@@ -15,7 +15,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
  * this init (the hope is this special "init-helper class" gets GCed by
  * the JVM)
  *
- * Note that all modelled objects already assigned to bindings (whether constant
+ * Note that all modeled objects already assigned to bindings (whether constant
  * or not) can use those bindings as names.
  * [ Late Note:  I think this information is lost by modeling time (only in the init code),
  *   so shall assume no models match module bindings at all! ]
@@ -52,7 +52,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
  * init-helper class (as a static field).
  *
  * create a mapping from all these objects to their Java names.  For
- * locals, this is defered, since haven't created the method yet??!
+ * locals, this is deferred, since haven't created the method yet??!
  *
  * For all objects, generate code to make the bare object.  Can at this
  * stage init any direct fields too, although not critical (shares work

@@ -256,7 +256,7 @@ define function add-bytecode (jbb :: <java-basic-block>, byte :: <java-abstract-
   jbb.pc := jbb.pc + byte.frag-size
 end;
 
-define variable *debug-jvm-instrs* = 4;
+define variable *debug-jvm-instrs* = #t;
 
 
 // maintain the model of stack depth within a BB - collect the max depth as

@@ -7,7 +7,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 
 define variable *print-insns* = #f;
-define variable *break-methods* = #f;
+// define variable *break-methods* = #f;
 
 // in order to accumulate a more BB-oriented view of the code,
 // we need a notion of a merge with a sense
@@ -15,56 +15,56 @@ define sealed abstract class <faked-transfer> (<object>)
   sealed slot merge      :: <binary-merge>, required-init-keyword: merge:;
 end;
 
-define abstract class <merge-transfer> (<faked-transfer>)
-  sealed slot temp :: <temporary>, required-init-keyword: temp:;
-end;
+// define abstract class <merge-transfer> (<faked-transfer>, <computation>)
+//   sealed slot temp :: <temporary>, required-init-keyword: temp:;
+// end;
 
-define class <merge-transfer-l> (<merge-transfer>) end;
-define class <merge-transfer-r> (<merge-transfer>) end;
+// define class <merge-transfer-l> (<merge-transfer>) end;
+// define class <merge-transfer-r> (<merge-transfer>) end;
 
 // ARSE this is SEALED.  BUM!
-define constant $faked-transfer-accs$ =
-  list (make (<temporary-accessors>, getter: computation-value, setter: computation-value-setter));
-define method used-temporary-accessors (et :: <faked-transfer>) => (list :: <list>)
-  $faked-transfer-accs$
-end;
+// define constant $faked-transfer-accs$ =
+//   list (make (<temporary-accessors>, getter: computation-value, setter: computation-value-setter));
+// define method used-temporary-accessors (et :: <faked-transfer>) => (list :: <list>)
+//   $faked-transfer-accs$
+// end;
 
-define function left-merge (merge :: <binary-merge>) => (mt :: <merge-transfer>)
-  let  temp = merge.temporary;
-  let  temp-copy = make (<merging-temporary>,
-                         actual-temporary: temp,
-                         environment: merge.environment);
-  temp-copy.users := copy-sequence (temp.users);
-  let  merge-transfer = make (<merge-transfer-l>, merge: merge, temp: temp-copy);
-  temp-copy.generator := merge-transfer;
-  merge-transfer
-end;
-
-define function right-merge (merge :: <binary-merge>) => (mt :: <merge-transfer>)
-  let  temp = merge.temporary;
-  let  temp-copy = make (<merging-temporary>,
-                         actual-temporary: temp,
-                         environment: merge.environment);
-  temp-copy.users := copy-sequence (temp.users);
-  let  merge-transfer = make (<merge-transfer-r>, merge: merge, temp: temp-copy);
-  temp-copy.generator := merge-transfer;
-  merge-transfer
-end;
+// define function left-merge (merge :: <binary-merge>) => (mt :: <merge-transfer>)
+//   let  temp = merge.temporary;
+//   let  temp-copy = make (<merging-temporary>,
+//                          actual-temporary: temp,
+//                          environment: merge.environment);
+//   temp-copy.users := copy-sequence (temp.users);
+//   let  merge-transfer = make (<merge-transfer-l>, merge: merge, temp: temp-copy);
+//   temp-copy.generator := merge-transfer;
+//   merge-transfer
+// end;
+// 
+// define function right-merge (merge :: <binary-merge>) => (mt :: <merge-transfer>)
+//   let  temp = merge.temporary;
+//   let  temp-copy = make (<merging-temporary>,
+//                          actual-temporary: temp,
+//                          environment: merge.environment);
+//   temp-copy.users := copy-sequence (temp.users);
+//   let  merge-transfer = make (<merge-transfer-r>, merge: merge, temp: temp-copy);
+//   temp-copy.generator := merge-transfer;
+//   merge-transfer
+// end;
 
 // ARSE, SEALED AGAIN
-define method temporary (ft :: <faked-transfer>) => (tmp :: <temporary>)
-  ft.merge.temporary
-end;
-define method temporary (mt :: <merge-transfer>) => (tmp :: <temporary>)
-  mt.temp
-end;
+// define method temporary (ft :: <faked-transfer>) => (tmp :: <temporary>)
+//   ft.merge.temporary
+// end;
+// define method temporary (mt :: <merge-transfer>) => (tmp :: <temporary>)
+//   mt.temp
+// end;
 // ARSE, SEALED AGAIN
-define method computation-value (mt :: <merge-transfer-l>) => (tmp :: <temporary>)
-  mt.merge.merge-left-value
-end;
-define method computation-value (mt :: <merge-transfer-r>) => (tmp :: <temporary>)
-  mt.merge.merge-right-value
-end;
+// define method computation-value (mt :: <merge-transfer-l>) => (tmp :: <temporary>)
+//   mt.merge.merge-left-value
+// end;
+// define method computation-value (mt :: <merge-transfer-r>) => (tmp :: <temporary>)
+//   mt.merge.merge-right-value
+// end;
 
 
 
@@ -77,9 +77,9 @@ define function exit-merge (merge :: <bind-exit-merge>, exit :: <exit>) => (et :
 end;
 
 // ARSE, SEALED AGAIN
-define method computation-value (et :: <exit-transfer>) => (tmp :: <temporary>)
-  et.exit.computation-value
-end;
+// define method computation-value (et :: <exit-transfer>) => (tmp :: <temporary>)
+//   et.exit.computation-value
+// end;
 
 
 /* was needed to prevent BB duplication on <binary-merge>s ?
@@ -549,7 +549,7 @@ end;
 
 
 
-define sealed generic fall-through-comp (c :: <object>) => (fall-thru :: false-or (<computation>));
+// define sealed generic fall-through-comp (c :: <object>) => (fall-thru :: false-or (<computation>));
 
 define method fall-through-comp (c :: <computation>) => (fall-thru :: false-or (<computation>))    c.next-computation end;
 define method fall-through-comp (c :: <faked-transfer>) => (fall-thru :: false-or (<computation>)) c.merge.next-computation end;
@@ -606,16 +606,16 @@ end;
 
 
 // not normally used
-define function describe-bbs (bbs-seen)
-  format-out ("Basic Block Dump:\n");
-  for (bb in bbs-seen)
-    format-out ("Basic Block:\n\n");
-    for (comp :: <computation> in bb.head)
-      format-out ("  %s %s\n", comp.object-class, comp);
-    end
-  end;
-  format-out ("\n\n")
-end;
+// define function describe-bbs (bbs-seen)
+//   format-out ("Basic Block Dump:\n");
+//   for (bb in bbs-seen)
+//     format-out ("Basic Block:\n\n");
+//     for (comp :: <computation> in bb.head)
+//       format-out ("  %s %s\n", comp.object-class, comp);
+//     end
+//   end;
+//   format-out ("\n\n")
+// end;
 
 /*
 define function bb-label-node (node :: <computation>, meth :: <java-method>) => (lab :: <integer>)
@@ -693,14 +693,14 @@ define method collect-bbs (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm ::
   collect-bbs-check (bbs, then-bb, dfm.next-computation, uptil)
 end;
 
-define sealed generic raw-false? (obj) => (res :: <boolean>);
-define method raw-false? (obj) => (res :: <boolean>)
-  #f
-end;
-
-define method raw-false? (obj :: <&raw-boolean>) => (res :: <boolean>)
-  ~ obj.^raw-object-value
-end;
+// define sealed generic raw-false? (obj) => (res :: <boolean>);
+// define method raw-false? (obj) => (res :: <boolean>)
+//   #f
+// end;
+// 
+// define method raw-false? (obj :: <&raw-boolean>) => (res :: <boolean>)
+//   ~ obj.^raw-object-value
+// end;
 
 define function collect-bbs-if-special (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm :: <if>, uptil :: false-or (<computation>), next-if :: <if>) => (now-bb :: <dylan-bb>)
   let  con = dfm.consequent;
@@ -733,14 +733,14 @@ define function collect-bbs-if-special (bbs :: <bb-collection>, then-bb :: <dyla
       con-end-bb := con-bb := new-bb (bbs);
       linearize-stamp (bbs, con-bb)
     end;
-    let  the-left-merge = left-merge (merge);
-    let  next-if2 = make (<if>, test: the-left-merge.temporary,
-                                consequent:  next-if.consequent,
-                                alternative: next-if.alternative,
-                                environment: next-if.environment);
-    add! (con-end-bb.comp-list, the-left-merge);
-    add! (con-end-bb.comp-list, next-if2);
-    *unwind-handlers* [next-if2] := con-end-bb;
+    // let  the-left-merge = left-merge (merge);
+    // let  next-if2 = make (<if>, test: the-left-merge.temporary,
+    //                             consequent:  next-if.consequent,
+    //                             alternative: next-if.alternative,
+    //                             environment: next-if.environment);
+    // add! (con-end-bb.comp-list, the-left-merge);
+    // add! (con-end-bb.comp-list, next-if2);
+    // *unwind-handlers* [next-if2] := con-end-bb;
   end;
   if (alt-bb == #f &
       instance? (alt-temp, <object-reference>))
@@ -751,14 +751,14 @@ define function collect-bbs-if-special (bbs :: <bb-collection>, then-bb :: <dyla
       alt-end-bb := alt-bb := new-bb (bbs);
       linearize-stamp (bbs, alt-bb)
     end;
-    let  the-right-merge = right-merge (merge);
-    let  next-if2 = make (<if>, test: the-right-merge.temporary,
-                                consequent:  next-if.consequent,
-                                alternative: next-if.alternative,
-                                environment: next-if.environment);
-    add! (alt-end-bb.comp-list, the-right-merge);
-    add! (alt-end-bb.comp-list, next-if2);
-    *unwind-handlers* [next-if2] := alt-end-bb;
+    // let  the-right-merge = right-merge (merge);
+    // let  next-if2 = make (<if>, test: the-right-merge.temporary,
+    //                             consequent:  next-if.consequent,
+    //                             alternative: next-if.alternative,
+    //                             environment: next-if.environment);
+    // add! (alt-end-bb.comp-list, the-right-merge);
+    // add! (alt-end-bb.comp-list, next-if2);
+    // *unwind-handlers* [next-if2] := alt-end-bb;
   end;
 
   // generate the next if, with next-con-bb, next-alt-bb
@@ -773,7 +773,7 @@ define function collect-bbs-if-special (bbs :: <bb-collection>, then-bb :: <dyla
     linearize-stamp (bbs, next-con-bb);
     next-con-end-bb := collect-bbs-check (bbs, next-con-bb, next-if.consequent, next-merge);
     if (next-merge.temporary & ~ next-con-end-bb.complete?)
-      add! (next-con-end-bb.comp-list, left-merge (next-merge))
+      // add! (next-con-end-bb.comp-list, left-merge (next-merge))
     end;
     if (~ (next-con-end-bb.complete?))
       bb-link (next-con-end-bb, escape-bb)
@@ -784,7 +784,7 @@ define function collect-bbs-if-special (bbs :: <bb-collection>, then-bb :: <dyla
     linearize-stamp (bbs, next-alt-bb);
     next-alt-end-bb := collect-bbs-check (bbs, next-alt-bb, next-if.alternative, next-merge);
     if (next-merge.temporary & ~ next-alt-end-bb.complete?)
-      add! (next-alt-end-bb.comp-list, right-merge (next-merge))
+      // add! (next-alt-end-bb.comp-list, right-merge (next-merge))
     end;
     if (~ (next-alt-end-bb.complete?))
       bb-link (next-alt-end-bb, escape-bb)
@@ -836,13 +836,13 @@ define method collect-bbs (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm ::
     let  con-bbkey = con;
     let  left-merge-node = #f;
     if (con == merge & merge-temp)
-      con-bbkey := left-merge-node := left-merge (merge)
+      // con-bbkey := left-merge-node := left-merge (merge)
     end;
 
     let  alt-bbkey = alt;
     let  right-merge-node = #f;
     if (alt == merge & merge-temp)
-      alt-bbkey := right-merge-node := right-merge (merge)
+      // alt-bbkey := right-merge-node := right-merge (merge)
     end;
 
     // label the bb's appropriately
@@ -865,7 +865,7 @@ define method collect-bbs (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm ::
         // add any merging instructions
         if (~ con-end-bb.complete?)
           linearize-stamp (bbs, con-end-bb);
-          add! (con-end-bb.comp-list, left-merge-node  | left-merge (merge))
+          // add! (con-end-bb.comp-list, left-merge-node  | left-merge (merge))
         end
       end;
       if (alt ~== merge)
@@ -875,7 +875,7 @@ define method collect-bbs (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm ::
       if (merge-temp)
         if (~ alt-end-bb.complete?)
           linearize-stamp (bbs, alt-end-bb);
-          add! (alt-end-bb.comp-list, right-merge-node | right-merge (merge))
+          // add! (alt-end-bb.comp-list, right-merge-node | right-merge (merge))
         end
       end;
 
@@ -925,7 +925,7 @@ define method collect-bbs (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm ::
     if (fake-body?)
       error ("<fake-bb> seen in merging context")
     else
-      add! (body-bb.comp-list, right-merge (maybe-merge));
+      // add! (body-bb.comp-list, right-merge (maybe-merge));
       bb-link (body-bb, escape-bb);
       linearize-stamp (bbs, escape-bb);
       collect-bbs-check (bbs, escape-bb, maybe-merge.next-computation, uptil)
@@ -989,7 +989,7 @@ define method collect-bbs (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm ::
   record-uenv-level (dfm);
   let escape-bb = find-bb (bbs, dfm);
   for (m :: <computation> in dfm.loop-merges)
-    add! (then-bb.comp-list, left-merge (m))
+    // add! (then-bb.comp-list, left-merge (m))
   end;
   let  body-bb = find-bb (bbs, dfm.loop-body);
   linearize-stamp (bbs, body-bb);
@@ -1002,7 +1002,7 @@ end;
 define method collect-bbs (bbs :: <bb-collection>, then-bb :: <dylan-bb>, dfm :: <loop-call>, uptil :: false-or (<computation>)) => (now-bb :: <dylan-bb>)
   record-uenv-level (dfm);
   for (m :: <computation> in dfm.loop-call-merges)
-    add! (then-bb.comp-list, right-merge (m))
+    // add! (then-bb.comp-list, right-merge (m))
   end;
   add! (then-bb.comp-list, dfm);  // not required
   bb-link (then-bb, find-bb (bbs, dfm.loop-call-loop.loop-body));
@@ -1147,13 +1147,13 @@ define function bb-link (from :: <dylan-bb>, to :: <dylan-bb>) => ()
 end;
 
 
-define function desc-dfm (dfm :: <bind>)
-  let  bbs = make (<bb-collection>);
-  let  new = new-bb (bbs);
-  collect-bbs-check (bbs, new, dfm.next-computation, dfm);
-  describe-dylan-bbs (bbs);
-  #f
-end;
+// define function desc-dfm (dfm :: <bind>)
+//   let  bbs = make (<bb-collection>);
+//   let  new = new-bb (bbs);
+//   collect-bbs-check (bbs, new, dfm.next-computation, dfm);
+//   describe-dylan-bbs (bbs);
+//   #f
+// end;
 
 define function describe-dylan-bbs (bbs :: <bb-collection>)
   for (el :: <dylan-bb> in bbs.bb-vec)
@@ -1164,15 +1164,15 @@ define function describe-dylan-bbs (bbs :: <bb-collection>)
     end;
     format-out ("}\n");
     for (comp :: <computation> in el.comp-list)
-      if (instance? (comp, <merge-transfer>))
-        format-out ("       %s := %s  // merge-transfer\n", comp.temporary, comp.computation-value)
-      else
+      // if (instance? (comp, <merge-transfer>))
+      //   format-out ("       %s := %s  // merge-transfer\n", comp.temporary, comp.computation-value)
+      // else
         if (instance? (comp, <exit-transfer>))
           format-out ("       %s := %s  // exit-transfer\n", comp.temporary, comp.computation-value)
         else
           format-out ("       %s\n", comp)
         end
-      end
+      // end
     end;
     format-out ("   { ");
     for (succ :: <dylan-bb> in el.succs.reverse)

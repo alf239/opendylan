@@ -135,20 +135,20 @@ end;
 
 
 // Oh ARSE, the hierarchy is sealed - have to deal with this as a separate class
-define sealed class <merging-temporary> (<temporary>)
-  sealed slot actual-temporary :: <temporary>, required-init-keyword: actual-temporary:;
-end;
+// define sealed class <merging-temporary> (<temporary>)
+//   sealed slot actual-temporary :: <temporary>, required-init-keyword: actual-temporary:;
+// end;
 
-define method print-object (t :: <merging-temporary>, stream :: <stream>) => ()
-  format (stream, "M%s", t.actual-temporary)
-end;
+// define method print-object (t :: <merging-temporary>, stream :: <stream>) => ()
+//   format (stream, "M%s", t.actual-temporary)
+// end;
 
 
 define sealed generic number-local-var (tt :: <temporary>) => (num :: <integer>);
 
-define method number-local-var (tt :: <merging-temporary>) => (num :: <integer>)
-  number-local-var (tt.actual-temporary)
-end;
+// define method number-local-var (tt :: <merging-temporary>) => (num :: <integer>)
+//   number-local-var (tt.actual-temporary)
+// end;
 
 // we hash on the frame-offset so that we can share marged vars
 define method number-local-var (tt :: <temporary>) => (num :: <integer>)
@@ -205,10 +205,10 @@ end;
 
 define constant $dylan-true-slot$  = slot-spec ($dylan-class-<object>$, "Ptrue", $dylan-class-<boolean>$, #t);
 define constant $dylan-false-slot$ = slot-spec ($dylan-class-<object>$, "Pfalse", $dylan-class-<boolean>$, #t);
-define constant $dylan-empty-list-slot$ =
-  slot-spec ($dylan-class-<object>$, "Pempty_list", $dylan-class-<empty-list>$, #t);
-define constant $dylan-empty-vec-slot$  =
-  slot-spec ($dylan-class-<object>$, "Psv_empty", $dylan-class-<simple-object-vector>$, #t);
+// define constant $dylan-empty-list-slot$ =
+//   slot-spec ($dylan-class-<object>$, "Pempty_list", $dylan-class-<empty-list>$, #t);
+// define constant $dylan-empty-vec-slot$  =
+//   slot-spec ($dylan-class-<object>$, "Psv_empty", $dylan-class-<simple-object-vector>$, #t);
 
 define method emit-expression-leaf (jbb :: <java-basic-block>, node == #t) => ()
   java-read (jbb, $dylan-true-slot$)
@@ -618,13 +618,13 @@ end;
 
 
 // not actually used
-define function emit-java-new-init-2 (jbb :: <java-basic-block>, jc :: <java-class>, type1 :: <java-type>, type2 :: <java-type>) => ()
-  java-op2 (jbb, j-new, jc);
-  java-simple-op (jbb, j-dup-x2);
-  java-simple-op (jbb, j-dup-x2);
-  emit-pop (jbb);
-  emit-java-init (jbb, jc, type1, type2)
-end;
+// define function emit-java-new-init-2 (jbb :: <java-basic-block>, jc :: <java-class>, type1 :: <java-type>, type2 :: <java-type>) => ()
+//   java-op2 (jbb, j-new, jc);
+//   java-simple-op (jbb, j-dup-x2);
+//   java-simple-op (jbb, j-dup-x2);
+//   emit-pop (jbb);
+//   emit-java-init (jbb, jc, type1, type2)
+// end;
 
 define function emit-java-init (jbb :: <java-basic-block>, jc :: <java-class>, #rest types :: <java-type>) => ()
   java-call (jbb, meth-spec (jc,
@@ -731,8 +731,8 @@ define function  push-the-thread (jbb) => ()
 end;
 */
 
-define constant $dylanthread-class-constant$ =
-  make (<java-class-constant>, java-class: $dylan/dylanthread$);
+// define constant $dylanthread-class-constant$ =
+//   make (<java-class-constant>, java-class: $dylan/dylanthread$);
 
 define constant $restore-mv-method$ =
   meth-spec ($dylan/dylanthread$, "restore_mv",
@@ -762,11 +762,11 @@ define constant $values-methods$ =
                                                                $dylan-class-<object>$), j-invokestatic));
 
 
-define constant $next-methods-slot$ =
-  slot-spec ($dylan/dylanthread$,
-             "next_methods",
-             $dylan-class-<list>$,
-             #f);
+// define constant $next-methods-slot$ =
+//   slot-spec ($dylan/dylanthread$,
+//              "next_methods",
+//              $dylan-class-<list>$,
+//              #f);
 define constant $next-methods-getter$ =
   meth-spec ($dylan/dylanthread$,
              "next_methods",
@@ -777,11 +777,11 @@ define constant $next-methods-setter$ =
              "next_methods_setter",
              meth-type ($java-void-type$, $dylan-class-<list>$),
              j-invokestatic);
-define constant $next-methods-popper$ =
-  meth-spec ($dylan/dylanthread$,
-             "pop_next_method",
-             meth-type ($dylan-class-<function>$),
-             j-invokestatic);
+// define constant $next-methods-popper$ =
+//   meth-spec ($dylan/dylanthread$,
+//              "pop_next_method",
+//              meth-type ($dylan-class-<function>$),
+//              j-invokestatic);
 
 
 define method emit-expression-tree (jbb :: <java-basic-block>, node :: <values>, nodes, value?) => ()
@@ -893,10 +893,10 @@ define method emit-expression-tree (jbb :: <java-basic-block>, node :: <temporar
 end;
 
 define method emit-expression-tree (jbb :: <java-basic-block>, node :: <faked-transfer>, nodes, value?) => ()
-  emit-expression (jbb, node.computation-value, nodes, value?);
+  // emit-expression (jbb, node.computation-value, nodes, value?);
   // effectively a nop on the stack, unless at top level in expression
   if (~value?)
-    emit-pop-local (jbb, node.temporary.number-local-var, j-ref-code) // J-CODE-FOR
+    // emit-pop-local (jbb, node.temporary.number-local-var, j-ref-code) // J-CODE-FOR
   end
 end;
 
@@ -1453,11 +1453,11 @@ define method emit-obj-if-expression-tree (jbb :: <java-basic-block>, node :: <g
 //format-out ("emit-obj-if-expression-tree recursing through %s\n", node);
   emit-obj-if-expression (jbb, node.computation-value, nodes, true-dest, false-dest, fall-through)
 end;
-define method emit-obj-if-expression-tree (jbb :: <java-basic-block>, node :: <merge-transfer>, nodes, true-dest, false-dest, fall-through) => ()
-  // enable further dispatch on primitives
-//format-out ("emit-obj-if-expression-tree recursing through %s\n", node);
-  emit-obj-if-expression (jbb, node.computation-value, nodes, true-dest, false-dest, fall-through)
-end;
+// define method emit-obj-if-expression-tree (jbb :: <java-basic-block>, node :: <merge-transfer>, nodes, true-dest, false-dest, fall-through) => ()
+//   // enable further dispatch on primitives
+// //format-out ("emit-obj-if-expression-tree recursing through %s\n", node);
+//   emit-obj-if-expression (jbb, node.computation-value, nodes, true-dest, false-dest, fall-through)
+// end;
 
 define method emit-raw-if-expression-tree (jbb :: <java-basic-block>, node :: <temporary-transfer>, nodes, true-dest, false-dest, fall-through) => ()
   // enable further dispatch on primitives
@@ -1469,11 +1469,11 @@ define method emit-raw-if-expression-tree (jbb :: <java-basic-block>, node :: <g
 //format-out ("emit-raw-if-expression-tree recursing through %s\n", node);
   emit-raw-if-expression (jbb, node.computation-value, nodes, true-dest, false-dest, fall-through)
 end;
-define method emit-raw-if-expression-tree (jbb :: <java-basic-block>, node :: <merge-transfer>, nodes, true-dest, false-dest, fall-through) => ()
-  // enable further dispatch on primitives
-//format-out ("emit-raw-if-expression-tree recursing through %s\n", node);
-  emit-raw-if-expression (jbb, node.computation-value, nodes, true-dest, false-dest, fall-through)
-end;
+// define method emit-raw-if-expression-tree (jbb :: <java-basic-block>, node :: <merge-transfer>, nodes, true-dest, false-dest, fall-through) => ()
+//   // enable further dispatch on primitives
+// //format-out ("emit-raw-if-expression-tree recursing through %s\n", node);
+//   emit-raw-if-expression (jbb, node.computation-value, nodes, true-dest, false-dest, fall-through)
+// end;
 
 define thread variable *expression-tree-nodes* = #f;
 
@@ -1489,7 +1489,7 @@ define method emit-expression-tree (jbb :: <java-basic-block>, node :: <primitiv
   for (tt in temps, n :: <integer> from 0)
     emit-expression (jbb, tt, nodes, 1)  // assume all args to primitives single-valued?
   end;
-  let  desc = prim.primitive-descriptor-getter;
+  // let  desc = prim.primitive-descriptor-getter;
   let  prim-name = as (<symbol>, prim.binding-name);
   dynamic-bind (*expression-tree-nodes* = nodes)
     gen-primitive (prim-name, node, args, jbb);

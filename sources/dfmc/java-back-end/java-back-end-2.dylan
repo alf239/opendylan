@@ -32,9 +32,9 @@ define method backend-concrete-class-for (jcls :: <java-interface>) => (cls :: <
   <java-backend-concrete-interface-info>
 end;
 
-define function ensure-backend-class-concrete (cls) => (cls)
-  ensure-class-concrete (cls, class-for: backend-concrete-class-for)
-end;
+// define function ensure-backend-class-concrete (cls) => (cls)
+//   ensure-class-concrete (cls, class-for: backend-concrete-class-for)
+// end;
 
 
 define variable *current-library-java-class* = #f;
