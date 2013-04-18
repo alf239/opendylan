@@ -1,6 +1,6 @@
-*******************************
-Getting Started with Open Dylan
-*******************************
+***************************************
+Getting Started with the Open Dylan IDE
+***************************************
 
 Contents:
 
@@ -9,7 +9,6 @@ Contents:
 
    copyright
    preface
-   console
    quick-start
    expanding
    model
