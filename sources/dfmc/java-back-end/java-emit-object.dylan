@@ -708,8 +708,6 @@ define method emit-iep-code-for-method (methodd :: <&method>,
 
       // have to do stack dataflow across these boundaries!
       dynamic-bind (*entry-stack-model* = jbb.local-var-types)
-      format-out("Hello, world!\n");
-      
         process-bbs (meth, bbcoll);  // first pass, all but label fixup
       end dynamic-bind;
 
