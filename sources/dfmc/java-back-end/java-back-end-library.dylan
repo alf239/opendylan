@@ -56,14 +56,14 @@ define module dfmc-java-back-end
   use dfmc-flow-graph;
 
   export
-    <java-back-end>,
-    java-local-mangle, java-global-mangle, java-raw-mangle,
-    *current-be-library*,
-    flush-java-classes,
-    emit-java-class-for-library,
-    finalize-java-linking,
-    *current-module-java-class*,
-    *current-library-jar*;
+    <java-back-end>;
+    // java-local-mangle, java-global-mangle, java-raw-mangle,
+    // *current-be-library*,
+    // flush-java-classes,
+    // emit-java-class-for-library,
+    // finalize-java-linking,
+    // *current-module-java-class*,
+    // *current-library-jar*;
 end module;
 
 

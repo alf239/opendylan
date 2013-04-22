@@ -12,15 +12,13 @@ define constant $initial-string-stream-contents-size = 10000;
 define sealed class <java-back-end> (<back-end>)
   constant slot lambda-stream = make(<string-stream>,
                                      direction: #"output",
-                                     contents:  make(<byte-string>,
-                                     size:      $initial-string-stream-contents-size));
+                                     contents:  make(<byte-string>, size: $initial-string-stream-contents-size));
   // slot current-module  = #f;
 end;
 
 register-back-end(<java-back-end>, #"java", #f, #f);
 
 define method initialize (back-end :: <java-back-end>, #key, #all-keys) => ()
-  next-method ();
-  stream-contents (back-end.lambda-stream, clear-contents?: #t);
+  next-method();
+  stream-contents(back-end.lambda-stream, clear-contents?: #t);
 end method;
-

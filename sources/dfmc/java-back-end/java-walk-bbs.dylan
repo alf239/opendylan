@@ -6,7 +6,7 @@ License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 
-define variable *print-insns* = #f;
+define variable *print-insns* = #t;
 // define variable *break-methods* = #f;
 
 // in order to accumulate a more BB-oriented view of the code,
@@ -324,7 +324,7 @@ define function table-concatenate (tab0 :: <object-table>, #rest others :: <obje
   new
 end;
 
-define variable *debug-java-walk* = #f;
+define variable *debug-java-walk* = #t;
 
 define function process-bb (jc :: <java-concrete-class>, bb :: <dylan-bb>, jbb :: <java-basic-block>)
  => ()

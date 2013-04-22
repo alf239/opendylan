@@ -12,4 +12,3 @@ define library dfmc-back-end-implementations
   use dfmc-java-back-end;        // JVM backend
   use dfmc-java-linker;          // JVM linker
 end library dfmc-back-end-implementations;
-
