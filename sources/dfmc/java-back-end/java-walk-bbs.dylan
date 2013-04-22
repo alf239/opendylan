@@ -5,7 +5,6 @@ Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
-
 define variable *print-insns* = #t;
 // define variable *break-methods* = #f;
 
@@ -545,8 +544,6 @@ define function internal-process-bb (jc :: <java-concrete-class>, computations, 
   end
 
 end;
-
-
 
 
 // define sealed generic fall-through-comp (c :: <object>) => (fall-thru :: false-or (<computation>));
@@ -1097,7 +1094,6 @@ define function find-bb (bbs :: <bb-collection>, tag) => (bb :: <dylan-bb>)
   | (bbs.label-tab [tag] := new-bb (bbs))
 end;
 
-
 define function new-bb (bbs :: <bb-collection>) => (bb :: <dylan-bb>)
   let  new = make (<dylan-bb>, collection: bbs);
   let  seq = bbs.seqnum;
@@ -1135,7 +1131,7 @@ define function linearize-bbs (bbs :: <bb-collection>) => (bbs :: <bb-collection
   bbs
 end;
 
-define variable *the-fake-bb* = make (<fake-bb>, collection: #f);
+define variable *the-fake-bb* = make(<fake-bb>, collection: make(<bb-collection>));
 
 define function new-fake-bb (bbs :: <bb-collection>) => (bb :: <fake-bb>)
   *the-fake-bb*
@@ -1145,7 +1141,6 @@ define function bb-link (from :: <dylan-bb>, to :: <dylan-bb>) => ()
   from.succs := pair (to, from.succs);
   to.preds   := pair (from, to.preds);
 end;
-
 
 // define function desc-dfm (dfm :: <bind>)
 //   let  bbs = make (<bb-collection>);
@@ -1181,3 +1176,4 @@ define function describe-dylan-bbs (bbs :: <bb-collection>)
     format-out ("}\n")
   end
 end;
+
