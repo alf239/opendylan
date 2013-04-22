@@ -200,7 +200,7 @@ define method ensure-library-compiled (description :: <project-library-descripti
   values(warning-count, serious-warning-count, error-count, data-size, code-size);
 end method;
 
-// This method can be overriden for testing by specializing on
+// This method can be overridden for testing by specializing on
 // <library-description>.
 define method verify-library-before-compile (description :: <object>)
 end method;
@@ -701,24 +701,6 @@ define method retract-library-models (ld :: <dylan-project-library-description>)
   next-method();
   remove-all-keys!(library-description-dylan-value-cache(ld));
 end method;
-
-//// Batch-mode condition handling.
-
-/* TODO: OBSOLETE?
-define generic handle-batch-condition (condition :: <condition>) => ();
-
-define method handle-batch-condition (condition :: <error>) => ()
-  // Unexpected error.
-end method;
-
-define method handle-batch-condition (condition :: <program-error>) => ()
-  // Try a skip and continue.
-end method;
-
-define method handle-batch-condition (condition :: <program-restart>) => ()
-  // If we've got this, there is no sensible restart.
-end method;
-*/
 
 // Incremental condition handling
 
