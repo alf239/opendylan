@@ -274,9 +274,7 @@ end;
 
 
 // model those classes we actually generate
-//define abstract class <java-concrete-class-or-interface> (<java-class-or-interface>)
-
-define open abstract class <java-concrete-class-or-interface> (<java-concrete>)
+define open abstract class <java-concrete-class-or-interface> (<java-class-or-interface>)
   // accumulate constants here
   sealed slot constants = make (<stretchy-vector>, size: 1, fill: #f);
   sealed slot slots     = make (<stretchy-vector>); // of <java-field>
