@@ -282,7 +282,7 @@ define method make-project
     | select (processor)
         #"x86" =>
           select(operating-system)
-            #"darwin" => #"c";
+            #"darwin" => #"java";
             otherwise => #"harp";
           end;
         otherwise => #"c";
