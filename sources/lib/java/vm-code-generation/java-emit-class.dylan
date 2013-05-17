@@ -109,13 +109,14 @@ define function java-method (meth-spec :: <java-method-spec>,
                                   synchronized? = #f,
                                   public?       = #t)
  => (meth :: <java-method>)
+  format-out("-- java-method: %s\n", meth-spec.slot-name);
   let  meth-name = meth-spec.slot-name;
   let  meth-sig  = signature-string (meth-spec.slot-type);
   let  jclass = meth-spec.java-class;
   let  concrete = jclass.concrete-implementation;
+  let  meth-name-index = java-name-pool-index (meth-name, jclass);
+  let  meth-sig-index  = java-name-pool-index (meth-sig, jclass);
   if (concrete)
-    let  meth-name-index = java-name-pool-index (meth-name, jclass);
-    let  meth-sig-index  = java-name-pool-index (meth-sig, jclass);
     let  meth = any? (method (meth :: <java-method>)
                         if (meth.slot-name = meth-name-index & meth.slot-sig = meth-sig-index)
                           format-out ("###### found duplicate method %s:%s in %s, appending code regardless...\n",
@@ -143,8 +144,8 @@ define function java-method (meth-spec :: <java-method-spec>,
     make (<java-method>,
           max-locals: meth-spec.total-args,
           java-class: jclass,
-          name:       meth-name,
-          sig:        meth-sig,
+          name:       meth-name-index,
+          sig:        meth-sig-index,
           public?:    public?,
           static?:    meth-spec.static?,
           synchronized?: synchronized?,
