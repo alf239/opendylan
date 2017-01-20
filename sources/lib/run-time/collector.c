@@ -22,11 +22,8 @@
  *  the trampoline.
  */
 
-#ifdef OPEN_DYLAN_PLATFORM_UNIX
-#define _GNU_SOURCE
-#define RUN_TIME_API
-#else
-#define RUN_TIME_API __declspec( dllexport )
+#ifndef GC_USE_MPS
+#  define NO_ALLOCATION_COUNT_FOR_PROFILER 1
 #endif
 
 #define unused(param)   ((void)param)
@@ -55,11 +52,25 @@ void force_reference_to_spy_interface()
 #include <stdlib.h>
 #include <assert.h>
 
+#ifdef OPEN_DYLAN_BACKEND_LLVM
+#include <inttypes.h>
+typedef intptr_t DSINT;
+#endif
+
 #ifdef OPEN_DYLAN_PLATFORM_UNIX
 #include "unix-types.h"
 #else
 #include "windows-types.h"
 #endif
+
+#if defined(__clang__)
+#define EXTERN_INLINE
+#define STATIC_INLINE static inline
+#else
+#define EXTERN_INLINE __inline
+#define STATIC_INLINE static __inline
+#endif
+
 
 /* Configuration
  *
@@ -70,14 +81,14 @@ void force_reference_to_spy_interface()
 #define MISCAVGSIZE     ((size_t)32)
 #define MISCMAXSIZE     ((size_t)65536)
 
-void report_runtime_error (char* header, char* message);
+static void report_runtime_error (char* header, char* message);
 
 static void simple_error (char* message)
 {
   report_runtime_error("\nDylan runtime error: ", message);
 }
 
-// typedef mps_word_t              word;
+typedef size_t                  word;
 typedef unsigned char           byte_char;
 typedef unsigned short          half_word;
 typedef _int64                  double_word;
@@ -87,14 +98,12 @@ typedef void*                   dylan_object;
 
 typedef int                     dylan_bool_t;
 
-__inline
+EXTERN_INLINE
 void fill_dylan_object_mem(dylan_object *mem, dylan_object fill, int count)
 {
   // This really should be controlled by a better define, but we don't have
   // or really need one at the moment.
-#if defined(OPEN_DYLAN_PLATFORM_DARWIN)
-#warning Implement me
-#elif defined(OPEN_DYLAN_PLATFORM_UNIX)
+#if defined(OPEN_DYLAN_PLATFORM_UNIX) && defined(OPEN_DYLAN_ARCH_X86)
   __asm__
     (
       "cld    \n\t"
@@ -111,7 +120,7 @@ void fill_dylan_object_mem(dylan_object *mem, dylan_object fill, int count)
       // clobbered machine registers
       : "ax", "cx","di","si", "cc"
     );
-#else
+#elif defined(OPEN_DYLAN_PLATFORM_WINDOWS) && defined(OPEN_DYLAN_ARCH_X86)
   __asm
     {
       cld
@@ -120,12 +129,17 @@ void fill_dylan_object_mem(dylan_object *mem, dylan_object fill, int count)
       mov edi, mem
       rep stosd
     };
+#else
+  int i;
+  for (i = 0; i < count; i++) {
+    mem[i] = fill;
+  }
 #endif
 }
 
 
 #define define_fill_mem(type) \
-__inline  \
+EXTERN_INLINE  \
 void fill_ ## type ## _mem(type *mem, type fill, int count) \
 { \
   int index = 0; \
@@ -136,13 +150,14 @@ void fill_ ## type ## _mem(type *mem, type fill, int count) \
     } \
 }
 
+define_fill_mem(word)
 define_fill_mem(half_word)
 define_fill_mem(double_word)
 define_fill_mem(single_float)
 define_fill_mem(double_float)
 
 
-__inline
+EXTERN_INLINE
 void untraced_fill_byte_char_mem(void **object, byte_char fill, int count, int count_slot, dylan_bool_t ztq)
 {
   byte_char *d = (byte_char*)(&(object[count_slot + 1]));
@@ -153,10 +168,10 @@ void untraced_fill_byte_char_mem(void **object, byte_char fill, int count, int c
 }
 
 #define define_untraced_fill_mem(type) \
-__inline  \
-void untraced_fill_ ## type ## _mem(void **object, type fill, int count, int count_slot, dylan_bool_t ztq) \
+EXTERN_INLINE  \
+void untraced_fill_ ## type ## _mem(void **object, type fill, size_t count, size_t count_slot, dylan_bool_t ztq) \
 { \
-  int index = 0; \
+  size_t index = 0; \
   type *mem = (type*)(object + count_slot + 1); \
   unused(ztq); \
   object[count_slot] = (void*)((count << 2) + 1); \
@@ -169,6 +184,7 @@ void untraced_fill_ ## type ## _mem(void **object, type fill, int count, int cou
 }
 
 define_untraced_fill_mem(dylan_object)
+define_untraced_fill_mem(word)
 define_untraced_fill_mem(half_word)
 define_untraced_fill_mem(double_word)
 define_untraced_fill_mem(single_float)
@@ -182,8 +198,10 @@ define_untraced_fill_mem(double_float)
 __thread void* teb;
 #endif
 
-BOOL heap_statsQ = FALSE;
-BOOL heap_alloc_statsQ = FALSE;
+static BOOL heap_statsQ = FALSE;
+#ifndef NO_ALLOCATION_COUNT_FOR_PROFILER
+static BOOL heap_alloc_statsQ = FALSE;
+#endif
 extern void add_stat_for_object (void *object, void* wrapper, int size);
 extern void clear_wrapper_stats ();
 extern void display_wrapper_stats ();
@@ -216,6 +234,9 @@ int primitive_end_heap_alloc_stats(char *buffer)
   dylan_streamQ = FALSE;
   heap_alloc_statsQ = FALSE;
   return(dylan_buffer_pos);
+#else
+  unused(buffer);
+  return 0;
 #endif
 }
 
@@ -228,7 +249,7 @@ extern void set_wrapper_breakpoint (void *wrapper, int count);
 extern void clear_wrapper_breakpoint (void *wrapper);
 extern BOOL check_wrapper_breakpoint_for_objectQ;
 
-__inline
+EXTERN_INLINE
 void *class_wrapper(void *class)
 {
   void *iclass = ((void**)class)[3];
@@ -280,7 +301,7 @@ void primitive_clear_class_breakpoint(void *class)
     // MSG0("primitive_clear_class_breakpoint: error waiting for class breakpoint event\n");
   }
 
-  switch ((int)class) {
+  switch ((long)class) {
 
   case 0:
     // clear all breakpoints
@@ -314,7 +335,9 @@ int primitive_display_class_breakpoints(char *buffer)
   }
 
   dylan_streamQ = TRUE; dylan_buffer = buffer; dylan_buffer_pos = 0;
+#ifdef GC_USE_MPS
   display_wrapper_breakpoints();
+#endif
   dylan_streamQ = FALSE;
 
   --class_breakpoints_pending;
@@ -359,7 +382,7 @@ void primitive_keyboard_interrupt_polling_setter(BOOL pollingQ)
 
 #define MAX_POLLING_THREADS 50
 
-HANDLE polling_threads[MAX_POLLING_THREADS];
+static HANDLE polling_threads[MAX_POLLING_THREADS];
 
 static int polling_threads_cursor = -1;
 
@@ -380,7 +403,7 @@ static int polling_thread_index (HANDLE hThread)
   return(-1);
 }
 
-static __inline
+STATIC_INLINE
 BOOL polling_threadQ (HANDLE hThread)
 {
   int index = polling_thread_index(hThread);
@@ -389,7 +412,7 @@ BOOL polling_threadQ (HANDLE hThread)
   else return TRUE;
 }
 
-static __inline
+STATIC_INLINE
 BOOL polling_individual_threadsQ ()
 {
   if (polling_threads_cursor > -1) return TRUE;
@@ -461,21 +484,62 @@ extern void check_wrapper_breakpoint (void *wrapper, int size);
 
 extern BOOL Prunning_dylan_spy_functionQ;
 
-#ifdef GC_USE_BOEHM
+extern BOOL Prunning_under_dylan_debuggerQ;
+
+/*
+    The strategy at the moment for handling keyboard interrupts is merely
+    to set a flag; the runtime will check this flag periodically (e.g. every
+    time an attempt is made to heap-allocate an object) and signal a keyboard
+    interrupt at that time. Provision is also made for applications to do their
+    own polling of this flag, for example in a dedicated thread, if they so wish.
+*/
+
+/* Used by each memory manager in the init function */
+BOOL WINAPI DylanBreakControlHandler(DWORD dwCtrlType)
+{
+  switch (dwCtrlType)
+    {
+    case CTRL_BREAK_EVENT:
+    case CTRL_C_EVENT:
+      {
+        if (Prunning_under_dylan_debuggerQ == FALSE) {
+          dylan_keyboard_interruptQ = TRUE;
+        }
+        return TRUE;
+      }
+
+    default:
+      return FALSE;
+    }
+}
+
+#if defined(GC_USE_BOEHM)
 #include "boehm-collector.c"
+#elif defined(GC_USE_MALLOC)
+#include "malloc-collector.c"
 #else
 #include "mps-collector.c"
 #endif
 
-static __inline
+STATIC_INLINE
 void update_allocation_counter(gc_teb_t gc_teb, size_t count, void* wrapper)
 {
-#ifndef NO_ALLOCATION_COUNT_FOR_PROFILER
+#ifdef GC_USE_MPS
   gc_teb->gc_teb_allocation_counter += count;
+#elif defined(OPEN_DYLAN_BACKEND_LLVM)
+  extern __thread DSINT Pallocation_count;
+  Pallocation_count += count;
+#else
+  unused(gc_teb);
+#endif
 
   // Periodic polling of keyboard-interrupt flag
   if (dylan_keyboard_interruptQ) HandleDylanKeyboardInterrupt();
 
+#ifdef NO_ALLOCATION_COUNT_FOR_PROFILER
+  unused(count);
+  unused(wrapper);
+#else
   if (heap_statsQ) {
     if (!Prunning_dylan_spy_functionQ) {
       if (heap_alloc_statsQ) {
@@ -489,13 +553,15 @@ void update_allocation_counter(gc_teb_t gc_teb, size_t count, void* wrapper)
 
 static void zero_allocation_counter(gc_teb_t gc_teb)
 {
-#ifndef NO_ALLOCATION_COUNT_FOR_PROFILER
+#ifdef GC_USE_MPS
   gc_teb->gc_teb_allocation_counter = 0;
+#else
+  unused(gc_teb);
 #endif
 }
 
 
-__inline
+EXTERN_INLINE
 gc_teb_t current_gc_teb()
 {
   gc_teb_t gc_teb;
@@ -523,61 +589,6 @@ gc_teb_t current_gc_teb()
 #define thread        (*current_gc_teb()).gc_teb_thread
 #define stack_root    (*current_gc_teb()).gc_teb_stack_root
 
-#if defined(OPEN_DYLAN_PLATFORM_LINUX)
-#include "x86-linux-exceptions.c"
-#elif defined(OPEN_DYLAN_PLATFORM_FREEBSD)
-#include "x86-freebsd-exceptions.c"
-#elif defined(OPEN_DYLAN_PLATFORM_DARWIN)
-#include "x86-darwin-exceptions.c"
-#else
-#include "x86-windows-exceptions.c"
-#endif
-
-
-/* Support for foreign call-ins */
-extern void *dylan_callin_internal(void *arg_base, size_t s);
-
-
-MMError dylan_init_thread(void **rReturn, void *(*f)(void *, size_t), void *p, size_t s)
-{
-  EXCEPTION_PREAMBLE()
-
-  gc_teb_t gc_teb = current_gc_teb();
-
-  gc_teb->gc_teb_inside_tramp = 1;
-
-  /* Go for it! */
-  mps_tramp(rReturn, f, p, s);
-
-  gc_teb->gc_teb_inside_tramp = 0;
-
-  EXCEPTION_POSTAMBLE()
-
-  return MMSUCCESS;
-}
-
-
-void *dylan_callin_handler(void *arg_base, size_t s)
-{
-  void *res;
-
-  EXCEPTION_PREAMBLE()
-
-  gc_teb_t gc_teb = current_gc_teb();
-
-  mps_bool_t was_inside = gc_teb->gc_teb_inside_tramp;
-  gc_teb->gc_teb_inside_tramp = 1;
-
-  /* Go for it! */
-  mps_tramp(&res, dylan_callin_internal, arg_base, s);
-
-  gc_teb->gc_teb_inside_tramp = was_inside;
-
-  EXCEPTION_POSTAMBLE()
-
-  return res;
-}
-
 void *dylan__malloc__misc(size_t size)
 {
   return MMAllocMisc(size);
@@ -587,7 +598,7 @@ void *dylan__malloc__misc(size_t size)
 #define BLOCK_CODE_TOKEN 0xab000000
 #define BLOCK_SIZE_MASK  0x00ffffff
 
-int encode_size_of_block(int size)
+static int encode_size_of_block(int size)
 {
   if ((size & BLOCK_CODE_MASK) != 0) {
     simple_error("Unexpected block size for manual allocation");
@@ -595,7 +606,7 @@ int encode_size_of_block(int size)
   return (size | BLOCK_CODE_TOKEN);
 }
 
-int decode_size_of_block(int size)
+static int decode_size_of_block(int size)
 {
   if ((size & BLOCK_CODE_MASK) != BLOCK_CODE_TOKEN) {
     simple_error("Attempt to free a corrupted manually managed object");
@@ -613,7 +624,7 @@ void *mps__malloc(size_t size)
 }
 
 
-void duplicated_deallocation_error(size_t *ptr)
+static void duplicated_deallocation_error(size_t *ptr)
 {
   unused(ptr);
   simple_error("Duplicate attempt to free manually managed object");
@@ -642,7 +653,7 @@ void dylan__finish__malloc(void)
 }
 
 
-__inline
+EXTERN_INLINE
 void *wrapper_class(void *wrapper)
 {
   void *iclass = ((void**)wrapper)[1];
@@ -651,14 +662,7 @@ void *wrapper_class(void *wrapper)
   return class;
 }
 
-#ifndef OPEN_DYLAN_PLATFORM_UNIX
-
-extern void dylan_main ();
-
-int main ()
-{
-  dylan_main();
-  return 0;
-}
-
+#ifndef OPEN_DYLAN_BACKEND_LLVM
+#include "exceptions.c"
 #endif
+

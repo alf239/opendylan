@@ -100,8 +100,8 @@ end command-property registries;
 define method show-property
     (context :: <environment-context>, property :: <registries-property>)
  => ()
-  let (processor, os) = default-platform-info();
-  let registries = find-registries(processor, os);
+  let platform-name = as(<string>, target-platform-name());
+  let registries = find-registries(platform-name);
   for (registry in registries)
     message(context, "  %s", registry)
   end
@@ -130,7 +130,7 @@ define method maybe-set-roots
           system-root :: false-or(<directory-locator>))
  => ()
   local method set-variable
-            (variable :: <string>, directory :: <directory-locator>, 
+            (variable :: <string>, directory :: <directory-locator>,
              subdirectories :: <sequence>)
           let subdirectory = apply(subdirectory-locator, directory, subdirectories);
           environment-variable(variable) := as(<string>, subdirectory)

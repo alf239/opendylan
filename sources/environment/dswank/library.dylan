@@ -12,6 +12,7 @@ define library dswank
   use lisp-reader;
   use environment-commands;
   use environment-protocols;
+  use build-system;
   use commands;
   use environment-internal-commands;
   use source-records;
@@ -24,8 +25,9 @@ define library dswank
 end library;
 
 define module dswank
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use lisp-reader;
+  use format-out;
   use format;
   use streams;
   use standard-io;
@@ -34,8 +36,9 @@ define module dswank
   use environment-internal-commands;
   use environment-protocols,
     exclude: { application-filename,
-	       application-arguments,
-	       run-application };
+               application-arguments,
+               run-application };
+  use build-system;
   use command-lines;
   use commands;
   use source-records;

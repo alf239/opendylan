@@ -9,11 +9,15 @@ OPTIMIZEDDEBUG = 1
 INCLUDEDEST      = $(BuildArea)\include
 LIBDEST          = $(BuildArea)\lib
 BINDEST          = $(BuildArea)\bin
+BUILDSCRIPTSDEST = $(BuildArea)\build-scripts
 !else
 INCLUDEDEST      = $(OPEN_DYLAN_USER_INSTALL)\include
 LIBDEST          = $(OPEN_DYLAN_USER_INSTALL)\lib
 BINDEST          = $(OPEN_DYLAN_USER_INSTALL)\bin
+BUILDSCRIPTSDEST = $(OPEN_DYLAN_USER_INSTALL)\build-scripts
 !endif
+
+BUILD_LOGS = $(OPEN_DYLAN_BUILD_LOGS)
 
 !include <win32.mak>
 
@@ -32,9 +36,9 @@ cvarsmt = $(noansi) -D_MT -MT
 
 CC	 = $(cc)
 LINKLIB	 = $(implib) /nologo /out:
-CFLAGS	 = $(cflags) $(cvarsmt) $(cdebug) /I$(INCLUDEDEST) /I. /I.. /I$(SDK4MEMORY_POOL_SYSTEM)\code $(OPEN_DYLAN_C_FLAGS)
+CFLAGS	 = $(cflags) $(cvarsmt) $(cdebug) /I$(INCLUDEDEST) /I. /I.. /I$(SDK4MEMORY_POOL_SYSTEM)\code $(OPEN_DYLAN_C_FLAGS) /DOPEN_DYLAN_PLATFORM_WINDOWS /DGC_USE_MPS /DOPEN_DYLAN_ARCH_X86 /DOPEN_DYLAN_BACKEND_HARP
 HEAPOBJS = heap-display.obj heap-utils.obj heap-trail.obj heap-order1.obj heap-order2.obj heap-table.obj
-OBJS	 = collector.obj $(HEAPOBJS) harp-support\x86-windows\runtime.obj windows-threads-primitives.obj windows-spy-interfaces.obj
+OBJS	 = collector.obj break.obj $(HEAPOBJS) thread-utils.obj harp-support\x86-windows\runtime.obj windows-threads-primitives.obj windows-spy-interfaces.obj windows-harp-support.obj
 LIBFILE	 = pentium-run-time.lib
 USEROBJ	 = harp-support\x86-windows\dylan-support.obj
 USERLIB	 = dylan-support.lib
@@ -80,12 +84,13 @@ $(USERLIB): $(USEROBJ)
 ensure-dirs:
 	if not exist $(LIBDEST) mkdir $(LIBDEST)
 	if not exist $(BINDEST) mkdir $(BINDEST)
+	if not exist $(BUILDSCRIPTSDEST) mkdir $(BUILDSCRIPTSDEST)
 
 install-build:
 	echo Building pentium run time: install-build
-	xcopy /i/q ..\..\jamfiles\*.jam $(LIBDEST)
-	if not exist $(LIBDEST)\x86-win32-build.jam copy $(LIBDEST)\x86-win32-vc6-build.jam $(LIBDEST)\x86-win32-build.jam
-	if not exist $(LIBDEST)\dylan-support.obj copy $(USEROBJ) $(LIBDEST)
+	xcopy /i/q/y ..\..\jamfiles\*.jam $(BUILDSCRIPTSDEST)
+	copy/y $(BUILDSCRIPTSDEST)\x86-win32-vc6-build.jam $(BUILDSCRIPTSDEST)\x86-win32-build.jam
+	copy/y $(USEROBJ) $(LIBDEST)
 
 install-userlib: $(USERLIB)
   echo Building pentium run time: install-userlib
@@ -161,7 +166,7 @@ install: ensure-dirs install-stripped install-build
 # Only delete the products that should be built by this makefile.
 # (The files runtime.obj & dylan-support.obj are checked out from HOPE)
 clean:
-	pushd . & (del /f /q *collector.obj $(HEAPOBJS) windows-threads-primitives.obj windows-spy-interfaces.obj) & popd
+	pushd . & (del /f /q *collector.obj break.obj $(HEAPOBJS) thread-utils.obj windows-threads-primitives.obj windows-spy-interfaces.obj windows-harp-support.obj) & popd
         pushd . & (del /f /q *pentium-run-time.lib $(USERLIB)) & popd
         pushd . & (del /f /q $(MINCRT) mincrt.def) & popd
         pushd . & (del /f /q $(DYLANPLINTH) $(PLINTHOBJS)) & popd

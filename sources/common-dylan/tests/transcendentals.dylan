@@ -39,7 +39,7 @@ end constant-test $double-e;
 // tests found at http://netlib.org/elefunt and described in detail in:
 //
 //   Cody, William J. and William Waite. Software Manual for the Elementary
-//   Functions. 
+//   Functions.
 
 define transcendentals function-test sin ()
   // ---*** Fill this in.
@@ -52,6 +52,10 @@ end function-test cos;
 define transcendentals function-test tan ()
   // ---*** Fill this in.
 end function-test tan;
+
+define transcendentals function-test sincos ()
+  // ---*** Fill this in.
+end function-test sincos;
 
 define transcendentals function-test asin ()
   // ---*** Fill this in.
@@ -93,6 +97,19 @@ define transcendentals function-test atanh ()
   // ---*** Fill this in.
 end function-test atanh;
 
+define transcendentals function-test hypot ()
+  assert-equal(5.0s0, hypot(3.0s0, 4.0s0));
+  assert-equal(5.0s0, hypot(3.0s0, 4.0d0));
+  assert-equal(5.0d0, hypot(3.0d0, 4.0d0));
+  assert-equal(5.0d0, hypot(3.0d0, 4.0s0));
+  assert-no-errors(
+    begin
+      let z = hypot(1.0d154, 1.0d154);
+      assert-not-equal(#"infinite", classify-float(z));
+    end
+  );
+end function-test hypot;
+
 define transcendentals function-test log ()
   check-condition("log(-1) errors",
                   <error>,
@@ -120,6 +137,18 @@ define transcendentals function-test logn ()
   // ---*** Fill this in
 end function-test logn;
 
+define transcendentals function-test ilog2 ()
+  check-equal("ilog2(1) = 0",
+              0, ilog2(1));
+  check-equal("ilog2(32) = 5",
+              5, ilog2(32));
+  check-equal("ilog2(33) = 5",
+              5, ilog2(32));
+  check-condition("ilog2(-1) errors",
+                  <error>,
+                  ilog2(-1));
+end function-test ilog2;
+
 define transcendentals function-test \^ ()
 end function-test \^;
 
@@ -146,10 +175,10 @@ define transcendentals function-test isqrt ()
                   isqrt(-1));
 
   // Compare isqrt to floor(sqrt)
-  for(arg = 2 then arg * 3 + 5,
-      while: (arg < floor/($maximum-integer, 3) ) )
+  for (arg = 2 then arg * 3 + 5,
+       while: (arg < floor/($maximum-integer, 3)))
     check-equal(format-to-string("isqrt(%=) = floor(sqrt(%=))", arg, arg),
                 isqrt(arg),
-                floor(sqrt(arg)));
+                floor(sqrt(as(<single-float>, arg))));
   end;
 end function-test isqrt;

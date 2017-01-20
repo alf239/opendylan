@@ -37,11 +37,14 @@ define sealed inline method debugging-part?
 end method debugging-part?;
 
 /// DEBUG MESSAGE
-
-define sealed method debug-message
-    (format-string :: <string>, #rest format-args) => ()
-  primitive-debug-message(as(<byte-string>, format-string), format-args);
-end method debug-message;
+///
+/// This is a function and is set up to avoid any generic dispatch
+/// so that it can be used at any point in time, including inside
+/// dispatch.
+define function debug-message
+    (format-string :: <byte-string>, #rest format-args) => ()
+  primitive-debug-message(format-string, format-args);
+end function debug-message;
 
 /// DEBUG OUT
 ///
@@ -53,7 +56,7 @@ define variable *debug-out-function* :: <function> = default-debug-out;
 define macro debug-out
   { debug-out (?key:expression, ?args:*) }
     => { if (debugging-part?(?key))
-	   debug-out-function()(method () vector(?args) end)
+           debug-out-function()(method () vector(?args) end)
          end }
 end macro debug-out;
 
@@ -79,22 +82,22 @@ define macro assert
  { assert(?value:expression) }
     => { unless (?value)
            assertion-failure("no reason supplied")
-	 end }
+         end }
  { assert(?value:expression, ?format-string:expression, ?format-arguments:*) }
     => { unless (?value)
            assertion-failure(?format-string, ?format-arguments)
-	 end }
+         end }
 end macro assert;
 
 define macro debug-assert
  { debug-assert(?value:expression) }
     => { if (debugging?() & ~?value)
-	   debug-assertion-failure("no reason supplied")
-	 end }
+           debug-assertion-failure("no reason supplied")
+         end }
  { debug-assert(?value:expression, ?format-string:expression, ?format-arguments:*) }
     => { if (debugging?() & ~?value)
-	   debug-assertion-failure(?format-string, ?format-arguments)
-	 end }
+           debug-assertion-failure(?format-string, ?format-arguments)
+         end }
 end macro debug-assert;
 
 /// ASSERTION CONDITIONS
@@ -107,8 +110,8 @@ define function assertion-failure
   let format-string
     = concatenate-as(<string>, "Assertion failed: ", format-string);
   error(make(<assert-error>,
-	     format-string: format-string,
-	     format-arguments: format-arguments))
+             format-string: format-string,
+             format-arguments: format-arguments))
 end function assertion-failure;
 
 define function debug-assertion-failure
@@ -116,8 +119,8 @@ define function debug-assertion-failure
   let format-string
     = concatenate-as(<string>, "Debug assertion failed: ", format-string);
   cerror("Carry on regardless",
-	 make(<assert-error>,
-	      format-string: format-string,
-	      format-arguments: format-arguments))
+         make(<assert-error>,
+              format-string: format-string,
+              format-arguments: format-arguments))
 end function debug-assertion-failure;
 

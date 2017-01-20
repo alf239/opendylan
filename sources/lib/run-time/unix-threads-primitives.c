@@ -7,8 +7,6 @@
  * found in D-doc-design-runtime!win32-thread-portability.text
  */
 
-#define _GNU_SOURCE
-
 #include <assert.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -27,6 +25,8 @@
 
 #include "unix-threads-primitives.h"
 
+#include "thread-utils.h"
+
 #define unused(x) (void)x
 
 /*****************************************************************************/
@@ -44,17 +44,10 @@
    of growing the TLV vector */
 static const long TLV_GROW = -2000000;
 
-#ifdef C_TESTING
-  DWORD TlsIndexThread;
-  DWORD TlsIndexThreadHandle;
-  DWORD TlsIndexThreadVector;
-  TLV_VECTOR default_tlv_vector = NULL;
-#else
 /*****************************************************************************/
 /* Provided by the HARP runtime                                              */
 /*****************************************************************************/
-  extern TLV_VECTOR default_tlv_vector;
-#endif
+extern TLV_VECTOR default_tlv_vector;
 
 static int TLV_vector_offset = 3*sizeof(Z);
 
@@ -117,67 +110,6 @@ long internal_InterlockedCompareExchange(long *destination, long exchange,
   return __sync_val_compare_and_swap(destination, compare, exchange);
 }
 
-#ifdef C_TESTING
-/*****************************************************************************/
-/* Implementation for C tests                                                */
-/*****************************************************************************/
-
-void *make_dylan_vector(int n)
-{
-  return (malloc((n+2) * sizeof(Z)));
-}
-
-void *get_tlv_vector(void)
-{
-  return (void *)(TlsGetValue(TlsIndexThreadVector));
-}
-
-void set_tlv_vector(void *vector)
-{
-  TlsSetValue(TlsIndexThreadVector, vector);
-}
-
-void *get_current_thread()
-{
-  return (void *)(TlsGetValue(TlsIndexThread));
-}
-
-void set_current_thread(void *thread)
-{
-  TlsSetValue(TlsIndexThread, thread);
-}
-
-void *get_current_thread_handle()
-{
-  return (void *)(TlsGetValue(TlsIndexThreadHandle));
-}
-
-void set_current_thread_handle(void *handle)
-{
-  TlsSetValue(TlsIndexThreadHandle, handle);
-}
-
-/* This is the starting function for the new thread. It calls the
- * dylan trampoline function which we rely on to initialise the thread.
- */
-DWORD WINAPI
-dylan_thread_trampoline(void **arg)
-{
-  trampoline_body(arg[0], 0);
-  return 0;
-}
-
-void *MMAllocMisc(size_t size)
-{
-  return malloc(size);
-}
-
-void MMFreeMisc(void *old, size_t size)
-{
-  free(old);
-}
-
-#else
 /*****************************************************************************/
 /* Provided by the HARP runtime                                              */
 /*****************************************************************************/
@@ -197,9 +129,6 @@ extern void *dylan_thread_trampoline(void *thread);
 
 extern void *MMAllocMisc(size_t size);
 extern void MMFreeMisc(void *old, size_t size);
-
-
-#endif
 
 
 THREADS_RUN_TIME_API
@@ -225,22 +154,18 @@ extern void *dylan_false;
 
 /* 1 */
 THREADS_RUN_TIME_API  ZINT
-primitive_make_thread(DTHREAD *newthread, D_NAME name,
-                      ZINT zpriority, ZFN func, BOOL synchronize)
+primitive_make_thread(DTHREAD *newthread, ZFN func, BOOL synchronize)
 {
-  int    priority = (int)zpriority >> 2;
   int status;
   DTHREAD **newthread_ptr;
 
-  unused(name);
   unused(synchronize);
-  unused(priority);
 
   newthread_ptr = (DTHREAD **)(dylan__malloc__ambig(4));
   newthread_ptr[0] = newthread;
 
   assert(newthread != NULL);
-  assert(IS_ZINT(zpriority));
+  assert(IS_ZINT(newthread->priority));
   assert(func != NULL);
 
 
@@ -277,12 +202,7 @@ trampoline_body(void *arg, size_t ignore)
   thread = (DTHREAD *)arg;
   dylan_trampoline = (ZFN)thread->handle2;
 
-#ifdef C_TESTING
-  primitive_initialize_current_thread(thread);
-  (*dylan_trampoline)(NULL, 0);  // method for C tests only
-#else
   call_first_dylan_function((void *)dylan_trampoline, 0);
-#endif
 
   remove_tlv_vector((pthread_t)thread->handle1);
   return 0;
@@ -1183,11 +1103,9 @@ TLV_VECTOR grow_tlv_vector(TLV_VECTOR vector, int newsize)
   new_vector = make_dylan_vector(newsize);
   copy_tlv_vector(new_vector, vector);
 
-#ifndef C_TESTING
   // put the new TLV vector in the TEB
   teb = (BYTE *)(*((Z *)(vector + 2*sizeof(Z))));
   *((void **)(teb + 4)) = new_vector;
-#endif
 
   // return the new vector
   return(new_vector);
@@ -1291,6 +1209,8 @@ primitive_initialize_current_thread(DTHREAD *thread, BOOL synchronize)
   /* @@@@#!"£$ no support for "synchronized" threads */
   assert(thread != NULL);
 
+  thread->thread_id = I(dylan_current_thread_id());
+
   // race conditions mean handle may not be set up yet by father thread in pthread_create,
   // so do it here explicitly.
   hThread = pthread_self();
@@ -1310,11 +1230,9 @@ primitive_initialize_current_thread(DTHREAD *thread, BOOL synchronize)
   // Initialise the vector with the values from the default vector
   copy_tlv_vector(tlv_vector, default_tlv_vector);
 
-#ifndef C_TESTING
   // Put the TEB in the first slot of the vector
   destination = (Z *)(tlv_vector + 2*sizeof(Z));
   *destination = get_current_teb();
-#endif
 
   // Add thread to active thread list
   add_tlv_vector(hThread, tlv_vector);
@@ -1403,12 +1321,6 @@ void initialize_threads_primitives()
   assert(default_tlv_vector != NULL);
   initialize_CRITICAL_SECTION(&tlv_vector_list_lock);
   tlv_vector_list  = NULL;
-
-#ifdef C_TESTING
-  TlsIndexThread = TlsAlloc();
-  TlsIndexThreadHandle = TlsAlloc();
-  TlsIndexThreadVector = TlsAlloc();
-#endif
 }
 
 
@@ -1454,10 +1366,6 @@ remove_tlv_vector(pthread_t hThread)
   if (tlv_vector_list->hThread == hThread) {
     // matches first entry in list
     tlv_vector_list = tlv_vector_list->next;
-#ifdef C_TESTING
-    MMFreeMisc(last->tlv_vector, linksize);
-    MMFreeMisc(last, linksize);
-#endif
 
     pthread_mutex_unlock(&tlv_vector_list_lock);
     return(0);
@@ -1468,10 +1376,6 @@ remove_tlv_vector(pthread_t hThread)
     if (current->hThread == hThread) {
       // found the right entry, so cut it out
       last->next = current->next;
-#ifdef C_TESTING
-      MMFreeMisc(current->tlv_vector, linksize);
-      MMFreeMisc(current, linksize);
-#endif
       // Finished
       pthread_mutex_unlock(&tlv_vector_list_lock);
       return(0);

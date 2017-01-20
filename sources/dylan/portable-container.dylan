@@ -8,13 +8,13 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 
 
-define generic handle1 
+define generic handle1
     (obj :: <object>) => (h :: <raw-pointer>);
 
 define generic handle1-setter
     (newval :: <raw-pointer>, obj :: <object>) => (h :: <raw-pointer>);
 
-define generic handle2 
+define generic handle2
     (obj :: <object>) => (h :: <object>);
 
 define generic handle2-setter
@@ -40,9 +40,3 @@ define abstract primary class <portable-double-container> (<portable-container>)
   slot handle2 :: <object>;
 
 end class;
-
-
-
-/// <optional-name> is not exactly related, but gets defined here anyway
-
-define constant <optional-name> = type-union(<byte-string>, singleton(#f));

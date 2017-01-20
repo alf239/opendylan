@@ -9,8 +9,9 @@ Audience, goals, and purpose
 ============================
 
 This manual is intended for programmers using DUIM, and forms a complete
-reference for the Application Programmer’s Interface (API) for DUIM. You
-should also see *Building Applications using DUIM* for a description of
+reference for the Application Programmer's Interface (API) for DUIM. You
+should also see `Building Applications using DUIM
+<http://opendylan.org/documentation/building-with-duim/>`_ for a description of
 how to start building applications using DUIM. At some points, the API
 also includes lower-level layers, which DUIM programmers are free to
 specialize.
@@ -51,32 +52,32 @@ chapter of this manual indicates what module its API is exported from.
 The *duim* module is the main API module, which contains the variables
 for the API-level functions available.
 
-The *duim-geometry* module provides basic support for coordinate
+The :doc:`geom` module provides basic support for coordinate
 geometry. This allows the position of elements in a window object to be
 determined correctly.
 
-The *duim-extended-geometry* module provides more extensive support for
+The :doc:`ext-geom` module provides more extensive support for
 co-ordinate geometry that is only required for more specialist uses.
 
-The *duim-dcs* module provides color support to the DUIM library.
+The :doc:`dcs` module provides color support to the DUIM library.
 
-The *duim-sheets* module provides basic support for sheets. Sheets are
+The :doc:`sheets` module provides basic support for sheets. Sheets are
 the basic unit of window applications, and can be nested hierarchically
 to build up a complete user interface.
 
-The *duim-graphics* module provides support for graphics drawing
+The :doc:`graphics` module provides support for graphics drawing
 
-The *duim-layouts* module provides support for a layout protocol that
+The :doc:`layouts` module provides support for a layout protocol that
 makes it easy to create and layout groups of related elements in a given
 interface. This module can handle layout problems such as the spacing
 and justification of a group of elements automatically.
 
-The *duim-gadgets* module provides all the gadgets available for use in
+The :doc:`gadgets` module provides all the gadgets available for use in
 the DUIM library. Gadgets are the sheet objects that make up any user
 interface, and the DUIM library supplies all the gadgets you will need
 in your applications.
 
-The *duim-frames* module provides support for frames. A DUIM frame is a
+The :doc:`frames` module provides support for frames. A DUIM frame is a
 combination of a set of nested sheets, together with an event loop that
 describes the behavior of the elements in those sheets. DUIM frames can
 be used to specify whether a given user interface is displayed in an
@@ -99,7 +100,7 @@ arguments take a pair of arguments that correspond to the *x* and *y*
 coordinates of the point.
 
 Functions that take structured point arguments, or return structured
-point values have an asterisk in their name, for example, *draw-line\**
+point values have an asterisk in their name, for example, ``draw-line*``
 .
 
 Immutability of objects
@@ -107,7 +108,7 @@ Immutability of objects
 
 Most DUIM objects are *immutable*, that is, at the API level none of
 their components can be modified once the object is created. Examples of
-immutable objects include all of the members of the *<region>* classes,
+immutable objects include all of the members of the :class:`<region>` classes,
 pens, brushes, colors, and text styles. Since immutable objects by
 definition never change, functions in the DUIM API can safely capture
 immutable objects without first copying them. This also allows DUIM to
@@ -160,8 +161,8 @@ internal state of DUIM.
 Functions that return mutable objects that are not fresh objects fall
 into two categories:
 
--  Those that return *read-only state*
--  Those that return *read/write state*
+- Those that return *read-only state*
+- Those that return *read/write state*
 
 If a function returns read-only state, programmers must not modify that
 object; doing so might corrupt the state of DUIM. If a function returns
@@ -175,19 +176,19 @@ Specialized arguments to generic functions
 Unless otherwise stated, this manual uses the following convention for
 specifying which arguments to generic functions are specialized:
 
--  If the generic function is a ``-setter`` function, the second argument
-   is the one that is intended to be specialized.
--  If the generic function is a “mapping” function (such as ``do-sheets``),
-   the second argument (the object that specifies what is being
-   mapped over) is the one that is specialized. The first argument (the
-   functional argument) is not intended to be specialized.
--  Otherwise, the first argument is the one that is intended to be
-   specialized.
+- If the generic function is a ``-setter`` function, the second argument
+  is the one that is intended to be specialized.
+- If the generic function is a "mapping" function (such as ``do-sheets``),
+  the second argument (the object that specifies what is being
+  mapped over) is the one that is specialized. The first argument (the
+  functional argument) is not intended to be specialized.
+- Otherwise, the first argument is the one that is intended to be
+  specialized.
 
 Macros that expand into calls to advertised functions
 =====================================================
 
-Many macros that take a “body” argument expand into a call to an
+Many macros that take a "body" argument expand into a call to an
 advertised function that takes a functional argument. This functional
 argument will execute the supplied body. For a macro named
 ``with-environment``, the function is generally named
@@ -216,27 +217,27 @@ be defined as follows:
 Terminology pertaining to error conditions
 ==========================================
 
-When this documentation specifies that it “is an error” for some
+When this documentation specifies that it "is an error" for some
 situation to occur, this means that:
 
--  No valid DUIM program should cause this situation to occur.
--  If this situation does occur, the effects and results are undefined.
--  DUIM often tries to detect such an error, but it might not.
+- No valid DUIM program should cause this situation to occur.
+- If this situation does occur, the effects and results are undefined.
+- DUIM often tries to detect such an error, but it might not.
 
-When this manual specifies that some argument “must be a *type* ” or
+When this manual specifies that some argument "must be a *type* " or
 uses the phrase "the *type* argument", this means that it is an
 error if the argument is not of the specified *type*. DUIM tries to
 detect such type errors, but it might not always be successful.
 
-When this documentation says that “an error is signalled” in some
+When this documentation says that "an error is signalled" in some
 situation, this means that:
 
--  If the situation occurs, DUIM will signal an error using ``error`` or
-   ``cerror``.
--  Valid DUIM programs may rely on the fact that an error will be
-   signalled.
+- If the situation occurs, DUIM will signal an error using ``error`` or
+  ``cerror``.
+- Valid DUIM programs may rely on the fact that an error will be
+  signalled.
 
-When this manual states that “a condition is signalled” in a given
-situation, this is the same as saying that “an error is signalled”, with
+When this manual states that "a condition is signalled" in a given
+situation, this is the same as saying that "an error is signalled", with
 the exception that the condition will be signalled using ``signal``
 instead of ``error``.

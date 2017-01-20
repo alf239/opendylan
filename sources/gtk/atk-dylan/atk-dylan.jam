@@ -1,0 +1,5 @@
+{
+  local _dll = [ FDLLName $(image) ] ;
+  LINKLIBS on $(_dll) += `pkg-config --libs atk` ;
+  CCFLAGS += `pkg-config --cflags atk` ;
+}

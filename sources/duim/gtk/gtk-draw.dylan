@@ -8,59 +8,50 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 /// GTK graphics
 
-define constant $2pi-in-64ths-of-degree :: <integer> = 360 * 64;
+define constant $double-2pi = as(<double-float>, $2pi);
 define constant $supports-titled-ellipses = #f;
 
 define sealed method draw-point
     (medium :: <gtk-medium>, x, y) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-    = update-drawing-state(medium);
-  let transform = medium-device-transform(medium);
-  with-device-coordinates (transform, x, y)
-    let thickness = pen-width(medium-pen(medium));
-    with-gdk-lock
-      if (thickness < 2)
-        gdk-draw-point(drawable, gcontext, x, y)
-      else 
-        let thickness/2 = truncate/(thickness, 2);
-        gdk-draw-arc(drawable, gcontext, $true,
-                     x - thickness/2, y - thickness/2, thickness, thickness,
-                     0, $2pi-in-64ths-of-degree)
-      end
+  with-gdk-lock
+    let gcontext :: <CairoContext> = update-drawing-state(medium);
+    let transform = medium-device-transform(medium);
+    with-device-coordinates (transform, x, y)
+      let thickness = pen-width(medium-pen(medium));
+      let thickness/2 = truncate/(thickness, 2);
+      cairo-arc(gcontext,
+                as(<double-float>, x),
+                as(<double-float>, y),
+                as(<double-float>, thickness/2),
+                0.0d0, $double-2pi);
+      cairo-fill(gcontext);
     end;
-  end;
+    cairo-destroy(gcontext);
+  end with-gdk-lock;
   #f
 end method draw-point;
 
 define sealed method draw-points
     (medium :: <gtk-medium>, coord-seq :: <coordinate-sequence>) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-    = update-drawing-state(medium);
-  let transform = medium-device-transform(medium);
-  let thickness = pen-width(medium-pen(medium));
   with-gdk-lock
-    if (thickness < 2)
-      do-coordinates
-        (method (x, y)
-	   with-device-coordinates (transform, x, y)
-	   //---*** Use gdk-draw-points
-	     gdk-draw-point(drawable, gcontext, x, y)
-	   end
-         end,
-         coord-seq)
-    else
-      let thickness/2 = truncate/(thickness, 2);
-      do-coordinates
-        (method (x, y)
-           with-device-coordinates (transform, x, y)
-	     gdk-draw-arc(drawable, gcontext, $true,
-                          x - thickness/2, y - thickness/2, thickness, thickness,
-                          0, $2pi-in-64ths-of-degree)
-           end
-         end,
-         coord-seq)
-    end;
-  end;
+    let gcontext :: <CairoContext> = update-drawing-state(medium);
+    let transform = medium-device-transform(medium);
+    let thickness = pen-width(medium-pen(medium));
+    let thickness/2 = truncate/(thickness, 2);
+    do-coordinates
+      (method (x, y)
+         with-device-coordinates (transform, x, y)
+           cairo-arc(gcontext,
+                     as(<double-float>, x),
+                     as(<double-float>, y),
+                     as(<double-float>, thickness/2),
+                     0.0d0, $double-2pi);
+           cairo-fill(gcontext);
+         end
+       end,
+       coord-seq);
+    cairo-destroy(gcontext);
+  end with-gdk-lock;
   #f
 end method draw-points;
 
@@ -78,7 +69,7 @@ end method set-pixel;
 
 //---*** Do an efficient version of this
 define sealed method set-pixels
-    (medium :: <gtk-medium>, color :: <rgb-color>, 
+    (medium :: <gtk-medium>, color :: <rgb-color>,
      coord-seq :: <coordinate-sequence>)
  => (record)
   with-drawing-options (medium, brush: color)
@@ -90,32 +81,48 @@ end method set-pixels;
 
 define sealed method draw-line
     (medium :: <gtk-medium>, x1, y1, x2, y2) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-    = update-drawing-state(medium, pen: medium-pen(medium));
-  let transform = medium-device-transform(medium);
-  with-device-coordinates (transform, x1, y1, x2, y2)
-    with-gdk-lock
-      gdk-draw-line(drawable, gcontext, x1, y1, x2, y2)
+  with-gdk-lock
+    let gcontext :: <CairoContext> = update-drawing-state(medium, pen: medium-pen(medium));
+    let transform = medium-device-transform(medium);
+    with-device-coordinates (transform, x1, y1, x2, y2)
+      cairo-set-line-width(gcontext, 1.0d0);
+      cairo-set-line-cap(gcontext, $cairo-line-cap-square);
+      cairo-move-to(gcontext,
+                    as(<double-float>, x1),
+                    as(<double-float>, y1));
+      cairo-line-to(gcontext,
+                    as(<double-float>, x2),
+                    as(<double-float>, y2));
+      cairo-stroke(gcontext);
     end;
-  end;
+    cairo-destroy(gcontext);
+  end with-gdk-lock;
   #f
 end method draw-line;
 
 define sealed method draw-lines
     (medium :: <gtk-medium>, coord-seq :: <coordinate-sequence>) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-    = update-drawing-state(medium, pen: medium-pen(medium));
-  let transform = medium-device-transform(medium);
-  //---*** Use gdk-draw-segments
   with-gdk-lock
+    let gcontext :: <CairoContext> = update-drawing-state(medium, pen: medium-pen(medium));
+    let transform = medium-device-transform(medium);
+    //---*** Use gdk-draw-segments
+    cairo-set-line-width(gcontext, 1.0d0);
+    cairo-set-line-cap(gcontext, $cairo-line-cap-square);
     do-endpoint-coordinates
       (method (x1, y1, x2, y2)
          with-device-coordinates (transform, x1, y1, x2, y2)
-	   gdk-draw-line(drawable, gcontext, x1, y1, x2, y2)
+           cairo-move-to(gcontext,
+                         as(<double-float>, x1),
+                         as(<double-float>, y1));
+           cairo-line-to(gcontext,
+                         as(<double-float>, x2),
+                         as(<double-float>, y2));
          end
        end,
        coord-seq);
-  end;
+    cairo-stroke(gcontext);
+    cairo-destroy(gcontext);
+  end with-gdk-lock;
   #f
 end method draw-lines;
 
@@ -128,17 +135,27 @@ define sealed method draw-rectangle
       draw-polygon(medium, coords, filled?: filled?, closed?: #t)
     end
   else
-    let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-      = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
-    //---*** Might need to use 'gdk-gc-set-ts-origin' to set tile/stipple origin to x1/y1
-    with-device-coordinates (transform, x1, y1, x2, y2)
-      with-gdk-lock
-        gdk-draw-rectangle(drawable, gcontext,
-                           if (filled?) $true else $false end,
-                           x1, y1, x2 - x1, y2 - y1)
-      end
-    end
-  end;
+    with-gdk-lock
+      let gcontext :: <CairoContext>
+        = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
+      //---*** Might need to use 'gdk-gc-set-ts-origin' to set tile/stipple origin to x1/y1
+      with-device-coordinates (transform, x1, y1, x2, y2)
+        cairo-set-line-width(gcontext, 1.0d0);
+        cairo-set-line-cap(gcontext, $cairo-line-cap-square);
+        cairo-rectangle(gcontext,
+                        as(<double-float>, x1),
+                        as(<double-float>, y1),
+                        as(<double-float>, x2 - x1),
+                        as(<double-float>, y2 - y1));
+        if (filled?)
+          cairo-fill(gcontext);
+        else
+          cairo-stroke(gcontext);
+        end if;
+      end;
+      cairo-destroy(gcontext);
+    end with-gdk-lock;
+  end if;
   #f
 end method draw-rectangle;
 
@@ -149,20 +166,30 @@ define sealed method draw-rectangles
   if (~rectilinear-transform?(transform))
     draw-transformed-rectangles(medium, coord-seq, filled?: filled?)
   else
-    let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-      = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
-    let transform = medium-device-transform(medium);
-    do-endpoint-coordinates
-      (method (x1, y1, x2, y2)
-	 with-device-coordinates (transform, x1, y1, x2, y2)
-           with-gdk-lock
-             gdk-draw-rectangle(drawable, gcontext, 
-			        if (filled?) $true else $false end,
-                                x1, y1, x2 - x1, y2 - y1)
+    with-gdk-lock
+      let gcontext :: <CairoContext>
+        = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
+      let transform = medium-device-transform(medium);
+      do-endpoint-coordinates
+        (method (x1, y1, x2, y2)
+           with-device-coordinates (transform, x1, y1, x2, y2)
+             cairo-set-line-width(gcontext, 1.0d0);
+             cairo-set-line-cap(gcontext, $cairo-line-cap-square);
+             cairo-rectangle(gcontext,
+                             as(<double-float>, x1),
+                             as(<double-float>, y1),
+                             as(<double-float>, x2 - x1),
+                             as(<double-float>, y2 - y1));
+             if (filled?)
+               cairo-fill(gcontext);
+             else
+               cairo-stroke(gcontext);
+             end if;
            end
-	 end
-       end,
-       coord-seq);
+         end,
+         coord-seq);
+      cairo-destroy(gcontext);
+    end with-gdk-lock;
   end;
   #f
 end method draw-rectangles;
@@ -174,17 +201,17 @@ define sealed method draw-transformed-rectangles
   ignore(filled?);
   let ncoords :: <integer> = size(coord-seq);
   assert(zero?(modulo(ncoords, 4)),
-	 "The coordinate sequence has the wrong number of elements");
+         "The coordinate sequence has the wrong number of elements");
   local method draw-one (x1, y1, x2, y2) => ()
-	  with-stack-vector (coords = x1, y1, x2, y1, x2, y2, x1, y2)
-	    apply(draw-polygon, medium, coords, closed?: #t, keys)
-	  end
+          with-stack-vector (coords = x1, y1, x2, y1, x2, y2, x1, y2)
+            apply(draw-polygon, medium, coords, closed?: #t, keys)
+          end
         end method;
   dynamic-extent(draw-one);
   without-bounds-checks
     for (i :: <integer> = 0 then i + 4, until: i = ncoords)
       draw-one(coord-seq[i + 0], coord-seq[i + 1],
-	       coord-seq[i + 2], coord-seq[i + 3])
+               coord-seq[i + 2], coord-seq[i + 3])
     end
   end;
   #f
@@ -193,7 +220,7 @@ end method draw-transformed-rectangles;
 define sealed method draw-rounded-rectangle
     (medium :: <gtk-medium>, x1, y1, x2, y2,
      #key filled? = #t, radius) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
+  let gcontext :: <CairoContext>
     = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
   let transform = medium-device-transform(medium);
   with-device-coordinates (transform, x1, y1, x2, y2)
@@ -211,43 +238,38 @@ end method draw-rounded-rectangle;
 define sealed method draw-polygon
     (medium :: <gtk-medium>, coord-seq :: <coordinate-sequence>,
      #key closed? = #t, filled? = #t) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-    = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
-  let transform = medium-device-transform(medium);
-  let scoords :: <integer> = size(coord-seq);
-  let ncoords :: <integer> = size(coord-seq);
-  let npoints :: <integer> = floor/(ncoords, 2) + if (closed? & ~filled?) 1 else 0 end;
-  with-stack-structure (points :: <GdkPoint>, element-count: npoints)
-    //--- Can't use without-bounds-checks until it works on FFI 'element-setter' calls
-    // without-bounds-checks
-      for (i :: <integer> from 0 below ncoords by 2,
-	   j :: <integer> from 0)
-	let x = coord-seq[i + 0];
-	let y = coord-seq[i + 1];
-	with-device-coordinates (transform, x, y)
-	  //---*** This doesn't work in the FFI!
-	  // let point = points[j];
-	  let point = pointer-value-address(points, index: j);
-	  point.GdkPoint-x := x;
-	  point.GdkPoint-y := y;
-	end;
-      finally
-	when (closed? & ~filled?)
-	  //---*** This doesn't work in the FFI!
-	  // let point = points[0];
-	  let first-point = pointer-value-address(points, index: 0);
-	  let last-point  = pointer-value-address(points, index: npoints - 1);
-	  last-point.GdkPoint-x := first-point.GdkPoint-x;
-	  last-point.GdkPoint-y := first-point.GdkPoint-y;
-	end
-      end;
+  with-gdk-lock
+    let gcontext :: <CairoContext>
+      = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
+    let transform = medium-device-transform(medium);
+    let scoords :: <integer> = size(coord-seq);
+    let ncoords :: <integer> = size(coord-seq);
+    let npoints :: <integer> = floor/(ncoords, 2) + if (closed? & ~filled?) 1 else 0 end;
+    with-stack-structure (points :: <GdkPoint>, element-count: npoints)
+      //--- Can't use without-bounds-checks until it works on FFI 'element-setter' calls
+      // without-bounds-checks
+        for (i :: <integer> from 0 below ncoords by 2,
+             j :: <integer> from 0)
+          let x = coord-seq[i + 0];
+          let y = coord-seq[i + 1];
+          with-device-coordinates (transform, x, y)
+            //---*** This doesn't work in the FFI!
+            // let point = points[j];
+            let point = pointer-value-address(points, index: j);
+            point.gdk-point-x := x;
+            point.gdk-point-y := y;
+          end;
+        finally
+          when (closed? & ~filled?)
+            //---*** This doesn't work in the FFI!
+            // let point = points[0];
+            let first-point = pointer-value-address(points, index: 0);
+            let last-point  = pointer-value-address(points, index: npoints - 1);
+            last-point.gdk-point-x := first-point.gdk-point-x;
+            last-point.gdk-point-y := first-point.gdk-point-y;
+          end
+        end;
     // end;
-    with-gdk-lock
-      if (filled?)
-        gdk-draw-polygon(drawable, gcontext, 
-                         $true,
-                         points, npoints)
-      else
 // ---*** gdk-draw-lines doesn't work on Win32 for some reason so use kludge instead.
 // ---*** Kludge draws each line in turn after frigging the gcontext so that
 // ---*** the line ends don't go over the start of the next line.
@@ -255,39 +277,34 @@ define sealed method draw-polygon
 // ---*** (I tried both Dylan stack allocated and gdk-gc-new gcontexts)
 // ---*** so the code has to frig a potentially shared gcontext (= not good).
 //      gdk-draw-lines(drawable, gcontext, points, npoints)
-        with-stack-structure (gcontext-values :: <GdkGCValues>)
-          let old-cap-style = #f;
-          block ()
-            gdk-gc-get-values(gcontext, gcontext-values);
-            old-cap-style := gcontext-values.GdkGCValues-cap-style;
-            gdk-gc-set-line-attributes(gcontext,
-                                       gcontext-values.GdkGCValues-line-width,
-                                       gcontext-values.GdkGCValues-line-style,
-                                       $gdk-cap-butt, // NB short lines for better joins
-                                       gcontext-values.GdkGCValues-join-style);
-            let previous-p = pointer-value-address(points, index: 0);
-            for (i from 1 below npoints)
-              let previous-x :: <integer> = previous-p.GdkPoint-x;
-              let previous-y :: <integer> = previous-p.GdkPoint-y;
-              let p = pointer-value-address(points, index: i);
-              let x = p.GdkPoint-x;
-              let y = p.GdkPoint-y;
-              gdk-draw-line(drawable, gcontext, previous-x, previous-y, x, y);
-              previous-p := p;
-            end;
-          cleanup
-            if (old-cap-style)
-              gdk-gc-set-line-attributes(gcontext,
-                                         gcontext-values.GdkGCValues-line-width,
-                                         gcontext-values.GdkGCValues-line-style,
-                                         old-cap-style,
-                                         gcontext-values.GdkGCValues-join-style);
-            end;
-          end block;
-        end with-stack-structure;
-      end if;
-    end with-gdk-lock;
-  end;
+      let old-cap-style = #f;
+      block ()
+        old-cap-style := cairo-get-line-cap(gcontext);
+        cairo-set-line-cap(gcontext, $cairo-line-cap-butt);
+
+        let previous-p = pointer-value-address(points, index: 0);
+        cairo-move-to(gcontext,
+                      as(<double-float>, previous-p.gdk-point-x),
+                      as(<double-float>, previous-p.gdk-point-y));
+        for (i from 1 below npoints)
+          let p = pointer-value-address(points, index: i);
+          let x = as(<double-float>, p.gdk-point-x);
+          let y = as(<double-float>, p.gdk-point-y);
+          cairo-line-to(gcontext, x, y);
+        end;
+        if (filled?)
+          cairo-fill(gcontext);
+        else
+          cairo-stroke(gcontext);
+        end if;
+      cleanup
+        if (old-cap-style)
+          cairo-set-line-cap(gcontext, old-cap-style);
+        end;
+      end block;
+    end with-stack-structure;
+    cairo-destroy(gcontext);
+  end with-gdk-lock;
   #f
 end method draw-polygon;
 
@@ -295,39 +312,50 @@ define sealed method draw-ellipse
     (medium :: <gtk-medium>, center-x, center-y,
      radius-1-dx, radius-1-dy, radius-2-dx, radius-2-dy,
      #key start-angle, end-angle, filled? = #t) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
+  let gcontext :: <CairoContext>
     = update-drawing-state(medium, pen: ~filled? & medium-pen(medium));
   let transform = medium-device-transform(medium);
   with-device-coordinates (transform, center-x, center-y)
     with-device-distances (transform, radius-1-dx, radius-1-dy, radius-2-dx, radius-2-dy)
       let (angle-2, x-radius, y-radius, angle-1)
-	= singular-value-decomposition-2x2(radius-1-dx, radius-2-dx, radius-1-dy, radius-2-dy);
+        = singular-value-decomposition-2x2(radius-1-dx, radius-2-dx, radius-1-dy, radius-2-dy);
       if (~$supports-titled-ellipses
-	  | x-radius = abs(y-radius)		// a circle - rotations are irrelevant
-	  | zero?(angle-1))			// axis-aligned ellipse
-	let (angle, delta-angle)
-	  = if (start-angle & end-angle)
-	      let start-angle = modulo(start-angle, $2pi);
-	      let end-angle   = modulo(end-angle, $2pi);
-	      when (end-angle < start-angle)
-		end-angle := end-angle + $2pi
-	      end;
-	      values(round($2pi-in-64ths-of-degree * (($2pi - start-angle) / $2pi)),
-		     round($2pi-in-64ths-of-degree * ((start-angle - end-angle) / $2pi)))
-	    else
-	      values(0, $2pi-in-64ths-of-degree)
-	    end;
-	x-radius := abs(x-radius);
-	y-radius := abs(y-radius);
+          | x-radius = abs(y-radius)                // a circle - rotations are irrelevant
+          | zero?(angle-1))                        // axis-aligned ellipse
+        let (angle, delta-angle)
+          = if (start-angle & end-angle)
+              let start-angle = modulo(start-angle, $2pi);
+              let end-angle   = modulo(end-angle, $2pi);
+              when (end-angle < start-angle)
+                end-angle := end-angle + $2pi
+              end;
+              values($2pi - start-angle, start-angle - end-angle)
+            else
+              values(0.0d0, $double-2pi)
+            end;
+        x-radius := abs(x-radius);
+        y-radius := abs(y-radius);
         with-gdk-lock
-          gdk-draw-arc(drawable, gcontext, 
-                       if (filled?) $true else $false end,
-                       center-x - x-radius, center-y - y-radius,
-                       x-radius * 2, y-radius * 2, angle, delta-angle)
+          cairo-save(gcontext);
+          cairo-translate(gcontext,
+                          as(<double-float>, center-x),
+                          as(<double-float>, center-y));
+          cairo-scale(gcontext,
+                      as(<double-float>, x-radius),
+                      as(<double-float>, y-radius));
+          cairo-arc(gcontext, 0.0d0, 0.0d0, 1.0d0,
+                    as(<double-float>, angle),
+                    as(<double-float>, delta-angle));
+          cairo-restore(gcontext);
+          if (filled?)
+            cairo-fill(gcontext);
+          else
+            cairo-stroke(gcontext);
+          end if;
         end
       else
-	ignoring("draw-ellipse for tilted ellipses");
-	#f
+        ignoring("draw-ellipse for tilted ellipses");
+        #f
       end;
       // SelectObject(hDC, old-object)
     end
@@ -338,7 +366,7 @@ end method draw-ellipse;
 // GTK bitmaps and icons are handled separately
 define sealed method draw-image
     (medium :: <gtk-medium>, image :: <image>, x, y) => (record)
-  let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
+  let gcontext :: <CairoContext>
     = update-drawing-state(medium);
   let transform = medium-device-transform(medium);
   with-device-coordinates (transform, x, y)
@@ -432,33 +460,35 @@ define sealed method draw-pixmap
     (medium :: <gtk-medium>, pixmap :: <pixmap>, x, y,
      #key function = $boole-1) => (record)
   do-copy-area(pixmap, 0, 0, image-width(pixmap), image-height(pixmap),
-	       medium, x, y)
+               medium, x, y)
 end method draw-pixmap;
 
 define sealed method clear-box
     (medium :: <gtk-medium>, left, top, right, bottom) => ()
   with-gdk-lock
-    let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
-      = get-gcontext(medium);
-    let colormap = gdk-gc-get-colormap(gcontext);
-    with-stack-structure (color :: <GdkColor>)
-      gdk-color-white(colormap, color);
-      gdk-gc-set-foreground(gcontext, color);
-    end;
+    let gcontext :: <CairoContext> = get-gcontext(medium);
+    let background-color = medium-background(medium);
+    let (red, green, blue, opacity) = color-rgb(background-color);
+    cairo-set-source-rgba(gcontext,
+                          as(<double-float>, red),
+                          as(<double-float>, green),
+                          as(<double-float>, blue),
+                          as(<double-float>, opacity));
     let sheet = medium-sheet(medium);
     let transform = sheet-device-transform(sheet);
     with-device-coordinates (transform, left, top, right, bottom)
-      //gdk-window-clear-area(drawable, left, top, right - left, bottom - top)
-      gdk-draw-rectangle(drawable, gcontext, $true, left, top, right - left, bottom - top); 
+      cairo-rectangle(gcontext,
+                      as(<double-float>, left),
+                      as(<double-float>, top),
+                      as(<double-float>, right - left),
+                      as(<double-float>, bottom - top));
+      cairo-fill(gcontext);
     end;
-    with-stack-structure (color :: <GdkColor>)
-      gdk-color-black(colormap, color);
-      gdk-gc-set-foreground(gcontext, color);
-    end;
-  end;
+    cairo-destroy(gcontext);
+  end with-gdk-lock;
 end method clear-box;
 
-
+
 /// Text drawing
 
 define sealed method draw-text
@@ -483,14 +513,11 @@ define sealed method draw-text
     let text-style :: <text-style> = medium-merged-text-style(medium);
     let font :: <gtk-font> = text-style-mapping(port(medium), text-style);
     let length :: <integer> = size(string);
-    let (drawable :: <GdkDrawable>, gcontext :: <GdkGC>)
+    let gcontext :: <CairoContext>
       = update-drawing-state(medium, font: font);
-    let screen = gdk-drawable-get-screen(drawable);
-    //  let renderer = gdk-pango-renderer-get-default(screen);
-    //  gdk-pango-renderer-set-gc(renderer, gcontext);
-    let context = gdk-pango-context-get-for-screen(screen);
-    let (_font, _width, _height, ascent) = gtk-font-metrics(font, context);
-    let layout = pango-layout-new(context);
+    let pcontext = pango-cairo-create-context(gcontext);
+    let (_font, _width, _height, ascent) = gtk-font-metrics(font, pcontext);
+    let layout = pango-cairo-create-layout(gcontext);
     pango-layout-set-font-description(layout, font.%font-description);
     let transform = medium-device-transform(medium);
     with-device-coordinates (transform, x, y)
@@ -508,15 +535,16 @@ define sealed method draw-text
             let e = position(string, '\t', start: s, end: _end) | _end;
             let substring = copy-sequence(string, start: s, end: e);
             pango-layout-set-text(layout, substring, e - s);
-            //          pango-layout-context-changed(layout);
-            //          pango-renderer-draw-layout(renderer, layout, tab-origin + x, y);
-            gdk-draw-layout(drawable, gcontext, tab-origin + x, y - ascent, layout);
+            cairo-move-to(gcontext,
+                          as(<double-float>, tab-origin + x),
+                          as(<double-float>, y - ascent));
+            pango-cairo-show-layout(gcontext, layout);
             if (e = _end)
               break()
             else
               with-stack-structure (rectangle :: <PangoRectangle>)
                 pango-layout-get-pixel-extents(layout, null-pointer(<PangoRectangle>), rectangle);
-                x := floor/(x + rectangle.PangoRectangle-x + rectangle.PangoRectangle-width 
+                x := floor/(x + rectangle.pango-rectangle-x + rectangle.pango-rectangle-width
                               + tab-width, tab-width) * tab-width;
                 s := min(e + 1, _end)
               end;
@@ -525,23 +553,17 @@ define sealed method draw-text
         end
       else
         let substring
-          = if (_start = 0 & _end = length) 
+          = if (_start = 0 & _end = length)
               string
             else
               copy-sequence(string, start: _start, end: _end)
             end;
         pango-layout-set-text(layout, substring, -1);
-        //pango-layout-context-changed(layout);
-        //pango-renderer-draw-layout(renderer, layout, x, y);
-        gdk-draw-layout(drawable, gcontext, x, y - ascent, layout);
+        cairo-move-to(gcontext,
+                      as(<double-float>, x),
+                      as(<double-float>, y - ascent));
+        pango-cairo-show-layout(gcontext, layout);
       end
     end
   end
 end method draw-text;
-
-
-
-
-
-
-

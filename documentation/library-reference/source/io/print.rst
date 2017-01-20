@@ -8,7 +8,7 @@ The print and pprint Modules
 Introduction
 ------------
 
-The IO library’s printing modules provide an interface that outputs an
+The IO library's printing modules provide an interface that outputs an
 object in Dylan literal syntax if the object can be represented as a
 Dylan literal, and otherwise, outputs the object in an
 implementation-dependent manner. There are two functions, :func:`print`
@@ -17,13 +17,13 @@ arguments that form a print request, controlling features such as
 circular printing, how deep within a data structure to print, how many
 elements in long sequences to print before using an ellipsis notation,
 whether pretty printing is desired, and so on. Users extend
-:func:`print`’s ability to print various objects by adding methods to
+:func:`print`'s ability to print various objects by adding methods to
 the :gf:`print-object` function. The :func:`print` function handles most
 of the overhead to satisfy special print requests, outputting any
 special notations required, and it only calls :gf:`print-object` when it
 is necessary to print objects. Users should always call the
 :func:`print` function to output objects, especially recursively from
-within :gf:`print-object` methods to output an object’s components.
+within :gf:`print-object` methods to output an object's components.
 Users should never call :gf:`print-object` directly.
 
 The IO library exports two modules for use with printing, *print* and
@@ -76,7 +76,7 @@ The print Module
 ----------------
 
 This section contains a reference entry for each item exported from the
-IO library’s *print* module.
+IO library's *print* module.
 
 .. function:: print
 
@@ -84,15 +84,15 @@ IO library’s *print* module.
 
    :signature: print *object* *stream* #key *level length circle? pretty?* => ()
 
-   :parameter object: An instance of ``<object>``.
+   :parameter object: An instance of :drm:`<object>`.
    :parameter stream: An instance of :class:`<stream>`.
    :parameter #key level: ``#f`` or an instance of ``<fixed-integer>``.
      Default value: :var:`*print-level*`.
    :parameter #key length: ``#f`` or an instance of ``<fixed-integer>``.
      Default value: :var:`*print-length*`.
-   :parameter #key circle?: An instance of ``<boolean>``. Default value:
+   :parameter #key circle?: An instance of :drm:`<boolean>`. Default value:
      :var:`*print-circle?*`.
-   :parameter #key pretty?: An instance of ``<boolean>``. Default value:
+   :parameter #key pretty?: An instance of :drm:`<boolean>`. Default value:
      :var:`*print-pretty?*`.
 
    :description:
@@ -126,7 +126,7 @@ IO library’s *print* module.
      indicates that there is no limit. The *print-length* control can be
      interpreted loosely by some :gf:`print-object` methods to control
      how many *elements* of any kind of object to print; for example,
-     the default ``<object>`` method might regard *print-length* to
+     the default :drm:`<object>` method might regard *print-length* to
      determine how many slot-name/value pairs to print. The default,
      :var:`*print-length*`, has no effect on recursive calls to
      ``print``. Recursive calls to ``print`` may change the value of
@@ -163,6 +163,7 @@ IO library’s *print* module.
      that changed the value to ``#t``, the value reverts back to ``#f``.
 
 .. variable:: *print-circle?*
+   :thread:
 
    Controls whether or not to print recursively.
 
@@ -178,6 +179,7 @@ IO library’s *print* module.
      terminate.
 
 .. variable:: *print-length*
+   :thread:
 
    Controls the number of elements of an expression to print.
 
@@ -191,6 +193,7 @@ IO library’s *print* module.
      expression.
 
 .. variable:: *print-level*
+   :thread:
 
    Controls how deeply into a nested expression to print.
 
@@ -209,7 +212,7 @@ IO library’s *print* module.
 
    :signature: print-object *object stream* => ()
 
-   :parameter object: An instance of ``<object>``.
+   :parameter object: An instance of :drm:`<object>`.
    :parameter stream: An instance of :class:`<stream>`.
 
    :description:
@@ -218,10 +221,11 @@ IO library’s *print* module.
      :func:`print` to print various objects by adding methods to the
      ``print-object`` function. When :func:`print` actually prints an
      object, it calls ``print-object``.
-     
+
      You should never call ``print-object`` directly.
 
 .. variable:: *print-pretty?*
+   :thread:
 
    Controls whether or not pretty printing is used.
 
@@ -234,20 +238,20 @@ IO library’s *print* module.
 
 .. function:: print-to-string
 
-   Calls *print* on *object.* and returns the result as a string*.*
+   Calls *print* on *object* and returns the result as a string.
 
    :signature: print-to-string *object* #key *level length circle? pretty?* => *result*
 
-   :parameter object: An instance of ``<object>``.
+   :parameter object: An instance of :drm:`<object>`.
    :parameter #key level: ``#f`` or an instance of ``<fixed-integer>``.
      Default value: :var:`*print-level*`.
    :parameter #key length: ``#f`` or an instance of ``<fixed-integer>``.
      Default value: :var:`*print-length*`.
-   :parameter #key circle?: An instance of ``<boolean>``. Default value:
+   :parameter #key circle?: An instance of :drm:`<boolean>`. Default value:
      :var:`*print-circle?*`.
-   :parameter #key pretty?: An instance of ``<boolean>``. Default value:
+   :parameter #key pretty?: An instance of :drm:`<boolean>`. Default value:
      :var:`*print-pretty?*`.
-   :value result: An instance of ``<byte-string>``.
+   :value result: An instance of :drm:`<byte-string>`.
 
    :description:
 
@@ -261,7 +265,7 @@ The pprint Module
 .. current-module:: pprint
 
 This section contains a reference entry for each item exported from the
-IO library’s *pprint* module.
+IO library's *pprint* module.
 
 .. variable:: *default-line-length*
 
@@ -302,10 +306,10 @@ IO library’s *pprint* module.
    :signature: pprint-logical-block *stream* #key *prefix per-line-prefix body suffix column* => ()
 
    :parameter stream: An instance of :class:`<stream>`.
-   :parameter #key prefix: ``#f`` or an instance of ``<byte-string>``.
-   :parameter #key per-line-prefix: ``#f`` or an instance of ``<byte-string>``.
-   :parameter #key body: An instance of ``<function>``.
-   :parameter #key suffix: ``#f`` or an instance of ``<byte-string>``.
+   :parameter #key prefix: ``#f`` or an instance of :drm:`<byte-string>`.
+   :parameter #key per-line-prefix: ``#f`` or an instance of :drm:`<byte-string>`.
+   :parameter #key body: An instance of :drm:`<function>`.
+   :parameter #key suffix: ``#f`` or an instance of :drm:`<byte-string>`.
    :parameter #key column: A *limited* instance of ``<fixed-integer>``, minimum 0.
 
    :description:
@@ -323,7 +327,7 @@ IO library’s *pprint* module.
      current column of the output stream (the default is zero). The
      *column* argument may be ignored entirely by some methods, and it
      may be ignored in some cases by methods that can better determine
-     the stream’s current output column.
+     the stream's current output column.
 
      The *body* keyword must be a function that can take one argument,
      and this argument is a stream. The *body* function should use the
@@ -353,7 +357,7 @@ IO library’s *pprint* module.
 
      Announces a conditional newline to the pretty printer. The pretty
      printer emits a newline depending on the *kind* and the state of
-     the pretty printer’s current line buffer. The *kind* argument has
+     the pretty printer's current line buffer. The *kind* argument has
      roughly the following meanings:
 
      - ``#"fill"`` Emit a newline if the current *section* of output
@@ -398,7 +402,7 @@ IO library’s *pprint* module.
      - ``#"line-relative"``
        Output *colnum* spaces. Then output enough spaces to tab to a column
        that is a multiple of *colinc* from the beginning of the line.
-  
+
      - ``#"section"``
        Similar to ``#"line"``, but column counting is relative
        to the beginning of the current *section* rather than the beginning

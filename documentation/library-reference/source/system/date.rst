@@ -31,10 +31,10 @@ the function *encode-date* or using the *make* method for ``<date>``.
 
 Each of the arguments to :func:`encode-date` and to the :meth:`make
 <make(<date>)>` method on :class:`<date>` is an instance of
-``<integer>`` (except for the *iso8601-string* keyword for the *make*
+:drm:`<integer>` (except for the *iso8601-string* keyword for the *make*
 method, which is a string) that is passed as an init-keyword value to
 the ``<date>`` object. Each init-keyword takes an instance of
-``<integer>``, limited to the natural range for that attribute. For
+:drm:`<integer>`, limited to the natural range for that attribute. For
 example, *month:* can only take values between 1 and 12.
 
 You must specify values, via :func:`encode-date`, for at least the
@@ -44,7 +44,7 @@ and *time-zone-offset:*. If not supplied, the default value for each of
 these init-keywords is 0.
 
 The *time-zone-offset:* init-keyword is used to represent time zones in
-the ``date`` module as ``<integer>`` values representing the offset in minutes
+the ``date`` module as :drm:`<integer>` values representing the offset in minutes
 from Greenwich Mean Time (GMT). Positive values are used for time zones
 East of Greenwich; negative values represent time zones to the west of
 Greenwich.
@@ -54,7 +54,7 @@ the value -240 (-4 hours) is U.S. Eastern Daylight Savings Time.
 
 If you wish, a ``<date>`` can be specified completely by using the
 *iso8601-string:* init-keyword. This init-keyword takes an instance of
-``<string>``, which should be a valid ISO8601 format date. If you use the
+:drm:`<string>`, which should be a valid ISO8601 format date. If you use the
 *iso8601-string:* init-keyword, there is no need to specify any other
 init-keywords to a call to *make* on ``<date>``.
 
@@ -139,35 +139,35 @@ together with their return values.
 
 Methods defined for arithmetic operations on dates and durations
 
-+-------+---------------------------+---------------------------+---------------------------+
-| Op    | Argument 1                | Argument 2                | Return value              |
-+=======+===========================+===========================+===========================+
-| ``+`` | ``<duration>``            | ``<duration>``            | ``<duration>``            |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``+`` | ``<year/month-duration>`` | ``<year/month-duration>`` | ``<year/month-duration>`` |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``+`` | ``<day/time-duration>``   | ``<day/time-duration>``   | ``<day/time-duration>``   |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``+`` | ``<date>``                | ``<duration>``            | ``<date>``                |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``+`` | ``<duration>``            | ``<date>``                | ``<date>``                |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``-`` | ``<duration>``            | ``<duration>``            | ``<duration>``            |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``-`` | ``<year/month-duration>`` | ``<year/month-duration>`` | ``<year/month-duration>`` |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``-`` | ``<day/time-duration>``   | ``<day/time-duration>``   | ``<day/time-duration>``   |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``-`` | ``<date>``                | ``<duration>``            | ``<date>``                |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``-`` | ``<date>``                | ``<date>``                | ``<day/time-duration>``   |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``*`` | ``<duration>``            | ``<real>``                | ``<duration>``            |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``*`` | ``<real>``                | ``<duration>``            | ``<duration>``            |
-+-------+---------------------------+---------------------------+---------------------------+
-| ``/`` | ``<duration>``            | ``<real>``                | ``<duration>``            |
-+-------+---------------------------+---------------------------+---------------------------+
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| Op                        | Argument 1                     | Argument 2                     | Return value                   |
++===========================+================================+================================+================================+
+| :meth:`+ <+(<duration>)>` | :class:`<duration>`            | :class:`<duration>`            | :class:`<duration>`            |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`+ <+(<duration>)>` | :class:`<year/month-duration>` | :class:`<year/month-duration>` | :class:`<year/month-duration>` |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`+ <+(<duration>)>` | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`+ <+(<date>)>`     | :class:`<date>`                | :class:`<duration>`            | :class:`<date>`                |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`+ <+(<date>)>`     | :class:`<duration>`            | :class:`<date>`                | :class:`<date>`                |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`- <-(<duration>)>` | :class:`<duration>`            | :class:`<duration>`            | :class:`<duration>`            |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`- <-(<duration>)>` | :class:`<year/month-duration>` | :class:`<year/month-duration>` | :class:`<year/month-duration>` |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`- <-(<duration>)>` | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`- <-(<date>)>`     | :class:`<date>`                | :class:`<duration>`            | :class:`<date>`                |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`- <-(<date>)>`     | :class:`<date>`                | :class:`<date>`                | :class:`<day/time-duration>`   |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`* <*(<duration>)>` | :class:`<duration>`            | :drm:`<real>`                  | :class:`<duration>`            |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`* <*(<duration>)>` | :drm:`<real>`                  | :class:`<duration>`            | :class:`<duration>`            |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
+| :meth:`/ </(<duration>)>` | :class:`<duration>`            | :drm:`<real>`                  | :class:`<duration>`            |
++---------------------------+--------------------------------+--------------------------------+--------------------------------+
 
 Dealing with time-zones
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -216,14 +216,29 @@ month that the date refers to.
 - :func:`date-time-zone-offset`
 
 For each function except *date-day-of-week*, the value returned is an
-instance of ``<integer>``. The *date-day-of-week* function returns an
+instance of :drm:`<integer>`. The *date-day-of-week* function returns an
 object of type ``<day-of-week>``. For more information, please refer to
-the reference entries of each function. See also the function
+the reference entries of each function. Also see the function
 :func:`date-time-zone-offset-setter`, which allows you to set
 the time-zone offset of a ``<date>`` explicitly.
 
+Formatting Dates
+----------------
+
 To return an ISO 8601 format date from a ``<date>`` object, use the
 function :func:`as-iso8601-string`.
+
+Dates can also be returned in RFC-822 and RFC-1123 formats with the
+:func:`as-rfc822-string` and :func:`as-rfc1123-string` functions.
+
+More flexible date formatting is available with :func:`format-date`.
+
+
+Parsing Dates
+-------------
+
+Dates can be parsed with :func:`parse-date-string`. ISO-8601 formatted
+date strings can be parsed with :func:`parse-iso8601-string`.
 
 The date module
 ---------------
@@ -240,7 +255,7 @@ Date module.
    :signature: *date1* = *date2* => *equal?*
    :parameter date1: An instance of :class:`<date>`.
    :parameter date2: An instance of :class:`<date>`.
-   :value equal?: An instance of ``<boolean>``.
+   :value equal?: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -248,9 +263,9 @@ Date module.
      Any differences in microseconds between *date1* and *date2* are
      ignored.
 
-   See also
+   :seealso:
 
-   - :meth:`< <<(<date>)>`
+     - :meth:`< <<(<date>)>`
 
 .. method:: =
    :specializer: <duration>
@@ -262,7 +277,7 @@ Date module.
 
    :parameter duration1: An instance of :class:`<duration>`.
    :parameter duration2: An instance of :class:`<duration>`.
-   :value equal?: An instance of ``<boolean>``.
+   :value equal?: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -271,9 +286,9 @@ Date module.
      :class:`<day/time-duration>`, any differences in microseconds
      between *duration1* and *duration2* are ignored.
 
-   See also
+   :seealso:
 
-   - :meth:`< <<(<duration>)>`
+     - :meth:`< <<(<duration>)>`
 
 .. method:: <
    :sealed:
@@ -285,7 +300,7 @@ Date module.
 
    :parameter date1: An instance of :class:`<date>`.
    :parameter date2: An instance of :class:`<date>`.
-   :value before?: An instance of ``<boolean>``.
+   :value before?: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -293,9 +308,9 @@ Date module.
      differences in microseconds between *date1* and *date2* are
      ignored.
 
-   See also
+   :seealso:
 
-   - :meth:`= <=(<date>)>`
+     - :meth:`= <=(<date>)>`
 
 .. method:: <
    :sealed:
@@ -307,7 +322,7 @@ Date module.
 
    :parameter duration1: An instance of :class:`<duration>`.
    :parameter duration2: An instance of :class:`<duration>`.
-   :value less-than?: An instance of ``<boolean>``.
+   :value less-than?: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -316,208 +331,227 @@ Date module.
      differences in microseconds between *duration1* and *duration2* are
      ignored.
 
-   See also
+   :seealso:
 
-   - :meth:`= <=(<duration>)>`
+     - :meth:`= <=(<duration>)>`
 
-\+
-^^
-
-Sealed methods
+.. method:: +
+   :sealed:
+   :specializer: <date>
 
    Performs addition on specific combinations of dates and durations.
 
    :signature: + *arg1* *arg2* => *sum*
 
-Arguments
-
--  *arg1* An instance of :class:`<date>` or
-   :class:`<duration>`. See description for details.
--  *arg2* An instance of :class:`<date>` or
-   :class:`<duration>`. See description for details.
-
-Values
-
--  *sum* An instance of :class:`<date>` or
-   :class:`<duration>`. See description for details.
+   :parameter arg1: An instance of :class:`<date>` or
+     :class:`<duration>`. See description for details.
+   :parameter arg2: An instance of :class:`<date>` or
+     :class:`<duration>`. See description for details.
+   :value sum: An instance of :class:`<date>`.
 
    :description:
 
-A number of methods are defined for the *+* generic function to allow
-summing of various combinations of dates and durations. Note that there
-is not a method defined for every possible combination of date and
-duration. Specifically, you cannot sum different types of duration, and
-you cannot sum two dates. The return value can be either a date or a
-duration, depending on the arguments supplied. The table below lists the
-methods that are defined on *+*.
+     A number of methods are defined for the ``+`` generic function to allow
+     summing of various combinations of dates and durations. Note that there
+     is not a method defined for every possible combination of date and
+     duration. Specifically, you cannot sum two dates. The table below lists
+     the methods that are defined on ``+`` and :class:`<date>`.
 
-Methods defined for addition of dates and durations
+     Methods defined for addition of dates and durations
 
-*arg1*
+     +--------------------------------+--------------------------------+--------------------------------+
+     | arg1                           | arg2                           | sum                            |
+     +================================+================================+================================+
+     | :class:`<date>`                | :class:`<duration>`            | :class:`<date>`                |
+     +--------------------------------+--------------------------------+--------------------------------+
+     | :class:`<duration>`            | :class:`<date>`                | :class:`<date>`                |
+     +--------------------------------+--------------------------------+--------------------------------+
 
-*arg2*
+   :seealso:
 
-*sum*
+     - :meth:`+(<duration>)`
+     - :meth:`-(<date>)`
+     - :meth:`-(<duration>)`
+     - :meth:`*(<duration>)`
+     - :meth:`/(<duration>)`
 
-#. ``<duration>``
+.. method:: +
+   :sealed:
+   :specializer: <duration>
 
-#. ``<duration>``
+   Performs addition on durations.
 
-#. ``<duration>``
+   :signature: + *arg1* *arg2* => *sum*
 
-#. ``<year/month-duration>``
+   :parameter arg1: An instance of :class:`<duration>`.
+   :parameter arg2: An instance of :class:`<duration>`.
+   :value sum: An instance of :class:`<duration>`.
 
-#. ``<year/month-duration>``
+   :description:
 
-#. ``<year/month-duration>``
+     A number of methods are defined for the ``+`` generic function
+     allow summing of durations. Note that there is not a method defined
+     for every possible combination of duration Specifically, you cannot
+     sum different types of duration. The table below lists the methods
+     that are defined on ``+``.
 
-#. ``<day/time-duration>``
+     Methods defined for addition of durations
 
-#. ``<day/time-duration>``
+     +--------------------------------+--------------------------------+--------------------------------+
+     | arg1                           | arg2                           | sum                            |
+     +================================+================================+================================+
+     | :class:`<duration>`            | :class:`<duration>`            | :class:`<duration>`            |
+     +--------------------------------+--------------------------------+--------------------------------+
+     | :class:`<year/month-duration>` | :class:`<year/month-duration>` | :class:`<year/month-duration>` |
+     +--------------------------------+--------------------------------+--------------------------------+
+     | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   |
+     +--------------------------------+--------------------------------+--------------------------------+
 
-#. ``<day/time-duration>``
+   :seealso:
 
-#. ``<date>``
+     - :meth:`+(<date>)`
+     - :meth:`-(<date>)`
+     - :meth:`-(<duration>)`
+     - :meth:`*(<duration>)`
+     - :meth:`/(<duration>)`
 
-#. ``<duration>``
-
-#. ``<date>``
-
-#. ``<duration>``
-
-#. ``<date>``
-
-#. ``<date>``
-
-   See also: `-`_, `\*`_, `/`_
-
-\-
-^^
-
-Sealed methods
+.. method:: -
+   :sealed:
+   :specializer: <date>
 
    Performs subtraction on specific combinations of dates and durations.
 
    :signature: - *arg1* *arg2* => *diff*
 
-Arguments
-
--  *arg1* An instance of :class:`<date>` or
-   :class:`<duration>`. See description for details.
--  *arg2* An instance of :class:`<duration>`, or an
-   instance of :class:`<date>` if *arg1* is a ``<date>``.
-   See description for details.
-
-Values
-
--  *diff* An instance of :class:`<date>` or
-   :class:`<duration>`. See description for details.
+   :parameter arg1: An instance of :class:`<date>` or
+     :class:`<duration>`. See description for details.
+   :parameter arg2: An instance of :class:`<duration>`, or an
+     instance of :class:`<date>` if *arg1* is a ``<date>``.
+     See description for details.
+   :value diff: An instance of :class:`<date>` or
+     :class:`<duration>`. See description for details.
 
    :description:
 
-A number of methods are defined for the *-* generic function to allow
-subtraction of various combinations of dates and durations. Note that
-there is not a method defined for every possible combination of date and
-duration. Specifically, you cannot subtract a date from a duration, and
-you cannot subtract different types of duration. The return value can be
-either a date or a duration, depending on the arguments supplied. The
-table below lists the methods that are defined on *-*.
+     A number of methods are defined for the ``-`` generic function to allow
+     subtraction of various combinations of dates and durations. Note that
+     there is not a method defined for every possible combination of date and
+     duration. Specifically, you cannot subtract a date from a duration, and
+     you cannot subtract different types of duration. The return value can be
+     either a date or a duration, depending on the arguments supplied. The
+     table below lists the methods that are defined on ``-``.
 
-Methods defined for subtraction of dates and durations
+     Methods defined for subtraction of dates and durations
                                                       
-*arg1*
+     +--------------------------------+--------------------------------+--------------------------------+
+     | arg1                           | arg2                           | difference                     |
+     +================================+================================+================================+
+     | :class:`<date>`                | :class:`<duration>`            | :class:`<date>`                |
+     +--------------------------------+--------------------------------+--------------------------------+
+     | :class:`<date>`                | :class:`<date>`                | :class:`<day/time-duration>`   |
+     +--------------------------------+--------------------------------+--------------------------------+
 
-*arg2*
+   :seealso:
 
-*diff*
+     - :meth:`+(<date>)`
+     - :meth:`+(<duration>)`
+     - :meth:`-(<duration>)`
+     - :meth:`*(<duration>)`
+     - :meth:`/(<duration>)`
 
-#. ``<year/month-duration>``
+.. method:: -
+   :sealed:
+   :specializer: <duration>
 
-#. ``<year/month-duration>``
+   Performs subtraction on specific combinations of durations.
 
-#. ``<year/month-duration>``
+   :signature: - *arg1* *arg2* => *diff*
 
-#. ``<day/time-duration>``
+   :parameter arg1: An instance of :class:`<date>` or
+     :class:`<duration>`. See description for details.
+   :parameter arg2: An instance of :class:`<duration>`, or an
+     instance of :class:`<date>` if *arg1* is a ``<date>``.
+     See description for details.
+   :value diff: An instance of :class:`<date>` or
+     :class:`<duration>`. See description for details.
 
-#. ``<day/time-duration>``
+   :description:
 
-#. ``<day/time-duration>``
+     A number of methods are defined for the ``-`` generic function to allow
+     subtraction of durations. Note that there is not a method defined for
+     every possible combination of duration. Specifically, you cannot
+     subtract different types of duration. The table below lists the
+     methods that are defined on ``-``.
 
-#. ``<date>``
+     Methods defined for subtraction of dates and durations
+                                                      
+     +--------------------------------+--------------------------------+--------------------------------+
+     | arg1                           | arg2                           | difference                     |
+     +================================+================================+================================+
+     | :class:`<year/month-duration>` | :class:`<year/month-duration>` | :class:`<year/month-duration>` |
+     +--------------------------------+--------------------------------+--------------------------------+
+     | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   | :class:`<day/time-duration>`   |
+     +--------------------------------+--------------------------------+--------------------------------+
 
-#. ``<duration>``
+   :seealso:
 
-#. ``<date>``
+     - :meth:`+(<date>)`
+     - :meth:`+(<duration>)`
+     - :meth:`-(<date>)`
+     - :meth:`*(<duration>)`
+     - :meth:`/(<duration>)`
 
-#. ``<date>``
-
-#. ``<date>``
-
-#. ``<day/time-duration>``
-
-   See also: `+`_ `\*`_ `/`_
-
-\*
-^^
-
-Sealed methods
+.. method:: *
+   :sealed:
+   :specializer: <duration>
 
    Multiplies a duration by a scale factor.
 
    :signature: \* *duration* *scale* => *new-duration*
    :signature: \* *scale* *duration* => *new-duration*
 
-Arguments
-
--  *duration* An instance of :class:`<duration>`.
--  *scale* An instance of ``<real>``.
-
-*Note:* These arguments can be expressed in any order.
-
-Values
-
--  *new-duration* An instance of :class:`<date>` or
-   :class:`<duration>`. See description for details.
+   :parameter duration: An instance of :class:`<duration>`.
+   :parameter scale: An instance of :drm:`<real>`.
+   :value new-duration: An instance of :class:`<duration>`.
 
    :description:
 
-Multiples a duration by a scale factor and returns the result. Note that
-the arguments can be expressed in any order: methods are defined such
-that the duration can be placed first or second in the list of
-arguments.
+     *Note:* These arguments can be expressed in any order.
 
-   See also: `+`_, `-`_, `/`_
+     Multiples a duration by a scale factor and returns the result. Note that
+     the arguments can be expressed in any order: methods are defined such
+     that the duration can be placed first or second in the list of
+     arguments.
 
-/
-^
+   :seealso:
 
-Sealed methods
+     - :meth:`+(<date>)`
+     - :meth:`+(<duration>)`
+     - :meth:`-(<date>)`
+     - :meth:`-(<duration>)`
+     - :meth:`/(<duration>)`
+
+.. method:: /
+   :sealed:
+   :specializer: <duration>
 
    Divides a duration by a scale factor
 
    :signature: / *duration* *scale* => *new-duration*
 
-Arguments
-
--  *duration* An instance of :class:`<duration>`.
--  *scale* An instance of ``<real>``.
-
-Values
-
--  *new-duration* An instance of :class:`<date>` or
-   :class:`<duration>`. See description for details.
+   :parameter duration: An instance of :class:`<duration>`.
+   :parameter scale: An instance of :drm:`<real>`.
+   :value new-duration: An instance of :class:`<duration>`.
 
    :description:
 
-A number of methods are defined for the + generic function to allow
-summing of various combinations of dates and durations. Note that there
-is not a method defined for every possible combination of date and
-duration. Specifically, you cannot sum different types of duration, and
-you cannot sum two dates. The return value can be either a date or a
-duration, depending on the arguments supplied. The table below lists the
-methods that are defined on +.
+   :seealso:
 
-   See also: `+`_, `-`_, `\*`_
+     - :meth:`+(<date>)`
+     - :meth:`+(<duration>)`
+     - :meth:`-(<date>)`
+     - :meth:`-(<duration>)`
+     - :meth:`*(<duration>)`
 
 .. function:: as-iso8601-string
 
@@ -526,9 +560,9 @@ methods that are defined on +.
 
    :signature: as-iso8601-string *date* #key *precision* => *iso8601-string*
 
-   :paramter date: An instance of :class:`<date>`.
-   :parameter precision: An instance of ``<integer>``. Default value: 0.
-   :value iso8601-string: An instance of ``<string>``.
+   :parameter date: An instance of :class:`<date>`.
+   :parameter #key precision: An instance of :drm:`<integer>`. Default value: 0.
+   :value iso8601-string: An instance of :drm:`<string>`.
 
    :description:
 
@@ -543,9 +577,85 @@ methods that are defined on +.
      however, accepts ISO 8601 strings with other time zone
      specifications.
 
-   See also
+     This is the same as calling:
 
-   - :class:`<date>`
+     .. code-block:: dylan
+
+        format-date("%Y-%m-%dT%H:%M:%S%:z", date);
+
+   :seealso:
+
+     - :class:`<date>`
+     - :func:`as-rfc822-string`
+     - :func:`as-rfc1123-string`
+     - :func:`format-date`
+     - :func:`parse-date-string`
+     - :func:`parse-iso8601-string`
+
+.. function:: as-rfc822-string
+
+   Returns a string representation of a date, conforming to
+   `RFC 822 <http://www.w3.org/Protocols/rfc822/#z28>`_.
+
+   :signature: as-rfc822-string *date* => *rfc822-string*
+
+   :parameter date: An instance of :class:`<date>`.
+   :value rfc822-string: An instance of :drm:`<string>`.
+
+   :description:
+
+     An example in this format is::
+
+        Sun, 01 Sep 13 17:00:00 GMT
+
+     This is the same as calling:
+
+     .. code-block:: dylan
+
+        format-date("%a, %d %b %y %H:%M:%S %z", date);
+
+   :seealso:
+
+     - :class:`<date>`
+     - :func:`as-rfc1123-string`
+     - :func:`as-iso8601-string`
+     - :func:`format-date`
+     - :func:`parse-date-string`
+
+.. function:: as-rfc1123-string
+
+   Returns a string representation of a date, conforming to
+   `RFC 1123 <http://www.faqs.org/rfcs/rfc1123.html>`_.
+
+   :signature: as-rfc1123-string *date* => *rfc1123-string*
+
+   :parameter date: An instance of :class:`<date>`.
+   :value rfc1123-string: An instance of :drm:`<string>`.
+
+   :description:
+
+     The date format for RFC-1123 is the same as for RFC-822
+     except that the year must be 4 digits rather than 2::
+
+        Sun, 01 Sep 2013 17:00:00 GMT
+
+     This is the same as calling:
+
+     .. code-block:: dylan
+
+        format-date("%a, %d %b %Y %H:%M:%S %z", date);
+
+     This format is commonly used in email, HTTP headers,
+     RSS feeds and other protocols where date representations
+     are used.
+
+   :seealso:
+
+     - :class:`<date>`
+     - :func:`as-rfc822-string`
+     - :func:`as-iso8601-string`
+     - :func:`format-date`
+     - :func:`parse-date-string`
 
 .. function:: current-date
 
@@ -564,7 +674,7 @@ methods that are defined on +.
 
    The class of objects representing dates.
 
-   :superclasses: ``<number>``
+   :superclasses: :drm:`<number>`
 
    :keyword iso8601-string: An instance of ``false-or(<string>)``.
      Default value: ``#f``.
@@ -581,7 +691,7 @@ methods that are defined on +.
      59)``. Default value: 0.
    :keyword microseconds: An instance of ``limited(<integer>, min: 0,
      max: 999999)``. Default value: 0.
-   :keyword time-zone-offset: An instance of ``<integer>``. Default
+   :keyword time-zone-offset: An instance of :drm:`<integer>`. Default
      value: 0.
 
    :description:
@@ -603,7 +713,7 @@ methods that are defined on +.
      For the *time-zone-offset* init-keyword, a positive number
      represents an offset ahead of GMT, in minutes, and a negative
      number represents an offset behind GMT. The value returned is an
-     instance of ``<integer>`` (for example, -300 represents the offset
+     instance of :drm:`<integer>` (for example, -300 represents the offset
      for EST, which is 5 hours behind GMT).
 
    :operations:
@@ -613,6 +723,8 @@ methods that are defined on +.
      - :meth:`+ <+(<date>)>`
      - :meth:`- <-(<date>)>`
      - :func:`as-iso8601-string`
+     - :func:`as-rfc822-string`
+     - :func:`as-rfc1123-string`
      - :func:`current-date`
      - :func:`date-day`
      - :func:`date-day-of-week`
@@ -626,10 +738,12 @@ methods that are defined on +.
      - :func:`date-year`
      - :func:`decode-date`
 
-   See also
+   :seealso:
 
-   - :func:`as-iso8601-string`
-   - `<day-of-week>`_
+     - :func:`as-iso8601-string`
+     - :func:`as-rfc822-string`
+     - :func:`as-rfc1123-string`
+     - :class:`<day-of-week>`
 
 .. function:: date-day
 
@@ -638,7 +752,7 @@ methods that are defined on +.
    :signature: date-day *date* => *day*
 
    :parameter date: An instance of :class:`<date>`.
-   :value day: An instance of ``<integer>``.
+   :value day: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -646,17 +760,17 @@ methods that are defined on +.
      example, if passed a :class:`<date>` that represented 16:36 on the
      20th June, 1997, *date-day* returns the value 20.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-year`
-   - :func:`date-hours`
-   - :func:`date-minutes`
-   - :func:`date-seconds`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-year`
+     - :func:`date-hours`
+     - :func:`date-minutes`
+     - :func:`date-seconds`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day-of-week`
 
 .. function:: date-day-of-week
 
@@ -671,18 +785,18 @@ methods that are defined on +.
 
      Returns the day of the week of the specified *date*.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-year`
-   - :func:`date-hours`
-   - :func:`date-minutes`
-   - :func:`date-seconds`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day`
-   - `<day-of-week>`_
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-year`
+     - :func:`date-hours`
+     - :func:`date-minutes`
+     - :func:`date-seconds`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day`
+     - :class:`<day-of-week>`
 
 .. function:: date-hours
 
@@ -691,24 +805,24 @@ methods that are defined on +.
    :signature: date-hours *date* => *hour*
 
    :parameter date: An instance of :class:`<date>`.
-   :value hour: An instance of ``<integer>``.
+   :value hour: An instance of :drm:`<integer>`.
 
    :description:
 
      Returns the hour component of the specified *date*. This component is
      always expressed in 24 hour format.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-day`
-   - :func:`date-year`
-   - :func:`date-minutes`
-   - :func:`date-seconds`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-day`
+     - :func:`date-year`
+     - :func:`date-minutes`
+     - :func:`date-seconds`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day-of-week`
 
 .. function:: date-microseconds
 
@@ -717,7 +831,7 @@ methods that are defined on +.
    :signature: date-microseconds *date* => *microseconds*
 
    :parameter date: An instance of :class:`<date>`.
-   :value microseconds: An instance of ``<integer>``.
+   :value microseconds: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -727,17 +841,17 @@ methods that are defined on +.
      *microseconds:* init-keyword when the :class:`<date>` object was
      created.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-day`
-   - :func:`date-hours`
-   - :func:`date-minutes`
-   - :func:`date-seconds`
-   - :func:`date-year`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-day`
+     - :func:`date-hours`
+     - :func:`date-minutes`
+     - :func:`date-seconds`
+     - :func:`date-year`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day-of-week`
 
 .. function:: date-minutes
 
@@ -746,23 +860,23 @@ methods that are defined on +.
    :signature: date-minutes *date* => *minutes*
 
    :parameter date: An instance of :class:`<date>`.
-   :value minutes: An instance of ``<integer>``.
+   :value minutes: An instance of :drm:`<integer>`.
 
    :description:
 
      Returns the minutes component of the specified *date*.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-day`
-   - :func:`date-hours`
-   - :func:`date-year`
-   - :func:`date-seconds`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-day`
+     - :func:`date-hours`
+     - :func:`date-year`
+     - :func:`date-seconds`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day-of-week`
 
 .. function:: date-month
 
@@ -771,23 +885,23 @@ methods that are defined on +.
    :signature: date-month *date* => *month*
 
    :parameter date: An instance of :class:`<date>`.
-   :value month: An instance of ``<integer>``.
+   :value month: An instance of :drm:`<integer>`.
 
    :description:
 
      Returns the month of the specified *date*.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-year`
-   - :func:`date-day`
-   - :func:`date-hours`
-   - :func:`date-minutes`
-   - :func:`date-seconds`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-year`
+     - :func:`date-day`
+     - :func:`date-hours`
+     - :func:`date-minutes`
+     - :func:`date-seconds`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day-of-week`
 
 .. function:: date-seconds
 
@@ -796,7 +910,7 @@ methods that are defined on +.
    :signature: date-seconds *date* => *seconds*
 
    :parameter date: An instance of :class:`<date>`.
-   :value seconds: An instance of ``<integer>``.
+   :value seconds: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -805,17 +919,17 @@ methods that are defined on +.
      number of seconds; it returns any value assigned to the *seconds:*
      init-keyword when the :class:`<date>` object was created.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-day`
-   - :func:`date-hours`
-   - :func:`date-minutes`
-   - :func:`date-year`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-day`
+     - :func:`date-hours`
+     - :func:`date-minutes`
+     - :func:`date-year`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day-of-week`
 
 .. function:: date-time-zone-offset
 
@@ -824,7 +938,7 @@ methods that are defined on +.
    :signature: date-time-zone-offset *date* => *time-zone-offset*
 
    :parameter date: An instance of :class:`<date>`.
-   :value time-zone-offset: An instance of ``<integer>``.
+   :value time-zone-offset: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -833,21 +947,21 @@ methods that are defined on +.
 
      A positive number represents an offset ahead of GMT, in minutes,
      and a negative number represents an offset behind GMT. The value
-     returned is an instance of ``<integer>`` (for example, -300
+     returned is an instance of :drm:`<integer>` (for example, -300
      represents the offset for EST, which is 5 hours behind GMT).
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-day`
-   - :func:`date-hours`
-   - :func:`date-minutes`
-   - :func:`date-seconds`
-   - :func:`date-year`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset-setter`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-day`
+     - :func:`date-hours`
+     - :func:`date-minutes`
+     - :func:`date-seconds`
+     - :func:`date-year`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset-setter`
+     - :func:`date-day-of-week`
 
 .. function:: date-time-zone-offset-setter
 
@@ -856,9 +970,9 @@ methods that are defined on +.
 
    :signature: date-time-zone-offset-setter *new-time-zone-offset* *date*  => *new-time-zone-offset*
 
-   :parameter new-time-zone-offset: An instance of ``<integer>``.
+   :parameter new-time-zone-offset: An instance of :drm:`<integer>`.
    :parameter date: An instance of :class:`<date>`.
-   :value new-time-zone-offset: An instance of ``<integer>``.
+   :value new-time-zone-offset: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -871,9 +985,9 @@ methods that are defined on +.
      representing EST, which is 5 hours behind GMT,
      *new-time-zone-offset* should have the value -300.
 
-   See also
+   :seealso:
 
-   - :func:`date-time-zone-offset`
+     - :func:`date-time-zone-offset`
 
 .. function:: date-year
 
@@ -882,56 +996,46 @@ methods that are defined on +.
    :signature: date-year *date* => *year*
 
    :parameter date: An instance of :class:`<date>`.
-   :value year: An instance of ``<integer>``.
+   :value year: An instance of :drm:`<integer>`.
 
    :description:
 
      Returns the year of the specified *date*.
 
-   See also
+   :seealso:
 
-   - :func:`decode-date`
-   - :func:`date-month`
-   - :func:`date-day`
-   - :func:`date-hours`
-   - :func:`date-minutes`
-   - :func:`date-seconds`
-   - :func:`date-microseconds`
-   - :func:`date-time-zone-offset`
-   - :func:`date-day-of-week`
+     - :func:`decode-date`
+     - :func:`date-month`
+     - :func:`date-day`
+     - :func:`date-hours`
+     - :func:`date-minutes`
+     - :func:`date-seconds`
+     - :func:`date-microseconds`
+     - :func:`date-time-zone-offset`
+     - :func:`date-day-of-week`
 
-<day-of-week>
-^^^^^^^^^^^^~
+:: todo Make this a type.
 
-Type
+.. class:: <day-of-week>
 
    The days of the week.
-
-Equivalent
-
-one-of(#"Sunday", #"Monday", #"Tuesday", #"Wednesday",
- #"Thursday", #"Friday", #"Saturday")
-
-Supertypes
-
-None.
-
-Init-keywords
-
--  None.
 
    :description:
 
      The days of the week. This is the type of the return value of the
      :func:`date-day-of-week` function.
 
+     .. code-block:: dylan
+
+        one-of(#"Sunday", #"Monday", #"Tuesday", #"Wednesday", #"Thursday", #"Friday", #"Saturday")
+
    :operations:
 
      - :func:`date-day-of-week`
 
-   See also
+   :seealso:
 
-   - :func:`date-day-of-week`
+     - :func:`date-day-of-week`
 
 .. class:: <day/time-duration>
    :sealed:
@@ -940,11 +1044,11 @@ Init-keywords
 
    :superclasses: :class:`<duration>`
 
-   :keyword days: An instance of ``<integer>``.
-   :keyword hours: An instance of ``<integer>``. Default value: 0.
-   :keyword minutes: An instance of ``<integer>``. Default value: 0.
-   :keyword seconds: An instance of ``<integer>``. Default value: 0.
-   :keyword microseconds: An instance of ``<integer>``. Default value: 0.
+   :keyword days: An instance of :drm:`<integer>`.
+   :keyword hours: An instance of :drm:`<integer>`. Default value: 0.
+   :keyword minutes: An instance of :drm:`<integer>`. Default value: 0.
+   :keyword seconds: An instance of :drm:`<integer>`. Default value: 0.
+   :keyword microseconds: An instance of :drm:`<integer>`. Default value: 0.
 
    :description:
 
@@ -963,10 +1067,10 @@ Init-keywords
      - :gf:`decode-duration`
      - :func:`encode-day/time-duration`
 
-   See also
+   :seealso:
 
-   - :class:`<duration>`
-   - :class:`<year/month-duration>`
+     - :class:`<duration>`
+     - :class:`<year/month-duration>`
 
 .. function:: decode-date
 
@@ -976,14 +1080,14 @@ Init-keywords
 
    :parameter date: An instance of :class:`<date>`.
 
-   :value year: An instance of ``<integer>``.
-   :value month: An instance of ``<integer>``.
-   :value day: An instance of ``<integer>``.
-   :value hours: An instance of ``<integer>``.
-   :value minutes: An instance of ``<integer>``.
-   :value seconds: An instance of ``<integer>``.
+   :value year: An instance of :drm:`<integer>`.
+   :value month: An instance of :drm:`<integer>`.
+   :value day: An instance of :drm:`<integer>`.
+   :value hours: An instance of :drm:`<integer>`.
+   :value minutes: An instance of :drm:`<integer>`.
+   :value seconds: An instance of :drm:`<integer>`.
    :value day-of-week: An instance of ``<day-of-week>``.
-   :value time-zone-offset: An instance of ``<integer>``.
+   :value time-zone-offset: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -993,9 +1097,9 @@ Init-keywords
      :class:`<date>`, but it does return the appropriate
      ``<day-of-week>``.
 
-   See also
+   :seealso:
 
-   - :func:`encode-date`
+     - :func:`encode-date`
 
 .. generic-function:: decode-duration
    :sealed:
@@ -1005,7 +1109,7 @@ Init-keywords
    :signature: decode-duration *duration* => #rest *components*
 
    :parameter duration: An instance of :class:`<duration>`.
-   :value #rest components: Instances of ``<integer>``.
+   :value #rest components: Instances of :drm:`<integer>`.
 
    :description:
 
@@ -1014,10 +1118,10 @@ Init-keywords
      on :class:`<year/month-duration>` and :class:`<day/time-duration>`
      respectively, as described below.
 
-   See also
+   :seealso:
 
-   - :meth:`decode-duration <decode-duration(<day/time-duration>)>`
-   - :meth:`decode-duration <decode-duration(<year/month-duration>)>`
+     - :meth:`decode-duration <decode-duration(<day/time-duration>)>`
+     - :meth:`decode-duration <decode-duration(<year/month-duration>)>`
 
 .. method:: decode-duration
    :specializer: <day/time-duration>
@@ -1028,22 +1132,22 @@ Init-keywords
    :signature: decode-duration *duration* => *days* *hours* *minutes* *seconds* *microseconds*
 
    :parameter duration: An instance of :class:`<day/time-duration>`.
-   :value days: An instance of ``<integer>``.
-   :value hours: An instance of ``<integer>``.
-   :value minutes: An instance of ``<integer>``.
-   :value seconds: An instance of ``<integer>``.
-   :value microseconds: An instance of ``<integer>``.
+   :value days: An instance of :drm:`<integer>`.
+   :value hours: An instance of :drm:`<integer>`.
+   :value minutes: An instance of :drm:`<integer>`.
+   :value seconds: An instance of :drm:`<integer>`.
+   :value microseconds: An instance of :drm:`<integer>`.
 
    :description:
 
      Decodes an instance of :class:`<day/time-duration>` into its
      constituent parts.
 
-   See also
+   :seealso:
 
-   - :gf:`decode-duration`
-   - :meth:`decode-duration <decode-duration(<year/month-duration>)>`
-   - :func:`encode-day/time-duration`
+     - :gf:`decode-duration`
+     - :meth:`decode-duration <decode-duration(<year/month-duration>)>`
+     - :func:`encode-day/time-duration`
 
 .. method:: decode-duration
    :specializer: <year/month-duration>
@@ -1054,19 +1158,19 @@ Init-keywords
    :signature: decode-duration *duration* => *years* *months*
 
    :parameter duration: An instance of :class:`<year/month-duration>`.
-   :value years: An instance of ``<integer>``.
-   :value months: An instance of ``<integer>``.
+   :value years: An instance of :drm:`<integer>`.
+   :value months: An instance of :drm:`<integer>`.
 
    :description:
 
      Decodes an instance of :class:`<year/month-duration>` into its
      constituent parts.
 
-   See also
+   :seealso:
 
-   - :gf:`decode-duration`
-   - :meth:`decode-duration <decode-duration(<day/time-duration>)>`
-   - :func:`encode-year/month-duration`
+     - :gf:`decode-duration`
+     - :meth:`decode-duration <decode-duration(<day/time-duration>)>`
+     - :func:`encode-year/month-duration`
 
 .. class:: <duration>
    :sealed:
@@ -1075,7 +1179,7 @@ Init-keywords
 
    The class of objects representing durations.
 
-   :superclasses: ``<number>``
+   :superclasses: :drm:`<number>`
 
    :keyword iso8601-string: An instance of ``false-or(<string>)``.
      Default value: ``#f``.
@@ -1092,13 +1196,13 @@ Init-keywords
      59)``. Default value: 0.
    :keyword microseconds: An instance of ``limited(<integer>, min: 0,
      max: 999999)``. Default value: 0.
-   :keyword time-zone-offset: An instance of ``<integer>``. Default
+   :keyword time-zone-offset: An instance of :drm:`<integer>`. Default
      value: 0.
 
    :description:
 
      This class is the used to represent durations. It is a subclass of
-     ``<number>``, and it has two subclasses.
+     :drm:`<number>`, and it has two subclasses.
 
    :operations:
 
@@ -1109,10 +1213,10 @@ Init-keywords
      - :meth:`\* <*(<duration>)>`
      - :meth:`/ </(<duration>)>`
 
-   See also
+   :seealso:
 
-   - :class:`<day/time-duration>`
-   - :class:`<year/month-duration>`
+     - :class:`<day/time-duration>`
+     - :class:`<year/month-duration>`
 
 .. function:: encode-date
 
@@ -1120,15 +1224,15 @@ Init-keywords
 
    :signature: encode-date *year month day hours minutes seconds* #key*microseconds time-zone-offset* => *date*
 
-   :parameter year: An instance of ``<integer>``.
-   :parameter month: An instance of ``<integer>``.
-   :parameter day: An instance of ``<integer>``.
-   :parameter hours: An instance of ``<integer>``.
-   :parameter minutes: An instance of ``<integer>``.
-   :parameter seconds: An instance of ``<integer>``.
-   :parameter microseconds: An instance of ``<integer>``. Default value:
+   :parameter year: An instance of :drm:`<integer>`.
+   :parameter month: An instance of :drm:`<integer>`.
+   :parameter day: An instance of :drm:`<integer>`.
+   :parameter hours: An instance of :drm:`<integer>`.
+   :parameter minutes: An instance of :drm:`<integer>`.
+   :parameter seconds: An instance of :drm:`<integer>`.
+   :parameter #key microseconds: An instance of :drm:`<integer>`. Default value:
      0.
-   :parameter time-zone-offset: An instance of ``<integer>``. Default
+   :parameter  #keytime-zone-offset: An instance of :drm:`<integer>`. Default
      value: :func:`local-time-zone-offset()`.
    :value date: An instance of :class:`<date>`.
 
@@ -1136,11 +1240,11 @@ Init-keywords
 
      Creates a :class:`<date>` object for the specified date and time.
 
-   See also
+   :seealso:
 
-   - :gf:`decode-date`
-   - :func:`local-time-zone-offset`
-   - :meth:`make <make(<date>)>`
+     - :gf:`decode-date`
+     - :func:`local-time-zone-offset`
+     - :meth:`make <make(<date>)>`
 
 .. function:: encode-day/time-duration
 
@@ -1148,21 +1252,21 @@ Init-keywords
 
    :signature: encode-day/time-duration *days* *hours* *minutes* *seconds* *microseconds* => *duration*
 
-   :parameter days: An instance of ``<integer>``.
-   :parameter hours: An instance of ``<integer>``.
-   :parameter minutes: An instance of ``<integer>``.
-   :parameter seconds: An instance of ``<integer>``.
-   :parameter microseconds: An instance of ``<integer>``.
+   :parameter days: An instance of :drm:`<integer>`.
+   :parameter hours: An instance of :drm:`<integer>`.
+   :parameter minutes: An instance of :drm:`<integer>`.
+   :parameter seconds: An instance of :drm:`<integer>`.
+   :parameter microseconds: An instance of :drm:`<integer>`.
    :value duration: An instance of :class:`<day/time-duration>`.
 
    :description:
 
      Creates an instance of :class:`<day/time-duration>`.
 
-   See also
+   :seealso:
 
-   - :gf:`decode-duration`
-   - :func:`encode-year/month-duration`
+     - :gf:`decode-duration`
+     - :func:`encode-year/month-duration`
 
 .. function:: encode-year/month-duration
 
@@ -1170,18 +1274,64 @@ Init-keywords
 
    :signature: encode-year/month-duration *years* *months* => *duration*
 
-   :parameter years: An instance of ``<integer>``.
-   :parameter months: An instance of ``<integer>``.
+   :parameter years: An instance of :drm:`<integer>`.
+   :parameter months: An instance of :drm:`<integer>`.
    :value duration: An instance of :class:`<year/month-duration>`.
 
    :description:
 
      Creates an instance of :class:`<year/month-duration>`.
 
-   See also
+   :seealso:
 
-   - :gf:`decode-duration`
-   - :func:`encode-day/time-duration`
+     - :gf:`decode-duration`
+     - :func:`encode-day/time-duration`
+
+.. function:: format-date
+
+   Formats a date according to a format string.
+
+   :signature: format-date *format* *date* => *formatted-date*
+
+   :parameter format: An instance of :drm:`<byte-string>`.
+   :parameter date: An instance of :class:`<date>`.
+   :value formatted-date: An instance of :drm:`<byte-string>`.
+
+   :description:
+
+     ``format-date`` interprets a control string, ``format``,
+     to create a string representing the ``date``.
+
+     The control string can contain these directives:
+
+     - ``%Y`` - The year.
+     - ``%y`` - The year, in 2 digit form.
+     - ``%H`` - Hours, zero padded.
+     - ``%k`` - Hours, space padded.
+     - ``%M`` - Minutes, zero padded.
+     - ``%S`` - Seconds, zero padded.
+     - ``%f`` - Microseconds, 6 digits.
+     - ``%F`` - Milliseconds, 3 digits.
+     - ``%T`` - Time, each component zero padded.
+     - ``%m`` - Month in numeric form, zero padded.
+     - ``%d`` - Day of the month, zero padded.
+     - ``%e`` - Day of the month, space padded.
+     - ``%A`` - Name of the day of the week.
+     - ``%a`` - Short name of the day of the week.
+     - ``%B`` - Name of the month.
+     - ``%b`` - Short name of the month.
+     - ``%z`` - Time zone offset.
+     - ``%:z`` - Time zone offset, but using ``:`` between hours and minutes.
+     - ``%n`` - A new line.
+     - ``%%`` - A % character.
+
+   :seealso:
+
+     - :func:`as-rfc822-string`
+     - :func:`as-rfc1123-string`
+     - :func:`as-iso8601-string`
+     - :func:`parse-date-string`
+     - :func:`parse-iso8601-string`
 
 .. function:: local-daylight-savings-time?
 
@@ -1189,7 +1339,7 @@ Init-keywords
 
    :signature: local-daylight-savings-time? () => *dst?*
 
-   :value dst?: An instance of ``<boolean>``.
+   :value dst?: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -1202,7 +1352,7 @@ Init-keywords
 
    :signature: local-time-zone-name () => *time-zone-name*
 
-   :value time-zone-name: An instance of ``<string>``.
+   :value time-zone-name: An instance of :drm:`<string>`.
 
    :description:
 
@@ -1217,14 +1367,14 @@ Init-keywords
 
    :signature: local-time-zone-offset () => *time-zone-offset*
 
-   :value time-zone-offset: An instance of ``<integer>``.
+   :value time-zone-offset: An instance of :drm:`<integer>`.
 
    :description:
 
      Returns the offset of the time-zone from Greenwich Mean Time,
      expressed as a number of minutes. A positive number represents an
      offset ahead of GMT, and a negative number represents an offset
-     behind GMT. The return value is an instance of ``<integer>`` (for
+     behind GMT. The return value is an instance of :drm:`<integer>` (for
      example, -300 represents the offset for EST, which is 5 hours
      behind GMT). The return value incorporates daylight savings time
      when necessary.
@@ -1253,7 +1403,7 @@ Init-keywords
      max: 59)``. Default value: 0.
    :parameter #key microseconds: An instance of ``limited(<integer>,
      min: 0, max: 999999)``. Default value: 0.
-   :parameter #key time-zone-offset: An instance of ``<integer>``.
+   :parameter #key time-zone-offset: An instance of :drm:`<integer>`.
      Default value: 0.
    :value date-instance: An instance of :class:`<date>`.
 
@@ -1266,7 +1416,8 @@ Init-keywords
 
      **Note**: The iso8601-string keyword accepts a richer subset of
      the ISO 8601 specification than is produced by the
-     :func:`as-iso8601-string` function.
+     :func:`as-iso8601-string` function. See :func:`parse-iso8601-string`
+     for details.
 
    :example:
 
@@ -1274,10 +1425,83 @@ Init-keywords
 
        make (<date>, iso8601-string: "19970717T1148-0400")
 
-   See also
+   :seealso:
 
-   - :class:`<date>`
-   - :func:`encode-date`
+     - :class:`<date>`
+     - :func:`encode-date`
+     - :func:`parse-iso8601-string`
+
+.. function:: parse-date-string
+
+   Parse a date in string form according to a control string, returning
+   a date.
+
+   :signature: parse-date-string *date* *format* => *date*
+
+   :parameter date: An instance of :drm:`<string>`.
+   :parameter format: An instance of :drm:`<string>`.
+   :value date: An instance of :class:`<date>`.
+
+   :description:
+
+     Parses a date in string form according to a control string, ``format``.
+     The control string uses the same directives as :func:`format-date`.
+
+   :seealso:
+
+     - :func:`format-date`
+     - :func:`parse-iso8601-string`
+
+.. function:: parse-iso8601-string
+
+   Parse a variety of variants on ISO-8601 formatted date strings.
+
+   :signature: parse-iso8601-string *string* #key *strict?* => *date*
+
+   :parameter string: An instance of :drm:`<string>`.
+   :parameter #key strict?: An instance of :drm:`<boolean>`, default ``#t``.
+   :value date: An instance of :class:`<date>`.
+
+   :description:
+
+     This function parses the ISO 8601 formats listed below, with the
+     following differences if strict? = #f:
+
+     * the '-' in YYYY-MM-DD is optional
+     * the ':' in hh:mm:ss is optional
+     * the ':' in the timezone is optional
+     * the date and time may be separated by a space character
+     * TZD may be preceded by a space character
+
+     See http://www.w3.org/TR/NOTE-datetime.html.
+
+     Year:
+        YYYY (eg 1997)
+     Year and month:
+        YYYY-MM (eg 1997-07)
+     Complete date:
+        YYYY-MM-DD (eg 1997-07-16)
+     Complete date plus hours and minutes:
+        YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
+     Complete date plus hours, minutes and seconds:
+        YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
+     Complete date plus hours, minutes, seconds and a decimal fraction of a second
+        YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
+     where:
+        * YYYY = four-digit year
+        * MM   = two-digit month (01=January, etc.)
+        * DD   = two-digit day of month (01 through 31)
+        * hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+        * mm   = two digits of minute (00 through 59)
+        * ss   = two digits of second (00 through 59)
+        * s    = one or more digits representing a decimal fraction of a second
+        * TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+
+   :seealso:
+
+     - :func:`as-iso8601-string`
+     - :func:`format-date`
+     - :func:`parse-date-string`
 
 .. class:: <year/month-duration>
    :sealed:
@@ -1286,8 +1510,8 @@ Init-keywords
 
    :superclasses: :class:`<duration>`
 
-   :keyword year: An instance of ``<integer>``.
-   :keyword month: An instance of ``<integer>``.
+   :keyword year: An instance of :drm:`<integer>`.
+   :keyword month: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -1301,13 +1525,13 @@ Init-keywords
 
    :operations:
 
-     - :meth:`< <<(duration>)>`
-     - :meth:`+ <+(<year/month-duration>)>`
-     - :meth:`- <-(<year/month-duration>)>`
+     - :meth:`< <<(<duration>)>`
+     - :meth:`+ <+(<duration>)>`
+     - :meth:`- <-(<duration>)>`
      - :func:`decode-duration`
      - :func:`encode-year/month-duration`
 
-   See also
+   :seealso:
 
-   - :class:`<day/time-duration>`
-   - :class:`<duration>`
+     - :class:`<day/time-duration>`
+     - :class:`<duration>`

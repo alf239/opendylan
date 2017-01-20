@@ -8,6 +8,7 @@ extern void dylan_stack_overflow_handler(PVOID base_address, int size, DWORD pro
 extern void dylan_integer_overflow_handler();
 extern void dylan_integer_divide_0_handler();
 extern void dylan_float_divide_0_handler();
+extern void dylan_float_invalid_handler();
 extern void dylan_float_overflow_handler();
 extern void dylan_float_underflow_handler();
 
@@ -85,7 +86,7 @@ LONG DylanExceptionFilter (LPEXCEPTION_POINTERS info)
         // calling the Dylan handler) we destructively modify the execution
         // context, so that when Windows continues from the exception, it
         // actually continues in the Dylan handler calling code instead.
-        // This handler will never return - instead it will ultimatly NLX
+        // This handler will never return - instead it will ultimately NLX
 
         info->ContextRecord->Eip = (unsigned long) &call_dylan_stack_overflow_handler;
         return(EXCEPTION_CONTINUE_EXECUTION);
@@ -103,6 +104,10 @@ LONG DylanExceptionFilter (LPEXCEPTION_POINTERS info)
     }
   case EXCEPTION_FLT_DIVIDE_BY_ZERO:
     { info->ContextRecord->Eip = (unsigned long) &dylan_float_divide_0_handler;
+      return(EXCEPTION_CONTINUE_EXECUTION);
+    }
+  case EXCEPTION_FLT_INVALID_OPERATION:
+    { info->ContextRecord->Eip = (unsigned long) &dylan_float_invalid_handler;
       return(EXCEPTION_CONTINUE_EXECUTION);
     }
   case EXCEPTION_FLT_OVERFLOW:

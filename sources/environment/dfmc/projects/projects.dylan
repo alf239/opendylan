@@ -178,7 +178,6 @@ end function dfmc-project-library-name;
 
 define sealed sideways method project-stage-text
     (project :: <project>, #rest args) => ()
-  let name = dfmc-project-library-name(project);
   let stage = apply(format-to-string, args);
   *progress-section* := stage;
   *progress-message* := $default-progress-message;
@@ -308,6 +307,8 @@ end macro with-project-location-handler;
 define sealed method build-project
     (project-object :: <dfmc-project-object>,
      #key clean? = #f, link? = #t, release? = #f, output = #[],
+          abort-on-all-warnings? = #f,
+          abort-on-serious-warnings? = #f,
           warning-callback :: false-or(<function>),
           progress-callback :: false-or(<function>), error-handler,
           save-databases? = #f,
@@ -331,8 +332,8 @@ define sealed method build-project
                 update-libraries(project,
                                  force?: clean?,
                                  save?:  save-databases?,
-                                 abort-on-all-warnings?:     #f,
-                                 abort-on-serious-warnings?: #f,
+                                 abort-on-all-warnings?: abort-on-all-warnings?,
+                                 abort-on-serious-warnings?: abort-on-serious-warnings?,
                                  assembler-output?: assembler-output?,
                                  dfm-output?:       dfm-output?,
                                  harp-output?:      harp-output?)
@@ -341,8 +342,8 @@ define sealed method build-project
                                 force-parse?:   clean?,
                                 force-compile?: clean?,
                                 save?: save-databases?,
-                                abort-on-all-warnings?:     #f,
-                                abort-on-serious-warnings?: #f,
+                                abort-on-all-warnings?: abort-on-all-warnings?,
+                                abort-on-serious-warnings?: abort-on-serious-warnings?,
                                 assembler-output?: assembler-output?,
                                 dfm-output?:       dfm-output?,
                                 harp-output?:      harp-output?)
@@ -536,7 +537,7 @@ define sealed method link-project
      #key progress-callback, error-handler, process-subprojects? = #t,
           build-script, target, force?, unify?, release?, messages)
  => ()
-  ignore(progress-callback, messages);
+  ignore(messages);
   let project = project-object.ensure-project-proxy;
   let name = dfmc-project-library-name(project);
   with-progress-reporting (project-object, progress-callback,
@@ -563,16 +564,6 @@ define sealed method link-project
     end
   end
 end method link-project;
-
-define sealed sideways method env/default-build-script
-    () => (build-script :: <file-locator>)
-  default-build-script()
-end method env/default-build-script;
-
-define sealed sideways method env/default-build-script-setter
-    (build-script :: <file-locator>) => (build-script :: <file-locator>);
-  default-build-script() := build-script
-end method env/default-build-script-setter;
 
 define sealed method env/close-project
     (project-object :: <dfmc-project-object>) => ()
@@ -888,6 +879,23 @@ define sealed method env/project-compiler-back-end-setter
   back-end
 end method env/project-compiler-back-end-setter;
 
+define sealed method env/project-executable-name
+    (project :: <dfmc-project-object>)
+ => (executable-name :: <string>)
+  project-executable-name(project.ensure-project-proxy)
+end method env/project-executable-name;
+
+define sealed method env/project-executable-name-setter
+    (executable-name :: <string>, project :: <dfmc-project-object>)
+ => (executable-name :: <string>)
+  let proxy = project.ensure-project-proxy;
+  unless (proxy.project-executable-name == executable-name)
+    proxy.project-executable-name := executable-name;
+    save-project(proxy)
+  end;
+  executable-name
+end method env/project-executable-name-setter;
+
 define sealed method env/project-target-type
     (project :: <dfmc-project-object>)
  => (target-type :: env/<project-target-type>)
@@ -1103,7 +1111,6 @@ define sealed method open-project-compiler-database
      #key warning-callback :: false-or(<function>),
           error-handler :: false-or(<function>))
  => (database :: false-or(<compiler-database>))
-  let opened? = project-object.project-proxy ~== #f;
   let old-warning-callback = *warning-callback*;
   block ()
     *warning-callback* := warning-callback;

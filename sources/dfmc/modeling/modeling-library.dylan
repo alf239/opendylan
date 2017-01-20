@@ -35,12 +35,12 @@ define macro module-with-models-definer
  binding:
   { slot ?:name }  => { ?name, ?name ## "-setter" }
   { &slot ?:name } => { // "&" ## ?name, "&" ## ?name ## "-setter",
-			"^" ## ?name, "^" ## ?name ## "-setter" }
+                        "^" ## ?name, "^" ## ?name ## "-setter" }
   { &getter ?:name } => { // "&" ## ?name
-			"^" ## ?name }
+                        "^" ## ?name }
   { &setter ?:name } => { // "&" ## ?name ## "-setter",
-			 "^" ## ?name ## "-setter" }
-  { &name ?:name } => { // "&" ## ?name, 
+                         "^" ## ?name ## "-setter" }
+  { &name ?:name } => { // "&" ## ?name,
                         "^" ## ?name }
   { slot-offset ?:name }  => { ?name ## "-runtime-slot-offset" }
   { ?:name }       => { ?name }
@@ -50,7 +50,7 @@ end macro module-with-models-definer;
 define module make/initialize-aliases
   use dylan,
     rename: { make => ^make,
-	      initialize => ^initialize },
+              initialize => ^initialize },
     export: all;
 end module;
 
@@ -60,8 +60,8 @@ define module-with-models dfmc-modeling
     import: { $machine-word-size, immutable-vector };
   use machine-word-lowlevel,
     import: { coerce-integer-to-machine-word,
-	      machine-word-logior,
-	      machine-word-unsigned-shift-left };
+              machine-word-logior,
+              machine-word-unsigned-shift-left };
   use generic-arithmetic,
     prefix: "generic/";
   use dfmc-common;
@@ -71,7 +71,7 @@ define module-with-models dfmc-modeling
   use dfmc-macro-expander;
   use dfmc-definitions;
   use make/initialize-aliases,
-    export: { ^make, 
+    export: { ^make,
               ^initialize };
 
   export
@@ -96,14 +96,6 @@ define module-with-models dfmc-modeling
     ^slot-value-setter, ^repeated-slot-value-setter;
   export
     direct-object?; // direct-object-value;
-
-  export
-//    <&values>,
-    <&static-values>,
-//      &values,
-//      &values-element,
-      &values-model-objects;
-//    <&dynamic-values>;
 
   export
     $dylan-system-subtype-bit-type-names;
@@ -176,7 +168,7 @@ define module-with-models dfmc-modeling
       ^signature-number-values,
       ^pack-signature-properties,
       ^signature-number-keys,
-      
+
     <&domain>,
       ^domain-library,
       &slot domain-next,
@@ -223,9 +215,9 @@ define module-with-models dfmc-modeling
       iep,
       slot xep,
       slot keyword-specifiers,
-      slot parameters-dynamic-extent, 
+      slot parameters-dynamic-extent,
       slot lambda-top-level?,
-      slot lambda-heap, private-lambda-heap,	   // HACK: FOR DFM-COPIER
+      slot lambda-heap, private-lambda-heap,           // HACK: FOR DFM-COPIER
       slot environment,
       slot parameters,
       slot body,
@@ -270,6 +262,7 @@ define module-with-models dfmc-modeling
 //    <&incremental-setter-method>,
 //    <&incremental-repeated-getter-method>,
 //    <&incremental-repeated-setter-method>,
+    <dynamic-extent>,
     <&generic-function>,
       &slot %gf-cache,
       ^generic-function-methods,
@@ -278,7 +271,7 @@ define module-with-models dfmc-modeling
       slot  %generic-function-methods-initialized?,
       slot  %generic-function-domains,
       slot  %generic-function-domains-initialized?,
-      slot  parameters-dynamic-extent, 
+      slot  parameters-dynamic-extent,
       ^generic-function-sealed?,
 //      slot ^generic-function-compiler-open?,
       slot ^generic-function-cache-info,
@@ -365,7 +358,6 @@ define module-with-models dfmc-modeling
       ^least-primary-superclass,
       ^iclass-number-to-key,
     <&value-class>,
-      &slot value-class-comparitor,
     <&function-class>,
     <&virtual-class>,
     <&slot-initial-value-descriptor>,
@@ -416,11 +408,13 @@ define module-with-models dfmc-modeling
       &getter limited-collection-size,
       &getter limited-collection-dimensions,
       lookup-any-limited-collection-element-type,
+    <&limited-function>,
+      &getter limited-function-signature,
     <&limited-integer>,
       ^limited-integer,
       &getter limited-integer-min,
       &getter limited-integer-max,
-    <&singleton>, 
+    <&singleton>,
       &getter singleton-object,
       ^singleton,
     <&union>,
@@ -506,40 +500,37 @@ define module-with-models dfmc-modeling
 //    engine-node$k-reserved-discriminator-s,
 //    engine-node$k-reserved-discriminator-t,
 //    engine-node$k-reserved-discriminator-u,
-//    properties$m-entry-type,
+    properties$m-entry-type,
 //    properties$s-entry-type,
-//    properties$v-entry-type,
+    properties$v-entry-type,
 //    properties$v-data,
 //    engine-node$v-data-start,
-//    smen$v-nrequired,
-//    smen$s-nrequired,
-//    smen$m-nrequired,
-//    smen$v-restp,
-//    smen$m-restp,
+    smen$v-nrequired,
+    smen$s-nrequired,
+    smen$m-nrequired,
+    smen$v-restp,
+    smen$m-restp,
 //    smen$v-data-start,
 
     $simple-typechecked-cache-arguments-limit,
     stchen$v-checkedmask,
 //    stchen$s-checkedmask,
     stchen$m-checkedmask,
-    $partial-dispatch-arguments-limit,
-    pdisp$v-typemask,
-    pdisp$s-typemask,
-    pdisp$m-typemask;
 
-//    discriminator$v-argnum,
-//    discriminator$s-argnum,
-//    discriminator$m-argnum,
-//    discriminator$v-nrequired,
-//    discriminator$s-nrequired,
-//    discriminator$m-nrequired,
+    discriminator$v-argnum,
+    discriminator$s-argnum,
+    discriminator$m-argnum,
+    discriminator$v-nrequired,
+    discriminator$s-nrequired,
+    discriminator$m-nrequired,
 //    discriminator$v-restp,
-//    discriminator$m-restp,
-//    discriminator$v-data-start;
+    discriminator$m-restp,
+//    discriminator$v-data-start,
+    slotdiscrim$v-offset;
 
-//  export
-//    $engine-node-entry-point-names,
-//    $engine-node-callback-names;
+  export
+    $engine-node-entry-point-names,
+    $engine-node-callback-names;
   export
     <&engine-node-ep>,
       ^engine-node,
@@ -568,9 +559,6 @@ define module-with-models dfmc-modeling
       &slot cache-header-engine-node-parent,
     <&simple-typechecked-cache-header-engine-node>,
       ^stchen-checkedmask,
-    <&partial-dispatch-cache-header-engine-node>,
-      &slot partial-dispatch-type,
-      ^pdisp-type-mask,
     <&simple-call-site-cache-header-engine-node>,
     <&profiling-call-site-cache-header-engine-node>,
       &slot profiling-call-site-cache-header-engine-node-count-1,
@@ -636,9 +624,7 @@ define module-with-models dfmc-modeling
 //      &slot gf-cache-info-users,
 //    <&simple-typechecked-gf-cache-info>,
 //      &slot simple-typechecked-gf-cache-info-entries,
-//      &slot simple-typechecked-gf-cache-info-argmask,
-//    <&partial-dispatch-gf-cache-info>,
-//      &slot partial-dispatch-gf-cache-info-caches;
+//      &slot simple-typechecked-gf-cache-info-argmask;
 
   export
     method-number, domain-number;
@@ -677,7 +663,7 @@ define module-with-models dfmc-modeling
       raw-c-unsigned-char, // <&raw-c-unsigned-char>,
       raw-c-signed-short, // <&raw-c-signed-short>,
       raw-c-unsigned-short, // <&raw-c-unsigned-short>,
-      raw-c-signed-int, // <&raw-c-signed-int>,
+      raw-c-signed-int, <&raw-c-signed-int>,
       raw-c-unsigned-int, // <&raw-c-unsigned-int>,
       raw-c-signed-long, // <&raw-c-signed-long>,
       raw-c-unsigned-long, // <&raw-c-unsigned-long>,
@@ -687,7 +673,8 @@ define module-with-models dfmc-modeling
       raw-c-double, // <&raw-c-double>,
       raw-c-long-double, // <&raw-c-long-double>,
       raw-c-void, // <&raw-c-void>,
-      raw-c-pointer, // <&raw-c-pointer>,
+      raw-c-pointer, <&raw-c-pointer>,
+      raw-c-size-t, raw-c-ssize-t,
       raw-boolean, <&raw-boolean>,
       raw-byte-character, <&raw-byte-character>, // TODO: OBSOLETE
       raw-unicode-character, // <&raw-unicode-character>, // TODO: OBSOLETE ???
@@ -712,7 +699,7 @@ define module-with-models dfmc-modeling
 
   // raw struct/union types
 
-  export 
+  export
     <&raw-aggregate-type>,
     <&raw-struct-type>,
     <&raw-union-type>,
@@ -722,6 +709,7 @@ define module-with-models dfmc-modeling
     <raw-aggregate-ordinary-member>,
     <raw-aggregate-array-member>,
     <raw-struct-bitfield-member>,
+      member-name,
       member-raw-type,
       member-bitfield-width,
       member-array-length,
@@ -735,6 +723,7 @@ define module-with-models dfmc-modeling
     <&primitive>,
       primitive-value,
       primitive-signature,
+      primitive-signature-spec,
       primitive-descriptor-getter-name,
       primitive-side-effecting?,
       primitive-dynamic-extent?,
@@ -749,13 +738,15 @@ define module-with-models dfmc-modeling
   export
     <&c-function>,
     <&c-callable-function>,
+      c-function-name,
       c-modifiers,
       c-signature,
       c-signature-setter,
       alternate-name,
     <&c-variable>,
       dll-import?,
-      dll-export?;
+      dll-export?,
+    <&objc-msgsend>;
 
   // collections
 
@@ -782,7 +773,7 @@ define module-with-models dfmc-modeling
 //      &slot string-element,
       frame-size,
 //      &empty-byte-string,
-//    <&symbol>, 
+//    <&symbol>,
 //      &slot symbol-name,
       ^symbol?,
     <uninterned-symbol>,
@@ -794,7 +785,7 @@ define module-with-models dfmc-modeling
       expander-macro-object,
     <unknown>;
 
-  export 
+  export
     <&expander>;
 
   export
@@ -804,12 +795,5 @@ define module-with-models dfmc-modeling
     compiler-class-definer,
     model-class-definer,
     compiler-class-accessors-definer;
-
-  export
-    current-css,
-    *current-css*,
-    with-current-css,
-    get-default-call-site-summary,
-    <call-site-summary>;
 
 end module-with-models dfmc-modeling;

@@ -64,6 +64,16 @@ end class <simple-condition>;
 
 define constant <format-string-condition> = <simple-condition>;
 
+// debug-message and its C primitive require the arguments as a vector.
+define function condition-format-arguments-vector
+    (condition :: <simple-condition>) => (vector :: <simple-object-vector>)
+  as(<simple-object-vector>, condition.condition-format-arguments)
+end function;
+
+// Ignore this since we don't use it outside of the runtime and we don't
+// export it.
+ignore(condition-format-arguments-vector);
+
 define method signal (condition :: <condition>, #rest noise)
   unless (empty?(noise))
     error("Can only supply format arguments when supplying a format string.")
@@ -72,17 +82,18 @@ define method signal (condition :: <condition>, #rest noise)
   iterate search (handlers = *current-handlers*)
     if (empty?(handlers))
       if (done-last?)
-	default-handler(condition)
+        default-handler(condition)
       else
-	done-last? := #t;
-	search(*last-handlers*)
+        done-last? := #t;
+        search(*last-handlers*)
       end if;
     else
       let _handler = head(handlers);
       let remaining = tail(handlers);
       if (handler-matches?(_handler, condition))
-        handler-function(_handler)
-	  (condition, method () search(remaining) end method)
+        invoke-handler(_handler,
+                       condition,
+                       method () search(remaining) end method)
       else
         search(remaining)
       end if
@@ -98,6 +109,13 @@ define method handler-matches? (_handler :: <handler>, condition :: <condition>)
       ~test | test(condition)
     end
 end method handler-matches?;
+
+// This is useful for setting a breakpoint within the runtime.
+define not-inline method invoke-handler
+    (_handler :: <handler>, condition :: <condition>,
+     continue-search :: <function>)
+  handler-function(_handler)(condition, continue-search)
+end method invoke-handler;
 
 define method error (condition :: <condition>, #rest noise)
  => (will-never-return :: <bottom>)
@@ -160,15 +178,15 @@ end method signal;
 define macro last-handler-definer
   { define last-handler (?condition:expression, ?args:*) = ?handler:expression }
     => { *last-handler* := #f;
-	 add-last-handler(make-last-handler(?condition, ?handler, ?args)) }
+         add-last-handler(make-last-handler(?condition, ?handler, ?args)) }
 
   { define last-handler ?condition:* = ?handler:expression }
     => { *last-handler* := #f;
-	 add-last-handler(make-last-handler(?condition, ?handler)) }
+         add-last-handler(make-last-handler(?condition, ?handler)) }
 
   { define last-handler }
     => { *last-handler* := #f;
-	 remove-last-handler() }
+         remove-last-handler() }
 
   condition: // hack to avoid eating "=" and RHS
   { ?expression:expression }
@@ -181,10 +199,10 @@ define function default-last-handler-test
   ~inside-debugger?()
 end function default-last-handler-test;
 
-define function make-last-handler 
-    (type, function, 
+define function make-last-handler
+    (type, function,
      #key test = default-last-handler-test, init-arguments)
   make-handler(type, function,
-	       test: test,
-	       init-arguments: init-arguments)
+               test: test,
+               init-arguments: init-arguments)
 end function make-last-handler;

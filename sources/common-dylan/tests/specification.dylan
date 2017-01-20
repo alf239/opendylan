@@ -6,29 +6,13 @@ Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
-define library-spec common-dylan ()
-  module common-extensions;
-  module streams-protocol;
-  module locators-protocol;
-  module finalization;
-  module simple-io;
-  module simple-random;
-  module simple-profiling;
-  module transcendentals;
-  module byte-vector;
-  module machine-words;
-  module threads;
-  suite common-dylan-regressions;
-  suite threads-test-suite; //---*** NOTE: Should be changed to module test
-  suite test-stream-suite;
-end library-spec common-dylan;
-
 define module-spec common-extensions ()
   // Numerics
   function integer-length (<integer>) => (<integer>);
 
   function decode-float (<float>) => (<float>, <integer>, <float>);
   function scale-float (<float>, <integer>) => (<float>);
+  function classify-float (<float>) => (<float-classification>);
   function float-radix (<float>) => (<integer>);
   function float-digits (<float>) => (<integer>);
   function float-precision (<float>) => (<integer>);
@@ -50,12 +34,11 @@ define module-spec common-extensions ()
   function unsupplied () => (<object>);
   function unsupplied? (<object>) => (<boolean>);
   function supplied? (<object>) => (<boolean>);
-
   constant $unfound    :: <object>;
   function unfound () => (<object>);
   function unfound? (<object>) => (<boolean>);
   function found? (<object>) => (<boolean>);
-  
+
   // Collections
   sealed instantiable class <object-deque> (<deque>);
   open abstract class <stretchy-sequence> (<stretchy-collection>, <sequence>);
@@ -71,7 +54,6 @@ define module-spec common-extensions ()
    => (<sequence>);
   function join
     (<sequence>, <sequence>, #"key" #"key", #"conjunction") => (<sequence>);
-
   open generic-function remove-all-keys! (<mutable-collection>) => ();
   open generic-function difference
       (<sequence>, <sequence>, #"key", #"test") => (<sequence>);
@@ -86,9 +68,10 @@ define module-spec common-extensions ()
   open generic-function condition-to-string (<condition>) => (<string>);
   open abstract class <arithmetic-error> (<error>);
   sealed instantiable class <division-by-zero-error> (<arithmetic-error>);
+  sealed instantiable class <arithmetic-domain-error> (<arithmetic-error>);
   sealed instantiable class <arithmetic-overflow-error> (<arithmetic-error>);
   sealed instantiable class <arithmetic-underflow-error> (<arithmetic-error>);
-  
+
   // Assertions & Debugging
   function debug-message (<string>, #"rest") => ();
   macro-test assert-test;
@@ -102,17 +85,15 @@ define module-spec common-extensions ()
   // Ignoring
   function ignorable (#"rest") => ();
   function ignore (#"rest") => ();
-  
+
   // Formatting
   function float-to-string (<float>) => (<string>);
   function integer-to-string (<integer>, #"key", #"base") => (<string>);
   open generic-function number-to-string (<number>) => (<string>);
-  function string-to-integer 
+  function string-to-integer
       (<string>, #"key", #"base", #"start", #"end", #"default")
    => (<integer>, <integer>);
 
-  function format-to-string (<string>, #"rest") => (<string>);
-  
   // Control constructs
   macro-test iterate-test; // the macro iterate
   macro-test when-test;    // the macro when (which we're discussing)
@@ -150,7 +131,7 @@ define module-spec streams-protocol ()
   open generic-function read (<stream>, <integer>, #"key", #"on-end-of-stream")
     => (<object>);
   open generic-function read-into! (<stream>, <integer>, <mutable-sequence>,
-				    #"key", #"start", #"on-end-of-stream")
+                                    #"key", #"start", #"on-end-of-stream")
     => (<object>);
   open generic-function peek (<stream>, #"key", #"on-end-of-stream")
     => (<object>);
@@ -210,11 +191,12 @@ define module-spec finalization ()
   open generic-function finalize (<object>) => ();
   function finalize-when-unreachable (<object>) => (<object>);
 end module-spec finalization;
-  
-define module-spec simple-io ()
+
+define module-spec simple-format ()
   function format-out (<string>, #"rest") => ();
-end module-spec simple-io;
-  
+  function format-to-string (<string>, #"rest") => (<string>);
+end module-spec simple-format;
+
 define module-spec simple-random ()
   sealed instantiable class <random> (<object>);
   function random (<integer>, #"key", #"random") => (<integer>);
@@ -222,8 +204,10 @@ end module-spec simple-random;
 
 define module-spec simple-profiling ()
   sealed instantiable class <profiling-state> (<table>);
+  function start-profiling(<sequence>) => (<profiling-state>);
   open generic-function start-profiling-type
     (<profiling-state>, <symbol>) => ();
+  function stop-profiling(<profiling-state>, <sequence>) => ();
   open generic-function stop-profiling-type
     (<profiling-state>, <symbol>) => ();
   open generic-function profiling-type-result
@@ -330,7 +314,11 @@ define module-spec transcendentals ()
 // given in radians.
 
 // The floating point precision of the result is given by the precision
-// of _x_.  The result will be a <single-float> if _x_ is an integer.
+// of _x_.
+
+  open generic-function sincos(<number>) => (<number>, <number>);
+
+// As above, but returns both the sine and cosine of _x_.
 
   open generic-function asin(<number>) => (<number>); // -1 <= y <= +1
   open generic-function acos(<number>) => (<number>); // -1 <= y <= +1
@@ -342,7 +330,7 @@ define module-spec transcendentals ()
 // in the range [-1, +1], an error is signalled.
 
 // The floating point precision of the result is given by the precision
-// of _y_.  The result will be a <single-float> if _y_ is an integer.
+// of _y_.
 
   open generic-function sinh (<number>) => (<number>);
   open generic-function cosh (<number>) => (<number>);
@@ -352,7 +340,7 @@ define module-spec transcendentals ()
 // of _x_, respectively.
 
 // The floating point precision of the result is given by the precision
-// of _x_.  The result will be a <single-float> if _x_ is an integer.
+// of _x_.
 
   open generic-function asinh (<number>) => (<number>);
   open generic-function acosh (<number>) => (<number>);
@@ -362,8 +350,14 @@ define module-spec transcendentals ()
 // arc tangent of _y_, respectively.
 
 // The floating point precision of the result is given by the precision
-// of _y_.  The result will be a <single-float> if _y_ is an integer.
+// of _y_.
 
+  open generic-function hypot (<number>, <number>) => (<number>);
+
+// Returns the Euclidian distance.
+
+// The floating point precision of the result is given by the precision
+// of _x_.
 
   open generic-function log (<number>) => (<number>); //  x > 0
 
@@ -371,7 +365,7 @@ define module-spec transcendentals ()
 // error is signalled.
 
 // The floating point precision of the result is given by the precision
-// of _x_.  The result will be a <single-float> if _x_ is an integer.
+// of _x_.
 
   open generic-function exp (<number>) => (<number>);
 
@@ -387,8 +381,14 @@ define module-spec transcendentals ()
 // error is signalled.
 
 // The floating point precision of the result is given by the precision
-// of _x_.  The result will be a <single-float> if _x_ is an integer.
+// of _x_.
 
+
+  function ilog2 (<integer>) => (<integer>);
+  // x > 0
+
+// Returns the logarithm of _x_ in base _2_ as an integer.  If _x_ <= 0, an
+// error is signalled.
 
   open generic-function \^ (<number>, <number>) => (<number>);
 
@@ -397,10 +397,10 @@ define module-spec transcendentals ()
 // an integer, an error is signalled.
 
 // The floating point precision of the result is given by the precision
-// of _b_.  The result will be a <single-float> if _b_ is an integer.
+// of _b_.
 
 
-//  open 
+//  open
 //    generic-function \^ (b :: <integer>, x :: <integer>) => (y :: <integer>);
 
 // Returns an integer result giving _b_ raised to the power _x_.  If _b_
@@ -413,7 +413,7 @@ define module-spec transcendentals ()
 // Returns the square root of _x_.  If _x_ < 0, an error is signalled.
 
 // The floating point precision of the result is given by the precision
-// of _x_.  The result will be a <single-float> if _x_ is an integer.
+// of _x_.
 
   function isqrt (<integer>) => (<integer>); // x >= 0
 
@@ -439,10 +439,12 @@ define module-spec threads ()
   constant $interactive-priority :: <object>;
   constant $high-priority :: <object>;
   function thread-name (<thread>) => (false-or(<string>));
+  function thread-id (<thread>) => (<integer>);
   function join-thread (<thread>, #"rest") => (<thread>, #"rest");
   class <duplicate-join-error> (<thread-error>);
   function thread-yield () => ();
   function current-thread () => (<thread>);
+  function current-thread-id () => (<integer>);
 
   // Synchronization protocol
   open abstract class <synchronization> (<object>);
@@ -466,7 +468,7 @@ define module-spec threads ()
 
   // Recursive locks
   open abstract instantiable primary class <recursive-lock> (<exclusive-lock>);
-  
+
   // Simple locks
   open abstract instantiable primary class <simple-lock> (<exclusive-lock>);
 
@@ -491,3 +493,21 @@ define module-spec threads ()
   macro-test atomic-decrement!-test;
   macro-test atomic-increment!-test;
 end module-spec threads;
+
+define library-spec common-dylan ()
+  module common-extensions;
+  module streams-protocol;
+  module locators-protocol;
+  module finalization;
+  module simple-format;
+  module simple-random;
+  module simple-profiling;
+  module transcendentals;
+  module byte-vector;
+  module machine-words;
+  module threads;
+  suite common-dylan-regressions;
+  suite threads-test-suite; //---*** NOTE: Should be changed to module test
+  suite test-stream-suite;
+end library-spec common-dylan;
+

@@ -12,7 +12,7 @@ define module environment-imports
   use simple-debugging, import: { debug-out }, export: all;
   use common-dylan,
     exclude: { slot-setter, slot-getter, slot-type, slot-allocation,
-	       range-by, range-to,
+               range-by, range-to,
                method-specializers,
                application-filename, application-arguments,
                format-to-string },
@@ -24,8 +24,8 @@ define module environment-imports
   use file-system, export: all;
   use operating-system,
     rename: { application-filename => os/application-filename,
-	      application-arguments => os/application-arguments,
-	      run-application => os/run-application },
+              application-arguments => os/application-arguments,
+              run-application => os/run-application },
     export: all;
   use channels, export: all;
   use settings, export: all;
@@ -36,7 +36,7 @@ define module environment-imports
   use collectors, export: all;
   use machine-words,
     import: { u%+ => mw/+,
-	      u%- => mw/- },
+              u%- => mw/- },
     export: all;
 
   use memory-manager,
@@ -51,6 +51,8 @@ end module environment-imports;
 
 define module environment-protocols
   use environment-imports;
+  use coloring-stream;
+  use print;
 
   // Server objects
   export <server>,
@@ -139,7 +141,7 @@ define module environment-protocols
          indexed-address,
          address-read-memory-contents,
          address-read-application-object;
-         
+
   // Register objects
   export <register-category>,
          <register-object>,
@@ -287,7 +289,7 @@ define module environment-protocols
          project-breakpoints,
          source-location-breakpoints,
          environment-object-breakpoints,
-         breakpoint-object, breakpoint-object-setter, 
+         breakpoint-object, breakpoint-object-setter,
          breakpoint-project,
          breakpoint-stop?, breakpoint-stop?-setter,
          breakpoint-message?, breakpoint-message?-setter,
@@ -300,8 +302,8 @@ define module environment-protocols
          breakpoint-directions, breakpoint-directions-setter,
          note-breakpoint-state-changed,
          server-note-breakpoint-state-changed,
-	 \with-compressed-breakpoint-state-changes,
-	 do-with-compressed-breakpoint-state-changes,
+         \with-compressed-breakpoint-state-changes,
+         do-with-compressed-breakpoint-state-changes,
          note-breakpoint-state-changes-failed,
          trace-function;
 
@@ -354,7 +356,7 @@ define module environment-protocols
          do-active-processes,
          do-processes-on-machine; // Not for use by clients, and
                                   // not documented.
-  
+
   // Applications
   export <application>,
          <application-state>,
@@ -373,7 +375,6 @@ define module environment-protocols
          application-stopped?,
          application-closed?,
          application-tethered?,
-         application-debug?,
          application-pause-before-termination?,
          application-just-hit-breakpoint?,
          application-just-hit-dylan-error?,
@@ -389,7 +390,7 @@ define module environment-protocols
          run-application,
          initialize-application-client,
          attach-live-application,
-	 note-run-application-failed,
+         note-run-application-failed,
          stop-application,
          make-project-application,
          step-application-into,
@@ -403,7 +404,7 @@ define module environment-protocols
          ensure-database-proxy,
          find-compiler-database-proxy,
          compiler-database-proxy-id,
-	 invalidate-compiler-database;
+         invalidate-compiler-database;
 
   // Project objects
   export <project-object>,
@@ -467,6 +468,7 @@ define module environment-protocols
          project-server-path,
          project-compilation-mode, project-compilation-mode-setter,
          project-compiler-back-end, project-compiler-back-end-setter,
+         project-executable-name, project-executable-name-setter,
          project-target-type, project-target-type-setter,
          project-interface-type, project-interface-type-setter,
          project-base-address, project-base-address-setter,
@@ -483,7 +485,6 @@ define module environment-protocols
          parse-project-source,
          build-project,
          clean-project,
-         default-build-script, default-build-script-setter,
          link-project,
          note-user-project-opened;
 
@@ -515,7 +516,7 @@ define module environment-protocols
          project-bind-variable,
          fetch-interactor-return-values,
          dispose-interactor-return-values,
-	 transaction-id-source-record;
+         transaction-id-source-record;
 
   // Name objects
   export <name-object>,
@@ -671,8 +672,8 @@ define module environment-protocols
   // Profiling
   export <profile-state>,
          profiling-enabled?,
-         project-default-profile-options, 
-	   project-default-profile-options-setter,
+         project-default-profile-options,
+           project-default-profile-options-setter,
          project-last-profile,
          profile-snapshot-available-values,
          start-profiling-application,
@@ -685,13 +686,13 @@ define module environment-protocols
   export <profile-options>,
          <profile-sampling-options>,
          <profile-sampling-style>,
-	 <profile-snapshot-options>,
+         <profile-snapshot-options>,
          profile-sampling-options,
          profile-sampling-style,
          profile-sampling-rate,
          profile-snapshot-options,
-	 profile-snapshot-values,
-	 profile-snapshot-stack-depth;
+         profile-snapshot-values,
+         profile-snapshot-stack-depth;
 
   // Profile results
   export <application-profile>,

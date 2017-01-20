@@ -13,12 +13,13 @@ define library dfmc-c-linker
   use dfmc-c-back-end;
   use dfmc-linker;
   use dfmc-management;
+  use release-info;
 
   export dfmc-c-linker;
 end library;
 
 define module dfmc-c-linker
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use dfmc-core;
   use dfmc-imports;
   use dfmc-conversion;
@@ -26,5 +27,6 @@ define module dfmc-c-linker
   use dfmc-c-back-end;
   use dfmc-linker;
   use dfmc-management;
+  use release-info;
 end module;
 

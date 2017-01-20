@@ -8,12 +8,12 @@ The Win32 API Libraries
 Introduction
 ============
 
-This chapter is about Open Dylan’s set of Win32 API interface
+This chapter is about Open Dylan's set of Win32 API interface
 libraries. These libraries provide a low-level Dylan interface to the
 Win32 API in Microsoft Windows and Microsoft Windows NT.
 
 Each Dylan library is a simple translation of Win32 API header files
-into a set of interface declarations from Open Dylan’s C-FFI
+into a set of interface declarations from Open Dylan's C-FFI
 library. So you can write Windows applications in Dylan by using the
 same functions and types as you would in C, albeit with slightly
 modified names so that they conform to Dylan naming conventions and
@@ -21,7 +21,7 @@ requirements.
 
 The Open Dylan Win32 API has been constructed from several Dylan
 libraries. Win32 functionality is divided among these libraries,
-matching the contents of Microsoft’s DLLs, allowing Dylan applications
+matching the contents of Microsoft's DLLs, allowing Dylan applications
 to avoid references to DLLs they do not need to use.
 
 With the exception of changes necessitated by Dylan naming conventions
@@ -45,52 +45,52 @@ The libraries are:
 
 Win32-Common
 
--  Data types, constants (including error codes), and structure
-   accessors that are shared by the other modules.
--  Most of these come from the Win32 header files *WINDEF.H*, *WINNT.H*,
-   and *WINERROR.H*. (There is no DLL file supplied as standard with
-   Windows that corresponds with this library, because there are no C
-   functions in the header files to which it forms an interface.)
--  Win32-Kernel Non-GUI system services, as implemented in
-   *KERNEL32.DLL* and declared in *WINBASE.H* (files, pipes, semaphores,
-   atoms, time, and so on) and *WINNLS.H* (National Language Support).
--  *Note:* This library does not provide thread support. Thread support
-   is being handled at a higher level by Dylan’s own Threads library.
-   See the *Core Features* manual for details.
--  Win32-GDI Graphics Device Interface, drawing graphics and text, and
-   printing. Corresponds to *WINGDI.H* and *GDI32.DLL*.
--  Win32-User Other windowing functions. Corresponds to *WINUSER.H* and
-   *USER32.DLL*. Also contains :func:`win32-last-handler` which can handle
-   conditions and display them to the application user a simply Win32
-   dialog. That function is exported from the module
-   Win32-Default-Handler.
--  Win32-Version Version management. Corresponds to *WINVER.H* and
-   *VERSION.DLL*.
--  Win32-Dialog Common dialog boxes, as implemented in *COMDLG32.DLL*
-   and declared in *COMMDLG.H*, *DLGS.H*, and *CDERR.H*.
+- Data types, constants (including error codes), and structure
+  accessors that are shared by the other modules.
+- Most of these come from the Win32 header files *WINDEF.H*, *WINNT.H*,
+  and *WINERROR.H*. (There is no DLL file supplied as standard with
+  Windows that corresponds with this library, because there are no C
+  functions in the header files to which it forms an interface.)
+- Win32-Kernel Non-GUI system services, as implemented in
+  *KERNEL32.DLL* and declared in *WINBASE.H* (files, pipes, semaphores,
+  atoms, time, and so on) and *WINNLS.H* (National Language Support).
+- *Note:* This library does not provide thread support. Thread support
+  is being handled at a higher level by Dylan's own Threads library.
+  See the *Core Features* manual for details.
+- Win32-GDI Graphics Device Interface, drawing graphics and text, and
+  printing. Corresponds to *WINGDI.H* and *GDI32.DLL*.
+- Win32-User Other windowing functions. Corresponds to *WINUSER.H* and
+  *USER32.DLL*. Also contains :func:`win32-last-handler` which can handle
+  conditions and display them to the application user a simply Win32
+  dialog. That function is exported from the module
+  Win32-Default-Handler.
+- Win32-Version Version management. Corresponds to *WINVER.H* and
+  *VERSION.DLL*.
+- Win32-Dialog Common dialog boxes, as implemented in *COMDLG32.DLL*
+  and declared in *COMMDLG.H*, *DLGS.H*, and *CDERR.H*.
 
 Win32-Controls
 
--  “Common controls”, including list view, tree view, property sheets,
-   and so on (*COMMCTRL.H* and *COMCTL32.DLL*).
+- "Common controls", including list view, tree view, property sheets,
+  and so on (*COMMCTRL.H* and *COMCTL32.DLL*).
 
 Win32-Registry
 
--  Registry (*WINREG.H* and *ADVAPI32.DLL*).
+- Registry (*WINREG.H* and *ADVAPI32.DLL*).
 
 Win32-Rich-Edit
 
--  “Rich edit” controls (*RICHEDIT.H* and *RICHED32.DLL*).
--  Win32-DDE Dynamic Data Exchange (*DDE.H* and *DDEML.H*).
--  Win32-Shell API for querying and extending the Windows Shell.
-   Corresponds to *SHELLAPI.H* and *SHELL32.DLL*.
--  Winsock2 Corresponds to *WINSOCK2.H*, *QOS.H*, and *MSWSOCK.H*.
+- "Rich edit" controls (*RICHEDIT.H* and *RICHED32.DLL*).
+- Win32-DDE Dynamic Data Exchange (*DDE.H* and *DDEML.H*).
+- Win32-Shell API for querying and extending the Windows Shell.
+  Corresponds to *SHELLAPI.H* and *SHELL32.DLL*.
+- Winsock2 Corresponds to *WINSOCK2.H*, *QOS.H*, and *MSWSOCK.H*.
 
 Content and organization of the Win32 API libraries
 ===================================================
 
 The Open Dylan Win32 API libraries are modeled closely upon
-Microsoft’s Win32 C libraries. Most names available in the Dylan
+Microsoft's Win32 C libraries. Most names available in the Dylan
 libraries are the same as those available in the C libraries, though of
 course to conform to Dylan naming conventions and restrictions, many of
 the C names have been translated.
@@ -164,7 +164,7 @@ Mapping C types onto Dylan classes
 
 The multitude of integer data types in C code (``int``, ``long``,
 ``unsigned``, ``ULONG``, ``DWORD``, ``LRESULT``, and so on) are all
-designated as ``<integer>`` (or some appropriate subrange thereof) in
+designated as :drm:`<integer>` (or some appropriate subrange thereof) in
 Dylan method argument types. However, a ``<machine-word>`` needs to be
 used to represent values that do not fit in the signed 30-bit
 representation of an integer.
@@ -173,7 +173,7 @@ Names such as ``<DWORD>`` should not be used in application code because
 they refer to the FFI designation of the C value representation, not to
 a Dylan data type.
 
-The C types ``BOOL`` and ``BOOLEAN`` are both mapped to ``<boolean>`` in
+The C types ``BOOL`` and ``BOOLEAN`` are both mapped to :drm:`<boolean>` in
 Dylan. Use ``#t`` and ``#f`` instead of ``TRUE`` and ``FALSE``.
 
 .. note:: Beware that some functions, such as *TranslateAccelerator*,
@@ -183,16 +183,16 @@ Dylan. Use ``#t`` and ``#f`` instead of ``TRUE`` and ``FALSE``.
 
    Similarly, watch out for cases where C code passes ``TRUE`` or ``FALSE`` as
    an integer argument. To handle one common case, the Dylan implementation
-   of *MAKELPARAM* accepts either an ``<integer>`` or ``<boolean>`` as the
+   of *MAKELPARAM* accepts either an :drm:`<integer>` or :drm:`<boolean>` as the
    first argument.
 
 The C types ``CHAR``, ``WCHAR``, and ``TCHAR`` are all mapped to
-``<character>`` in Dylan. However, ``UCHAR`` is mapped to ``<integer>``
+:drm:`<character>` in Dylan. However, ``UCHAR`` is mapped to :drm:`<integer>`
 since that is how it is actually used.
 
 Most of the pointer types in the Windows API have several names; for
 example: *PRECT*, *NPRECT*, and *LPRECT*. In 16-bit code, these
-distinguished between “near” and “far” pointers, but in 32-bit code
+distinguished between "near" and "far" pointers, but in 32-bit code
 there is no difference. Rather than carry the duplicate names over into
 Dylan, it would be simpler to use only the basic *P...* prefix names.
 However, the *LP...* names seem to be used much more often, and hence
@@ -203,9 +203,9 @@ The *NP...* names are not defined in Dylan since they are not as
 commonly used.
 
 Values of type ``char*`` in C are represented as instances of class
-``<C-string>`` in Dylan. This is a subclass of ``<string>``, so all of the
+``<C-string>`` in Dylan. This is a subclass of :drm:`<string>`, so all of the
 normal string operations can be used directly. C function parameters of
-type *char\** will also accept an instance of ``<byte-string>`` ; a C
+type *char\** will also accept an instance of :drm:`<byte-string>` ; a C
 pointer is created to point to the characters of the Dylan data, so the
 string does not need to be copied. (Dylan byte strings maintain a NUL
 character at the end in order to allow them to be used directly by C.)
@@ -230,8 +230,8 @@ Consider a Windows function called *Foo* which is an alias for either
 *FooA* (an 8-bit character version) or *FooW* (a 16-bit character
 version). In Dylan, only the name *Foo* will be defined, but it will be
 a generic function with separate methods for arguments of types
-``<C-string>``, ``<C-unicode-string>``, ``<byte-string>`` or
-``<unicode-string>``. (Only the 8-bit versions will be supported in the
+``<C-string>``, ``<C-unicode-string>``, :drm:`<byte-string>` or
+:drm:`<unicode-string>`. (Only the 8-bit versions will be supported in the
 initial implementation, both because the compiler is not ready to handle
 Unicode and because it will not work on Windows 95.)
 
@@ -316,7 +316,7 @@ is consistent with what ``<WNDPROC>`` requires. For example:
       ...
 
 Note that the *uParam* and *lParam* arguments might receive values of
-either type ``<integer>`` or ``<machine-word>``, so it may be best not to
+either type :drm:`<integer>` or ``<machine-word>``, so it may be best not to
 specialize them. Often these values are not used directly anyway, but
 are passed to other functions (such as *LOWORD* and *HIWORD*) which
 have methods for handling either representation.
@@ -324,7 +324,7 @@ have methods for handling either representation.
 The other types of function supported by ``define callback`` are dialog
 functions (``<DLGPROC>``) and dialog hooks (*<LP...HOOKPROC>*), both of
 which have the same argument types as a window function, but return a
-``<boolean>``. (The dialog hook functions are actually declared in
+:drm:`<boolean>`. (The dialog hook functions are actually declared in
 *COMMDLG.H* as returning a *UINT*, but the value is always supposed to
 be ``TRUE`` or ``FALSE``, so the Dylan callback interface has been
 implemented using ``BOOL`` instead.)
@@ -340,7 +340,7 @@ The Win32-Kernel library provides the following utility functions.
 
    :description:
 
-     The *error-code* is an instance of ``<integer>`` or ``<machine-word>`` (type
+     The *error-code* is an instance of :drm:`<integer>` or ``<machine-word>`` (type
      unioned).
 
      The *error-code* argument is either a Windows a Windows error code
@@ -402,7 +402,7 @@ Handling Dylan conditions in a Win32 application
 
 The Win32-User library exports from its Win32-Default-Handler module a
 handler utility function called :func:`win32-last-handler`, defined on
-objects of class ``<serious-condition>``.
+objects of class :drm:`<serious-condition>`.
 
 .. function:: win32-last-handler
    :library: win32-user
@@ -440,9 +440,11 @@ objects of class ``<serious-condition>``.
 
          define last-handler <serious-condition> = win32-last-handler;
 
-     See also *last-handler-definer* and *default-last-handler*, exported
-     from the Functional Dylan-Extensions library and module, in the
-     *Core Features* reference manual.
+     :seealso:
+
+       *last-handler-definer* and *default-last-handler*, exported
+       from the Functional Dylan-Extensions library and module, in the
+       *Core Features* reference manual.
 
 Dealing with the C function WinMain
 ===================================
@@ -468,7 +470,7 @@ Win32s as well as NT and Windows 95.
 
 The program can be terminated, with an exit code, by calling either the
 Win32 ``ExitProcess`` function or the ``exit-application`` function in
-Open Dylan’s System library. The latter method is preferred if the
+Open Dylan's System library. The latter method is preferred if the
 application might actually be run as part of another process.
 
 The start of an application program might look something like this:
@@ -507,25 +509,25 @@ Combining bit mask constants
 Where C code would use the *\|* operator to combine bit mask constants,
 Dylan code usually uses the *logior* function. However, a few such
 constants have values of type ``<machine-word>`` when they will not fit in
-a small integer, and *logior* only works on instances of ``<integer>``.
+a small integer, and *logior* only works on instances of :drm:`<integer>`.
 Because of this, the *win32-common* library exports a *%logior* function
 which is used like *logior* except that it accepts values of either type
-``<integer>`` or ``<machine-word>`` and returns a ``<machine-word>`` result.
+:drm:`<integer>` or ``<machine-word>`` and returns a ``<machine-word>`` result.
 It can be used in most places that accept a bit mask (C types *DWORD*,
 *ULONG*, *LPARAM*, and so on), but must be used if any of the
 arguments are a ``<machine-word>``. The contexts where this is likely to
 occur are:
 
--  Window style parameter of *CreateWindow ($WS-...)*
--  Flags value for *CreateFile* or *CreateNamedPipe* *($FILE-FLAG-...)*
--  *$LOCALE-NOUSEROVERRIDE* for *LCTYPE* parameters for *GetLocaleInfoA*
-   , *GetLocaleInfo*, and possibly others, or *dwFlags* parameter of
-   *GetTimeFormat*, *GetNumberFormat*, *GetCurrencyFormat*, or
-   *GetDateFormat*.
--  Mask and effects values in *CHARFORMAT* structure for “rich edit”
-   controls *($CFM-...* and *$CFE-...)*
--  Mask value in *PARAFORMAT* structure for “rich edit” controls
-    *($PFM-...)*
+- Window style parameter of *CreateWindow ($WS-...)*
+- Flags value for *CreateFile* or *CreateNamedPipe* *($FILE-FLAG-...)*
+- *$LOCALE-NOUSEROVERRIDE* for *LCTYPE* parameters for *GetLocaleInfoA*,
+  *GetLocaleInfo*, and possibly others, or *dwFlags* parameter of
+  *GetTimeFormat*, *GetNumberFormat*, *GetCurrencyFormat*, or
+  *GetDateFormat*.
+- Mask and effects values in *CHARFORMAT* structure for "rich edit"
+  controls *($CFM-...* and *$CFE-...)*
+- Mask value in *PARAFORMAT* structure for "rich edit" controls
+  *($PFM-...)*
 
 Other minor details
 ===================
@@ -535,7 +537,7 @@ The types ``<FARPROC>`` and ``<PROC>`` are defined as equivalent to
 to a routine taking a ``<FARPROC>`` without needing to do any type
 conversion like that needed in C.
 
-Type casts between handles and integers (``<integer>`` or
+Type casts between handles and integers (:drm:`<integer>` or
 ``<machine-word>``) can be done by using *as*. For example:
 
 .. code-block:: dylan

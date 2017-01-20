@@ -13,10 +13,10 @@ define library dfmc-environment-projects
   use file-source-records;
 
   use dfmc-browser-support;
-  use dfmc-conditions;	//---*** for the warning classes
+  use dfmc-conditions;        //---*** for the warning classes
   use build-system;
 
-  use dfmc-debug-back-end;		// Compiler print methods
+  use dfmc-debug-back-end;                // Compiler print methods
 
   use dfmc-environment-database;
 
@@ -28,18 +28,18 @@ define module dfmc-environment-projects
     exclude: { load-library };
   use environment-protocols,
     rename: { close-project => env/close-project,
-	      project-name => env/project-name,
-	      project-source-location => env/project-source-location,
+              project-name => env/project-name,
+              project-source-location => env/project-source-location,
               project-other-sources => env/project-other-sources,
-	      open-project => env/open-project,
+              open-project => env/open-project,
               save-project =>  env/save-project,
               save-project-database =>  env/save-project-database,
-	      default-build-script => env/default-build-script,
-	      default-build-script-setter => env/default-build-script-setter,
               project-compilation-mode => env/project-compilation-mode,
               project-compilation-mode-setter => env/project-compilation-mode-setter,
               project-compiler-back-end => env/project-compiler-back-end,
               project-compiler-back-end-setter => env/project-compiler-back-end-setter,
+              project-executable-name => env/project-executable-name,
+              project-executable-name-setter => env/project-executable-name-setter,
               project-target-type => env/project-target-type,
               <project-target-type> => env/<project-target-type>,
               project-target-type-setter => env/project-target-type-setter,
@@ -54,13 +54,12 @@ define module dfmc-environment-projects
               project-read-only? => env/project-read-only? };
   use dfmc-environment-database;
 
-  use project-manager-interface,
-    exclude: { build-project };
+  use project-manager-interface;
 
   use dfmc-derived-information,
     import: { project-library-definition,
-	      source-record-top-level-forms => dfmc/source-record-top-level-forms,
-	      source-record-dispatch-decisions => dfmc/source-record-dispatch-decisions,
+              source-record-top-level-forms => dfmc/source-record-top-level-forms,
+              source-record-dispatch-decisions => dfmc/source-record-dispatch-decisions,
               <source-form> };
   use dfmc-conditions,
     import: { <program-condition> };

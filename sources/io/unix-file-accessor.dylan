@@ -8,12 +8,14 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 // Native file accessor class for POSIX platforms
 
+define constant $preferred-buffer-size = 1024 * 16;
+
 define sealed class <native-file-accessor> (<external-file-accessor>)
   slot file-descriptor :: false-or(<integer>) = #f,
     init-keyword: file-descriptor:;
   slot file-position :: <integer> = 0,
     init-keyword: file-position:;
-  constant slot asynchronous? :: <boolean> = #f, 
+  constant slot asynchronous? :: <boolean> = #f,
     init-keyword: asynchronous?:;
   sealed slot accessor-positionable? :: <boolean> = #f;
   sealed slot accessor-preferred-buffer-size :: <integer> = 0;
@@ -24,7 +26,7 @@ ignore(asynchronous?);
 
 // An attempt at a portable flexible interface to OS read/write/seek
 // functionality.  Legal values for TYPE might include #"file", #"pipe",
-// #"tcp", #"udp".  Legal values for LOCATOR depend on TYPE.  
+// #"tcp", #"udp".  Legal values for LOCATOR depend on TYPE.
 define sideways method platform-accessor-class
     (type == #"file", locator)
  => (class :: singleton(<native-file-accessor>))
@@ -32,12 +34,19 @@ define sideways method platform-accessor-class
 end method platform-accessor-class;
 
 define method accessor-fd
-    (the-accessor :: <native-file-accessor>) 
+    (the-accessor :: <native-file-accessor>)
  => (the-fd :: false-or(<machine-word>))
   if (the-accessor.file-descriptor)
     as(<machine-word>, the-accessor.file-descriptor)
   end if
 end method;
+
+define method accessor-console?
+    (the-accessor :: <native-file-accessor>)
+ => (result :: <boolean>)
+  let fd = the-accessor.file-descriptor;
+  fd & unix-isatty(fd)
+end method accessor-console?;
 
 // Legal values for direction are #"input", #"output", #"input-output"
 // Legal values for if-exists are #"new-version", #"overwrite", #"replace",
@@ -54,8 +63,8 @@ define method accessor-open
        file-size: initial-file-size = #f, // :: false-or(<integer>)?
      #all-keys) => ()
   accessor.file-descriptor := initial-file-descriptor;
-  let (preferred-size, positionable?) = unix-fd-info(initial-file-descriptor);
-  accessor.accessor-preferred-buffer-size := preferred-size;
+  accessor.accessor-preferred-buffer-size := $preferred-buffer-size;
+  let positionable? = unix-fd-positionable?(initial-file-descriptor);
   accessor.accessor-positionable? := positionable?;
   if (positionable? & ~initial-file-position)
     accessor.file-position := unix-lseek(initial-file-descriptor, 0, $seek_cur);
@@ -107,13 +116,13 @@ define method accessor-position-setter
  => (position :: <integer>)
   let old-position = accessor.file-position;
   if (position ~= old-position)
-    let new-position = 
+    let new-position =
       unix-lseek(accessor.file-descriptor, position, $seek_set);
     if (position ~= new-position)
       if (new-position < 0)
-	unix-error("lseek");
+        unix-error("lseek");
       else
-	error("lseek seeked to wrong postion")
+        error("lseek seeked to wrong postion")
       end;
     else
       accessor.accessor-at-end? := #f;

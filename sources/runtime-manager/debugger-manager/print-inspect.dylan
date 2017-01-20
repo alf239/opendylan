@@ -151,22 +151,8 @@ define method classify-dylan-object
 	= select (tag)
 	    $dylan-tag-integer =>
 	      $integer-type;
-	    $dylan-tag-character =>
+	    $dylan-tag-character, $dylan-tag-unichar =>
 	      $character-type;
-	    $dylan-tag-boolean =>
-	      let sod = application.static-object-directory;
-	      if (sod.booleans-tagged?)
-		select (instance by \=)
-		  sod.canonical-false-object =>
-		    $boolean-false;
-		  sod.canonical-true-object =>
-		    $boolean-true;
-		  otherwise =>
-		    $unknown-type;
-		end select
-	      else
-		$unknown-type;
-	      end if;
 	    $dylan-tag-pointer =>
 	      let sod = application.static-object-directory;
 	      if (instance = sod.canonical-false-object)
@@ -2450,23 +2436,13 @@ define method dylan-object-class
       end unless;
       immediate? := #t;
 
-    $dylan-tag-character =>
+    $dylan-tag-character, $dylan-tag-unichar =>
       unless (browsable-only?)
         class-instance :=
           lookup-static-object(application, "<character>", "dylan");
       end unless;
       immediate? := #t;
 
-    $dylan-tag-boolean =>
-      let sod = application.static-object-directory;
-      if (sod.booleans-tagged?)
-        unless (browsable-only?)
-          class-instance :=
-            lookup-static-object(application, "<boolean>", "dylan");
-        end unless;
-        immediate? := #t;
-      end if;
-      
     $dylan-tag-pointer =>
       let (wrapper-instance, ok?) = 
         read-instance-header(application, instance);
@@ -2512,7 +2488,7 @@ define method dylan-object-immediate-value
       success? := #t;
       replica := tagged-remote-value-as-integer(instance);
 
-    $dylan-tag-character =>
+    $dylan-tag-character, $dylan-tag-unichar =>
       success? := #t;
       replica := tagged-remote-value-as-character(instance);
 

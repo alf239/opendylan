@@ -66,6 +66,9 @@ define module dfmc-reader
   export
     <reader-error>,
       <invalid-token>,
+        <integer-too-large>,
+        <character-code-too-large>,
+        <ratios-not-supported>,
       <invalid-end-of-input>,
       <parser-error>,
       <manual-parser-error>,
@@ -156,14 +159,19 @@ define module dfmc-reader
               <abstract-integer-fragment>,
                 <integer-fragment>,
                 <big-integer-fragment>,
+              <float-fragment>,
             <symbol-fragment>,
               <symbol-syntax-symbol-fragment>,
               <keyword-syntax-symbol-fragment>,
+            <character-fragment>,
             <string-fragment>,
             <boolean-fragment>,
               <true-fragment>,
               <false-fragment>,
+            <model-object-literal-fragment>,
           <list-fragment>, fragment-elements,
+            <improper-list-fragment>,
+            <proper-list-fragment>,
           <vector-fragment>,
         <macro-call-fragment>, fragment-macro, fragment-argument,
           <definition-fragment>, fragment-modifiers, fragment-define-word,
@@ -180,11 +188,16 @@ define module dfmc-reader
             fragment-body-fragment,
               <local-declaration-fragment>, fragment-list-fragment,
         <function-call-fragment>, fragment-function, fragment-arguments,
+          <prefix-call-fragment>,
+          <dot-call-fragment>,
+          <array-call-fragment>,
+          <binary-operator-call-fragment>,
+          <unary-operator-call-fragment>,
         <body-fragment>, body-fragment, fragment-constituents,
         <macro-definition-fragment>;
 
   export
-    <end-of-modifiers-marker>, end-of-modifiers-marker?;
+    <end-of-modifiers-marker>;
 
   export
     <fragment-copier>;
@@ -216,7 +229,7 @@ define module dfmc-reader
       <template-macro-call-fragment>;
 
   export
-    <template>, <template-closure>, template-fragments;
+    <template>, template-fragments;
 
   //// Fragment source location utilities.
 

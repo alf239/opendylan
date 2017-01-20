@@ -5,7 +5,7 @@ Author:       Andy Armstrong
 Executable:   DxCMNDYL
 Base-Address: 0x66DC0000
 RC-Files:     version.rc
-Target-Type:	dll
+Target-Type:  dll
 Files: library
        macros
        common-extensions
@@ -16,6 +16,8 @@ Files: library
        numerics
        format
        byte-vector
+       timers
+       profiling
        transcendentals
        machine-words/utilities
        machine-words/machine-word
@@ -27,6 +29,8 @@ Files: library
        machine-words/signal-overflow
        machine-words/double
        machine-words/unsigned-double
+C-Source-Files: timer_helpers.c
+C-Libraries:  $(libcmt)
 Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
               All rights reserved.
 License:      See License.txt in this distribution for details.

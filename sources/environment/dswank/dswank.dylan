@@ -33,7 +33,7 @@ define emacs-command emacs-rex (command, package, thread-id, request-id)
     let result = apply(function, command.tail);
     list(#":return", list(#":ok", result), request-id);
   exception(e :: <error>)
-    format(*standard-error*, "Received error during evaluation:\n%=\n", e);
+    format-err("Received error during evaluation:\n%=\n", e);
     //walk-stack();
     list(#":return", list(#":abort", format-to-string("%=", e)), request-id);
   end;
@@ -82,7 +82,7 @@ define swank-function list-all-package-names (t)
             end;
           end;
         end;
-  let regs = find-registries($machine-name, $os-name);
+  let regs = find-registries(as(<string>, target-platform-name()));
   let reg-paths = map(registry-location, regs);
   for (reg-path in reg-paths)
     if (file-exists?(reg-path))
@@ -118,10 +118,14 @@ define swank-function compile-file-for-emacs (filename, #rest foo)
       end;
     end;
   end;
-  run-compiler(*server*, concatenate("build ", *project*.project-name));
-  let notes = compiler-notes-for-emacs();
-  //result is output-pathname, notes, success/failure of compilation
-  list("pathname", notes, "T");
+  if (*project*)
+    run-compiler(*server*, concatenate("build ", *project*.project-name));
+    let notes = compiler-notes-for-emacs();
+    //result is output-pathname, notes, success/failure of compilation
+    list("pathname", notes, "T");
+  else
+    error("A project has not been set");
+  end;
 end;
 
 define swank-function compiler-notes-for-emacs ()
@@ -397,7 +401,7 @@ define function write-to-emacs (stream, s-expression)
   let newstream = make(<string-stream>, direction: #"output");
   print-s-expression(newstream, s-expression);
   let s-expression = stream-contents(newstream);
-  //format(*standard-error*, "write: %s\n", s-expression);
+  //format-err("write: %s\n", s-expression);
   let siz = integer-to-string(s-expression.size, base: 16, size: 6);
   format(stream, "%s%s", siz, s-expression);
 end;
@@ -424,9 +428,7 @@ define function main(args)
   local method open ()
           block ()
             let socket = make(<server-socket>, port: port);
-            format(*standard-output*,
-                   "Waiting for connection on port %d\n",
-                   port);
+            format-out("Waiting for connection on port %d\n", port);
             if (tmpfile)
               with-open-file (file = tmpfile, direction: #"output")
                 write(file, integer-to-string(port));
@@ -448,7 +450,7 @@ define function main(args)
   while(#t)
     let length = string-to-integer(read(stream, 6), base: 16);
     let line = read(stream, length);
-    format(*standard-error*, "read: %s\n", line);
+    format-err("read: %s\n", line);
     let expr = read-lisp(make(<string-stream>, direction: #"input", contents: line));
     let function = $emacs-commands[expr.head];
     let result = apply(function, expr.tail);

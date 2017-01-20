@@ -42,15 +42,15 @@ define function unix-read
   with-interrupt-repeat
     raw-as-integer
       (%call-c-function ("read")
-           (fd :: <raw-c-unsigned-int>, address :: <raw-pointer>, 
-            size :: <raw-c-unsigned-long>)
-        => (result :: <raw-c-signed-int>)
-         (integer-as-raw(fd), 
-	  primitive-cast-raw-as-pointer
-	    (primitive-machine-word-add
-	       (primitive-cast-pointer-as-raw
-		  (primitive-repeated-slot-as-raw(data, primitive-repeated-slot-offset(data))), 
-                primitive-cast-pointer-as-raw(integer-as-raw(offset)))), 
+           (fd :: <raw-c-unsigned-int>, address :: <raw-pointer>,
+            size :: <raw-c-size-t>)
+        => (result :: <raw-c-ssize-t>)
+         (integer-as-raw(fd),
+          primitive-cast-raw-as-pointer
+            (primitive-machine-word-add
+               (primitive-cast-pointer-as-raw
+                  (primitive-repeated-slot-as-raw(data, primitive-repeated-slot-offset(data))),
+                integer-as-raw(offset))),
           integer-as-raw(count))
        end)
   end
@@ -61,16 +61,16 @@ define function unix-write
   with-interrupt-repeat
     raw-as-integer
       (%call-c-function ("write")
-           (fd :: <raw-c-unsigned-int>, address :: <raw-pointer>, 
-            size :: <raw-c-unsigned-long>)
-        => (result :: <raw-c-signed-int>)
-         (integer-as-raw(fd), 
-	  primitive-cast-raw-as-pointer
-	    (primitive-machine-word-add
-	       (primitive-cast-pointer-as-raw
-		  (primitive-repeated-slot-as-raw(data, primitive-repeated-slot-offset(data))), 
-	        primitive-cast-pointer-as-raw(integer-as-raw(offset)))), 
-	  integer-as-raw(count))
+           (fd :: <raw-c-unsigned-int>, address :: <raw-pointer>,
+            size :: <raw-c-size-t>)
+        => (result :: <raw-c-ssize-t>)
+         (integer-as-raw(fd),
+          primitive-cast-raw-as-pointer
+            (primitive-machine-word-add
+               (primitive-cast-pointer-as-raw
+                  (primitive-repeated-slot-as-raw(data, primitive-repeated-slot-offset(data))),
+                integer-as-raw(offset))),
+          integer-as-raw(count))
        end)
   end
 end function unix-write;
@@ -79,8 +79,8 @@ define function unix-lseek
     (fd :: <integer>, position :: <integer>, mode :: <integer>) => (position :: <integer>)
   raw-as-integer
     (%call-c-function ("io_lseek")
-       (fd :: <raw-c-signed-int>, position :: <raw-c-signed-long>, 
-        mode :: <raw-c-signed-int>) 
+       (fd :: <raw-c-signed-int>, position :: <raw-c-signed-long>,
+        mode :: <raw-c-signed-int>)
        => (result :: <raw-c-signed-long>)
        (integer-as-raw(fd), integer-as-raw(position), integer-as-raw(mode))
      end)
@@ -95,24 +95,35 @@ define function unix-fsync (fd :: <integer>) => (result :: <integer>)
   end
 end function unix-fsync;
 
-define function unix-fd-info
+define function unix-fd-positionable?
     (fd :: <integer>)
- => (preferred-size :: <integer>, positionable? :: <boolean>);
+ => (positionable? :: <boolean>);
   let info :: <integer>
-    = raw-as-integer(%call-c-function ("io_fd_info")
+    = raw-as-integer(%call-c-function ("io_fd_positionable")
                        (fd :: <raw-c-unsigned-int>) => (result :: <raw-c-signed-int>)
                        (integer-as-raw(fd))
                      end);
-  values(logand(info, lognot(1)), odd?(info))
-end function unix-fd-info;
+  ~zero?(info)
+end function unix-fd-positionable?;
+
+define function unix-isatty
+    (fd :: <integer>)
+ => (result :: <boolean>)
+  let res :: <integer>
+    = raw-as-integer(%call-c-function ("isatty")
+                       (fd :: <raw-c-unsigned-int>) => (result :: <raw-c-signed-int>)
+                       (integer-as-raw(fd))
+                     end);
+  (res == 1)
+end function unix-isatty;
 
 define function get-unix-error (errno :: <integer>) => (message :: <string>)
   let message :: <byte-string>
     = primitive-raw-as-string
-       (%call-c-function ("strerror") 
-	    (errno :: <raw-c-signed-int>) => (message :: <raw-byte-string>)
-	  (integer-as-raw(errno))
-	end);
+       (%call-c-function ("strerror")
+            (errno :: <raw-c-signed-int>) => (message :: <raw-byte-string>)
+          (integer-as-raw(errno))
+        end);
   // Make a copy to avoid it being overwritten ...
   copy-sequence(message)
 end function get-unix-error;

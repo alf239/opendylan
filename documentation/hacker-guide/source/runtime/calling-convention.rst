@@ -30,7 +30,7 @@ registers to pass these parameters.
 +===========+================================================+
 | arg-count | number of args passed                          |
 +-----------+------------------------------------------------+
-| function  | the ``<function>`` object being called         |
+| function  | the :drm:`<function>` object being called      |
 +-----------+------------------------------------------------+
 | mlist     | the next-method list (``#f`` for direct-entry) |
 +-----------+------------------------------------------------+
@@ -48,9 +48,9 @@ reasons. In practice, the disadvantages will be small because:
 -  Many arguments to functions are expected to be simple expressions
    (like constants or variable references) - so order of evaluation does
    not normally matter.
--  On a RISC implementation, we won’t want to push each argument anyway
+-  On a RISC implementation, we won't want to push each argument anyway
    - instead it will be more efficient to allocate enough stack space
-   for the call, and store each argument when it’s available. This works
+   for the call, and store each argument when it's available. This works
    well with a conservative GC - but it might be poor with a total GC.
 
 This calling convention has the following advantages:
@@ -186,7 +186,7 @@ that value.
 The Method Entry Point Convention
 ---------------------------------
 
-All ``<method>`` objects support the *method entry point* convention. Each
+All :drm:`<method>` objects support the *method entry point* convention. Each
 method object has an *MEP* slot containing the code to support this
 convention. When a method is called by a generic function (or via next
 method), the caller uses a dedicated entry point (available from the

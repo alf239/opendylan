@@ -9,6 +9,10 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 // (integers and characters)
 define constant $llvm-object-pointer-type :: <llvm-type> = $llvm-i8*-type;
 
+// "Don't care" placeholder value of that type
+define constant $object-pointer-undef
+  = make(<llvm-undef-constant>, type: $llvm-object-pointer-type);
+
 
 /// Memoized pointer types
 
@@ -80,7 +84,7 @@ define method initialize-type-table
   register-raw-type(#"<raw-c-void>",               $llvm-void-type,
                     #f);
   register-raw-type(#"<raw-c-pointer>",            $llvm-i8*-type,
-                    #f);
+                    #"pointer");
   register-raw-type(#"<raw-boolean>",              $llvm-i8-type,
                     #"boolean");
   register-raw-type(#"<raw-byte-character>",       $llvm-i8-type,
@@ -92,7 +96,7 @@ define method initialize-type-table
   register-raw-type(#"<raw-double-byte>",          $llvm-i16-type,
                     #"unsigned");
   register-raw-type(#"<raw-byte-string>",          $llvm-i8*-type,
-                    #f);
+                    #"pointer");
   register-raw-type(#"<raw-integer>",              t["iWord"],
                     #"signed");
   register-raw-type(#"<raw-single-float>",         $llvm-float-type,
@@ -104,9 +108,13 @@ define method initialize-type-table
   register-raw-type(#"<raw-extended-float>",       llvm-long-double-type,
                     #"float");
   register-raw-type(#"<raw-pointer>",              $llvm-i8*-type,
-                    #f);
+                    #"pointer");
   register-raw-type(#"<raw-address>",              t["iWord"],
                     #"address");
+  register-raw-type(#"<raw-c-size-t>",             t["iWord"],
+                    #"unsigned");
+  register-raw-type(#"<raw-c-ssize-t>",            t["iWord"],
+                    #"signed");
 
   // MM Wrapper
   let mm-name = emit-name-internal(back-end, #f, dylan-value(#"<mm-wrapper>"));
@@ -132,6 +140,17 @@ define method initialize-type-table
                                   element-type: t["iWord"])));
   placeholder.llvm-placeholder-type-forward
     := llvm-pointer-to(back-end, t[mm-name]);
+
+  // Heap fixup table struct
+  let heap-fixup-struct-name = "struct.heapfixup";
+  back-end.llvm-heap-fixup-entry-llvm-type
+    := make(<llvm-struct-type>,
+            name: heap-fixup-struct-name,
+            elements: vector(// Heap object
+                             $llvm-object-pointer-type,
+                             // Heap reference
+                             llvm-pointer-to(back-end,
+                                             $llvm-object-pointer-type)));
 end method;
 
 // Register each of the built-in types in a new module's type symbol table
@@ -226,17 +245,29 @@ define method llvm-reference-type
     type
   else
     let elements = make(<stretchy-object-vector>);
-    for (member in o.raw-aggregate-members)
-      let member-type = member.member-raw-type;
-      if (member.member-bitfield-width = 0)  // not a bitfield
-        add!(elements, llvm-reference-type(back-end, member-type));
-      else
-        error ("Can't generate LLVM types for C-struct bitfields yet");
-      end if;
-    end for;
+    do(curry(add-llvm-struct-member, back-end, elements),
+       o.raw-aggregate-members);
     element(type-table, name)
       := make(<llvm-struct-type>, name: name, elements: elements)
   end
+end method;
+
+define method add-llvm-struct-member
+    (back-end :: <llvm-back-end>, elements :: <stretchy-object-vector>,
+     member :: <raw-aggregate-member>)
+ => ();
+  add!(elements, llvm-reference-type(back-end, member.member-raw-type));
+end method;
+
+define method add-llvm-struct-member
+    (back-end :: <llvm-back-end>, elements :: <stretchy-object-vector>,
+     member :: <raw-aggregate-array-member>)
+ => ();
+  let element-type = llvm-reference-type(back-end, member.member-raw-type);
+  add!(elements,
+       make(<llvm-array-type>,
+	    size: member.member-array-length,
+	    element-type: element-type));
 end method;
 
 // References to most objects use the object pointer type
@@ -294,10 +325,6 @@ define method llvm-signature-types
   for (spec in spec-argument-key-variable-specs(sig-spec))
     add!(parameter-types, $llvm-object-pointer-type);
   end for;
-  // Calling convention parameters
-  add!(parameter-types, $llvm-object-pointer-type); // next-methods
-  add!(parameter-types, $llvm-object-pointer-type); // function
-
   parameter-types
 end method;
 
@@ -318,10 +345,6 @@ define method llvm-dynamic-signature-types
   for (spec in spec-argument-key-variable-specs(sig-spec))
     add!(parameter-types, $llvm-object-pointer-type);
   end for;
-  // Calling convention parameters
-  add!(parameter-types, $llvm-object-pointer-type); // next-methods
-  add!(parameter-types, $llvm-object-pointer-type); // function
-
   parameter-types
 end method;
 
@@ -339,33 +362,45 @@ define method llvm-lambda-type
       else
         llvm-dynamic-signature-types(back-end, o, signature-spec(fun))
       end if;
+
+  let calling-convention-parameter-types
+    = vector($llvm-object-pointer-type,  // next-methods
+             $llvm-object-pointer-type); // function
   make(<llvm-function-type>,
        return-type: llvm-reference-type(back-end, back-end.%mv-struct-type),
-       parameter-types: parameter-types,
+       parameter-types:
+         if (parameter-types.size > $entry-point-argument-count)
+           let extra-parameter-type
+             = llvm-pointer-to(back-end, $llvm-object-pointer-type);
+           concatenate(copy-sequence(parameter-types,
+                                     end: $entry-point-argument-count),
+                       vector(extra-parameter-type),
+                       calling-convention-parameter-types)
+         else
+           concatenate(parameter-types,
+                       calling-convention-parameter-types)
+         end if,
        varargs?: #f)
 end method;
 
-// Shared generic entry points
-
-define method llvm-entry-point-type
-    (back-end :: <llvm-back-end>, o :: <&shared-entry-point>)
+// Function type for a C function
+// FIXME these are actually subject to target-specific/ABI-specific
+// normalization
+define method llvm-c-function-type
+    (back-end :: <llvm-back-end>,
+     o :: type-union(<&c-function>, <&c-callable-function>))
  => (type :: <llvm-function-type>);
-  let module = back-end.llvm-builder-module;
-  let base-name
-    = emit-name-internal(back-end, back-end.llvm-builder-module, o);
-  let name = concatenate("EPFN.", base-name);
-  let type-table = module.llvm-type-table;
-  let type = element(type-table, name, default: #f);
-  if (type)
-    type
-  else
-    let return-type = llvm-reference-type(back-end, back-end.%mv-struct-type);
-
-    // FIXME
-    element(type-table, name)
-      := make(<llvm-function-type>,
-              return-type: return-type,
-              parameter-types: #(),
-              varargs?: #f)
-  end if
+  let signature = o.c-signature;
+  let parameter-types
+    = map(curry(llvm-reference-type, back-end), signature.^signature-required);
+  let return-type
+    = if (empty?(signature.^signature-values))
+        $llvm-void-type
+      else
+        llvm-reference-type(back-end, signature.^signature-values.first);
+      end if;
+  make(<llvm-function-type>,
+       parameter-types: parameter-types,
+       return-type: return-type,
+       varargs?: #f)
 end method;

@@ -187,7 +187,7 @@ end test;
 
 //////////
 // Testing monitor-style programming
-// 
+//
 
 define variable *counter* = 0;
 define constant *mlock* = make(<lock>);
@@ -201,7 +201,7 @@ end method;
 
 define method debug-counter ()
   let count = *counter*;
-  format-l("%d - new value from %s\n", 
+  format-l("%d - new value from %s\n",
            count, current-thread().thread-name);
   count;
 end method;
@@ -219,8 +219,8 @@ end method;
 define method decrement-count ()
   with-lock (*mlock*)
     let count = *counter*;   // for debugging
-    while (*counter* == 0) 
-      wait-for(*non-zero*) 
+    while (*counter* == 0)
+      wait-for(*non-zero*)
     end;
     *counter* := *counter* - 1;
     debug-counter();
@@ -270,14 +270,6 @@ define test monitor-test ()
   check-true("*counter* is zero", *counter* == 0);
 
 end test;
-
-
-define method fixup (n :: <integer>)
-  // Fixup any screwup with the notification
-  with-lock (*mlock*)
-    for (i from 1 to n) release(*non-zero*) end;
-  end with-lock;
-end method;
 
 
 //////////

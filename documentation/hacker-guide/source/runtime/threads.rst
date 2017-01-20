@@ -6,7 +6,7 @@ Dylan Portability Interface
 
 The Threads Library is designed for implementation using
 different threads APIs from common operating systems, including Unix
-and Windows. Harlequin’s implementation of the library is designed
+and Windows. Harlequin's implementation of the library is designed
 to be directly portable onto these operating systems. This portability
 is achieved by using primitive operations defined within our runtime
 system. Each primitive operation must be implemented specially for each
@@ -36,7 +36,7 @@ handles, as well as to perform the basic functions of the class, such as
 *wait-for* and *release*. The platform-specific implementation of these
 primitive functions is free to choose any representation for these
 handles, provided that it is the same shape as a Dylan slot (which is
-equivalent to C’s *void \**).
+equivalent to C's *void \**).
 
 As with all Dylan objects, the container objects defined by the threads
 library are subject to automatic memory management, and possible
@@ -89,13 +89,10 @@ Dylan Types for Threads Portability
 -----------------------------------
 
 Three Dylan types merit discussion for their use with portability
-primitives: ``<thread>``, ``<portable-container>``, and ``<optional-name>``.
-Objects that are instances of the ``<thread>`` and
-``<portable-container>`` classes have slots which contain lower-level
-objects that are specific to the Dylan runtime or operating system. The
-``<optional-name>`` type allows an object, such as a lock, to have a name
-represented as a string or, if no name is supplied, as the Boolean false
-value ``#f``.
+primitives: ``<thread>``, ``<portable-container>``.  Objects that are
+instances of the ``<thread>`` and ``<portable-container>`` classes have
+slots which contain lower-level objects that are specific to the Dylan
+runtime or operating system.
 
 <thread>
 
@@ -116,15 +113,6 @@ superclass for all the concrete synchronization classes (``<simple-lock>``,
 ``<portable-container>`` object contains an OS handle, which is available
 to the runtime for storing any OS-specific data. Subclasses may provide
 additional slots.
-
-<optional-name>
-
-[Type]
-------
-
-This is a union type which is used to represent names of synchronization
-objects. Values of the type are either strings (of class ``<byte-string>``)
-or false (``#f``).
 
 Various classes of Dylan objects are passed through the portability
 interface, and hence require description in terms of lower level
@@ -147,40 +135,40 @@ layer, and subclasses may add additional fields of their own.
 Correspondence Between Dylan Types and C Types
 ----------------------------------------------
 
-+----------------------------+---------------+--------------------------------------+
-| Dylan Type                 | C Type        | C Type Definition                    |
-+============================+===============+======================================+
-| ``<object>``               | *D*           | *typedef void\* D;*                  |
-+----------------------------+---------------+--------------------------------------+
-| ``<integer>``              | *DINT*        | *platform specific (size of void\*)* |
-+----------------------------+---------------+--------------------------------------+
-| ``<function>``             | *DFN*         | *typedef D(\*DFN)(D, int, …);*       |
-+----------------------------+---------------+--------------------------------------+
-| ``<simple-object-vector>`` | *SOV\**       | *typedef struct \_sov {              |
-|                            |               | * *D class;                          |
-|                            |               | * *DINT size;*                       |
-|                            |               | *D data[ ];*                         |
-|                            |               | *} SOV;*                             |
-+----------------------------+---------------+--------------------------------------+
-| ``<byte-string>``          | *B\_STRING\** | *typedef struct \_bst {              |
-|                            |               | * *D class;                          |
-|                            |               | * *DINT size;*                       |
-|                            |               | *char data[ ];*                      |
-|                            |               | *} B\_STRING;*                       |
-+----------------------------+---------------+--------------------------------------+
-| ``<optional-name>``        | *D\_NAME*     | *typedef void\* D\_NAME;*            |
-+----------------------------+---------------+--------------------------------------+
-| ``<portable-container>``   | *CONTAINER\** | *typedef struct \_ctr {              |
-|                            |               | * *D class;                          |
-|                            |               | * *void\* handle;*                   |
-|                            |               | *} CONTAINER;*                       |
-+----------------------------+---------------+--------------------------------------+
-| ``<thread>``               | *D\_THREAD\** | *typedef struct \_dth {              |
-|                            |               | * *D class;                          |
-|                            |               | * *void\* handle1;*                  |
-|                            |               | *void\* handle2;*                    |
-|                            |               | *} D\_THREAD;*                       |
-+----------------------------+---------------+--------------------------------------+
++-------------------------------+---------------+--------------------------------------+
+| Dylan Type                    | C Type        | C Type Definition                    |
++===============================+===============+======================================+
+| :drm:`<object>`               | *D*           | *typedef void\* D;*                  |
++-------------------------------+---------------+--------------------------------------+
+| :drm:`<integer>`              | *DINT*        | *platform specific (size of void\*)* |
++-------------------------------+---------------+--------------------------------------+
+| :drm:`<function>`             | *DFN*         | *typedef D(\*DFN)(D, int, …);*       |
++-------------------------------+---------------+--------------------------------------+
+| :drm:`<simple-object-vector>` | *SOV\**       | *typedef struct \_sov {              |
+|                               |               | * *D class;                          |
+|                               |               | * *DINT size;*                       |
+|                               |               | *D data[ ];*                         |
+|                               |               | *} SOV;*                             |
++-------------------------------+---------------+--------------------------------------+
+| :drm:`<byte-string>`          | *B\_STRING\** | *typedef struct \_bst {              |
+|                               |               | * *D class;                          |
+|                               |               | * *DINT size;*                       |
+|                               |               | *char data[ ];*                      |
+|                               |               | *} B\_STRING;*                       |
++-------------------------------+---------------+--------------------------------------+
+| ``false-or(<byte-string>)``   | *D\_NAME*     | *typedef void\* D\_NAME;*            |
++-------------------------------+---------------+--------------------------------------+
+| ``<portable-container>``      | *CONTAINER\** | *typedef struct \_ctr {              |
+|                               |               | * *D class;                          |
+|                               |               | * *void\* handle;*                   |
+|                               |               | *} CONTAINER;*                       |
++-------------------------------+---------------+--------------------------------------+
+| ``<thread>``                  | *D\_THREAD\** | *typedef struct \_dth {              |
+|                               |               | * *D class;                          |
+|                               |               | * *void\* handle1;*                  |
+|                               |               | *void\* handle2;*                    |
+|                               |               | *} D\_THREAD;*                       |
++-------------------------------+---------------+--------------------------------------+
 
 Compiler Support for the Portability Interface
 ==============================================
@@ -321,7 +309,7 @@ One further consideration is the interaction of the Dylan threads
 library itself with foreign components:
 
 If foreign code is not designed for multiple threads (for instance,
-because it uses global data structures, and doesn’t synchronize
+because it uses global data structures, and doesn't synchronize
 updates), then the code may fail if it is invoked from multiple Dylan
 threads. However, this problem is not related to the Dylan
 implementation, since it would fail if called from multiple threads
@@ -371,7 +359,7 @@ the program. But the low-level structures are not Dylan objects and must
 be explicitly freed when the Dylan container is collected (primitive
 functions are provided for this purpose). However, the core language of
 Dylan provides no *finalization* mechanism to invoke cleanup code when
-objects are reclaimed. Harlequin’s implementation of the Threads
+objects are reclaimed. Harlequin's implementation of the Threads
 Library strictly requires this, but it is not yet implemented. It is
 intended to provide finalization support for Dylan with a new garbage
 collector which is currently under development.

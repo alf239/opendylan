@@ -132,7 +132,7 @@ define test bug-2178 ()
              end);
 end test bug-2178;
 
-define open generic foo-function (i);
+define generic foo-function (i);
 
 define method foo-function (i :: <integer>)
   if (i > 0)
@@ -241,6 +241,7 @@ define test issue-440 ()
 end;
 
 define suite dylan-regressions ()
+  test bug-2766;
   test bug-5800;
   test bug-5580;
   test bug-5325;

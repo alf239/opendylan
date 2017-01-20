@@ -5,13 +5,6 @@ Copyright:    Original Code is Copyright 2009 Gwydion Dylan Maintainers
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
-define library-spec llvm ()
-  module llvm;
-  module llvm-builder;
-
-  suite llvm-asm-suite;
-end library-spec llvm;
-
 define module-spec llvm ()
   instantiable class <llvm-module> (<object>);
 
@@ -247,7 +240,8 @@ define module-spec llvm-builder ()
   function ins--shufflevector
       (<llvm-builder>, <llvm-value>, <llvm-value>, <llvm-value>)
    => (<llvm-instruction>);
-  function ins--phi (<llvm-builder>, #"rest") => (<llvm-instruction>);
+  function ins--phi (<llvm-builder>, <sequence>) => (<llvm-instruction>);
+  function ins--phi* (<llvm-builder>, #"rest") => (<llvm-instruction>);
   function ins--landingpad
       (<llvm-builder>, <llvm-type>, <llvm-value>, <sequence>,
        #"key", #"cleanup?", #"metadata")
@@ -310,6 +304,9 @@ define module-spec llvm-builder ()
   function ins--ret (<llvm-builder>, #"rest") => (<llvm-instruction>);
   function ins--br (<llvm-builder>, #"rest") => (<llvm-instruction>);
   function ins--switch
+      (<llvm-builder>, <llvm-value>, <llvm-value>, <sequence>)
+   => (<llvm-instruction>);
+  function ins--switch*
       (<llvm-builder>, <llvm-value>, <llvm-value>, #"rest")
    => (<llvm-instruction>);
 
@@ -324,4 +321,14 @@ define module-spec llvm-builder ()
   function ins--resume
       (<llvm-builder>, <llvm-value>, #"key" #"metadata")
    => (<llvm-instruction>);
+
+  macro-test ins--if-test;
+  macro-test ins--iterate-test;
 end module-spec llvm-builder;
+
+define library-spec llvm ()
+  module llvm;
+  module llvm-builder;
+
+  suite llvm-asm-suite;
+end library-spec llvm;

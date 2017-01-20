@@ -248,6 +248,13 @@ define open generic project-compiler-back-end-setter
     (back-end :: <symbol>, project :: <project-object>)
  => (back-end :: <symbol>);
 
+define open generic project-executable-name
+    (project :: <project-object>) => (executable-name :: <string>);
+
+define open generic project-executable-name-setter
+    (executable-name :: <string>, project :: <project-object>)
+ => (executable-name :: <string>);
+
 define open generic project-target-type
     (project :: <project-object>) => (target-type :: <project-target-type>);
 
@@ -362,11 +369,6 @@ define open generic link-project
           process-subprojects?,
           build-script, target, force?, unify?, release?, messages)
  => ();
-
-define open generic default-build-script
-    () => (build-script :: <file-locator>);
-define open generic default-build-script-setter
-    (build-script :: <file-locator>) => (build-script :: <file-locator>);
 
 
 /// Source records
@@ -1199,7 +1201,7 @@ end method note-user-project-opened;
 
 /// Finding environment objects by name
 
-define method find-environment-object
+define method %find-environment-object
     (project :: <project-object>, id :: <id-or-integer>,
      #rest keys,
      #key, #all-keys)
@@ -1219,6 +1221,22 @@ define method find-environment-object
             end;
         server & apply(find-environment-object, server, id, keys)
       end
+end method %find-environment-object;
+
+define method find-environment-object
+    (project :: <project-object>, id :: <definition-id>,
+     #rest keys,
+     #key, #all-keys)
+ => (object :: false-or(<environment-object>))
+ apply(%find-environment-object, project, id, keys);
+end method find-environment-object;
+
+define method find-environment-object
+    (project :: <project-object>, id :: <integer>,
+     #rest keys,
+     #key, #all-keys)
+ => (object :: false-or(<environment-object>))
+ apply(%find-environment-object, project, id, keys);
 end method find-environment-object;
 
 
@@ -1233,7 +1251,7 @@ define function project-start-function
     let module = library-default-module(project, library);
     if (module)
       let object = find-environment-object(project, name, module: module);
-      if (instance?(object, <function-object>))	object end
+      if (instance?(object, <function-object>))        object end
     end
   end
 end function project-start-function;

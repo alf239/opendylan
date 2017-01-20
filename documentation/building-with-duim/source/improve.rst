@@ -55,13 +55,11 @@ will use the files suggested by the New Project wizard. When you use the
 New Project wizard, Open Dylan will create a number of files for a
 project named ``task-list``.
 
-``module.dylan``, ``library.dylan``
-
+``module.dylan`` and ``library.dylan``
    These files define the library and modules for the project. For the
    purposes of this application, you can ignore these files.
 
 ``task-list.dylan``
-
    Add non-GUI-specific code to this file.
 
 Finally, you need to create the following new file using *File > New*,
@@ -69,7 +67,6 @@ and add it to the project using the *Project > Insert File* command.
 Make sure that this file is the last one listed in the project window.
 
 ``frame.dylan``
-
    Add the GUI-specific code to this file.
 
 Starting the application
@@ -138,7 +135,7 @@ Adding a default callback
 Nothing is more frustrating than designing a user interface that does
 not respond to user input. Although, in the early stages at least, the
 user interface does nothing particularly useful, you can at least define
-a “not yet implemented” message that can be used until you define real
+a "not yet implemented" message that can be used until you define real
 behavior for the application.
 
 The definition of the function that gives you this default behavior is
@@ -186,7 +183,7 @@ define the new frame class, use the following structure:
 In this case, ``<task-frame>`` is the name of the new class of frame,
 and``<simple-frame>`` is its superclass. Like ordinary Dylan classes,
 frame classes can have any number of superclasses, with multiple
-superclasses separated by commas. The superclass of any “standard” frame
+superclasses separated by commas. The superclass of any "standard" frame
 is usually ``<simple-frame>``. If you were designing a dialog box, its
 superclass would be ``<dialog-frame>``. If you were designing a wizard,
 its superclass would be ``<wizard-frame>``.
@@ -207,7 +204,7 @@ defining a gadget class.
 The name is used to refer to the pane, both from within the frame
 definition itself, and from other code. The pane definition includes
 code to create the interface element. A pane specification also includes
-a place to declare a local variable that can be used within the pane’s
+a place to declare a local variable that can be used within the pane's
 definition to refer to the surrounding frame.
 
 The following code fragment defines the two buttons, the text field, the
@@ -279,7 +276,7 @@ define as a pane in the definition of a frame class. For example, the
 layout in the ``task-layout`` pane actually contains a number of
 sub-layouts. If you wanted, each one of these sub-layouts could be
 defined as a separate pane within the frame definition. Note, however,
-that you only have to “activate” the top-most layout; there should only
+that you only have to "activate" the top-most layout; there should only
 be one use of the ``layout`` option.
 
 Similarly, you are free to use whatever programming constructs you like
@@ -350,7 +347,7 @@ with the following complete definition of a frame class.
 
 Note the addition of a ``title:`` keyword at the end of the definition.
 This can be used to give any instance of the frame class a title that is
-displayed in the title bar of the frame’s window when it is mapped to
+displayed in the title bar of the frame's window when it is mapped to
 the screen.
 
 At this stage, the application still has no real functionality, and
@@ -395,8 +392,8 @@ incorporate it using the ``tool-bar`` clause, as shown below:
 
     pane task-tool-bar (frame)
       make(<tool-bar>, child: ...);
-      // ...more definitions here...
-      tool-bar (frame) frame.task-tool-bar;
+    // ...more definitions here...
+    tool-bar (frame) frame.task-tool-bar;
 
 A tool bar has a layout as its child, and each button in the tool bar is
 defined as a child of that layout. You can either define each button
@@ -420,11 +417,11 @@ simple tool bar containing two buttons is as follows:
                     frame.add-button;
                     frame.remove-button
                   end);
-      // ...more definitions here...
-      tool-bar (frame) frame.task-tool-bar;
+    // ...more definitions here...
+    tool-bar (frame) frame.task-tool-bar;
 
 A tool bar that only contains two buttons is on the lean side, however,
-so let’s add two more buttons to open a file and save a file to disk.
+so let's add two more buttons to open a file and save a file to disk.
 
 .. code-block:: dylan
 
@@ -451,11 +448,11 @@ so let’s add two more buttons to open a file and save a file to disk.
 More commonly, an icon is used to label buttons in a tool bar, rather
 than a text label. You can do this by supplying an instance of ``<image>``
 to the ``label:`` init-keyword when you define the button, rather than an
-instance of ``<string>``.
+instance of :drm:`<string>`.
 
 So now the application has a tool bar. Somewhat oddly, it does not yet
 have a menu bar or a system of menus — most tool bars represent a subset
-of the commands already available from the application’s menu system. A
+of the commands already available from the application's menu system. A
 menu system is added to the task list manager in :doc:`menus`.
 
 Adding a status bar
@@ -483,8 +480,8 @@ clause.
 
     pane task-status-bar (frame)
       make(<status-bar>, label: "Task Manager");
-      // ...more definitions here...
-      status-bar (frame) frame.task-status-bar;
+    // ...more definitions here...
+    status-bar (frame) frame.task-status-bar;
 
 Now you have added a status bar to the application. The next step is to
 glue all the pieces together once again to create your modified frame
@@ -550,7 +547,7 @@ conjunction with the other improvements to the definition of
   Assigning ``first`` to the label key of ``priority-box`` ensures that the
   first element from each sub-list of ``$priority-items`` (the string) is
   used as the label for the appropriate item. Thus, the first button in
-  priority box is labeled “Low”.
+  priority box is labeled "Low".
 
 - The *value key* is a function which is passed an entry and returns the
   logical value of the entry.
@@ -561,7 +558,7 @@ conjunction with the other improvements to the definition of
   priority box has the value ``#"low"``.
 
 Lastly, ``priority-box`` is given a default value: ``#"medium"``. This
-ensures that the button labeled “Medium” is selected by default whenever
+ensures that the button labeled "Medium" is selected by default whenever
 ``priority-box`` is first created.
 
 The definitions for ``add-button``, ``remove-button``, and ``task-list``
@@ -657,10 +654,11 @@ asks the user to type the text for a new task. The definition of
 initial design, with the exception that the activate callback exits the
 dialog, rather than calling the ``not-yet-implemented`` function.
 
-The dialog box created by the prompt-for-task method
 
 .. figure:: images/new-task.png
    :align: center
+
+   The dialog box created by the prompt-for-task method
 
 The method takes two keyword arguments: a title, which is assigned a
 value by default, and an owner, which is used as the owner for the

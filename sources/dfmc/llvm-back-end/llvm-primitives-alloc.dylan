@@ -151,6 +151,11 @@ define side-effect-free stateful indefinite-extent auxiliary &c-primitive-descri
 define side-effect-free stateful indefinite-extent auxiliary &c-primitive-descriptor primitive-copy
     (number-bytes :: <raw-integer>, template :: <raw-pointer>)
  => (pointer :: <raw-pointer>);
+define side-effect-free stateful indefinite-extent auxiliary &c-primitive-descriptor primitive-copy-r
+    (number-bytes :: <raw-integer>,
+     rep-size :: <raw-integer>, rep-size-slot :: <raw-integer>,
+     template :: <raw-pointer>)
+ => (pointer :: <raw-pointer>);
 
 
 /// Allocation operations
@@ -229,12 +234,6 @@ end method;
 /*
 define side-effect-free stateful indefinite-extent &runtime-primitive-descriptor primitive-allocate
     (number-words :: <raw-integer>) => (pointer :: <raw-pointer>);
-  //---*** Fill this in...
-end;
-
-define side-effect-free stateful indefinite-extent &runtime-primitive-descriptor primitive-byte-allocate
-    (number-words :: <raw-integer>, number-bytes :: <raw-integer>)
- => (pointer :: <raw-pointer>)
   //---*** Fill this in...
 end;
 */
@@ -317,10 +316,9 @@ define side-effect-free stateful indefinite-extent &primitive-descriptor primiti
      repeated-size :: <raw-integer>,
      repeated-size-offset :: <raw-integer>)
   => (object :: <object>);
-  let number-bytes = ins--mul(be, number-words, back-end-word-size(be));
   let word-size = back-end-word-size(be);
   let repeated-byte-size = ins--mul(be, number-words, word-size);
-  let total-size = ins--add(be, repeated-byte-size, repeated-size);
+  let total-size = ins--add(be, repeated-byte-size, number-bytes);
   let total-size-rounded = op--round-up-to-word(be, total-size);
 
   let byte-fill = op--untag-character(be, fill-value);
@@ -332,12 +330,12 @@ define side-effect-free stateful indefinite-extent &primitive-descriptor primiti
     0 =>
       // Allocate a byte-repeated leaf object with no fixed slots
       call-primitive(be, primitive-alloc-leaf-rbfz-descriptor,
-                     total-size, class-wrapper,
+                     total-size-rounded, class-wrapper,
                      repeated-size, repeated-size-offset, byte-fill);
     otherwise =>
       // Allocate a byte-repeated leaf object with fixed slots
       call-primitive(be, primitive-alloc-leaf-s-rbfz-descriptor,
-                     total-size, class-wrapper,
+                     total-size-rounded, class-wrapper,
                      number-slots, fill-value,
                      repeated-size, repeated-size-offset, byte-fill);
   end select
@@ -443,8 +441,6 @@ define side-effect-free stateful indefinite-extent &primitive-descriptor primiti
   let total-size = ins--add(be, repeated-byte-size, repeated-size);
   let total-size-rounded = op--round-up-to-word(be, total-size);
 
-  let byte-fill = op--untag-character(be, fill-value);
-
   let raw-number-slots
     = instance?(number-slots, <llvm-integer-constant>)
     & number-slots.llvm-integer-constant-integer;
@@ -452,14 +448,14 @@ define side-effect-free stateful indefinite-extent &primitive-descriptor primiti
     0 =>
       // Allocate a byte-repeated leaf object with no fixed slots
       call-primitive(be, primitive-alloc-leaf-rbf-descriptor,
-                     total-size, class-wrapper,
-                     repeated-size, repeated-size-offset, byte-fill);
+                     total-size-rounded, class-wrapper,
+                     repeated-size, repeated-size-offset, repeated-fill-value);
     otherwise =>
       // Allocate a byte-repeated leaf object with fixed slots
       call-primitive(be, primitive-alloc-leaf-s-rbf-descriptor,
-                     total-size, class-wrapper,
+                     total-size-rounded, class-wrapper,
                      number-slots, fill-value,
-                     repeated-size, repeated-size-offset, byte-fill);
+                     repeated-size, repeated-size-offset, repeated-fill-value);
   end select
 end;
 
@@ -562,17 +558,90 @@ define side-effecting stateless dynamic-extent &c-primitive-descriptor primitive
 define side-effect-free stateless dynamic-extent &c-primitive-descriptor primitive-mps-ld-isstale
     (primitive-hash-state) => (is-stale? :: <raw-integer>);
 
-define side-effect-free stateful &unimplemented-primitive-descriptor primitive-allocation-count
+define thread-local runtime-variable %allocation-count :: <raw-integer>
+  = make-raw-literal(0);
+
+define side-effect-free stateful &primitive-descriptor primitive-allocation-count
   () => (count :: <raw-integer>);
-  //---*** Fill this in...
+  let ptr = llvm-runtime-variable(be, be.llvm-builder-module,
+                                  %allocation-count-descriptor);
+  ins--load(be, ptr, alignment: back-end-word-size(be))
 end;
 
-define side-effecting stateful &unimplemented-primitive-descriptor primitive-initialize-allocation-count
+define side-effecting stateful &primitive-descriptor primitive-initialize-allocation-count
     () => ()
-  //---*** Fill this in...
+  let ptr = llvm-runtime-variable(be, be.llvm-builder-module,
+                                  %allocation-count-descriptor);
+  ins--store(be, 0, ptr, alignment: back-end-word-size(be));
 end;
 
 define side-effecting stateful &c-primitive-descriptor primitive-begin-heap-alloc-stats
   () => ();
 define side-effecting stateful &c-primitive-descriptor primitive-end-heap-alloc-stats
   (string-buffer :: <raw-byte-string>) => (number-read :: <raw-integer>);
+
+
+/// Auxiliary allocation operations
+
+define method op--allocate-vector
+    (back-end :: <llvm-back-end>, count, #key fill = &unbound)
+ => (new-vector :: <llvm-value>);
+  let module = back-end.llvm-builder-module;
+  let header-words = dylan-value(#"$number-header-words");
+
+  let class :: <&class> = dylan-value(#"<simple-object-vector>");
+  let instance-size = ^instance-storage-size(class);
+  let total-size = header-words + instance-size;
+  let wrapper = emit-reference(back-end, module, ^class-mm-wrapper(class));
+  let unbound = emit-reference(back-end, module, &unbound);
+  let size-slot-descriptor :: <&slot-descriptor>
+    = ^slot-descriptor(class, dylan-value(#"size"));
+  let size-slot-offset
+    = header-words + ^slot-offset(size-slot-descriptor, class);
+  let fill-ref = emit-reference(back-end, module, fill);
+  call-primitive(back-end, primitive-object-allocate-filled-descriptor,
+                 llvm-back-end-value-function(back-end, total-size),
+                 wrapper,
+                 llvm-back-end-value-function(back-end, instance-size),
+                 unbound,
+                 llvm-back-end-value-function(back-end, count),
+                 llvm-back-end-value-function(back-end, size-slot-offset),
+                 fill-ref)
+end method;
+
+define c-callable auxiliary mapped-parameter &runtime-primitive-descriptor primitive-grow-vector
+    (v :: <simple-object-vector>, minimum-size :: <raw-integer>)
+ => (new-vector :: <simple-object-vector>);
+  let word-size = back-end-word-size(be);
+
+  // Compute the expanded size for the vector. It is said that a
+  // growth factor of phi (i.e., the golden ratio) is best, but 3/2 is
+  // easy to compute and is close enough.
+  let current-size = call-primitive(be, primitive-vector-size-descriptor, v);
+  let thrice = ins--mul(be, current-size, 3);
+  let halved-thrice = ins--ashr(be, thrice, 1);
+
+  let cmp = ins--icmp-sge(be, halved-thrice, minimum-size);
+  let expanded-size = ins--select(be, cmp, halved-thrice, minimum-size);
+
+  let new-vector = op--allocate-vector(be, expanded-size);
+
+  // Copy elements of the old vector into the new one
+  let sov-class :: <&class> = dylan-value(#"<simple-object-vector>");
+  let new-vector-cast
+    = op--object-pointer-cast(be, new-vector, sov-class);
+  let dst-slot-ptr
+    = op--getslotptr(be, new-vector-cast, sov-class, #"vector-element");
+  let dst-byte-ptr = ins--bitcast(be, dst-slot-ptr, $llvm-i8*-type);
+
+  let src-slot-ptr
+    = op--getslotptr(be, v, sov-class, #"vector-element");
+  let src-byte-ptr = ins--bitcast(be, src-slot-ptr, $llvm-i8*-type);
+
+  let vector-byte-size = ins--mul(be, current-size, word-size);
+  ins--call-intrinsic(be, "llvm.memcpy",
+                      vector(dst-byte-ptr, src-byte-ptr, vector-byte-size,
+                             i32(word-size), $llvm-false));
+
+  new-vector
+end;

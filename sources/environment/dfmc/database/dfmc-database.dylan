@@ -46,9 +46,9 @@ end method browsing-context;
 define sealed method browsing-context
     (server :: <dfmc-database>, database :: <dfmc-database>)
  => (context :: <context>)
-  assert(server == database, 
-	 "Querying database %= using different database %=!",
-	 database, server);
+  assert(server == database,
+         "Querying database %= using different database %=!",
+         database, server);
   let project = server.dfmc-database-proxy;
   project.project-browsing-context
     | context-missing-error(server, project)
@@ -58,7 +58,7 @@ define sealed method context-missing-error
     (server :: <dfmc-database>, project :: <project>)
   let name = project.project-library-name;
   error("No compilation context found for project '%s'",
-	name-to-string(name))
+        name-to-string(name))
 end method context-missing-error;
 
 define sealed method context-missing-error
@@ -72,13 +72,11 @@ end method context-missing-error;
 define method project-macroexpand-code
     (database :: <dfmc-database>, module :: <module-object>,
      code :: <byte-string>,
-     #key expansion-stream :: false-or(<stream>) = #f,
-          trace-stream :: false-or(<stream>) = #f)
+     #key expansion-stream :: false-or(<stream>) = #f)
  => ()
   let project = module-project-proxy(database, module);
   let module-name = module.compiler-object-proxy.module-definition-name;
   macroexpand-expression
     (project, module-name, code,
-     expansion-stream: expansion-stream,
-     trace-stream:     trace-stream)
+     expansion-stream: expansion-stream)
 end method project-macroexpand-code;

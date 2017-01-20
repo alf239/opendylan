@@ -22,7 +22,7 @@ broken into a user-level API module and an internal implementation module.
 About 2/3 of the functionality is in the user API.  Only DUIM core and back-end
 implementors need to worry about the remaining 1/3.
 
-For the signatures of the functions, we have tried to use argument names and and
+For the signatures of the functions, we have tried to use argument names and
 return value names that convey useful type information.
 
 A small amount of effort has been made to indicate where classes are sealed vs.
@@ -191,7 +191,7 @@ composition_ pass (which builds up a set of _space requirement_ objects
 describing the desired, minimum, and maximum size for each pane), and the second
 pass is the _space allocation_ pass (which allocates real estate to each pane
 after solving the constraints that represent the desired size for each pane).
-(The layout protocol, in effect, serves as glue between the genealigy and
+(The layout protocol, in effect, serves as glue between the genealogy and
 geometry protocols.)
 
 Some sheets act as "controls", in which case we refer to them as _gadgets_.
@@ -1836,19 +1836,19 @@ event-region								[Generic function]
   init keywords:
 <frame-created-event>							[Sealed concrete class]
   superclasses: <frame-event>
-  init-keywords: 
+  init-keywords:
 <frame-destroyed-event>							[Sealed concrete class]
   superclasses: <frame-event>
-  init-keywords: 
+  init-keywords:
 <frame-exit-event>							[Sealed concrete class]
   superclasses: <frame-event>
   init-keywords: destroy-frame?:
 <frame-exited-event>							[Sealed concrete class]
   superclasses: <frame-event>
-  init keywords: status-code: 
+  init keywords: status-code:
 <application-exited-event>						[Sealed concrete class]
   superclasses: <frame-exited-event>
-  init keywords: 
+  init keywords:
 <port-terminated-event>							[Sealed concrete class]
   superclasses: <frame-exited-event>
   init keywords: condition:
@@ -2377,10 +2377,10 @@ invalidate-cached-drawing-state						[Generic function]
     (medium cached-state)
  => ()
 medium-+Y-upward?							[Generic function]
-    (medium) 
+    (medium)
  => (boolean)
 medium-+Y-upward?-setter						[Generic function]
-    (+Y-upward? medium) 
+    (+Y-upward? medium)
  => (boolean)
 
 
@@ -2939,7 +2939,7 @@ draw-text								[Generic function]
 	  towards-point (transform-glyphs? = #f))
 draw-text*								[Function]
     (drawable text point
-     #key (start = 0) end (align-x = #"left") (align-y = #"baseline") 
+     #key (start = 0) end (align-x = #"left") (align-y = #"baseline")
 	  towards-point (transform-glyphs? = #f))
 
 
@@ -3563,7 +3563,7 @@ update-gadget								[Generic function]
   init keywords: ncolumns: nlines: scroll-bars:
 <rich-text-editor>							[Abstract instantiable class]
   superclasses: <text-field>
-  init keywords: 
+  init keywords:
 <password-field>							[Abstract instantiable class]
   superclasses: <text-field>
   init keywords:

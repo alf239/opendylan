@@ -29,7 +29,19 @@ If you are on Windows, there is a ``make.bat`` as well::
 
     make.bat html
 
-The generated documentation will be in ``build/html``.
+The generated documentation will be in ``build/html``.  Just viewing
+the HTML locally may not correctly load the CSS files.  A workaround
+is to cd into ``build/html`` and run a web server.  For example (python 2)::
+
+  python -m SimpleHTTPServer
+
+or (python 3)::
+
+  python -m http.server
+
+The pages can then be accessed via::
+
+  http://localhost:8000/index.html
 
 You can build other formats as well. Run ``make`` or ``make.bat`` without
 arguments to see which formats are available.
@@ -66,4 +78,4 @@ Dylan Language Markup
 
 We have created a Dylan language Sphinx domain to make it easier to document and
 refer to Dylan language entities. This domain is documented in the
-"dylandomain/reference.rst" file in the "sphinx-extensions" repository.
+"sphinxcontrib/dylan/domain/reference.rst" file in the "sphinx-extensions" repository.

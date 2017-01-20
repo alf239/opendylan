@@ -10,6 +10,11 @@ extern void dylan_float_underflow_handler();
 
 /* ---*** TODO: Implement all of this */
 
+int inside_dylan_ffi_barrier() {
+  // Temporary until actually implemented.
+  return 0;
+}
+
 #include <sys/signal.h>
 #include <fenv.h>
 
@@ -32,7 +37,7 @@ static void EstablishDylanExceptionHandlers (struct sigaction * oldFPEHandler,
 
   unused(oldSEGVHandler);
 
-  sigfillset(&newFPEHandler.sa_mask);
+  sigemptyset(&newFPEHandler.sa_mask);
   newFPEHandler.sa_sigaction = DylanFPEHandler;
   newFPEHandler.sa_flags = SA_SIGINFO;
   sigaction(SIGFPE, &newFPEHandler, oldFPEHandler);

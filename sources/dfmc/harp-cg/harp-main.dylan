@@ -23,7 +23,7 @@ define method emit-lambda(back-end :: <harp-back-end>, stream, o :: <&iep>,
     select(fun by instance?)
       <&c-callable-function> => 
 	let export? = if (fun.dll-export?) #"code-stub" else #f end;
-	values(~ fun.binding-name, export?);
+	values(~ fun.c-function-name, export?);
       <&lambda> =>
 	let public? = fun.model-has-definition?;
 	values(~ public?,
@@ -2158,10 +2158,10 @@ define method emit-ffi-result(back-end :: <harp-back-end>, result, type :: <&raw
       ins--or(back-end, result, result, #xffff0000);
       ins--tag(back-end, done-tag);
 
-    "<raw-c-float>" =>
+    "<raw-c-float>", "<raw-single-float>" =>
       ins--fmove(back-end, result, back-end.registers.reg-c-float-result);
 
-    "<raw-c-double>" =>
+    "<raw-c-double>", "<raw-double-float>" =>
       ins--dmove(back-end, result, back-end.registers.reg-c-float-result);
 
     otherwise =>

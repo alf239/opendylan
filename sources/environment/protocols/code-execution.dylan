@@ -47,7 +47,7 @@ define open generic project-execute-code
 
 define open generic project-macroexpand-code
     (server :: <server>, module :: <module-object>, code :: <string>,
-     #key expansion-stream :: <stream>, trace-stream :: <stream>)
+     #key expansion-stream :: <stream>)
  => ();
 
 define open generic project-runtime-context
@@ -82,8 +82,8 @@ define open generic transaction-id-source-record
 /// provides, or whatever the environment protocols provide.
 ///
 define open generic record-return-values (project :: <project-object>,
-					  execution-id :: <execution-id>,
-					  values :: <sequence>)
+                                          execution-id :: <execution-id>,
+                                          values :: <sequence>)
  => ();
 
 
@@ -92,7 +92,7 @@ define open generic record-return-values (project :: <project-object>,
 /// Returns the execution info associated with id, or #f if there is none.
 ///
 define open generic project-execution-info (project :: <project-object>,
-					    id :: <execution-id>)
+                                            id :: <execution-id>)
  => (info :: false-or(<execution-info>));
 
 /// Project-remove-execution-info
@@ -121,14 +121,12 @@ end method;
 
 define method project-macroexpand-code
     (project :: <project-object>, module :: <module-object>, code :: <string>,
-     #key expansion-stream :: false-or(<stream>) = #f,
-          trace-stream :: false-or(<stream>) = #f)
+     #key expansion-stream :: false-or(<stream>) = #f)
  => ()
   let database = ensure-database-server(project, module, error?: #t);
   project-macroexpand-code
     (database, module, code,
-     expansion-stream: expansion-stream,
-     trace-stream: trace-stream)
+     expansion-stream: expansion-stream)
 end method;
 
 define method project-runtime-context
@@ -146,7 +144,7 @@ define method project-valid-code?
   let server = choose-server(project, thread, error?: #t);
   project-valid-code?
     (server, code, thread,
-     module: module, 
+     module: module,
      runtime-context: runtime-context,
      stack-frame: stack-frame)
 end method;

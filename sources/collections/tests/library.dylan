@@ -9,7 +9,6 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 define library collections-test-suite
   use common-dylan;
   use testworks;
-  use testworks-specs;
   use collections;
 
   export collections-test-suite;
@@ -17,9 +16,8 @@ end library collections-test-suite;
 
 define module collections-test-suite
   use common-dylan;
-  use simple-io;
+  use simple-format;
   use testworks;
-  use testworks-specs;
 
   use byte-vector;
   use bit-vector;

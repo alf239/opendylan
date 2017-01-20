@@ -19,7 +19,7 @@ end library;
 
 define module dfmc-c-back-end
   use big-integers, prefix: "generic-";
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use format;
   use streams-internals;
   use dfmc-core;
@@ -40,7 +40,6 @@ define module dfmc-c-back-end
     c-repeated-type-name,
     c-local-mangle, c-global-mangle, c-raw-mangle,
     format-emit, format-emit*,
-    emit-raw-character-data,
     emit-lambda-interface,
     emit-parameters;
 end module;

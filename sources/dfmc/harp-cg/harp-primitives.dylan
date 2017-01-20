@@ -1006,6 +1006,18 @@ define method op--word-size(back-end :: <harp-back-end>, result) => ()
 
 end method op--word-size;
 
+define method op--read-cycle-counter(back-end :: <harp-back-end>, result) => ()
+
+  ins--move(back-end, result, 0);
+
+end method op--read-cycle-counter;
+
+define method op--read-return-address(back-end :: <harp-back-end>, result) => ()
+
+  ins--move(back-end, result, 0);
+
+end method op--read-return-address;
+
 
 define method op--abs(back-end :: <harp-back-end>, result, x) => ()
 
@@ -1226,6 +1238,13 @@ define opposite-instructions dbeq dbne;
 define opposite-instructions dblt dbge;
 define opposite-instructions dynamic-bit dynamic-nbit;
 
+// Not referenced or exported.  https://github.com/dylan-lang/opendylan/issues/561
+ignore($bge-opposite,
+       $fbne-opposite,
+       $fbge-opposite,
+       $dbne-opposite,
+       $dbge-opposite,
+       $dynamic-nbit-opposite);
 
 define method op--true?(back-end :: <harp-back-end>, result, x) => (result :: <test-result>)
 
@@ -1248,6 +1267,14 @@ define method op--false?(back-end :: <harp-back-end>, result, x) => (result :: <
 
 end method op--false?;
 
+define method op--true(back-end :: <harp-back-end>, result, #rest args) => (result :: <test-result>)
+
+  make(<test-result>,
+       branch: #f,
+       result: result,
+       continue: make-tag(back-end));
+
+end method op--true;
 
 define method op--raw-as-boolean(back-end :: <harp-back-end>, result, x) => (result :: <test-result>)
 
@@ -1330,17 +1357,6 @@ define inline method op--instance?(back-end :: <harp-back-end>, result, x, y) =>
   call-primitive(back-end, result, function, x, y);
 
 end method op--instance?;
-
-
-define method op--boole(back-end :: <harp-back-end>, result, s :: <constant-reference>, x, y) => ()
-
-  select(s.cr-refers-to by \=)
-    "IKJboole_ior_" => ins--or(back-end, result, x, y);
-    "IKJboole_xor_" => ins--eor(back-end, result, x, y);
-    "IKJboole_and_" => ins--and(back-end, result, x, y);
-  end select;
-
-end method op--boole;
 
 
 define method op--logbit?(back-end :: <harp-back-end>, result, index, x) => (result :: <test-result>)
@@ -1728,23 +1744,6 @@ define macro &primitive-descriptor-definer
          install-primitive-descriptor(?#"name", ?name ## "-descriptor"); }
 end macro;
 
-define macro &local-primitive-descriptor-definer
-  { define &local-primitive-descriptor ?:name, 
-      #key ?emitter:expression = #f}
-    => { define constant ?name ## "-descriptor" =
-           begin
-             let emitter = ?emitter | &call-primitive(?"name", #f);
-	     make(<primitive-descriptor>, emitter: emitter);
-           end; }
-end macro;
-
-define macro &constant-primitive-descriptor-definer
-  { define &constant-primitive-descriptor ?:name = ?primitive:* }
-    => { define constant ?name ## "-descriptor" =
-           ?primitive ## "-descriptor";
-         install-primitive-descriptor(?#"name", ?name ## "-descriptor"); }
-end macro;
-
 define function &call-c-primitive(primitive :: <string>) => (call-primitive :: <function>)
   let primitive-name =
     make-c-runtime-reference(harp-raw-mangle(as-lowercase(primitive)));
@@ -1788,10 +1787,11 @@ define &primitive-descriptor primitive-debug-message, emitter: op--debug-message
 // Machine
 define &primitive-descriptor primitive-word-size, emitter: op--word-size;
 define &primitive-descriptor primitive-header-size, emitter: op--word-size;
+define &primitive-descriptor primitive-read-cycle-counter, emitter: op--read-cycle-counter;
+define &primitive-descriptor primitive-read-return-address, emitter: op--read-return-address;
     
 // Allocation.
 define &primitive-descriptor primitive-allocate;
-define &primitive-descriptor primitive-byte-allocate;
 define &primitive-descriptor primitive-allocate-wrapper;
 define &primitive-descriptor primitive-byte-allocate-filled, emitter: op--byte-allocate-filled;
 define &primitive-descriptor primitive-byte-allocate-filled-terminated, emitter: op--byte-allocate-filled-terminated;
@@ -1829,7 +1829,6 @@ define &primitive-descriptor primitive-replace-bytes!, emitter: op--replace-byte
 // GC
 define &primitive-descriptor primitive-pin-object, emitter: ins--move;
 define &primitive-descriptor primitive-unpin-object, emitter: op--ignore-result(ins--force-u);
-// define &primitive-descriptor primitive-gc-state;
 
 define &primitive-descriptor primitive-allocation-count, emitter: op--allocation-count;
 define &primitive-descriptor primitive-initialize-allocation-count, emitter: op--initialize-allocation-count;
@@ -1909,7 +1908,6 @@ define &primitive-descriptor primitive-wrap-abstract-integer;
 define &primitive-descriptor primitive-wrap-unsigned-abstract-integer;
 define &primitive-descriptor primitive-unwrap-abstract-integer;
 
-define &primitive-descriptor primitive-machine-word-boole, emitter: op--boole;
 define &primitive-descriptor primitive-machine-word-logand, emitter: ins--and;
 define &primitive-descriptor primitive-machine-word-logior, emitter: ins--or;
 define &primitive-descriptor primitive-machine-word-logxor, emitter: ins--eor;
@@ -2084,10 +2082,6 @@ define &primitive-descriptor primitive-double-float-atan, emitter: op--datan;
 define &primitive-descriptor primitive-single-float-as-double, emitter: ins--single-to-double-float;
 define &primitive-descriptor primitive-double-float-as-single, emitter: ins--double-to-single-float;
 
-define &local-primitive-descriptor primitive-float-class;
-define &constant-primitive-descriptor primitive-single-float-class = primitive-float-class;
-define &constant-primitive-descriptor primitive-double-float-class = primitive-float-class;
-
 // Checks
 define &primitive-descriptor primitive-instance?, emitter: emit-instance-check;
 define &primitive-descriptor primitive-type-check, reference: $primitive-type-check;
@@ -2131,10 +2125,10 @@ define &primitive-descriptor primitive-initialized-slot-value, emitter: op--init
 
 // Calling Convention.
 define &primitive-descriptor primitive-function-parameter, emitter: op--function-parameter;
-define &primitive-descriptor primitive-lambda-parameter, emitter: op--function-parameter;
 define &primitive-descriptor primitive-next-methods-parameter, emitter: op--next-methods-parameter;
 define &primitive-descriptor primitive-set-generic-function-entrypoints;
 define &primitive-descriptor primitive-set-accessor-method-xep;
+define &primitive-descriptor primitive-callable-as-engine-node?, emitter: op--true;
 
 // Apply.
 define &primitive-descriptor primitive-xep-apply;
@@ -2163,8 +2157,6 @@ define &primitive-descriptor primitive-preboot-symbols;
 
 // Operating System
 define &primitive-descriptor primitive-exit-application;
-define &primitive-descriptor primitive-start-timer;
-define &primitive-descriptor primitive-stop-timer;
 
 
 define macro at-primitive-definer
@@ -2196,6 +2188,8 @@ define at-primitive c-float,           load: op--load-float-index,     store: op
 define at-primitive c-double,          load: op--load-dfloat-index,     store: op--store-dfloat-index;
 define at-primitive c-long-double,     load: op--load-dfloat-index,     store: op--store-dfloat-index;
 define at-primitive c-pointer,         load: op--load-index,   store: op--store-index;
+define at-primitive c-size-t,          load: op--load-index,   store: op--store-index;
+define at-primitive c-ssize-t,         load: op--load-index,   store: op--store-index;
 
 define macro c-primitive-field-definer
   {define c-primitive-field ?:name }

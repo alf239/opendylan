@@ -10,7 +10,6 @@
 /*
 #define THREAD_AWARE_C_LIBS
 */
-#define THREADS_RUN_TIME_LIB
 
 #include <assert.h>
 #include <stdlib.h>
@@ -25,6 +24,7 @@
 #include <windows.h>
 
 #include "windows-threads-primitives.h"
+#include "thread-utils.h"
 
 
 /*****************************************************************************/
@@ -319,20 +319,19 @@ extern void *dylan_false;
 
 /* 1 */
 THREADS_RUN_TIME_API  ZINT
-primitive_make_thread(DTHREAD *newthread, D_NAME name,
-                      ZINT zpriority, ZFN func, BOOL synchronize)
+primitive_make_thread(DTHREAD *newthread, ZFN func, BOOL synchronize)
 {
   HANDLE hThread;
   HANDLE  *  events;
   DWORD  idThread;
-  int    priority = (int)zpriority >> 2;
+  int    priority = newthread->priority >> 2;
   DTHREAD **newthread_ptr;
 
   newthread_ptr = (DTHREAD **)(dylan__malloc__ambig(4));
   newthread_ptr[0] = newthread;
 
   assert(newthread != NULL);
-  assert(IS_ZINT(zpriority));
+  assert(IS_ZINT(newthread->priority));
   assert(func != NULL);
 
 
@@ -1391,6 +1390,8 @@ primitive_initialize_current_thread(DTHREAD *thread, BOOL synchronize)
   int         size;
 
   assert(thread != NULL);
+
+  thread->thread_id = I(dylan_current_thread_id());
 
   if (synchronize) {
     events = thread->handle1;

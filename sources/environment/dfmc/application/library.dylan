@@ -31,7 +31,7 @@ end library dfmc-environment-application;
 define module dfmc-application
   use environment-imports,
     rename: { load-library => os/load-library,
-	      thread-name => threads/thread-name };
+              thread-name => threads/thread-name };
   use dylan-extensions,
      import: {<abstract-integer>};
   use threads,
@@ -41,8 +41,7 @@ define module dfmc-application
     import: {<byte-vector>};
 
   use project-manager-interface,
-    exclude: { build-project,
-               save-project-database,
+    exclude: { save-project-database,
                project-compilation-mode, project-compilation-mode-setter };
 
   use channels;
@@ -51,13 +50,11 @@ define module dfmc-application
     // via project-manager-interface.  (Many of these are renamed but
     // not used.  Not sure why they weren't just excluded.  --cgay)
     rename: { close-project => env/close-project,
-	      project-name => env/project-name,
+              project-name => env/project-name,
               project-source-location => env/project-source-location,
-	      project-other-sources => env/project-other-sources,
-	      open-project => env/open-project,
+              project-other-sources => env/project-other-sources,
+              open-project => env/open-project,
               save-project => env/save-project,
-	      default-build-script => env/default-build-script,
-	      default-build-script-setter => env/default-build-script-setter,
               project-target-type => env/project-target-type,
               <project-target-type> => env/<project-target-type>,
               project-target-type-setter => env/project-target-type-setter,
@@ -68,6 +65,8 @@ define module dfmc-application
               project-read-only? => env/project-read-only?,
               project-compiler-back-end => env/project-compiler-back-end,
               project-compiler-back-end-setter => env/project-compiler-back-end-setter,
+              project-executable-name => env/project-executable-name,
+              project-executable-name-setter => env/project-executable-name-setter,
               session-property => env/session-property,
               session-property-setter => env/session-property-setter };
 
@@ -76,24 +75,24 @@ define module dfmc-application
 
   use debugger-manager,
     rename: { stop-application   => dm-stop-application,
-	      kill-application   => dm-kill-application,
-	      stack-frame-thread => dm-stack-frame-thread,
-	      close-application  => dm-close-application,
-	      <thread-profile>   => dm-<thread-profile>,
-	      thread-state       => dm-thread-state,
-	      thread-suspended?  => dm-thread-suspended?,
-	      application-stopped? => dm-application-stopped?,
-	      application-just-interacted? => dm-application-just-interacted?,
-	      <application-profile> => dm-<application-profile>,
-	      <application-snapshot> => dm-<application-snapshot>,
-	      <thread-snapshot> => dm-<thread-snapshot>,
-	      application-profile-threads => dm-application-profile-threads,
-	     set-application-class-breakpoint => dm-set-application-class-breakpoint,
-	     clear-application-class-breakpoint => dm-clear-application-class-breakpoint,
-	     clear-application-class-breakpoints => dm-clear-application-class-breakpoints },
+              kill-application   => dm-kill-application,
+              stack-frame-thread => dm-stack-frame-thread,
+              close-application  => dm-close-application,
+              <thread-profile>   => dm-<thread-profile>,
+              thread-state       => dm-thread-state,
+              thread-suspended?  => dm-thread-suspended?,
+              application-stopped? => dm-application-stopped?,
+              application-just-interacted? => dm-application-just-interacted?,
+              <application-profile> => dm-<application-profile>,
+              <application-snapshot> => dm-<application-snapshot>,
+              <thread-snapshot> => dm-<thread-snapshot>,
+              application-profile-threads => dm-application-profile-threads,
+             set-application-class-breakpoint => dm-set-application-class-breakpoint,
+             clear-application-class-breakpoint => dm-clear-application-class-breakpoint,
+             clear-application-class-breakpoints => dm-clear-application-class-breakpoints },
     exclude: { connection-open?, connection-open?-setter },
     export: {application-running-on-code-entry?,
-	     application-running-on-code-entry?-setter};
+             application-running-on-code-entry?-setter};
   use tether-downloader;
   use interactive-downloader;
   use interactive-symbol-table;

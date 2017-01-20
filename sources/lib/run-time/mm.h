@@ -17,7 +17,12 @@
 #define mm_h
 
 #include <stddef.h>
-#include <stdio.h>
+
+#ifdef OPEN_DYLAN_PLATFORM_WINDOWS
+#define RUN_TIME_API __declspec( dllexport )
+#else
+#define RUN_TIME_API
+#endif
 
 /* Error Codes */
 
@@ -189,21 +194,9 @@ extern MMAllocHandler MMReserveWrapperHandler(MMAllocHandler handler);
  * be freed explicitly.
  */
 
-extern void *MMAllocMisc(size_t size);
-extern MMAllocHandler MMAllocMiscHandler(MMAllocHandler handler);
-extern void MMFreeMisc(void *p, size_t size);
-
-
-/* Return the Collection Count
- *
- * MMCollectCount returns the number of garbage collections which
- * have taken place since the MM subsystem was initialized.  Things
- * which rely on the address of an object must examine this to see
- * if their information is out of date, since a collection may move
- * objects.
- */
-
-extern unsigned MMCollectCount(void);
+RUN_TIME_API extern void *MMAllocMisc(size_t size);
+RUN_TIME_API extern MMAllocHandler MMAllocMiscHandler(MMAllocHandler handler);
+RUN_TIME_API extern void MMFreeMisc(void *p, size_t size);
 
 
 /* Declare Roots for Garbage Collection

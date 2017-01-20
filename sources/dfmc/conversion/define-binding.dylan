@@ -25,33 +25,33 @@ end function;
 define method install-definition (model-object, form, name) => ()
 end method;
 
-define method install-definition 
+define method install-definition
     (model-object, form :: <booted-constant-definition>, name) => ()
   model-definition(model-object) := form;
 end method;
 
-define method install-definition 
+define method install-definition
     (model-object :: <&type>, form :: <binding-defining-form>, name) => ()
   unless (model-has-definition?(model-object))
     model-definition(model-object) := form;
   end unless;
 end method;
 
-define method install-definition 
+define method install-definition
     (model-object :: <&namespace>, form :: <binding-defining-form>, name) => ()
   unless (model-has-definition?(model-object))
     model-definition(model-object) := form;
   end unless;
 end method;
 
-define method install-definition 
+define method install-definition
     (model-object :: <&signature>, form :: <binding-defining-form>, name) => ()
   unless (model-has-definition?(model-object))
     model-definition(model-object) := form;
   end unless;
 end method;
 
-define method install-definition 
+define method install-definition
     (model-object :: <&method>, form :: <binding-defining-form>, name) => ()
   unless (model-has-definition?(model-object))
     model-definition(model-object) := form;
@@ -67,32 +67,30 @@ define compiler-sideways method compute-and-install-form-model-objects
   let init-model :: <&method> =
     convert-top-level-initializer
     (generate-binding-defining-fragment(form),
-     debug-name: 
+     debug-name:
        generate-variable-names-debug-name(names));
   maybe-compute-and-install-method-dfm(init-model);
   // Type infer init-model
-  type-initializer-method(init-model);
+  type-estimate(init-model);
   run-compilation-passes(init-model);
-  let complete? :: <boolean> = #t ;
   unless(empty-method?(init-model))
     form-init-method(form) := init-model;
-    complete? := #f ;
   end;
   // now set definitions where appropriate
   for (variable-name in names)
     if (form-defines-variable?(form, variable-name))
       let binding = lookup-binding(variable-name, reference?: #f);
       let (model-object, computed?) =
-	untracked-binding-model-object-if-computed(binding);
+        untracked-binding-model-object-if-computed(binding);
       if (computed?)
-	install-definition (model-object, form, variable-name);
+        install-definition (model-object, form, variable-name);
       end;
     end;
   end;
 end method;
 
 // TODO: May have to extend this to other things like FFI definitions.
-define method form-required-static? 
+define method form-required-static?
     (form :: <literal-value-binding-defining-form>) => (well? :: <boolean>)
   // The magic constants defined for libraries and modules.
   instance?(form-parent-form(form), <namespace-defining-form>)
@@ -101,7 +99,7 @@ end method;
 define compiler-sideways method compute-and-install-form-model-objects
     (form :: <literal-value-binding-defining-form>) => ();
   // Thread variable locations always have to be dynamically allocated and
-  // initialized, so... 
+  // initialized, so...
   // We don't want to fold away constants in loose mode either, so if
   // the definition's dynamic, don't expose its value.
   if ((form-thread?(form) | form-dynamic?(form) | form-redefinition?(form))
@@ -115,9 +113,9 @@ define compiler-sideways method compute-and-install-form-model-objects
       lookup-constant-model-object
       (#f,
        spec-type-expression
-	 (first(spec-value-required-variable-specs(form-bindings-spec(form)))));
+         (first(spec-value-required-variable-specs(form-bindings-spec(form)))));
     if (var-type &
-	  ^instance?(model-object, var-type))
+          ^instance?(model-object, var-type))
       define-model-object-and-type(name, model-object, var-type);
       install-definition (model-object, form, name);
     else
@@ -143,14 +141,14 @@ define compiler-sideways method compute-and-install-form-model-objects
         lambda-top-level?(model) := #t;
         define-model-object(name, model);
       else
-	form-evaluation-tried-and-failed?(form) := #t;
+        form-evaluation-tried-and-failed?(form) := #t;
         next-method();
       end;
     end;
   end if;
 end method;
 
-define compiler-sideways method form-top-level-methods 
+define compiler-sideways method form-top-level-methods
     (form :: <constant-method-definition>) => (methods :: <sequence>)
   let binding = form-variable-binding(form);
   let model = untracked-binding-model-object-if-computed(binding);
@@ -175,7 +173,7 @@ define method form-init-binding-expression (form) => (form)
   form-init-expression(form)
 end method;
 
-define method form-init-binding-expression 
+define method form-init-binding-expression
     (form :: <constant-method-definition>) => (form)
   let init-expression = form-init-expression(form);
   if (method-fragment?(init-expression))
@@ -193,19 +191,19 @@ define method generate-binding-defining-fragment
     let init-expression = form-init-binding-expression(form);
     let all-var-specs
       = concatenate(spec-value-required-variable-specs(bindings-spec),
-                    if (spec-value-rest?(bindings-spec)) 
+                    if (spec-value-rest?(bindings-spec))
                       list(spec-value-rest-variable-spec(bindings-spec))
                     else
                       #()
                     end);
     let type-bindings = map(generate-type-binding, all-var-specs);
     let tmp-binding = map(generate-tmp-binding, all-var-specs, type-bindings);
-    let binding-init 
+    let binding-init
       = map(curry(generate-binding-init, form), all-var-specs, type-bindings);
-    let type-binding-decls 
+    let type-binding-decls
       = map(method (type-binding, var-spec)
               let type-expression = spec-type-expression(var-spec);
-              #{ let ?type-binding :: <type> = ?type-expression; } 
+              #{ let ?type-binding :: <type> = ?type-expression; }
             end,
             type-bindings,
             all-var-specs);
@@ -221,13 +219,13 @@ define method generate-type-binding (spec :: <variable-spec>)
   #{ "_" ## ?name ## "-type_" }
 end method;
 
-define method generate-tmp-binding 
+define method generate-tmp-binding
     (spec :: <required-variable-spec>, type-name)
   let name = spec-variable-name(spec);
   #{ ?name ## "-tmp" :: ?type-name }
 end method;
 
-define method generate-tmp-binding 
+define method generate-tmp-binding
     (spec :: <rest-variable-spec>, type-name)
   let name = spec-variable-name(spec);
   if (type-name)
@@ -237,7 +235,7 @@ define method generate-tmp-binding
   end
 end method;
 
-define method generate-binding-init 
+define method generate-binding-init
     (form, spec :: <variable-spec>, type-name)
   let name = spec-variable-name(spec);
   if (form-defines-variable?(form, name))

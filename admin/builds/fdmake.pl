@@ -8,7 +8,7 @@ use Time::HiRes qw(time);
 
 my $lidfile_line;
 
-my $platform_name = $ENV{'OPEN_DYLAN_PLATFORM_NAME'};
+my $platform_name = $ENV{'OPEN_DYLAN_TARGET_PLATFORM'};
 
 my $user_root = $ENV{'OPEN_DYLAN_USER_ROOT'};
 my $user_registries = $ENV{'OPEN_DYLAN_USER_REGISTRIES'};
@@ -16,6 +16,7 @@ my $user_sources = $ENV{'OPEN_DYLAN_USER_SOURCES'};
 
 my $build_logs = $ENV{'OPEN_DYLAN_BUILD_LOGS'};
 
+my $lldb_arguments = "-o \"b Kdisplay_conditionYcommand_linesVenvironment_commandsI\"";
 my $verbose;
 my $debugger;
 my $gdb;
@@ -156,7 +157,7 @@ sub build_library {
     if ($gdb) {
         $command = "gdb --args " . $command;
     } elsif ($lldb) {
-        $command = "lldb -- " . $command;
+        $command = "lldb $lldb_arguments -- " . $command;
     }
     if (exists $header->{'target-type'}) {
         $command .= " -target " . $header->{'target-type'};
@@ -669,7 +670,7 @@ sub parse_header {
             # Continuation line -- part of a multi-line value
             $contents{$last_keyword} .= ' ' . $1;
         } else {
-            if(!/^([-A-Za-z0-9_!&*<>|^\$\%\@\?]+):\s*(.*)\s*$/) {
+            if(!/^([-+A-Za-z0-9_!&*<>|^\$\%\@\?]+):\s*(.*)\s*$/) {
                 print STDERR "$file:$lidfile_line: Warning: ",
                              "bad keyword line\n";
                 next;

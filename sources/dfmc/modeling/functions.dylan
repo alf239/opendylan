@@ -5,9 +5,9 @@ License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 
-//// 
+////
 //// CALLABLE-OBJECT
-//// 
+////
 
 define abstract class <&callable-object> (<object>)
 end class <&callable-object>;
@@ -15,9 +15,9 @@ end class <&callable-object>;
 define generic ^iep (function);
 define generic ^iep-setter (value, function);
 
-//// 
+////
 //// FUNCTION
-//// 
+////
 
 define inline-only function ^function-specializers (f :: <&function>)
  => (types)
@@ -42,9 +42,9 @@ define generic ^xep-setter (value, f :: <&function>);
 define method xep (f :: <&function>) ^xep(f) end;
 define method xep-setter (x, f :: <&function>) ^xep(f) := x end;
 
-//// 
+////
 //// GENERIC-FUNCTION
-//// 
+////
 
 
 // This object is just a place to store more datastructure in a g.f. (it goes in the cache slot).
@@ -64,11 +64,14 @@ define primary &class <simple-typechecked-gf-cache-info> (<gf-cache-info>)
     init-value: 0, init-keyword: argmask:;
 end &class;
 
-define primary &class <partial-dispatch-gf-cache-info> (<simple-typechecked-gf-cache-info>)
-  &slot partial-dispatch-gf-cache-info-caches :: <list>,
-    init-value: #(), init-keyword: caches:;
-end &class;
+// We associate a <dynamic-extent> with each lambda, method and GF.
+// It contains a list of those arguments that can safely have dynamic
+// extent when passed to the function.  We use #t as an abbreviation
+// to indicate that they all can.  The value #f is used to indicate that
+// the extent has not been computed yet.
 
+define constant <dynamic-extent> =
+  type-union(limited(<vector>, of: <integer>), <boolean>);
 
 define compiler-open generic ^generic-function-methods (gf :: <&generic-function>);
 define compiler-open generic ^generic-function-methods-setter (value, gf :: <&generic-function>);
@@ -76,14 +79,14 @@ define compiler-open generic ^generic-function-methods-setter (value, gf :: <&ge
 
 // Warning - run-time.h knows about this object's format!
 define abstract primary &class <generic-function> (<function>)
-  lazy &slot function-signature :: false-at-compile-time-or(<signature>), 
+  lazy &slot function-signature :: false-at-compile-time-or(<signature>),
     init-value: #f,
     init-keyword: signature:;
   &slot %gf-cache, init-value: #f;
   lazy &slot debug-name :: <object>,
     init-value:   #f,
     init-keyword: debug-name:;
-  lazy &computed-slot generic-function-methods :: <list>, 
+  lazy &computed-slot generic-function-methods :: <list>,
     init-value: #();
   // If we start using this it should probably be made lazy, as it would
   // only be used for creating the runtime object, not compilation.
@@ -91,11 +94,10 @@ define abstract primary &class <generic-function> (<function>)
 
   // Compile-time slots.
   slot ^generic-function-properties :: <integer>, init-value: 0;
-  lazy slot signature-spec :: <signature-spec>, 
+  lazy slot signature-spec :: <signature-spec>,
     required-init-keyword: signature-spec:;
   lazy slot %generic-function-domains :: <list> = #();
-  slot parameters-dynamic-extent, 
-    init-value: #f,
+  slot parameters-dynamic-extent :: <dynamic-extent> = #f,
     init-keyword: dynamic-extent:;
   slot ^generic-function-cache-info = #f;
   metaclass <function-class>;
@@ -143,7 +145,7 @@ end &class;
 // method libraries and domain info.
 define primary &class <incremental-generic-function> (<generic-function>)
   &slot incremental-gf-module :: <module>, init-keyword: module:;
-  lazy &slot incremental-gf-domain-info /* :: false-or(<domain>) */, 
+  lazy &slot incremental-gf-domain-info /* :: false-or(<domain>) */,
     init-value: #f;
   lazy &slot incremental-gf-method-libraries :: <simple-object-vector>,
     init-keyword: method-libraries:,
@@ -170,9 +172,9 @@ define method ^initialize (g :: <&incremental-generic-function>, #key)
   ^incremental-gf-module(g) := model-module-model(g);
 end method;
 
-//// 
+////
 //// METHOD
-//// 
+////
 
 // HACK: SHOULDN'T NEED THE FOLLOWING BUT &CLASS DOESN'T SUPPORT THESE MIXINS
 define abstract class <&referenced-object> (<referenced-object>) end;
@@ -185,7 +187,7 @@ define method lambda-top-level? (f :: <&method>) => (well? :: <boolean>)
   #t
 end method;
 
-define method lambda-top-level?-setter 
+define method lambda-top-level?-setter
     (x, f :: <&method>) => (well? :: <boolean>)
   #t
 end method;
@@ -201,12 +203,10 @@ define compiler-open generic parameters-setter (value, function);
 define compiler-open generic body (function);
 define compiler-open generic body-setter (value, function);
 
-define compiler-open generic environment (function);
-define compiler-open generic environment-setter (value, function);
-
-define method environment (f :: <&method>) => (res)
-  #[]
-end method;
+define compiler-open generic environment (function)
+ => (environment :: false-or(<environment>));
+define compiler-open generic environment-setter
+    (value :: false-or(<environment>), function);
 
 define compiler-open generic function (function);
 define compiler-open generic function-setter (value, function);
@@ -253,16 +253,16 @@ end method;
 
 
 
-//// 
+////
 //// LAMBDA
-//// 
+////
 
 define dood-class <lambda-body> (<object>)
   // TODO: WHAT TYPE IS THIS?
   weak slot lambda-body-spec = #f,
     reinit-expression: #f,
     init-keyword: body-spec:;
-  slot lambda-dfm-environment = #f,
+  slot lambda-dfm-environment :: false-or(<environment>) = #f,
     init-keyword: environment:;
   // TODO: TIE TO REAL PARAMETERS
   slot lambda-dfm-parameters :: false-or(<simple-object-vector>) = #f,
@@ -276,7 +276,7 @@ end dood-class;
 
 // Warning - run-time.h knows about this object's format!
 define primary &class <lambda> (<method>)
-  lazy &slot function-signature :: false-at-compile-time-or(<signature>), 
+  lazy &slot function-signature :: false-at-compile-time-or(<signature>),
     init-value: #f,
     init-keyword: signature:;
   &computed-slot mep,
@@ -288,14 +288,12 @@ define primary &class <lambda> (<method>)
     init-value: #f,
     init-keyword: compiler-debug-name:;
   // Compile-time slots.
-  // slot call-site-summaries = make(<call-site-summary-table>);
   slot function-properties :: <integer> = 0;
   // definition slots
-  lazy slot signature-spec :: <signature-spec>, 
+  lazy slot signature-spec :: <signature-spec>,
     required-init-keyword: signature-spec:;
   // model slots
-  slot parameters-dynamic-extent, 
-    init-value: #f,
+  slot parameters-dynamic-extent :: <dynamic-extent> = #f,
     init-keyword: dynamic-extent:;
   lazy slot lambda-heap = #f;
   // dfm slots
@@ -308,13 +306,13 @@ define runtime-slot-offset mep (<lambda>);
 define macro lambda-body-transfer-definer
   { define lambda-body-transfer ?slotname:name , ?otherslotname:name ( ?type:* ) ; }
     => { define inline method ?slotname (f :: <&lambda>) => (v :: ?type)
-	   let body = lambda-body(f);
+           let body = lambda-body(f);
            body & ?otherslotname(body);
-	 end method;
-	 define inline method ?slotname ## "-setter" (v :: ?type , f :: <&lambda>)
-	  => (v :: ?type)
+         end method;
+         define inline method ?slotname ## "-setter" (v :: ?type , f :: <&lambda>)
+          => (v :: ?type)
            ?otherslotname ## "-setter"(v, lambda-body(f))
-	 end method }
+         end method }
 end macro;
 
 // TODO: DO THIS ALL IN ONE
@@ -322,10 +320,10 @@ end macro;
 define lambda-body-transfer body-spec,
   lambda-body-spec (<object>);
 define lambda-body-transfer environment,
-  lambda-dfm-environment (<object>);
-define lambda-body-transfer parameters,         
+  lambda-dfm-environment (false-or(<environment>));
+define lambda-body-transfer parameters,
   lambda-dfm-parameters (false-or(<simple-object-vector>));
-define lambda-body-transfer body,               
+define lambda-body-transfer body,
   lambda-dfm-body (<object>);
 define lambda-body-transfer optimization-queue,
   lambda-dfm-optimization-queue (false-or(<stretchy-object-vector>));
@@ -345,7 +343,7 @@ define leaf packed-slots function-properties (<&lambda>, <object>)
 end packed-slots;
 
 define method ^make
-    (class == <&method>, #rest all-keys, 
+    (class == <&method>, #rest all-keys,
      #key definition, signature-spec, #all-keys)
  => (res :: <&method>)
 //  let dyn? = definition & form-dynamic?(definition);
@@ -357,34 +355,26 @@ define method ^make
 //  if (definition)
 //    format-out("\ndynamic=%= name=%= gdef=%= sealed=%= incr=%=", dyn?, name?, gdef, sealed?, incr?)
 //  end if;
-  apply(^make, 
-	if (~signature-spec | spec-argument-key?(signature-spec))
-	  if (definition & ~form-dynamic?(definition)) // top-level?
-	    // if (incr?) <&incremental-keyword-method> else <&keyword-method> end
-	    <&keyword-method>
-	  else 
-	    // if (incr?) <&incremental-keyword-closure-method> else <&keyword-closure-method> end
-	    <&keyword-closure-method>
-	  end if
-	else
-	  if (definition & ~form-dynamic?(definition)) // top-level?
-	    // if (incr?) <&incremental-simple-method> else <&simple-method> end
-	    <&simple-method>
-	  else 
-	    // if (incr?) <&incremental-simple-closure-method> else <&simple-closure-method> end
-	    <&simple-closure-method>
-	  end if
-	end if,
-	all-keys);
+  apply(^make,
+        if (~signature-spec | spec-argument-key?(signature-spec))
+          if (definition & ~form-dynamic?(definition)) // top-level?
+            // if (incr?) <&incremental-keyword-method> else <&keyword-method> end
+            <&keyword-method>
+          else
+            // if (incr?) <&incremental-keyword-closure-method> else <&keyword-closure-method> end
+            <&keyword-closure-method>
+          end if
+        else
+          if (definition & ~form-dynamic?(definition)) // top-level?
+            // if (incr?) <&incremental-simple-method> else <&simple-method> end
+            <&simple-method>
+          else
+            // if (incr?) <&incremental-simple-closure-method> else <&simple-closure-method> end
+            <&simple-closure-method>
+          end if
+        end if,
+        all-keys);
 end method;
-
-
-// define variable *dummy-call-site-summaries* = #f;
-// 
-// define method call-site-summaries (x :: <&lambda>) => (res :: <call-site-summary-table>)
-//   *dummy-call-site-summaries*
-//     | (*dummy-call-site-summaries* := make(<call-site-summary-table>))
-// end method;
 
 define method ^function-next? (x :: <&lambda>) => (z)
   lambda-next?(x)
@@ -416,9 +406,9 @@ define method ^mep-setter (v, lambda :: <&method>) %mep(lambda) := v end;
 
 define method mep (f :: <&method>) %mep(f) end;
 
-//// 
+////
 //// SIMPLE-METHOD
-//// 
+////
 
 define primary &class <simple-method> (<lambda>)
   metaclass <function-class>;
@@ -445,7 +435,7 @@ define &class <closure-method-mixin> (<object>)
 end &class;
 
 // HACK: SHOULDN'T GENERATE THESE IN THE FIRST PLACE
-ignore(^environment-element-values); 
+ignore(^environment-element-values);
 
 // HACK: DONT REALLY NEED THESE UNTIL CLOSURES ARE BUILT AT COMPILE-TIME
 
@@ -465,23 +455,23 @@ define method ^environment-element
   #f
 end method;
 
-//// 
+////
 //// SIMPLE-CLOSURE-METHOD
-//// 
+////
 
-define primary &class <simple-closure-method> 
+define primary &class <simple-closure-method>
     (<simple-method>, <closure-method-mixin>)
   metaclass <function-class>;
 end &class <simple-closure-method>;
 
-//define primary &class <incremental-simple-closure-method> 
+//define primary &class <incremental-simple-closure-method>
 //    (<incremental-method-mixin>, <simple-closure-method>)
 //  metaclass <function-class>;
 //end &class <incremental-simple-closure-method>;
 
-//// 
+////
 //// KEYWORD-METHOD
-//// 
+////
 
 define primary &class <keyword-method> (<lambda>)
   &computed-slot iep,
@@ -517,7 +507,7 @@ end method;
 define method keyword-specifiers (f :: <&keyword-method>)
   %keyword-specifiers(f)
 end method;
-define method keyword-specifiers-setter (v, f :: <&keyword-method>) 
+define method keyword-specifiers-setter (v, f :: <&keyword-method>)
   %keyword-specifiers(f) := mapped-model(v)
 end method;
 define method ^keyword-specifiers (f :: <&keyword-method>)
@@ -527,29 +517,29 @@ define method ^keyword-specifiers-setter (v, f :: <&keyword-method>)
  %keyword-specifiers(f) := mapped-model(v)
 end method;
 
-//// 
+////
 //// KEYWORD-CLOSURE-METHOD
-//// 
+////
 
 define primary &class <keyword-closure-method> (<keyword-method>, <closure-method-mixin>)
   metaclass <function-class>;
 end &class <keyword-closure-method>;
 
-//define primary &class <incremental-keyword-closure-method> 
+//define primary &class <incremental-keyword-closure-method>
 //  (<incremental-method-mixin>, <keyword-closure-method>)
 //  metaclass <function-class>;
 //end &class <incremental-keyword-closure-method>;
 
-//// 
+////
 //// INITIALIZER-METHOD
-//// 
+////
 
 // Initializer methods are automatically generated by the compiler for
 // each (concrete) class. This is a compile-time only distinction.
 
 define class <&initializer-method> (<&keyword-method>) end;
 
-define method ^class-constructor 
+define method ^class-constructor
     (class :: <&implementation-class>) => (constructor :: <&method>)
   if (slot-initialized?(class, %class-constructor))
     %class-constructor(class)
@@ -561,7 +551,7 @@ define method ^class-constructor
     // This forces installation.
     if (~lookup-model-object
           (creator-name, default: #f, error-if-circular?: #f))
-      // If there's no constructor model, or if we can't use it yet, use 
+      // If there's no constructor model, or if we can't use it yet, use
       // the default for now.
       %class-constructor(class) := dylan-value(#"default-class-constructor");
     end;
@@ -575,24 +565,24 @@ define method ^class-constructor-setter
   %class-constructor(class) := constructor
 end method;
 
-//// 
+////
 //// SLOT-INITIALIZER-METHOD
-//// 
+////
 
 // Slot initializer methods are generated for init functions or expressions,
 // another compile-time only distinction.
 
 define class <&slot-initializer-method> (<&lambda>) end;
 
-//// 
+////
 //// ACCESSOR-METHOD
-//// 
+////
 
 // TODO: figure out how to rearrange things so these can be abstract
 define /* abstract */ primary &class <accessor-method> (<method>)
   runtime-constant &slot method-slot-descriptor, init-value: #f,
     init-keyword: slot-descriptor:;
-  slot ^function-signature :: false-or(<&signature>), 
+  slot ^function-signature :: false-or(<&signature>),
     init-value: #f,
     init-keyword: signature:;
 end &class <accessor-method>;
@@ -617,49 +607,53 @@ define /* abstract */ &class <repeated-accessor-method> (<accessor-method>)
 end &class <repeated-accessor-method>;
 
 define &class <getter-method> (<getter-accessor-method>,
-			       <single-accessor-method>)
+                               <single-accessor-method>)
 end &class <getter-method>;
 
 //define &class <incremental-getter-method> (<incremental-method-mixin>, <getter-method>)
 //end &class <incremental-getter-method>;
 
 define method parameters-dynamic-extent (m :: <&getter-method>)
-  #[]
+ => (extent :: <dynamic-extent>)
+  as(limited(<vector>, of: <integer>), #[])
 end method;
 
 define &class <setter-method> (<setter-accessor-method>,
-			       <single-accessor-method>)
+                               <single-accessor-method>)
 end &class <setter-method>;
 
 //define &class <incremental-setter-method> (<incremental-method-mixin>, <setter-method>)
 //end &class <incremental-setter-method>;
 
 define method parameters-dynamic-extent (m :: <&setter-method>)
-  #[1]
+ => (extent :: <dynamic-extent>)
+  as(limited(<vector>, of: <integer>), #[1])
 end method;
 
 define &class <repeated-getter-method> (<getter-accessor-method>,
-					<repeated-accessor-method>)
+                                        <repeated-accessor-method>)
 end &class <repeated-getter-method>;
 
-//define &class <incremental-repeated-getter-method> (<incremental-method-mixin>, 
-//						    <repeated-getter-method>)
+//define &class <incremental-repeated-getter-method> (<incremental-method-mixin>,
+//                                                    <repeated-getter-method>)
 //end &class <incremental-repeated-getter-method>;
 
 define method parameters-dynamic-extent (m :: <&repeated-getter-method>)
-  #[1]
+ => (extent :: <dynamic-extent>)
+  as(limited(<vector>, of: <integer>), #[1])
 end method;
 
 define &class <repeated-setter-method> (<setter-accessor-method>,
-					<repeated-accessor-method>)
+                                        <repeated-accessor-method>)
 end &class <repeated-setter-method>;
 
 //define &class <incremental-repeated-setter-method> (<incremental-method-mixin>,
-//						    <repeated-setter-method>)
+//                                                    <repeated-setter-method>)
 //end &class <incremental-repeated-setter-method>;
 
 define method parameters-dynamic-extent (m :: <&repeated-setter-method>)
-  #[1, 2]
+ => (extent :: <dynamic-extent>)
+  as(limited(<vector>, of: <integer>), #[1, 2])
 end method;
 
 /*
@@ -694,18 +688,18 @@ end &class;
 define method ^make
     (class == <&copy-down-method>, #rest all-keys, #key signature-spec, #all-keys)
  => (res :: <&copy-down-method>)
-  apply(^make, 
-	if (spec-argument-key?(signature-spec))
-	  <&keyword-copy-down-method>
-	else
-	  <&simple-copy-down-method>
-	end if,
-	all-keys)
+  apply(^make,
+        if (spec-argument-key?(signature-spec))
+          <&keyword-copy-down-method>
+        else
+          <&simple-copy-down-method>
+        end if,
+        all-keys)
 end method;
 
-//// 
+////
 //// CODE
-//// 
+////
 
 define abstract class <&runtime-object> (<object>)
 end class;
@@ -724,15 +718,15 @@ define property-delegation (<&code>, function)
   model-definition, model-creator
 end property-delegation;
 
-//// 
+////
 //// LAMBDA-OR-CODE
-//// 
+////
 
 define constant <&lambda-or-code> = type-union(<&lambda>, <&code>);
 
-//// 
+////
 //// ENTRY-POINTS
-//// 
+////
 
 define abstract primary compiler-class <any-kernel-ep> (<code>) end;
 define abstract primary compiler-class <any-code-based-ep> (<code>) end;
@@ -757,13 +751,13 @@ end method;
 
 define abstract class <&shared-entry-point> (<&runtime-object>, <emitted-object>)
   keyword function:;
-  constant slot ^entry-point-key? :: <boolean>  = #f, 
+  constant slot ^entry-point-key? :: <boolean>  = #f,
     init-keyword: key?:;
-  constant slot ^entry-point-rest? :: <boolean> = #f, 
+  constant slot ^entry-point-rest? :: <boolean> = #f,
     init-keyword: rest?:;
-  constant slot ^entry-point-number-required :: <integer> = 0, 
+  constant slot ^entry-point-number-required :: <integer> = 0,
     init-keyword: number-required:;
-  constant slot ^entry-point-number-keys :: <integer> = 0, 
+  constant slot ^entry-point-number-keys :: <integer> = 0,
     init-keyword: number-keys:;
 end class;
 
@@ -785,17 +779,17 @@ define constant <shared-entry-point-cache> = <simple-object-vector>;
 
 define function make-shared-entry-point-cache
     () => (res :: <shared-entry-point-cache>)
-  make(<shared-entry-point-cache>, 
+  make(<shared-entry-point-cache>,
        size: $max-shared-entry-point-top-cache-size)
 end function;
 
-define inline function lookup-shared-entry-point 
-    (cache :: <shared-entry-point-cache>, 
+define inline function lookup-shared-entry-point
+    (cache :: <shared-entry-point-cache>,
      type :: <class>, sig-spec :: <signature-spec>)
  => (res :: <&shared-entry-point>)
   local method as-int (x :: <boolean>) => (res :: <integer>)
-	  if (x) 1 else 0 end
-	end method;
+          if (x) 1 else 0 end
+        end method;
   let k  = spec-argument-key?(sig-spec) ~== #f;
   let kn = spec-argument-number-keys(sig-spec);
   let r  = spec-argument-rest?(sig-spec);
@@ -806,12 +800,12 @@ define inline function lookup-shared-entry-point
   let kv = element(v, n, default: #f)
              | (element(v, n) := make(<stretchy-vector>));
   let e  = element(kv, kn, default: #f)
-             | (element(kv, kn) := make(type, key?: k, rest?: r, 
-					      number-required: n, number-keys: kn));
+             | (element(kv, kn) := make(type, key?: k, rest?: r,
+                                              number-required: n, number-keys: kn));
   e
 end function;
 
-define abstract class <&xep> (<&shared-entry-point>) 
+define abstract class <&xep> (<&shared-entry-point>)
 end class;
 
 define method ^make (class == <&xep>, #key function, #all-keys) => (res :: <&xep>)
@@ -825,10 +819,10 @@ end method;
 define method ^xep-setter (value, f :: <&function>)
 end method;
 
-define class <&generic-function-xep> (<&xep>) 
+define class <&generic-function-xep> (<&xep>)
 end class;
 
-define constant $generic-function-xeps :: <shared-entry-point-cache> 
+define constant $generic-function-xeps :: <shared-entry-point-cache>
   = make-shared-entry-point-cache();
 
 define method ^make-xep (function :: <&generic-function>) => (res :: <&generic-function-xep>)
@@ -836,13 +830,13 @@ define method ^make-xep (function :: <&generic-function>) => (res :: <&generic-f
     ($generic-function-xeps, <&generic-function-xep>, signature-spec(function))
 end method;
 
-define abstract class <&method-xep> (<&xep>) 
+define abstract class <&method-xep> (<&xep>)
 end class;
 
-define class <&lambda-xep> (<&method-xep>) 
+define class <&lambda-xep> (<&method-xep>)
 end class;
 
-define constant $lambda-xeps :: <shared-entry-point-cache> 
+define constant $lambda-xeps :: <shared-entry-point-cache>
   = make-shared-entry-point-cache();
 
 define method ^make-xep (function :: <&lambda>) => (res :: <&lambda-xep>)
@@ -850,16 +844,16 @@ define method ^make-xep (function :: <&lambda>) => (res :: <&lambda-xep>)
     ($lambda-xeps, <&lambda-xep>, signature-spec(function))
 end method;
 
-define abstract class <&slot-accessor-xep> (<&method-xep>) 
+define abstract class <&slot-accessor-xep> (<&method-xep>)
   constant slot ^entry-point-name :: <byte-string> = "";
 end class;
 
-define class <&slot-getter-xep> (<&slot-accessor-xep>) 
+define class <&slot-getter-xep> (<&slot-accessor-xep>)
   inherited slot ^entry-point-number-required = 1;
   inherited slot ^entry-point-name = "slotacc_single_q_instance_getter_xep";
 end class;
 
-define class <&class-slot-getter-xep> (<&slot-getter-xep>) 
+define class <&class-slot-getter-xep> (<&slot-getter-xep>)
   inherited slot ^entry-point-name = "slotacc_single_q_class_getter_xep";
 end class;
 
@@ -869,17 +863,17 @@ define constant $class-slot-getter-xep = make(<&class-slot-getter-xep>);
 define method ^make-xep (function :: <&getter-method>) => (res :: <&slot-getter-xep>)
   if (instance?(^method-slot-descriptor(function), <&any-class-slot-descriptor>))
     $class-slot-getter-xep
-  else 
+  else
     $slot-getter-xep
   end if
 end method;
 
-define class <&slot-setter-xep> (<&slot-accessor-xep>) 
+define class <&slot-setter-xep> (<&slot-accessor-xep>)
   inherited slot ^entry-point-number-required = 2;
   inherited slot ^entry-point-name = "slotacc_single_q_instance_setter_xep";
 end class;
 
-define class <&class-slot-setter-xep> (<&slot-setter-xep>) 
+define class <&class-slot-setter-xep> (<&slot-setter-xep>)
   inherited slot ^entry-point-name = "slotacc_single_q_class_setter_xep";
 end class;
 
@@ -889,52 +883,52 @@ define constant $class-slot-setter-xep = make(<&class-slot-setter-xep>);
 define method ^make-xep (function :: <&setter-method>) => (res :: <&slot-setter-xep>)
   if (instance?(^method-slot-descriptor(function), <&any-class-slot-descriptor>))
     $class-slot-setter-xep
-  else 
+  else
     $slot-setter-xep
   end if
 end method;
 
-define class <&repeated-slot-getter-xep> (<&slot-getter-xep>) 
+define class <&repeated-slot-getter-xep> (<&slot-getter-xep>)
   inherited slot ^entry-point-number-required = 2;
   inherited slot ^entry-point-name = "slotacc_repeated_instance_getter_xep";
 end class;
 
 define constant $repeated-slot-getter-xep = make(<&repeated-slot-getter-xep>);
 
-define method ^make-xep 
+define method ^make-xep
     (function :: <&repeated-getter-method>) => (res :: <&repeated-slot-getter-xep>)
   $repeated-slot-getter-xep
 end method;
 
-define class <&repeated-slot-setter-xep> (<&slot-setter-xep>) 
+define class <&repeated-slot-setter-xep> (<&slot-setter-xep>)
   inherited slot ^entry-point-number-required = 3;
   inherited slot ^entry-point-name = "slotacc_repeated_instance_setter_xep";
 end class;
 
 define constant $repeated-slot-setter-xep = make(<&repeated-slot-setter-xep>);
 
-define method ^make-xep 
+define method ^make-xep
     (function :: <&repeated-setter-method>) => (res :: <&repeated-slot-setter-xep>)
   $repeated-slot-setter-xep
 end method;
 
-define abstract class <&mep> (<&shared-entry-point>) 
+define abstract class <&mep> (<&shared-entry-point>)
 end class;
 
 define method ^make (class == <&mep>, #key function, #all-keys) => (res :: <&mep>)
   ^make-mep(function)
 end method;
 
-define abstract class <&method-mep> (<&mep>) 
+define abstract class <&method-mep> (<&mep>)
 end class;
 
-define class <&keyword-method-mep> (<&method-mep>) 
+define class <&keyword-method-mep> (<&method-mep>)
 end class;
 
-define constant $keyword-method-meps :: <shared-entry-point-cache> 
+define constant $keyword-method-meps :: <shared-entry-point-cache>
   = make-shared-entry-point-cache();
 
-define method ^make-mep 
+define method ^make-mep
     (function :: <&keyword-method>) => (res :: <&keyword-method-mep>)
   lookup-shared-entry-point
     ($keyword-method-meps, <&keyword-method-mep>, signature-spec(function))
@@ -954,8 +948,8 @@ define method lookup-compile-stage-function (accessor :: <&code>)
 end method;
 
 define property-delegation (<&iep>, function)
-  parameters, environment, body, data, xep, keyword-specifiers,
-  maximum-label, name, binding
+  parameters, environment :: false-or(<environment>), body, data,
+  xep, keyword-specifiers, maximum-label, name, binding
 end property-delegation;
 
 define property-delegation-getters (<&iep>, function)
@@ -975,11 +969,11 @@ end method;
 ////
 
 define abstract primary &class <domain> (<object>)
-  runtime-constant lazy &slot domain-library :: <library>, 
+  runtime-constant lazy &slot domain-library :: <library>,
     init-keyword: library:;
-  lazy &slot domain-next /* :: false-or(<domain>) */, 
+  lazy &slot domain-next /* :: false-or(<domain>) */,
     init-value: #f, init-keyword: next:;
-  constant slot ^domain-types, 
+  constant slot ^domain-types,
     required-init-keyword: domain-types:;
 end &class;
 
@@ -1039,14 +1033,14 @@ define method ^domain-type (object :: <&standalone-domain>, index :: <integer>) 
   element(^domain-type-values(object), index)
 end method;
 
-define method ^domain-type-setter 
+define method ^domain-type-setter
     (value :: <&type>, object :: <&standalone-domain>, index :: <integer>)
   element(^domain-type-values(object), index) := value
 end method;
 
-//// 
+////
 //// ENGINE-NODES
-//// 
+////
 
 // **** All the following constants are copied out of D-lib-dylan:dispatch-prologue.dylan.
 // **** They are also exported from dfmc-modeling.
@@ -1212,164 +1206,157 @@ define constant stchen$s-checkedmask = $simple-typechecked-cache-arguments-limit
 define constant stchen$m-checkedmask = ash(ash(1, stchen$s-checkedmask) - 1, stchen$v-checkedmask);
 
 
-define constant $partial-dispatch-arguments-limit = 8;
-define constant pdisp$v-typemask = engine-node$v-data-start;
-define constant pdisp$s-typemask = $partial-dispatch-arguments-limit;
-define constant pdisp$m-typemask = ash(ash(1, pdisp$s-typemask) - 1, pdisp$v-typemask);
-
-
-
 define constant discriminator$v-argnum = 6;
 
 define constant discriminator$s-argnum = 8;
 
-define constant discriminator$m-argnum 
+define constant discriminator$m-argnum
   = ash(ash(1, discriminator$s-argnum) - 1, discriminator$v-argnum);
 
 define constant discriminator$v-nrequired = 14;
 define constant discriminator$s-nrequired = 8;
-define constant discriminator$m-nrequired 
+define constant discriminator$m-nrequired
   = ash(ash(1, discriminator$s-nrequired) - 1, discriminator$v-nrequired);
 
 define constant discriminator$v-restp = 22;
-// define constant discriminator$m-restp = ash(1, discriminator$v-restp);
+define constant discriminator$m-restp = ash(1, discriminator$v-restp);
 
 // define constant discriminator$v-data-start = 23;
 
 
 define constant $engine-node-callback-names :: <simple-object-vector> =
-  #[#"%gf-dispatch-absent",		// 0, absent, general-engine-node-n
-    #"%gf-dispatch-inapplicable",	// 1, inapplicable, general-engine-node-spread
-    #f,					// 2, unkeyed-single-method, single-method
-    #f,					// 3, implicit-keyed-single-method, implicit-keyed-single-method
-    #f,					// 4, explicit-keyed-single-method, explicit-keyed-single-method
-    #f,					// 5, unrestricted-keyed-single-method, unrestricted-keyed-single-method
-    #f,					// 6, reserved-terminal-n-a, general-engine-node-n-engine
-    #f,					// 7, reserved-terminal-n-b, general-engine-node-n-engine
-    #f,					// 8, reserved-terminal-n-c, general-engine-node-n-engine
-    #f,					// 9, reserved-terminal-n-d, general-engine-node-n-engine
-    #f,					// 10, reserved-terminal-n-e, general-engine-node-n-engine
-    #f,					// 11, reserved-terminal-n-f, general-engine-node-n-engine
-    #f,					// 12, reserved-terminal-n-g, general-engine-node-n-engine
-    #f,					// 13, profiling-cache-header, general-engine-node-n
-    #f,					// 14, cache-header, general-engine-node-n
-    #"%gf-dispatch-ambiguous-methods",	// 15, ambiguous-methods, general-engine-node-spread
-    #f,					// 16, boxed-instance-slot-getter, boxed-instance-slot-getter
-    #f,					// 17, boxed-instance-slot-setter, boxed-instance-slot-setter
-    #f,					// 18, boxed-repeated-instance-slot-getter, boxed-repeated-instance-slot-getter
-    #f,					// 19, boxed-repeated-instance-slot-setter, boxed-repeated-instance-slot-setter
+  #[#"%gf-dispatch-absent",                // 0, absent, general-engine-node-n
+    #"%gf-dispatch-inapplicable",        // 1, inapplicable, general-engine-node-spread
+    #f,                                        // 2, unkeyed-single-method, single-method
+    #f,                                        // 3, implicit-keyed-single-method, implicit-keyed-single-method
+    #f,                                        // 4, explicit-keyed-single-method, explicit-keyed-single-method
+    #f,                                        // 5, unrestricted-keyed-single-method, unrestricted-keyed-single-method
+    #f,                                        // 6, reserved-terminal-n-a, general-engine-node-n-engine
+    #f,                                        // 7, reserved-terminal-n-b, general-engine-node-n-engine
+    #f,                                        // 8, reserved-terminal-n-c, general-engine-node-n-engine
+    #f,                                        // 9, reserved-terminal-n-d, general-engine-node-n-engine
+    #f,                                        // 10, reserved-terminal-n-e, general-engine-node-n-engine
+    #f,                                        // 11, reserved-terminal-n-f, general-engine-node-n-engine
+    #f,                                        // 12, reserved-terminal-n-g, general-engine-node-n-engine
+    #f,                                        // 13, profiling-cache-header, general-engine-node-n
+    #f,                                        // 14, cache-header, general-engine-node-n
+    #"%gf-dispatch-ambiguous-methods",        // 15, ambiguous-methods, general-engine-node-spread
+    #f,                                        // 16, boxed-instance-slot-getter, boxed-instance-slot-getter
+    #f,                                        // 17, boxed-instance-slot-setter, boxed-instance-slot-setter
+    #f,                                        // 18, boxed-repeated-instance-slot-getter, boxed-repeated-instance-slot-getter
+    #f,                                        // 19, boxed-repeated-instance-slot-setter, boxed-repeated-instance-slot-setter
     #"%gf-dispatch-boxed-class-slot-getter",// 20, boxed-class-slot-getter, general-engine-node-1
     #"%gf-dispatch-boxed-class-slot-setter",// 21, boxed-class-slot-setter, general-engine-node-2
-    #f,					// 22, raw-byte-repeated-instance-slot-getter, raw-byte-repeated-instance-slot-getter
-    #f,					// 23, raw-byte-repeated-instance-slot-setter, raw-byte-repeated-instance-slot-setter
-    #f,					// 24, reserved-slot-a-getter, general-engine-node-1
-    #f,					// 25, reserved-slot-a-setter, general-engine-node-2
-    #f,					// 26, reserved-slot-b-getter, general-engine-node-1
-    #f,					// 27, reserved-slot-b-setter, general-engine-node-2
-    #f,					// 28, reserved-repeated-slot-a-getter, general-engine-node-2
-    #f,					// 29, reserved-repeated-slot-a-setter, general-engine-node-3
-    #f,					// 30, reserved-repeated-slot-b-getter, general-engine-node-2
-    #f,					// 31, reserved-repeated-slot-b-setter, general-engine-node-3
-    #"%gf-dispatch-typecheck",		// 32, typecheck, discriminate-on-argument
-    #"%gf-dispatch-if-type",		// 33, if-type, discriminate-on-argument
-    #"%gf-dispatch-linear-by-class",	// 34, linear-by-class, discriminate-on-argument
-    #"%gf-dispatch-hashed-by-class",	// 35, hashed-by-class, discriminate-on-argument
+    #f,                                        // 22, raw-byte-repeated-instance-slot-getter, raw-byte-repeated-instance-slot-getter
+    #f,                                        // 23, raw-byte-repeated-instance-slot-setter, raw-byte-repeated-instance-slot-setter
+    #f,                                        // 24, reserved-slot-a-getter, general-engine-node-1
+    #f,                                        // 25, reserved-slot-a-setter, general-engine-node-2
+    #f,                                        // 26, reserved-slot-b-getter, general-engine-node-1
+    #f,                                        // 27, reserved-slot-b-setter, general-engine-node-2
+    #f,                                        // 28, reserved-repeated-slot-a-getter, general-engine-node-2
+    #f,                                        // 29, reserved-repeated-slot-a-setter, general-engine-node-3
+    #f,                                        // 30, reserved-repeated-slot-b-getter, general-engine-node-2
+    #f,                                        // 31, reserved-repeated-slot-b-setter, general-engine-node-3
+    #"%gf-dispatch-typecheck",                // 32, typecheck, discriminate-on-argument
+    #"%gf-dispatch-if-type",                // 33, if-type, discriminate-on-argument
+    #"%gf-dispatch-linear-by-class",        // 34, linear-by-class, discriminate-on-argument
+    #"%gf-dispatch-hashed-by-class",        // 35, hashed-by-class, discriminate-on-argument
     #"%gf-dispatch-linear-by-singleton-class",// 36, linear-by-singleton-class, discriminate-on-argument
     #"%gf-dispatch-hashed-by-singleton-class",// 37, hashed-by-singleton-class, discriminate-on-argument
     #"%gf-dispatch-immediate-linear-singleton",// 38, immediate-linear-singleton, discriminate-on-argument
     #"%gf-dispatch-immediate-hashed-noreloc-singleton",// 39, immediate-hashed-noreloc-singleton, discriminate-on-argument
     #"%gf-dispatch-immediate-hashed-singleton",// 40, immediate-hashed-singleton, discriminate-on-argument
-    #"%gf-dispatch-slow-linear-singleton",	// 41, value-object-linear-singleton, discriminate-on-argument
-    #f,	                                // 42, monomorphic-by-class, discriminate-on-argument
-    #f,					// 43, reserved-discriminator-a, discriminate-on-argument
-    #f,					// 44, reserved-discriminator-b, discriminate-on-argument
-    #f,					// 45, reserved-discriminator-c, discriminate-on-argument
-    #f,					// 46, reserved-discriminator-d, discriminate-on-argument
-    #f,					// 47, reserved-discriminator-e, discriminate-on-argument
-    #f,					// 48, reserved-discriminator-f, discriminate-on-argument
-    #f,					// 49, reserved-discriminator-g, discriminate-on-argument
-    #f,					// 50, reserved-discriminator-h, discriminate-on-argument
-    #f,					// 51, reserved-discriminator-i, discriminate-on-argument
-    #f,					// 52, reserved-discriminator-j, discriminate-on-argument
-    #f,					// 53, reserved-discriminator-k, discriminate-on-argument
-    #f,					// 54, reserved-discriminator-l, discriminate-on-argument
-    #f,					// 55, reserved-discriminator-m, discriminate-on-argument
-    #f,					// 56, reserved-discriminator-n, discriminate-on-argument
-    #f,					// 57, reserved-discriminator-o, discriminate-on-argument
-    #f,					// 58, reserved-discriminator-p, discriminate-on-argument
-    #f,					// 59, reserved-discriminator-q, discriminate-on-argument
-    #f,					// 60, reserved-discriminator-r, discriminate-on-argument
-    #f,					// 61, reserved-discriminator-s, discriminate-on-argument
-    #f,					// 62, reserved-discriminator-t, discriminate-on-argument
-    #f					// 63, reserved-discriminator-u, discriminate-on-argument
+    #"%gf-dispatch-slow-linear-singleton",        // 41, value-object-linear-singleton, discriminate-on-argument
+    #f,                                        // 42, monomorphic-by-class, discriminate-on-argument
+    #f,                                        // 43, reserved-discriminator-a, discriminate-on-argument
+    #f,                                        // 44, reserved-discriminator-b, discriminate-on-argument
+    #f,                                        // 45, reserved-discriminator-c, discriminate-on-argument
+    #f,                                        // 46, reserved-discriminator-d, discriminate-on-argument
+    #f,                                        // 47, reserved-discriminator-e, discriminate-on-argument
+    #f,                                        // 48, reserved-discriminator-f, discriminate-on-argument
+    #f,                                        // 49, reserved-discriminator-g, discriminate-on-argument
+    #f,                                        // 50, reserved-discriminator-h, discriminate-on-argument
+    #f,                                        // 51, reserved-discriminator-i, discriminate-on-argument
+    #f,                                        // 52, reserved-discriminator-j, discriminate-on-argument
+    #f,                                        // 53, reserved-discriminator-k, discriminate-on-argument
+    #f,                                        // 54, reserved-discriminator-l, discriminate-on-argument
+    #f,                                        // 55, reserved-discriminator-m, discriminate-on-argument
+    #f,                                        // 56, reserved-discriminator-n, discriminate-on-argument
+    #f,                                        // 57, reserved-discriminator-o, discriminate-on-argument
+    #f,                                        // 58, reserved-discriminator-p, discriminate-on-argument
+    #f,                                        // 59, reserved-discriminator-q, discriminate-on-argument
+    #f,                                        // 60, reserved-discriminator-r, discriminate-on-argument
+    #f,                                        // 61, reserved-discriminator-s, discriminate-on-argument
+    #f,                                        // 62, reserved-discriminator-t, discriminate-on-argument
+    #f                                        // 63, reserved-discriminator-u, discriminate-on-argument
 ];
 
 
 define constant $engine-node-entry-point-names :: <simple-object-vector> =
-  #[#"general-engine-node-n",	        // 0, absent
-    #"general-engine-node-spread",	// 1, inapplicable
-    #"single-method",			// 2, unkeyed-single-method
-    #"implicit-keyed-single-method",	// 3, implicit-keyed-single-method
-    #"explicit-keyed-single-method",	// 4, explicit-keyed-single-method
-    #"unrestricted-keyed-single-method",// 5, unrestricted-keyed-single-method
-    #"general-engine-node-n",		// 6, reserved-terminal-n-a
-    #"general-engine-node-n",		// 7, reserved-terminal-n-b
-    #"general-engine-node-n",		// 8, reserved-terminal-n-c
-    #"general-engine-node-n",		// 9, reserved-terminal-n-d
-    #"general-engine-node-n",		// 10, reserved-terminal-n-e
-    #"general-engine-node-n",		// 11, reserved-terminal-n-f
-    #"general-engine-node-n",		// 12, reserved-terminal-n-g
-    #"profiling-cache-header",		// 13, profiling-cache-header
-    #"cache-header",			// 14, cache-header
-    #"ambiguous-methods",		// 15, ambiguous-methods
-    #"boxed-instance-slot-getter",	// 16, boxed-instance-slot-getter
-    #"boxed-instance-slot-setter",	// 17, boxed-instance-slot-setter
-    #"boxed-repeated-instance-slot-getter",// 18, boxed-repeated-instance-slot-getter
-    #"boxed-repeated-instance-slot-setter",// 19, boxed-repeated-instance-slot-setter
-    #"general-engine-node-1",		// 20, boxed-class-slot-getter
-    #"general-engine-node-2",		// 21, boxed-class-slot-setter
+  #[#"general-engine-node-n",                 // 0, absent
+    #"general-engine-node-spread",            // 1, inapplicable
+    #"single-method",                         // 2, unkeyed-single-method
+    #"implicit-keyed-single-method",          // 3, implicit-keyed-single-method
+    #"explicit-keyed-single-method",          // 4, explicit-keyed-single-method
+    #"unrestricted-keyed-single-method",      // 5, unrestricted-keyed-single-method
+    #"general-engine-node-n",                 // 6, reserved-terminal-n-a
+    #"general-engine-node-n",                 // 7, reserved-terminal-n-b
+    #"general-engine-node-n",                 // 8, reserved-terminal-n-c
+    #"general-engine-node-n",                 // 9, reserved-terminal-n-d
+    #"general-engine-node-n",                 // 10, reserved-terminal-n-e
+    #"general-engine-node-n",                 // 11, reserved-terminal-n-f
+    #"general-engine-node-n",                 // 12, reserved-terminal-n-g
+    #"profiling-cache-header",                // 13, profiling-cache-header
+    #"cache-header",                          // 14, cache-header
+    #"general-engine-node-spread",            // 15, ambiguous-methods
+    #"boxed-instance-slot-getter",            // 16, boxed-instance-slot-getter
+    #"boxed-instance-slot-setter",            // 17, boxed-instance-slot-setter
+    #"boxed-repeated-instance-slot-getter",   // 18, boxed-repeated-instance-slot-getter
+    #"boxed-repeated-instance-slot-setter",   // 19, boxed-repeated-instance-slot-setter
+    #"general-engine-node-1",                 // 20, boxed-class-slot-getter
+    #"general-engine-node-2",                 // 21, boxed-class-slot-setter
     #"raw-byte-repeated-instance-slot-getter",// 22, raw-byte-repeated-instance-slot-getter
     #"raw-byte-repeated-instance-slot-setter",// 23, raw-byte-repeated-instance-slot-setter
-    #"general-engine-node-1",		// 24, reserved-slot-a-getter
-    #"general-engine-node-2",		// 25, reserved-slot-a-setter
-    #"general-engine-node-1",		// 26, reserved-slot-b-getter
-    #"general-engine-node-2",		// 27, reserved-slot-b-setter
-    #"general-engine-node-2",		// 28, reserved-repeated-slot-a-getter
-    #"general-engine-node-3",		// 29, reserved-repeated-slot-a-setter
-    #"general-engine-node-2",		// 30, reserved-repeated-slot-b-getter
-    #"general-engine-node-3",		// 31, reserved-repeated-slot-b-setter
-    #"typecheck-discriminator",		// 32, typecheck
-    #"if-type-discriminator",		// 33, if-type
-    #"discriminate-on-argument",	// 34, linear-by-class
-    #"discriminate-on-argument",	// 35, hashed-by-class
-    #"discriminate-on-argument",	// 36, linear-by-singleton-class
-    #"discriminate-on-argument",	// 37, hashed-by-singleton-class
-    #"discriminate-on-argument",	// 38, immediate-linear-singleton
-    #"discriminate-on-argument",	// 39, immediate-hashed-noreloc-singleton
-    #"discriminate-on-argument",	// 40, immediate-hashed-singleton
-    #"discriminate-on-argument",	// 41, value-object-linear-singleton
-    #"monomorphic-by-class-discriminator", // 42, immediate-hashed-singleton
-    #"discriminate-on-argument",	// 43, reserved-discriminator-a
-    #"discriminate-on-argument",	// 44, reserved-discriminator-b
-    #"discriminate-on-argument",	// 45, reserved-discriminator-c
-    #"discriminate-on-argument",	// 46, reserved-discriminator-d
-    #"discriminate-on-argument",	// 47, reserved-discriminator-e
-    #"discriminate-on-argument",	// 48, reserved-discriminator-f
-    #"discriminate-on-argument",	// 49, reserved-discriminator-g
-    #"discriminate-on-argument",	// 50, reserved-discriminator-h
-    #"discriminate-on-argument",	// 51, reserved-discriminator-i
-    #"discriminate-on-argument",	// 52, reserved-discriminator-j
-    #"discriminate-on-argument",	// 53, reserved-discriminator-k
-    #"discriminate-on-argument",	// 54, reserved-discriminator-l
-    #"discriminate-on-argument",	// 55, reserved-discriminator-m
-    #"discriminate-on-argument",	// 56, reserved-discriminator-n
-    #"discriminate-on-argument",	// 57, reserved-discriminator-o
-    #"discriminate-on-argument",	// 58, reserved-discriminator-p
-    #"discriminate-on-argument",	// 59, reserved-discriminator-q
-    #"discriminate-on-argument",	// 60, reserved-discriminator-r
-    #"discriminate-on-argument",	// 61, reserved-discriminator-s
-    #"discriminate-on-argument",	// 62, reserved-discriminator-t
-    #"discriminate-on-argument"		// 63, reserved-discriminator-u
+    #"general-engine-node-1",                 // 24, reserved-slot-a-getter
+    #"general-engine-node-2",                 // 25, reserved-slot-a-setter
+    #"general-engine-node-1",                 // 26, reserved-slot-b-getter
+    #"general-engine-node-2",                 // 27, reserved-slot-b-setter
+    #"general-engine-node-2",                 // 28, reserved-repeated-slot-a-getter
+    #"general-engine-node-3",                 // 29, reserved-repeated-slot-a-setter
+    #"general-engine-node-2",                 // 30, reserved-repeated-slot-b-getter
+    #"general-engine-node-3",                 // 31, reserved-repeated-slot-b-setter
+    #"typecheck-discriminator",               // 32, typecheck
+    #"if-type-discriminator",                 // 33, if-type
+    #"discriminate-on-argument",              // 34, linear-by-class
+    #"discriminate-on-argument",              // 35, hashed-by-class
+    #"discriminate-on-argument",              // 36, linear-by-singleton-class
+    #"discriminate-on-argument",              // 37, hashed-by-singleton-class
+    #"discriminate-on-argument",              // 38, immediate-linear-singleton
+    #"discriminate-on-argument",              // 39, immediate-hashed-noreloc-singleton
+    #"discriminate-on-argument",              // 40, immediate-hashed-singleton
+    #"discriminate-on-argument",              // 41, value-object-linear-singleton
+    #"monomorphic-by-class-discriminator",    // 42, immediate-hashed-singleton
+    #"discriminate-on-argument",              // 43, reserved-discriminator-a
+    #"discriminate-on-argument",              // 44, reserved-discriminator-b
+    #"discriminate-on-argument",              // 45, reserved-discriminator-c
+    #"discriminate-on-argument",              // 46, reserved-discriminator-d
+    #"discriminate-on-argument",              // 47, reserved-discriminator-e
+    #"discriminate-on-argument",              // 48, reserved-discriminator-f
+    #"discriminate-on-argument",              // 49, reserved-discriminator-g
+    #"discriminate-on-argument",              // 50, reserved-discriminator-h
+    #"discriminate-on-argument",              // 51, reserved-discriminator-i
+    #"discriminate-on-argument",              // 52, reserved-discriminator-j
+    #"discriminate-on-argument",              // 53, reserved-discriminator-k
+    #"discriminate-on-argument",              // 54, reserved-discriminator-l
+    #"discriminate-on-argument",              // 55, reserved-discriminator-m
+    #"discriminate-on-argument",              // 56, reserved-discriminator-n
+    #"discriminate-on-argument",              // 57, reserved-discriminator-o
+    #"discriminate-on-argument",              // 58, reserved-discriminator-p
+    #"discriminate-on-argument",              // 59, reserved-discriminator-q
+    #"discriminate-on-argument",              // 60, reserved-discriminator-r
+    #"discriminate-on-argument",              // 61, reserved-discriminator-s
+    #"discriminate-on-argument",              // 62, reserved-discriminator-t
+    #"discriminate-on-argument"               // 63, reserved-discriminator-u
     ];
 
 define abstract primary compiler-class <engine-node-ep> (<any-kernel-ep>)
@@ -1420,11 +1407,11 @@ define abstract primary &class <properties-provider> (<object>)
 end &class;
 
 
-define abstract primary &class <engine-node> (<properties-provider>, 
-					      <dispatch-engine-invocable>)
-  weak &slot engine-node-callback, 
+define abstract primary &class <engine-node> (<properties-provider>,
+                                              <dispatch-engine-invocable>)
+  weak &slot engine-node-callback,
     reinit-expression: ^compute-engine-node-callback(self);
-  weak &slot engine-node-entry-point, 
+  weak &slot engine-node-entry-point,
     reinit-expression: ^compute-engine-node-entry-point(self);
 end &class;
 
@@ -1436,7 +1423,7 @@ end method;
 
 define method ^entry-type-number-setter (n :: <integer>, e :: <&engine-node>) => ()
   e.^properties := logior(logand(e.^properties, lognot(properties$m-entry-type)),
-			  ash(n, properties$v-entry-type));
+                          ash(n, properties$v-entry-type));
 end method;
 
 define method ^entry-point-name (e :: <&engine-node>) => (name :: false-or(<symbol>))
@@ -1454,15 +1441,15 @@ end method;
 
 
 define macro concrete-engine-node-initialization-definer
-  { define ?mods:* concrete-engine-node-initialization "<" ## ?:name ## ">" 
+  { define ?mods:* concrete-engine-node-initialization "<" ## ?:name ## ">"
           (?self:name, ?params:*)
           ?:body
           end }
-    => 
+    =>
     { define ?mods method initialize (?self :: "<&" ## ?name ## ">", ?params)
-	^entry-type-number(?self) := engine-node-constant(?name);
-	?=next-method();
-	?body
+        ^entry-type-number(?self) := engine-node-constant(?name);
+        ?=next-method();
+        ?body
       end method
   }
 end macro;
@@ -1502,12 +1489,12 @@ define method ^compute-engine-node-callback (e :: <&engine-node>) => (cb)
 end method;
 
 
-define method ^compute-engine-node-entry-point (e :: <&engine-node>) 
+define method ^compute-engine-node-entry-point (e :: <&engine-node>)
  => (ep :: <&engine-node-ep>)
   with-dependent-context ($compilation of model-creator(e))
     ^make(<&rogue-engine-node-ep>,
-	  engine-node: e,
-  	  entry-point-name: ^entry-point-name(e))
+          engine-node: e,
+            entry-point-name: ^entry-point-name(e))
   end with-dependent-context;
 end method;
 
@@ -1537,11 +1524,11 @@ end method;
 //  with-dood-context (dood-root(dood))
 //    with-dependent ($top-level-processing of dood-engine-node-creator(proxy))
 //      make(dood-engine-node-class(proxy),
-//	   entry-type: dood-engine-node-entry-type(proxy))
+//           entry-type: dood-engine-node-entry-type(proxy))
 //    end with-dependent
 //  end with-dood-context
 //end method;
-  
+
 //define method dood-make-engine-node-proxy
 //    (dood :: <dood>, e :: <&engine-node>) => (proxy)
 //  make(<dood-engine-node-proxy>,
@@ -1580,10 +1567,10 @@ end &class;
 
 define method ^initialize (e :: <&cache-header-engine-node>, #key parent, function)
   next-method();
-  if (~^cache-header-engine-node-parent(e)) 
-    ^cache-header-engine-node-parent(e) := function 
+  if (~^cache-header-engine-node-parent(e))
+    ^cache-header-engine-node-parent(e) := function
   end;
-  if (~^cache-header-engine-node-next(e)) 
+  if (~^cache-header-engine-node-next(e))
     ^cache-header-engine-node-next(e) := dylan-value(#"$absent-engine-node");
   end;
 end method;
@@ -1595,20 +1582,20 @@ define method ^compute-engine-node-entry-point (e :: <&cache-header-engine-node>
     let g :: <&generic-function> = function(e);
 //    if (instance?(^%gf-cache(g), <&engine-node>))
       let sig = ^function-signature(g);
-      ^make(<&function-linked-engine-node-ep>, 
-	    number-required: ^signature-number-required(sig),
-	    optionals?:      ^signature-optionals?(sig),
-	    function:        g, 
-	    engine-node:     e)
+      ^make(<&function-linked-engine-node-ep>,
+            number-required: ^signature-number-required(sig),
+            optionals?:      ^signature-optionals?(sig),
+            function:        g,
+            engine-node:     e)
 //    else
-//      ^make(<&rogue-engine-node-ep>, 
-//	    entry-point-name: #"general-engine-node-n",
-//	    engine-node: e)
+//      ^make(<&rogue-engine-node-ep>,
+//            entry-point-name: #"general-engine-node-n",
+//            engine-node: e)
 //    end if
   end with-dependent-context;
 end method;
-	  
-	  
+
+
 
 define primary &class <common-root-cache-header-engine-node> (<cache-header-engine-node>)
 end &class;
@@ -1636,69 +1623,12 @@ define inline-only function ^stchen-checkedmask (e :: <&simple-typechecked-cache
 end function;
 
 
-define generic ^partial-dispatch-type (object, index :: <integer>) => (t :: <&type>);
-define generic ^partial-dispatch-type-setter (value :: <&type>, object, index :: <integer>);
-define generic ^number-types (object) => (n :: <integer>);
-
-define primary &class <partial-dispatch-cache-header-engine-node> (<cache-header-engine-node>)
-  repeated &slot partial-dispatch-type :: <type>,
-    init-value: <object>,
-    size-getter: number-types,
-    size-init-keyword: size:,
-    size-init-value: 0;
-end &class;
-
-
-define inline function ^pdisp-type-mask (e :: <&partial-dispatch-cache-header-engine-node>)
- => (checkedmask :: <integer>)
-  ash(logand(^properties(e), pdisp$m-typemask), - pdisp$v-typemask)
-end function;
-
-
-define concrete-engine-node-initialization <partial-dispatch-cache-header-engine-node>
-    (e, #key types :: false-or(<simple-object-vector>), type-mask :: <integer> = 0)
-  // HACK: CALLED WHEN FINALIZING COPYING, 
-  //       ENTRY-POINT INITIALIZATION SHOULD BE SPLIT OUT
-  when (types)
-    let siz :: <integer> = size(types);
-    let vals = make(<simple-object-vector>, size: siz);
-    ^partial-dispatch-type-values(e) := vals;
-    ^properties(e) := logior(ash(type-mask, pdisp$v-typemask), ^properties(e));
-    for (i :: <integer> from 0, t :: <&type> in types)
-      vals[i] := mapped-model(t)
-    end for;
-  end when;
-end concrete-engine-node-initialization;
-
-
-define method ^number-types 
-    (object :: <&partial-dispatch-cache-header-engine-node>) => (res :: <integer>)
-  size(^partial-dispatch-type-values(object))
-end method;
-
-// TODO: The size-getter: option isn't spotted as an accessor name by the
-// define &class macro, so have to hook up the compile-stage function
-// by hand. Fix!
-
-define &override-function ^number-types end;
-
-define method ^partial-dispatch-type 
-    (object :: <&partial-dispatch-cache-header-engine-node>, index :: <integer>) => (t :: <&type>)
-  element(^partial-dispatch-type-values(object), index)
-end method;
-
-define method ^partial-dispatch-type-setter 
-    (value :: <&type>, object :: <&partial-dispatch-cache-header-engine-node>, index :: <integer>)
-  element(^partial-dispatch-type-values(object), index) := value
-end method;
-
-
 define primary &class <simple-call-site-cache-header-engine-node> (<cache-header-engine-node>)
 end &class;
 
 define concrete-engine-node-initialization <simple-call-site-cache-header-engine-node>
     (e, #key )
-  
+
 end concrete-engine-node-initialization;
 
 define primary &class <profiling-call-site-cache-header-engine-node> (<cache-header-engine-node>)
@@ -1715,9 +1645,9 @@ define concrete-engine-node-initialization <profiling-call-site-cache-header-eng
   ^profiling-call-site-cache-header-engine-node-count-1(e) := zero;
   ^profiling-call-site-cache-header-engine-node-count-2(e) := zero;
   let ld = current-library-description();
-  ^profiling-call-site-cache-header-engine-node-id(e) 
+  ^profiling-call-site-cache-header-engine-node-id(e)
     := library-generate-call-site-id(ld);
-  ^profiling-call-site-cache-header-engine-node-library(e) 
+  ^profiling-call-site-cache-header-engine-node-library(e)
     := namespace-model(language-definition(ld));
 end concrete-engine-node-initialization;
 
@@ -1727,7 +1657,7 @@ define abstract primary &class <discriminator> (<engine-node>)
 end &class;
 
 
-define method ^discriminator-argnum (d :: <&discriminator>) 
+define method ^discriminator-argnum (d :: <&discriminator>)
  => (argnum :: <integer>);
   ash(logand(d.^properties, discriminator$m-argnum), - discriminator$v-argnum)
 end method;
@@ -1743,30 +1673,30 @@ define method ^discriminator-optionals? (d :: <&discriminator>)
 end method;
 
 
-define method initialize (d :: <&discriminator>, 
-			  #key entry-type :: <integer>, 
-			       argnum :: <integer>,
-			       function :: <&generic-function>)
+define method initialize (d :: <&discriminator>,
+                          #key entry-type :: <integer>,
+                               argnum :: <integer>,
+                               function :: <&generic-function>)
   next-method();
   let sig-spec = signature-spec(function);
   let req-size = spec-argument-number-required(sig-spec);
   let p :: <integer> = ^properties(d);
   let p :: <integer>
     = logior(ash(spec-argument-number-required(sig-spec), discriminator$v-nrequired), p);
-  let p :: <integer> 
+  let p :: <integer>
     = logior(ash(if (spec-argument-optionals?(sig-spec)) 1 else 0 end, discriminator$v-restp), p);
   let p :: <integer> = logior(ash(argnum, discriminator$v-argnum), p);
   ^properties(d) := p;
 end method;
 
 
-define method ^compute-engine-node-entry-point (d :: <&discriminator>) 
+define method ^compute-engine-node-entry-point (d :: <&discriminator>)
  => (ep :: <&engine-node-ep>);
   ^make(<&discriminator-ep>,
-	engine-node: d,
-	number-required: ^discriminator-nrequired(d),
-	optionals?: ^discriminator-optionals?(d),
-	function: function(d))
+        engine-node: d,
+        number-required: ^discriminator-nrequired(d),
+        optionals?: ^discriminator-optionals?(d),
+        function: function(d))
 end method;
 
 
@@ -1856,15 +1786,15 @@ end function;
 define method initialize (e :: <&single-method-engine-node>, #key method: meth)
   let sig-spec = signature-spec(meth);
   ^properties(e) := logior(^properties(e),
-			   ash(spec-argument-number-required(sig-spec), smen$v-nrequired),
-			   if (spec-argument-optionals?(sig-spec)) smen$m-restp else 0 end);
+                           ash(spec-argument-number-required(sig-spec), smen$v-nrequired),
+                           if (spec-argument-optionals?(sig-spec)) smen$m-restp else 0 end);
   next-method()
 end method;
 
 
 define method ^compute-engine-node-entry-point (e :: <&single-method-engine-node>)
  => (ep :: <&function-linked-engine-node-ep>)
-  make(<&function-linked-engine-node-ep>, 
+  make(<&function-linked-engine-node-ep>,
        engine-node: e,
        function: ^single-method-engine-node-method(e),
        number-required: ^smen-nrequired(e),
@@ -1955,7 +1885,7 @@ define concrete-engine-node-initialization <hashed-by-class-discriminator> (e, #
 end concrete-engine-node-initialization;
 
 define primary &class <linear-by-singleton-class-discriminator> (<by-singleton-class-discriminator>,
-								 <linear-class-keyed-discriminator>)
+                                                                 <linear-class-keyed-discriminator>)
   repeated &slot class-keyed-discriminator-table-element,
     init-value:        #f,
     size-getter:       class-keyed-discriminator-table-size,
@@ -1967,7 +1897,7 @@ define concrete-engine-node-initialization <linear-by-singleton-class-discrimina
 end concrete-engine-node-initialization;
 
 define primary &class <hashed-by-singleton-class-discriminator> (<by-singleton-class-discriminator>,
-								 <hashed-class-keyed-discriminator>)
+                                                                 <hashed-class-keyed-discriminator>)
   repeated &slot class-keyed-discriminator-table-element,
     init-value:        #f,
     size-getter:       class-keyed-discriminator-table-size,
@@ -2023,7 +1953,7 @@ define abstract primary &class <linear-singleton-discriminator> (<singleton-disc
   &slot lsd-hits  :: <integer>, init-value: 0;  // HACK: ONLY FOR PROFILING
 end &class;
 
-define primary &class <immediate-linear-singleton-discriminator> 
+define primary &class <immediate-linear-singleton-discriminator>
     (<linear-singleton-discriminator>, <singleton-discriminator>)
 end &class;
 
@@ -2108,26 +2038,26 @@ define abstract &class <byte-slot-engine-node>
 end &class;
 
 define primary &class <boxed-instance-slot-getter-engine-node>
-  (<slot-getter-engine-node>, 
+  (<slot-getter-engine-node>,
    <single-slot-access-engine-node>,
    <boxed-instance-slot-engine-node>)
 end &class;
 
 define primary &class <boxed-instance-slot-setter-engine-node>
-    (<slot-setter-engine-node>, 
-     <single-slot-access-engine-node>, 
+    (<slot-setter-engine-node>,
+     <single-slot-access-engine-node>,
      <boxed-instance-slot-engine-node>)
 end &class;
 
 define primary &class <boxed-repeated-instance-slot-getter-engine-node>
-  (<slot-getter-engine-node>, 
+  (<slot-getter-engine-node>,
    <repeated-slot-access-engine-node>,
    <boxed-instance-slot-engine-node>)
 end &class;
 
 define primary &class <boxed-repeated-instance-slot-setter-engine-node>
-    (<slot-setter-engine-node>, 
-     <repeated-slot-access-engine-node>, 
+    (<slot-setter-engine-node>,
+     <repeated-slot-access-engine-node>,
      <boxed-instance-slot-engine-node>)
 end &class;
 
@@ -2144,14 +2074,14 @@ define primary &class <byte-slot-setter-engine-node>
 end &class;
 
 define primary &class <repeated-byte-slot-getter-engine-node>
-  (<slot-getter-engine-node>, 
+  (<slot-getter-engine-node>,
    <repeated-slot-access-engine-node>,
    <byte-slot-engine-node>)
 end &class;
 
 define primary &class <repeated-byte-slot-setter-engine-node>
-    (<slot-setter-engine-node>, 
-     <repeated-slot-access-engine-node>, 
+    (<slot-setter-engine-node>,
+     <repeated-slot-access-engine-node>,
      <byte-slot-engine-node>)
 end &class;
 
@@ -2160,14 +2090,14 @@ define abstract primary &class <boxed-class-slot-engine-node>
 end &class;
 
 define primary &class <boxed-class-slot-getter-engine-node>
-    (<slot-getter-engine-node>, 
-     <single-slot-access-engine-node>, 
+    (<slot-getter-engine-node>,
+     <single-slot-access-engine-node>,
      <boxed-class-slot-engine-node>)
 end &class;
 
 define primary &class <boxed-class-slot-setter-engine-node>
     (<slot-setter-engine-node>,
-     <single-slot-access-engine-node>, 
+     <single-slot-access-engine-node>,
      <boxed-class-slot-engine-node>)
 end &class;
 
@@ -2183,12 +2113,12 @@ define function ^slot-method-requiring-class-discrimination? (m :: <&method>)
     #f
   end if
 end function;
+*/
 
-
-define constant slotdiscrim$v-offset 
+define constant slotdiscrim$v-offset
   = engine-node$v-data-start;
-
-define function ^slot-engine-node-offset-setter 
+/*
+define function ^slot-engine-node-offset-setter
     (offset :: <integer>, e :: <&slot-access-engine-node>)
  => (offset :: <integer>);
   let mask :: <integer> = ash(1, slotdiscrim$v-offset) - 1;
@@ -2196,7 +2126,7 @@ define function ^slot-engine-node-offset-setter
   ^properties(e) := logior(ash(offset, slotdiscrim$v-offset), logand(props, mask));
   let callbacks :: <simple-object-vector> = $engine-node-callback-names;
   if (~(element(callbacks, logand(ash(props, - properties$v-entry-type),
-				  ash(1, properties$s-entry-type) - 1))))
+                                  ash(1, properties$s-entry-type) - 1))))
     // ^engine-node-raw-integer(e) := offset
     ^engine-node-callback(e) := offset
   end if;
@@ -2219,7 +2149,7 @@ end method;
 
 define method method-number
     (defn :: <method-definition>) => (number :: <integer>)
-  // the position of this defn among the method definitions for this gf 
+  // the position of this defn among the method definitions for this gf
   // defined in this library.
   local-definition-number(defn, <method-definition>)
 end method;
@@ -2238,15 +2168,15 @@ define function local-definition-number (defn :: <modifying-form>, kind :: <clas
     let i :: <integer> = 0;
     block (return)
       for (def in local-defs)
-	when (instance?(def, kind))
-	  when (def == defn)
-	    return(i)
-	  end when;
-	  i := i + 1;
-	end when;
+        when (instance?(def, kind))
+          when (def == defn)
+            return(i)
+          end when;
+          i := i + 1;
+        end when;
       end for;
-      error("UNABLE TO FIND METHOD %= IN LOCAL DEFINITIONS %=", 
-	    defn, local-defs);
+      error("UNABLE TO FIND METHOD %= IN LOCAL DEFINITIONS %=",
+            defn, local-defs);
     end block
   end;
 end function;
@@ -2268,27 +2198,27 @@ define method lookup-method-by-number
   let model =
     block (return)
       for (model in local-models)
-	when (instance?(model, <&method>))
-	  when (index = i)
-	    return(model)
-	  end when;
-	  i := i + 1;
-	end when;
+        when (instance?(model, <&method>))
+          when (index = i)
+            return(model)
+          end when;
+          i := i + 1;
+        end when;
       end for
     end block;
   model
 end method;
 
 define class <dood-cross-method-proxy> (<dood-cross-model-proxy>)
-  constant slot dood-proxy-method-index :: false-or(<integer>), 
+  constant slot dood-proxy-method-index :: false-or(<integer>),
     required-init-keyword: index:;
-  constant slot dood-proxy-method-library :: false-or(<library>), 
+  constant slot dood-proxy-method-library :: false-or(<library>),
     required-init-keyword: library:;
 end class;
 
 define method dood-make-cross-method-proxy
-    (dood :: <dood>, class :: subclass(<dood-cross-method-proxy>), 
-     object :: <&method>) 
+    (dood :: <dood>, class :: subclass(<dood-cross-method-proxy>),
+     object :: <&method>)
 => (proxy :: <dood-cross-method-proxy>)
   let (binding, library) = method-binding-and-library(object);
   make(class,

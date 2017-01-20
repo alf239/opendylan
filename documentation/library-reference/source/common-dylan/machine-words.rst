@@ -2,6 +2,9 @@
 The machine-words Module
 ************************
 
+.. current-library:: common-dylan
+.. current-module:: machine-words
+
 Introduction
 ============
 
@@ -12,13 +15,14 @@ are available from the Dylan library.
 Throughout this chapter, arguments are instances of the class specified
 by the argument name, unless otherwise noted. Thus, the arguments
 *machine-word* and *integer* are instances of ``<machine-word>`` and
-``<integer>``, respectively.
+:drm:`<integer>`, respectively.
 
-The class ``<machine-word>`` is a sealed subclass of ``<object>``, defined
-in the Dylan library. The class ``<machine-word>`` represents a limited
-range of integral values. The representation used has the natural size
-suggested by the implementation architecture. (On the PC, a
-``<machine-word>`` is 32 bits wide.) The class ``<machine-word>`` is
+The class :class:`<machine-word>` is a sealed subclass of :drm:`<object>`,
+defined in the Dylan library. The class ``<machine-word>`` represents a
+limited range of integral values. The representation used has the natural
+size suggested by the implementation architecture. (When running a 32 bit
+OS, a ``<machine-word>`` is 32 bits wide. When running a 64 bit OS, then
+``<machine-word>`` is 64 bits wide.) The class ``<machine-word>`` is
 disjoint from all other classes specified by the Dylan language.
 
 The ``\\==`` function compares instances of ``<machine-word>`` by value.
@@ -34,150 +38,146 @@ also refer to the *Dylan Reference Manual*.
 Note that the Common Dylan library also has these extensions because it
 uses the Dylan library.
 
-odd?
-----
+.. function:: odd?
 
-Sealed Method
+   :signature: odd? m => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :drm:`<boolean>`
 
-    odd? (m :: <machine-word>) => _ :: <boolean>
+.. function:: even?
 
-even?
------
+   :signature: even? m => r
 
-Sealed Method
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :drm:`<boolean>`
 
-.. code-block:: dylan
+.. function:: zero?
 
-    even? (m :: <machine-word>) => _ :: <boolean>
+   :signature: zero? m => r
 
-zero?
------
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :drm:`<boolean>`
 
-Sealed Method
+.. note:: Cannot be used as the name of a result. It is not a valid Dylan name.
 
-.. code-block:: dylan
+.. function:: positive?
 
-    zero? (m :: <machine-word>) => _ :: <boolean>
+   :signature: positive? m => r
 
-Cannot be used as the name of a result. It is not a valid Dylan name.
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :drm:`<boolean>`
 
-positive?
----------
+.. function:: negative?
 
-Sealed Method
+   :signature: negative? m => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :drm:`<boolean>`
 
-    positive? (m :: <machine-word>) => _ :: <boolean>
-
-negative?
----------
-
-Sealed Method
-
-.. code-block:: dylan
-
-    negative? (m :: <machine-word>) => _ :: <boolean>
-
-These functions return a result based on interpreting *m* as a signed
+These functions return a result based on interpreting ``m`` as a signed
 integer value.
 
-\=
---
+.. function:: \=
 
-Sealed Method
+   :signature: = m1 m2 => r
+   :signature: = i1 m2 => r
+   :signature: = m1 i2 => r
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :parameter i1: An instance of :class:`<abstract-integer>`
+   :parameter i2: An instance of :class:`<abstract-integer>`
+   :value r: An instance of :drm:`<boolean>`
 
-    = (m1 :: <machine-word>, m2 :: <machine-word>) => _ :: <boolean>
-    = (i1 :: <abstract-integer>, m2 :: <machine-word>) => _ :: <boolean>
-    = (m1 :: <machine-word>, i2 :: <abstract-integer>) => _ :: <boolean>
+   :description:
 
-The comparison is performed with the ``<machine-word>`` arguments
-interpreted as signed integer values.
+     The comparison is performed with the :class:`<machine-word>` arguments
+     interpreted as signed integer values.
 
-<
--
+.. function:: <
 
-Sealed Method
+   :signature: < m1 m2 => r
+   :signature: < i1 m2 => r
+   :signature: < m1 i2 => r
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :parameter i1: An instance of :class:`<abstract-integer>`
+   :parameter i2: An instance of :class:`<abstract-integer>`
+   :value r: An instance of :drm:`<boolean>`
 
-    < (m1 :: <machine-word>, m2 :: <machine-word>) => _ :: <boolean>
-    < (i1 :: <abstract-integer>, m2 :: <machine-word>) => _ :: <boolean>
-    < (m1 :: <machine-word>, i2 :: <abstract-integer>) => _ :: <boolean>
+   :description:
 
-The comparison is performed with the ``<machine-word>`` arguments
-interpreted as signed integer values.
+     The comparison is performed with the :class:`<machine-word>` arguments
+     interpreted as signed integer values.
 
-as
---
+.. function:: as
 
-Sealed Method
+   :signature: as t == <integer> m => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :drm:`<integer>`
 
-    as(t == <integer>, m :: <machine-word>) => _ :: <integer>
+   :description:
 
-The result is an ``<integer>`` with the same value as ``m`` when interpreted
-as a signed integer value. An error is signaled if the value of ``m``
-cannot be represented as an instance of ``<integer>``.
+     The result is an :drm:`<integer>` with the same value as ``m`` when
+     interpreted as a signed integer value. An error is signaled if the value
+     of ``m`` cannot be represented as an instance of :drm:`<integer>`.
 
-as
---
+.. function:: as
 
-Sealed Method
+   :signature: as t == <abstract-integer> m => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<abstract-integer>`
 
-    as(t == <abstract-integer>, m :: <machine-word>) => _ :: <abstract-integer>
+   :description:
 
-The result is an ``<abstract-integer>`` with the same value as ``m`` when
-interpreted as a signed integer value.
+     The result is an :class:`<abstract-integer>` with the same value as ``m``
+     when interpreted as a signed integer value.
 
-(The uses for an instance of ``<abstract-integer>`` that is not also an
-instance of ``<integer>`` are rather limited without the Generic-Arithmetic
-library.)
+     (The uses for an instance of :class:`<abstract-integer>` that is not also
+     an instance of :drm:`<integer>` are rather limited without the
+     Generic-Arithmetic library.)
 
-as
---
+.. function:: as
 
-Sealed Method
+   :signature: as t == <machine-word> i => r
 
-.. code-block:: dylan
+   :parameter i: An instance of :class:`<abstract-integer>`
+   :value r: An instance of :class:`<machine-word>`
 
-    as(t == <machine-word>, i :: <abstract-integer>) => _ :: <machine-word>
+   :description:
 
-If the value of *i* is outside the machine word range, then the result
-consists of the low ``$machine-word-size`` bits of the twos-complement
-representation of *i*. If any of the discarded bits differ from the
-sign of *i*, then an error is signaled.
+     If the value of ``i`` is outside the machine word range, then the result
+     consists of the low :const:`$machine-word-size` bits of the twos-complement
+     representation of ``i``. If any of the discarded bits differ from the
+     sign of ``i``, then an error is signaled.
 
-limited
--------
+.. function:: limited
 
-Sealed Method
+   :signature: limited t == <machine-word> #key signed? min max => r
 
-.. code-block:: dylan
+   :parameter #key signed?: An instance of :drm:`<boolean>`. Defaults to
+                            ``#t``
+   :parameter #key min: An instance of :class:`<machine-word>`
+   :parameter #key max: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<type>`
 
-    limited(t == <machine-word>,
-            #key signed? :: boolean,
-            min :: <machine-word>, max :: <machine-word>)
-      => _ :: <type>
+   :description:
 
-If the *signed?* argument is true (the default) then the *min* and *max*
-arguments are interpreted as signed values. When *signed?* is false, the
-*min* and *max* arguments are interpreted as unsigned values. The
-default value for each of min and max depends on the value of *signed?*.
-The defaults are taken from the corresponding minimum and maximum
-machine word values (see `$maximum-signed-machine-word`_ and related
-constants below).
+     If the ``signed?`` argument is true (the default) then the ``min`` and
+     ``max`` arguments are interpreted as signed values. When ``signed?`` is
+     false, the ``min`` and ``max`` arguments are interpreted as unsigned
+     values. The default value for each of min and max depends on the value of
+     ``signed?``.  The defaults are taken from the corresponding minimum and
+     maximum machine word values (see :const:`$maximum-signed-machine-word` and
+     related constants below).
 
-For convenience, the values of *min* and/or *max* may also be instances
-of ``<abstract-integer>``, in which case they are coerced to instances of
-``<machine-word>`` as if by using *as*.
+     For convenience, the values of ``min`` and/or ``max`` may also be
+     instances of ``<abstract-integer>``, in which case they are coerced to
+     instances of ``<machine-word>`` as if by using *as*.
 
 The MACHINE-WORDS module
 ========================
@@ -185,117 +185,87 @@ The MACHINE-WORDS module
 This section contains a reference entry for each item exported from the
 Machine-Words module, which is exported by the Common Dylan library.
 
-<machine-word>
---------------
+.. class:: <machine-word>
+   :sealed:
 
-Sealed Class
+   :summary:
+     The class of objects that can represent a limited range of integral
+     values.
 
-Summary
+   :supers: :drm:`<object>`
 
-The class of objects that can represent a limited range of integral
-values.
+   :description:
 
-Superclasses
+     The class :class:`<machine-word>` represents a limited range of integral
+     values. The representation used has the natural size suggested by the
+     implementation architecture. The class :class:`<machine-word>` is
+     disjoint from all other classes specified by the Dylan language.
+     
 
-``<object>``
+   :operations:
 
-Init-keywords
-
-None.
-
-Library
-
-*dylan*
-
-Module
-
-*machine-word*
-
-Description
-
-The class ``<machine-word>`` represents a limited range of integral
-values. The representation used has the natural size suggested by the
-implementation architecture. The class ``<machine-word>`` is disjoint from
-all other classes specified by the Dylan language.
-
-Operations
-
-The ``<machine-words>`` class provides the operations described below and
-in `Useful functions from the Dylan module`_.
+     The :class:`<machine-word>` class provides the operations described below
+     and in `Useful functions from the Dylan module`_.
 
 Variables
 ---------
 
 The following variables are exported from the Machine-Words module.
 
-$machine-word-size
-^^^^^^^^^^^^^^^^^^
+.. constant:: $machine-word-size
 
-Constant
+   :type: :drm:`<integer>`
 
-.. code-block:: dylan
+   :description:
 
-    $machine-word-size :: <integer>
+     The number of bits in the representation of a :class:`<machine-word>`.
 
-The number of bits in the representation of a ``<machine-word>``.
+.. constant:: $maximum-signed-machine-word
 
-$maximum-signed-machine-word
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   :type: :class:`<machine-word>`
 
-Constant
+   :description:
 
-.. code-block:: dylan
+     The largest machine word, when interpreted as a signed integer value.
 
-    $maximum-signed-machine-word :: <machine-word>
+.. constant:: $minimum-signed-machine-word
 
-The largest machine word, when interpreted as a signed integer value.
+   :type: :class:`<machine-word>`
 
-$minimum-signed-machine-word
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   :description:
 
-Constant
+     The smallest machine word, when interpreted as a signed integer value.
 
-.. code-block:: dylan
+.. constant:: $maximum-unsigned-machine-word
 
-    $minimum-signed-machine-word :: <machine-word>
+   :type: :class:`<machine-word>`
 
-The smallest machine word, when interpreted as a signed integer value.
+   :description:
 
-$maximum-unsigned-machine-word
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     The largest machine word, when interpreted as an unsigned integer value.
 
-Constant
+.. constant:: $minimum-unsigned-machine-word
 
-.. code-block:: dylan
+   :type: :class:`<machine-word>`
 
-    $maximum-unsigned-machine-word :: <machine-word>
+   :description:
 
-The largest machine word, when interpreted as an unsigned integer value.
+     The smallest machine word, when interpreted as an unsigned integer
+     value.
 
-$minimum-unsigned-machine-word
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. function:: as-unsigned
 
-Constant
+   :signature: as-unsigned t m => result
 
-.. code-block:: dylan
+   :parameter t: A type
+   :parameter m: An instance of :class:`<machine-word>`
+   :value result: An istance of ``t``
 
-    $minimum-unsigned-machine-word :: <machine-word>
+   :description:
 
-The smallest machine word, when interpreted as an unsigned integer
-value.
-
-as-unsigned
-^^^^^^^^^^^
-
-Function
-
-.. code-block:: dylan
-
-    as-unsigned (t :: *type*, m :: <machine-word>) => *result*
-
-The value of *m* is interpreted as an unsigned value and converted to an
-instance of ``<abstract-integer>``, then the result of that conversion is
-converted to type *t* using *as*.
+     The value of ``m`` is interpreted as an unsigned value and converted to an
+     instance of :class:`<abstract-integer>`, then the result of that conversion
+     is converted to type ``t`` using ``as``.
 
 Basic and signed single word operations
 ---------------------------------------
@@ -305,184 +275,175 @@ being specialized to ``<machine-word>`` accept an instance of
 ``<abstract-integer>``, which is then coerced to a ``<machine-word>``
 before performing the operation.
 
-%logior
-^^^^^^^
+.. function:: %logior
 
-Function
+   :signature: %logior #rest *machine-words* => r
 
-.. code-block:: dylan
+   :parameter #rest *machine-words*: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
 
-    %logior (*#rest* *machine-words*) => (r :: <machine-word>)
+.. function:: %logxor
 
-%logxor
-^^^^^^^
+   :signature: %logxor #rest *machine-words* => r
 
-Function
+   :parameter #rest *machine-words*: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
 
-.. code-block:: dylan
+.. function:: %logand
 
-    %logxor (*#rest* *machine-words*) => (r :: <machine-word>)
+   :signature: %logand #rest *machine-words* => r
 
-%logand
-^^^^^^^
+   :parameter #rest *machine-words*: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
 
-Function
+.. function:: %lognot
 
-.. code-block:: dylan
+   :signature: %lognot m => r
 
-    %logand (*#rest* *machine-words*) => (r :: m*achine-word*)
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
 
-%lognot
-^^^^^^^
+These four functions have the same semantics as :drm:`logior`, :drm:`logxor`,
+:drm:`logand`, and :drm:`lognot` in the Dylan library, but they operate on
+``<machine-word>`` s instead of :drm:`<integer>` s.
 
-Function
+.. function:: %logbit?
 
-.. code-block:: dylan
+   :signature: %logbit? index m => set?
 
-    %lognot (m :: <machine-word>) => (r :: <machine-word>)
+   :parameter index: An instance of :drm:`<integer>`
+   :parameter m: An instance of :class:`<machine-word>`
+   :value set?: An instance of :drm:`<boolean>`
 
-These four functions have the same semantics as *logior*, *logxor*,
-*logand*, and *lognot* in the Dylan library, but they operate on
-``<machine-word>`` s instead of ``<integer>`` s.
+   :description:
 
-%logbit?
-^^^^^^^^
+     Returns true iff the indexed bit (zero based, counting from the least
+     significant bit) of ``m`` is set. An error is signaled unless ``0 <= index
+     < $machine-word-size``.
 
-Function
+.. function:: %count-low-zeros
 
-.. code-block:: dylan
+   :signature: %count-low-zeros m => c
 
-    %logbit? (index :: <integer>, m :: <machine-word>) => (set? ::
-      <boolean>)
+   :parameter m: An instance of :class:`<machine-word>`
+   :value c: An instance of :drm:`<integer>`
 
-Returns true iff the indexed bit (zero based, counting from the least
-significant bit) of *m* is set. An error is signaled unless *0 <= index
-< $machine-word-size*.
+   :description:
 
-%count-low-zeros
-^^^^^^^^^^^^^^^^
-
-Function
-
-.. code-block:: dylan
-
-    %count-low-zeros (m :: <machine-word>) => (c :: <integer>)
-
-Returns the number of consecutive zero bits in *m* counting from the
-least significant bit.
+     Returns the number of consecutive zero bits in ``m`` counting from the
+     least significant bit.
 
 .. note:: This is the position of the least significant non-zero bit in
-   *m*. So if *i* is the result, then *%logbit?(i, m)* is true, and for
-   all values of *j* such that *0 <= j < i*, *%logbit?(j, m)* is false.
+   ``m``. So if ``i`` is the result, then ``%logbit?(i, m)`` is true, and for
+   all values of ``j`` such that ``0 <= j < i``, ``%logbit?(j, m)`` is false.
 
-%count-high-zeros
-^^^^^^^^^^^^^^^^^
+.. function:: %count-high-zeros
 
-Function
+   :signature: %count-high-zeros m => c
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter c: An instance of :drm:`<integer>`
 
-    %count-high-zeros (m :: <machine-word>) => (c :: <integer>)
+   :description:
 
-Returns the number of consecutive zero bits in *m* counting from the
-most significant bit.
+     Returns the number of consecutive zero bits in ``m`` counting from the
+     most significant bit.
 
-.. note:: The position of the most significant non-zero bit in *m* can be
-   computed by subtracting this result from *$machine-word-size - 1*. So
-   if *i* is the result and *p = ($machine-word-size - i - 1)*, then
-   *%logbit?(p, m)* is true, and for all values of *j* such that *p < j <
-   $machine-word-size*, *%logbit?(j, m)* is false.
+.. note:: The position of the most significant non-zero bit in ``m`` can be
+   computed by subtracting this result from ``$machine-word-size - 1``. So
+   if ``i`` is the result and ``p = ($machine-word-size - i - 1)``, then
+   ``%logbit?(p, m)`` is true, and for all values of ``j`` such that ``p < j <
+   $machine-word-size*, *%logbit?(j, m)`` is false.
 
-%+
-^^
+.. function:: %+
 
-Function
+   :signature: %+ m1 m2 => sum overflow?
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value sum: An instance of :class:`<machine-word>`
+   :value overflow?: An instance of :drm:`<boolean>`
 
-    %+ (m1 :: <machine-word>, m2 :: <machine-word>) => (sum ::
-    <machine-word>, overflow? :: <boolean>)
+   :description:
 
-Signed addition.
+     Signed addition.
 
-%-
-^^
+.. function:: %-
 
-Function
+   :signature: %- m1 m2 => difference overflow?
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value difference: An instance of :class:`<machine-word>`
+   :value overflow?: An instance of :drm:`<boolean>`
 
-    %- (m1 :: <machine-word>, m2 :: <machine-word>) => (difference ::
-    <machine-word>, overflow? :: <boolean>)
+   :description:
 
-Signed subtraction.
+     Signed subtraction.
 
-%\*
-^^^
+.. function:: %\*
 
-Function
+   :signature: %\* m1 m2 => low high overflow?
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value low: An instance of :class:`<machine-word>`
+   :value high: An instance of :class:`<machine-word>`
+   :value overflow?: An instance of :drm:`<boolean>`
 
-    %\* (m1 :: <machine-word>, m2 :: <machine-word>) => (low ::
-      <machine-word>, high :: <machine-word>, overflow? :: <boolean>)
+   :description:
 
-Signed multiplication. The value of *overflow?* is false iff the *high*
-word result is a sign extension of the *low* word result.
+     Signed multiplication. The value of ``overflow?`` is false iff the
+     ``high`` word result is a sign extension of the ``low`` word result.
 
-%floor/
-^^^^^^^
+.. function:: %floor/
 
-Function
+   :signature: %floor/ dividend divisor => quotient remainder
 
-.. code-block:: dylan
+   :parameter dividend: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-    %floor/ (dividend :: <machine-word>, divisor :: <machine-word>) =>
-      (quotient :: <machine-word>, remainder :: <machine-word>)
+.. function:: %ceiling/
 
-%ceiling/
-^^^^^^^^^
+   :signature: %ceiling/ dividend divisor => quotient remainder
 
-Function
+   :parameter dividend: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-.. code-block:: dylan
+.. function:: %round/
 
-    %ceiling/ (dividend :: <machine-word>, divisor :: <machine-word>) =>
-      quotient :: <machine-word>, remainder :: <machine-word>
+   :signature: %round/ dividend divisor => quotient remainder
 
-%round/
-^^^^^^^
+   :parameter dividend: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-Function
+.. function:: %truncate/
 
-.. code-block:: dylan
+   :signature: %truncate/ dividend divisor => quotient remainder
 
-    %round/ (dividend :: <machine-word>, divisor :: <machine-word>)=>
-      (quotient :: <machine-word>, remainder :: <machine-word>)
+   :parameter dividend: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-%truncate/
-^^^^^^^^^^
+.. function:: %divide
 
-Function
+   :signature: %divide/ dividend divisor => quotient remainder
 
-.. code-block:: dylan
+   :parameter dividend: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-    %truncate/ (dividend :: <machine-word>, divisor :: <machine-word>) =>
-      (quotient :: <machine-word>, remainder :: <machine-word>)
-
-%divide
-^^^^^^^
-
-Function
-
-.. code-block:: dylan
-
-    %divide (dividend :: <machine-word>, divisor :: <machine-word>) =>
-      (quotient :: <machine-word>, remainder :: <machine-word>)
-
-The functions *%divide*, *%floor/*, *%ceiling/*, *%round/*, and
-*%truncate/* all perform signed division of the dividend by the divisor,
-returning a quotient and remainder such that:
+The functions :func:`%divide`, :func:`%floor/`, :func:`%ceiling/`,
+:func:`%round/`, and :func:`%truncate/` all perform signed division of the
+dividend by the divisor, returning a quotient and remainder such that:
 
 .. code-block:: dylan
 
@@ -491,71 +452,69 @@ returning a quotient and remainder such that:
 When the division is inexact (in other words, when the remainder is not
 zero), the kind of rounding depends on the operation:
 
--  *`%floor/`_* The quotient is rounded toward
-   negative infinity.
--  *`%ceiling/`_* The quotient is rounded toward
-   positive infinity.
--  *`%round/`_* The quotient is rounded toward
-   the nearest integer. If the mathematical quotient is exactly halfway
-   between two integers, then the resulting quotient is rounded to the
-   nearest even integer.
--  *`%truncate/`_* The quotient is rounded toward
-   zero.
--  *`%divide`_* If both operands are
-   non-negative, then the quotient is rounded toward zero. If either
-   operand is negative, then the direction of rounding is unspecified,
-   as is the sign of the remainder.
+- :func:`%floor/` The quotient is rounded toward
+  negative infinity.
+- :func:`%ceiling/` The quotient is rounded toward
+  positive infinity.
+- :func:`%round/` The quotient is rounded toward
+  the nearest integer. If the mathematical quotient is exactly halfway
+  between two integers, then the resulting quotient is rounded to the
+  nearest even integer.
+- :func:`%truncate/` The quotient is rounded toward
+  zero.
+- :func:`%divide` If both operands are
+  non-negative, then the quotient is rounded toward zero. If either
+  operand is negative, then the direction of rounding is unspecified,
+  as is the sign of the remainder.
 
 For all of these functions, an error is signaled if the value of the
 divisor is zero or if the correct value for the quotient exceeds the
 machine word range.
 
-%negative
-^^^^^^^^^
+.. function:: %negative
 
-Function
+   :signature: %negative m => r overflow?
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
+   :value overflow?: An instance of :drm:`<boolean>`
 
-    %negative (m :: <machine-word>) => (r :: <machine-word>, overflow? ::
-      <boolean>)
+.. function:: %abs
 
-%abs
-^^^^
+   :signature: %abs m => r overflow?
 
-Function
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
+   :value overflow?: An instance of :drm:`<boolean>`
 
-.. code-block:: dylan
+.. function:: %shift-left
 
-    %abs (m :: <machine-word>) => (r :: <machine-word>, overflow? ::
-      <boolean>)
+   :signature: %shift-left m count => low high overflow?
 
-%shift-left
-^^^^^^^^^^^
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value low: An instance of :class:`<machine-word>`
+   :value high: An instance of :class:`<machine-word>`
+   :value overflow?: An instance of :drm:`<boolean>`
 
-Function
+   :description:
 
-.. code-block:: dylan
+     Arithmetic left shift of ``m`` by count. An error is signaled unless ``0
+     <= count < $machine-word-size``. The value of ``overflow?`` is false iff
+     the high word result is a sign extension of the low word result.
 
-    %shift-left (m :: <machine-word>, count :: <integer>) => (low ::
-      <machine-word>, high :: <machine-word>, overflow? :: <boolean>)
+.. function:: %shift-right
 
-Arithmetic left shift of *m* by count. An error is signaled unless *0 <=
-count < $machine-word-size*. The value of *overflow?* is false iff the
-high word result is a sign extension of the low word result.
+   :signature: %shift-right m count => r
 
-%shift-right
-^^^^^^^^^^^^
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value r: An instance of :class:`<machine-word>`
 
-Function
+   :description:
 
-.. code-block:: dylan
-
-    %shift-right (m :: <machine-word>, count :: <integer>) => (r ::
-      <machine-word>)
-
-Arithmetic right shift of *m* by *count*. An error is signaled unless
-*0 <= count < $machine-word-size*.
+     Arithmetic right shift of ``m`` by ``count``. An error is signaled unless
+     ``0 <= count < $machine-word-size``.
 
 Overflow signalling operations
 ------------------------------
@@ -565,76 +524,76 @@ being specialized to ``<machine-word>`` accept an instance of
 ``<abstract-integer>``, which is then coerced to a ``<machine-word>``
 before performing the operation.
 
-so%+
-^^^^
+.. function:: so%+
 
-Function
+   :signature: so%+ m1 m2 => sum
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value sum: An instance of :class:`<machine-word>`
 
-    so%+ (m1 :: <machine-word>, m2 :: <machine-word>) => (sum ::
-      <machine-word>)
+   :description:
 
-Signed addition. An error is signaled on overflow.
+     Signed addition. An error is signaled on overflow.
 
-so%-
-^^^^
+.. function:: so%-
 
-Function
+   :signature: so%- m1 m2 => difference
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value difference: An instance of :class:`<machine-word>`
 
-    so%- (m1 :: <machine-word>, m2 :: <machine-word>) => (difference ::
-      <machine-word>)
+   :description:
 
-Signed subtraction. An error is signaled on overflow.
+     Signed subtraction. An error is signaled on overflow.
 
-so%\*
-^^^^^
+.. function:: so%\*
 
-Function
+   :signature: so%\* m1 m2 => product
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value product: An instance of :class:`<machine-word>`
 
-    so%\* (m1 :: <machine-word>, m2 :: <machine-word>) => (product ::
-      <machine-word>)
+   :description:
 
-Signed multiplication. An error is signaled on overflow.
+     Signed multiplication. An error is signaled on overflow.
 
-so%negative
-^^^^^^^^^^^
+.. function:: so%negative
 
-Function
+   :signature: so%negative m => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
 
-    so%negative (m :: <machine-word>) => (r :: <machine-word>)
+   :description:
 
-Negation. An error is signaled on overflow.
+      Negation. An error is signaled on overflow.
 
-so%abs
-^^^^^^
+.. function:: so%abs
 
-Function
+   :signature: so%abs m => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :value r: An instance of :class:`<machine-word>`
 
-    so%abs (m :: <machine-word>) => (r :: <machine-word>)
+   :description:
 
-Absolute value. An error is signaled on overflow.
+     Absolute value. An error is signaled on overflow.
 
-so%shift-left
-^^^^^^^^^^^^^
+.. function:: so%shift-left
 
-Function
+   :signature: so%shift-left m count => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value r: An instance of :class:`<machine-word>`
 
-    so%shift-left (m :: <machine-word>, count :: <integer>) => (r ::
-      <machine-word>)
+   :description:
 
-Arithmetic left shift of *m* by *count*. An error is signaled unless *0
-<= count < $machine-word-size*. An error is signaled on overflow.
+     Arithmetic left shift of ``m`` by ``count``. An error is signaled unless
+     ``0 <= count < $machine-word-size``. An error is signaled on overflow.
 
 Signed double word operations
 -----------------------------
@@ -644,64 +603,65 @@ being specialized to ``<machine-word>`` accept an instance of
 ``<abstract-integer>``, which is then coerced to a ``<machine-word>``
 before performing the operation.
 
-d%floor/
-^^^^^^^^
+.. function:: d%floor/
 
-Function
+   :signature: d%floor/ dividend-low dividend-high divisor => quotient
+               remainder
 
-.. code-block:: dylan
+   :parameter dividend-low: An instance of :class:`<machine-word>`
+   :parameter dividend-high: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-    d%floor/ (dividend-low :: <machine-word>, dividend-high ::
-      <machine-word>, divisor :: <machine-word>) => (quotient ::
-      <machine-word>, remainder :: <machine-word>)
+.. function:: d%ceiling/
 
-d%ceiling/
-^^^^^^^^^^
+   :signature: d%ceiling/ dividend-low dividend-high divisor => quotient
+               remainder
 
-Function
+   :parameter dividend-low: An instance of :class:`<machine-word>`
+   :parameter dividend-high: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-.. code-block:: dylan
+.. function:: d%round/
 
-    d%ceiling/ (dividend-low :: <machine-word>, dividend-high ::
-      <machine-word>, divisor :: <machine-word>) => (quotient ::
-      <machine-word>, remainder :: <machine-word>)
+   :signature: d%round/ dividend-low dividend-high divisor => quotient
+               remainder
 
-d%round/
-^^^^^^^^
+   :parameter dividend-low: An instance of :class:`<machine-word>`
+   :parameter dividend-high: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-Function
+.. function:: d%truncate/
 
-.. code-block:: dylan
+   :signature: d%truncate/ dividend-low dividend-high divisor => quotient
+               remainder
 
-    d%round/ (dividend-low :: <machine-word>, dividend-high ::
-      <machine-word>, divisor :: <machine-word>) => (quotient ::
-      <machine-word>, remainder :: <machine-word>)
+   :parameter dividend-low: An instance of :class:`<machine-word>`
+   :parameter dividend-high: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-d%truncate/
-^^^^^^^^^^^
+.. function:: d%divide
 
-Function
+   :signature: d%divide dividend-low dividend-high divisor => quotient
+               remainder
 
-.. code-block:: dylan
+   :parameter dividend-low: An instance of :class:`<machine-word>`
+   :parameter dividend-high: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-    d%truncate/ (dividend-low :: <machine-word>, dividend-high ::
-      <machine-word>, divisor :: <machine-word>) => (quotient ::
-      <machine-word>, remainder :: <machine-word>)
-
-d%divide
-^^^^^^^^
-
-Function
-
-.. code-block:: dylan
-
-    d%divide (dividend-low :: <machine-word>, dividend-high ::
-      <machine-word>, divisor :: <machine-word>) => (quotient ::
-      <machine-word>, remainder :: <machine-word>)
-
-The functions *d%divide*, *d%floor/*, *d%ceiling/*, *d%round/*, and
-*d%truncate/* all perform signed division of the double word dividend by
-the divisor, returning a quotient and remainder such that
+The functions :func:`d%divide`, :func:`d%floor/`, :func:`d%ceiling/`,
+:func:`d%round/`, and :func:`d%truncate/` all perform signed division of the
+double word dividend by the divisor, returning a quotient and remainder such
+that
 
 .. code-block:: dylan
 
@@ -710,20 +670,20 @@ the divisor, returning a quotient and remainder such that
 When the division is inexact (in other words, when the remainder is not
 zero), the kind of rounding depends on the operation:
 
--  *`d%floor/`_* The quotient is rounded toward
-   negative infinity.
--  *`d%ceiling/`_* The quotient is rounded toward
-   positive infinity.
--  *`d%round/`_* The quotient is rounded toward
-   the nearest integer. If the mathematical quotient is exactly halfway
-   between two integers then the resulting quotient is rounded to the
-   nearest even integer.
--  *`d%truncate/`_* The quotient is rounded
-   toward zero.
--  *`d%divide`_* If both operands are
-   non-negative, then the quotient is rounded toward zero. If either
-   operand is negative, then the direction of rounding is unspecified,
-   as is the sign of the remainder.
+- :func:`d%floor/` The quotient is rounded toward
+  negative infinity.
+- :func:`d%ceiling/` The quotient is rounded toward
+  positive infinity.
+- :func:`d%round/` The quotient is rounded toward
+  the nearest integer. If the mathematical quotient is exactly halfway
+  between two integers then the resulting quotient is rounded to the
+  nearest even integer.
+- :func:`d%truncate/` The quotient is rounded
+  toward zero.
+- :func:`d%divide` If both operands are
+  non-negative, then the quotient is rounded toward zero. If either
+  operand is negative, then the direction of rounding is unspecified,
+  as is the sign of the remainder.
 
 For all of these functions, an error is signaled if the value of the
 divisor is zero or if the correct value for the quotient exceeds the
@@ -737,125 +697,129 @@ being specialized to ``<machine-word>`` accept an instance of
 ``<abstract-integer>``, which is then coerced to a ``<machine-word>``
 before performing the operation.
 
-u%+
-^^^
+.. function:: u%+
 
-Function
+   :signature: u%+ m1 m2 => sum carry
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value sum: An instance of :class:`<machine-word>`
+   :value carry: An instance of :class:`<machine-word>`
 
-    u%+ (m1 :: <machine-word>, m2 :: <machine-word>) => (sum ::
-      <machine-word>, carry :: <machine-word>)
+   :description:
 
-Unsigned addition. The value represented by *carry* is either 0 or 1.
+     Unsigned addition. The value represented by ``carry`` is either 0 or 1.
 
-u%-
-^^^
+.. function:: u%-
 
-Function
+   :signature: u%- m1 m2 => sum borrow
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value sum: An instance of :class:`<machine-word>`
+   :value borrow: An instance of :class:`<machine-word>`
 
-    u%- (m1 :: <machine-word>, m2 :: <machine-word>) => (difference ::
-      <machine-word>, borrow :: <machine-word>)
+   :description:
 
-Unsigned subtraction. The value represented by *borrow* is either 0 or
-1.
+     Unsigned subtraction. The value represented by ``borrow`` is either 0 or
+     1.
 
-u%\*
-^^^^
+.. function:: u%\*
 
-Function
+   :signature: u%\* m1 m2 => low high
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value low: An instance of :class:`<machine-word>`
+   :value high: An instance of :class:`<machine-word>`
 
-    u%\* (m1 :: <machine-word>, m2 :: <machine-word>) => (low ::
-      <machine-word>, high :: <machine-word>)
+   :description:
 
-Unsigned multiplication.
+     Unsigned multiplication.
 
-u%divide
-^^^^^^^^
+.. function:: u%divide
 
-Function
+   :signature: u%divide dividend divisor => quotient remainder
 
-.. code-block:: dylan
+   :parameter dividend: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-    u%divide (dividend :: <machine-word>, divisor :: <machine-word>) =>
-      (quotient :: <machine-word>, remainder :: <machine-word>)
+   :description:
 
-Performs unsigned division of the dividend by the divisor, returning a
-quotient and remainder such that
+     Performs unsigned division of the dividend by the divisor, returning a
+     quotient and remainder such that
 
-.. code-block:: dylan
+     .. code-block:: dylan
 
-    (quotient * divisor + remainder = dividend)
+         (quotient * divisor + remainder = dividend)
 
-An error is signaled if the value of the *divisor* is zero.
+     An error is signaled if the value of the ``divisor`` is zero.
 
-u%rotate-left
-^^^^^^^^^^^^^
+.. function:: u%rotate-left
 
-Function
+   :signature: u%rotate-left m count => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value r: An instance of :class:`<machine-word>`
 
-    u%rotate-left (m :: <machine-word>, count :: <integer>) => (r ::
-      <machine-word>)
+   :description:
 
-Logical left rotation of *m* by *count*. An error is signaled unless *0
-<= count < $machine-word-size*.
+     Logical left rotation of ``m`` by ``count``. An error is signaled unless
+     ``0 <= count < $machine-word-size``.
 
-u%rotate-right
-^^^^^^^^^^^^^^
+.. function:: u%rotate-right
 
-Function
+   :signature: u%rotate-right m count => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value r: An instance of :class:`<machine-word>`
 
-    u%rotate-right (m :: <machine-word>, count :: <integer>) => (r ::
-      <machine-word>)
+   :description:
 
-Logical right rotation of *m* by *count*. An error is signaled unless
-*0 <= count < $machine-word-size*.
+     Logical right rotation of ``m`` by ``count``. An error is signaled unless
+     ``0 <= count < $machine-word-size``.
 
-u%shift-left
-^^^^^^^^^^^^
+.. function:: u%shift-left
 
-Function
+   :signature: u%shift-left m count => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value r: An instance of :class:`<machine-word>`
 
-    u%shift-left (m :: <machine-word>, count :: <integer>) => (r ::
-      <machine-word>)
+   :description:
 
-Logical left shift of *m* by *count*. An error is signaled unless *0 <=
-count < $machine-word-size*.
+     Logical left shift of ``m`` by ``count``. An error is signaled unless ``0
+     <= count < $machine-word-size``.
 
-u%shift-right
-^^^^^^^^^^^^^
+.. function:: u%shift-right
 
-Function
+   :signature: u%shift-right m count => r
 
-.. code-block:: dylan
+   :parameter m: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value r: An instance of :class:`<machine-word>`
 
-    u%shift-right (m :: <machine-word>, count :: <integer>) => (r ::
-      <machine-word>)
+   :description:
 
-Logical right shift of *m* by *count*. An error is signaled unless *0
-<= count < $machine-word-size*.
+     Logical right shift of ``m`` by ``count``. An error is signaled unless ``0
+     <= count < $machine-word-size``.
 
-u%<
-^^^
+.. function:: u%<
 
-Function
+   :signature: u%< m1 m2 => smaller?
 
-.. code-block:: dylan
+   :parameter m1: An instance of :class:`<machine-word>`
+   :parameter m2: An instance of :class:`<machine-word>`
+   :value smaller?: An instance of :drm:`<boolean>`
 
-    u%< (m1 :: <machine-word>, m2 :: <machine-word>) => (smaller? ::
-      <boolean>)
+   :description:
 
-Unsigned comparison.
+     Unsigned comparison.
 
 Unsigned double word operations
 -------------------------------
@@ -865,51 +829,56 @@ being specialized to ``<machine-word>`` accept an instance of
 ``<abstract-integer>``, which is then coerced to a ``<machine-word>``
 before performing the operation.
 
-ud%divide
-^^^^^^^^^
+.. function:: ud%divide
 
-Function
+   :signature: ud%divide dividend-low dividend-high divisor => quotient remainder
 
-.. code-block:: dylan
+   :parameter dividend-low: An instance of :class:`<machine-word>`
+   :parameter dividend-high: An instance of :class:`<machine-word>`
+   :parameter divisor: An instance of :class:`<machine-word>`
+   :value quotient: An instance of :class:`<machine-word>`
+   :value remainder: An instance of :class:`<machine-word>`
 
-    ud%divide (dividend-low :: <machine-word>, dividend-high ::
-      <machine-word>, divisor :: <machine-word>) => (quotient ::
-      <machine-word>, remainder :: <machine-word>)
+   :description:
 
-Performs unsigned division of the double word dividend by the *divisor*,
-returning a *quotient* and *remainder* such that
+     Performs unsigned division of the double word dividend by the ``divisor``,
+     returning a ``quotient`` and ``remainder`` such that
 
-.. code-block:: dylan
+     .. code-block:: dylan
 
-    (quotient * divisor + remainder = dividend)
+         (quotient * divisor + remainder = dividend)
 
-An error is signaled if the value of the *divisor* is zero or if the
-correct value for the *quotient* exceeds the machine word range.
+     An error is signaled if the value of the ``divisor`` is zero or if the
+     correct value for the ``quotient`` exceeds the machine word range.
 
-ud%shift-left
-^^^^^^^^^^^^^
+.. function:: ud%shift-left
 
-Function
+   :signature: ud%shift-left low high count => low high
 
-.. code-block:: dylan
+   :parameter low: An instance of :class:`<machine-word>`
+   :parameter high: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value low: An instance of :class:`<machine-word>`
+   :value high: An instance of :class:`<machine-word>`
 
-    ud%shift-left (low :: <machine-word>, high :: <machine-word>, count ::
-      <integer>) => (low :: <machine-word>, high :: <machine-word>)
+   :description:
 
-Logical left shift by *count* of the double word value represented by
-*low* and *high*. An error is signaled unless *0 <= count <
-$machine-word-size*.
+     Logical left shift by ``count`` of the double word value represented by
+     ``low`` and ``high``. An error is signaled unless ``0 <= count <
+     $machine-word-size``.
 
-ud%shift-right
-^^^^^^^^^^^^^^
+.. function:: ud%shift-right
 
-Function
+   :signature: ud%shift-right low high count => low high
 
-.. code-block:: dylan
+   :parameter low: An instance of :class:`<machine-word>`
+   :parameter high: An instance of :class:`<machine-word>`
+   :parameter count: An instance of :drm:`<integer>`
+   :value low: An instance of :class:`<machine-word>`
+   :value high: An instance of :class:`<machine-word>`
 
-    ud%shift-right (low :: <machine-word>, high :: <machine-word>, count
-      :: <integer>) => (low :: <machine-word>, high :: <machine-word>)
+   :description:
 
-Logical right shift by *count* of the double word value represented by
-*low* and *high*. An error is signaled unless *0 <= count <
-$machine-word-size*.
+     Logical right shift by ``count`` of the double word value represented by
+     ``low`` and ``high``. An error is signaled unless ``0 <= count <
+     $machine-word-size``.

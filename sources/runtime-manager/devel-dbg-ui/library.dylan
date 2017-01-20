@@ -14,7 +14,8 @@ define library devel-dbg-ui
   use system;
   use io;
   use access-path;
-  // Plug-in for Remote Debugging
+  // Plug-ins for debugging
+  use local-access-path;
   use remote-access-path;
   use debugger-manager;
   use collections;
@@ -36,7 +37,6 @@ end library;
 
 define module devel-dbg-ui
   use common-dylan,
-    exclude: { format-to-string },
     rename: { application-filename => os-application-filename };
   use dylan-extensions,
     import: { *class-profiling-enabled?*,

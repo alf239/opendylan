@@ -25,6 +25,8 @@ define method emit-definition
       end;
   llvm-constrain-type(llvm-value-type(initializer), $llvm-object-pointer-type);
 
+  let thread-local = o.binding-thread? & llvm-thread-local-support?(back-end);
+
   let global
     = make(<llvm-global-variable>,
            name: name,
@@ -32,8 +34,10 @@ define method emit-definition
            initializer: initializer,
            constant?: #f,
            linkage: linkage,
+	   thread-local: thread-local,
            alignment: back-end-word-size(back-end),
-           section: llvm-section-name(back-end, #"variables"));
+           section: llvm-section-name(back-end, #"variables",
+                                      thread-local?: thread-local));
   llvm-builder-define-global(back-end, name, global);
 end method;
 
@@ -41,12 +45,14 @@ define method emit-extern
     (back-end :: <llvm-back-end>, m :: <llvm-module>, o :: <module-binding>)
  => ()
   let name = emit-name(back-end, m, o);
+  let thread-local = o.binding-thread? & llvm-thread-local-support?(back-end);
   let global
     = make(<llvm-global-variable>,
            name: name,
            type: llvm-pointer-to(back-end, $llvm-object-pointer-type),
            constant?: #f,
-           linkage: #"external");
+           linkage: #"external",
+	   thread-local: thread-local);
   llvm-builder-define-global(back-end, name, global);
 end method;
 
@@ -94,18 +100,9 @@ define method emit-extern
     (back-end :: <llvm-back-end>, module :: <llvm-module>,
      ep :: <&shared-entry-point>)
  => ();
-  let name = emit-name(back-end, module, ep);
-  unless (element(module.llvm-global-table, name, default: #f))
-    let function-type = llvm-entry-point-type(back-end, ep);
-    let function
-      = make(<llvm-function>,
-             name: name,
-             type: llvm-pointer-to(back-end, function-type),
-             arguments: #(),
-             linkage: #"external",
-             calling-convention: llvm-calling-convention(back-end, ep));
-    llvm-builder-define-global(back-end, name, function);
-  end unless;
+  let (desc :: <llvm-entry-point-descriptor>, count :: false-or(<integer>))
+    = llvm-entry-point-info(back-end, ep);
+  llvm-entry-point-function(back-end, desc, count);
 end method;
 
 // FFI
@@ -113,30 +110,67 @@ end method;
 define method emit-extern
     (back-end :: <llvm-back-end>, module :: <llvm-module>, o :: <&c-function>)
  => ();
-  let name = o.binding-name;
-  unless (element(module.llvm-global-table, name, default: #f))
-    let sig-values = o.primitive-signature.^signature-values;
-    // FIXME these are actually subject to target-specific/ABI-specific
-    // normalization
-    let return-type
-      = llvm-reference-type
-          (back-end, first(sig-values, default: dylan-value(#"<object>")));
-    let parameter-types
-      = map(curry(llvm-reference-type, back-end),
-            o.c-signature.^signature-required);
+  let name = o.c-function-name;
+  if (name & ~llvm-builder-global-defined?(back-end, name))
+    let calling-convention
+      = llvm-c-function-calling-convention(back-end, o);
+
+    let function-type = llvm-c-function-type(back-end, o);
+    let args
+      = map(method (arg-type, index)
+              make(<llvm-argument>, type: arg-type, index: index)
+            end,
+            function-type.llvm-function-type-parameter-types, range(from: 0));
+    let global
+      = make(<llvm-function>,
+             linkage: #"external",
+             name: name,
+             type: llvm-pointer-to(back-end, function-type),
+             arguments: args,
+             calling-convention: calling-convention);
+    llvm-builder-define-global(back-end, name, global);
+  end if;
+end method;
+
+define method emit-extern
+  (back-end :: <llvm-back-end>, module :: <llvm-module>, o :: <&objc-msgsend>)
+ => ();
+  let name = o.c-function-name;
+  if (~llvm-builder-global-defined?(back-end, name))
+    let calling-convention
+      = llvm-c-function-calling-convention(back-end, o);
+
+    // Instead of using the actual function type, we want to
+    // just define a void name(void); prototype instead since
+    // we will invoke this function with many signatures, each
+    // bitcast to the right prototype at the callsite.
     let function-type
       = make(<llvm-function-type>,
-             return-type: return-type,
-             parameter-types: parameter-types,
+             parameter-types: #[],
+             return-type: $llvm-void-type,
              varargs?: #f);
-    let function
+    let global
       = make(<llvm-function>,
+             linkage: #"external",
              name: name,
              type: llvm-pointer-to(back-end, function-type),
              arguments: #[],
-             linkage: #"external",
-             calling-convention: $llvm-calling-convention-c); // FIXME
-    llvm-builder-define-global(back-end, name, function);
+             calling-convention: calling-convention);
+    llvm-builder-define-global(back-end, name, global);
+  end if;
+end method;
+
+define method emit-extern
+    (back-end :: <llvm-back-end>, module :: <llvm-module>, o :: <&c-variable>)
+ => ();
+  unless (llvm-builder-global-defined?(back-end, o.name))
+    let global
+      = make(<llvm-global-variable>,
+             name: o.name,
+             constant?: #f,
+             linkage: if (o.dll-import?) #"dllimport" else #"external" end,
+             type: $llvm-i8*-type);
+    llvm-builder-define-global(back-end, o.name, global);
   end unless;
 end method;
 
@@ -250,13 +284,13 @@ define method emit-definition-section
      o :: type-union(<uninterned-symbol>, <string>,
                      <&machine-word>, <&single-float>, <&double-float>,
                      <&mm-wrapper>, <&signature>))
- => (section-name :: <string>);
+ => (section-name :: false-or(<string>));
   llvm-section-name(back-end, #"untraced-objects");
 end method;
 
 // Other objects contain mutable references and need to be traced.
 define method emit-definition-section
-    (back-end :: <llvm-back-end>, o) => (section-name :: <string>)
+    (back-end :: <llvm-back-end>, o) => (section-name :: false-or(<string>))
   llvm-section-name(back-end, #"objects");
 end method;
 

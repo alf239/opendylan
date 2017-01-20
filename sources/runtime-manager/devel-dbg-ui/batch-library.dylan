@@ -15,7 +15,8 @@ define library batch-debug
   use io;
   use release-info;
   use access-path;
-  // Plug-in for Remote Debugging
+  // Plug-ins for debugging
+  use local-access-path;
   use remote-access-path;
   use debugger-manager;
   use collections;
@@ -36,7 +37,6 @@ end library;
 
 define module devel-dbg-ui
   use common-dylan,
-    exclude: { format-to-string },
     rename: { application-filename => os-application-filename };
   use dylan-extensions,
     import: { keyboard-interrupt-polling-thread?-setter };

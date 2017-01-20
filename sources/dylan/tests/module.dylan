@@ -10,8 +10,12 @@ define module dylan-test-suite
   use dylan-extensions,
     import: { <limited-collection>,
               element-type,
-              <hash-state> };
+              <hash-state>,
+              <limited-integer>,
+              limited-integer-min,
+              limited-integer-max };
   use common-dylan;
+  use format;
   use table-extensions,
     import: { case-insensitive-equal };
   use testworks;
@@ -24,4 +28,6 @@ define module dylan-test-suite
   export test-collection-class,
          test-condition-class,
          test-number-class;
+
+  // Stifle compiler warnings
 end module dylan-test-suite;

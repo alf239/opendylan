@@ -16,7 +16,7 @@ end;
 
 define module unix-sockets
   use common-dylan,
-    exclude: { close, format-to-string };
+    exclude: { close };
   use C-FFI;
 
   // Misc
@@ -224,8 +224,8 @@ define module sockets
   create
     <internet-address>,
       <ipv4-address>,
-        host-name, host-address, numeric-host-address, all-addresses,
-        aliases, $loopback-address, $local-host;
+        host-name, host-address, numeric-host-address, all-addresses, aliases;
+  create local-host-name;
   create
     <numeric-address>,
       network-order, host-order,
@@ -252,14 +252,14 @@ define module sockets
   create
     \interruptible-system-call;
   create
-    socket-descriptor-setter, <platform-socket>, buffer-offset,
+    socket-descriptor-setter, <platform-socket>,
     accessor-close-socket, <unix-socket-accessor>, current-socket-manager,
     socket-manager-lock, accessor-accept, default-element-type;
 end module sockets;
 
 define module sockets-internals
   use dylan;
-  use common-extensions, exclude: { format-to-string };
+  use common-extensions;
   use dylan-extensions;
   use machine-words;
   use C-FFI;

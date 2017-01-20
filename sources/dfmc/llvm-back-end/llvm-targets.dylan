@@ -37,6 +37,12 @@ define method llvm-back-end-data-layout
     "a0:0:64-f80:32:32-n8:16:32"
 end method;
 
+define method llvm-back-end-unwind-exception-size
+    (back-end :: <llvm-x86-back-end>)
+ => (number-words :: <integer>)
+  8
+end method;
+
 // x86_64
 
 define abstract class <llvm-x86_64-back-end> (<llvm-x86-back-end>)
@@ -53,6 +59,12 @@ define method llvm-back-end-data-layout
   "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-"
     "i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-"
     "a0:0:64-s0:64:64-f80:128:128-n8:16:32:64"
+end method;
+
+define method llvm-back-end-unwind-exception-size
+    (back-end :: <llvm-x86_64-back-end>)
+ => (number-words :: <integer>)
+  4
 end method;
 
 // PowerPC (32-bit)
@@ -98,7 +110,7 @@ define class <llvm-x86-windows-back-end> (<llvm-x86-back-end>,
                                         <llvm-windows-back-end>)
 end class;
 
-register-back-end(<llvm-x86-windows-back-end>, #"llvm", #"x86", #"win32");
+register-back-end(<llvm-x86-windows-back-end>, #"llvm", #"x86-win32");
 
 define method llvm-back-end-target-triple
     (back-end :: <llvm-x86-windows-back-end>) => (triple :: <string>);
@@ -118,7 +130,7 @@ define class <llvm-x86-darwin-back-end> (<llvm-x86-back-end>,
                                          <llvm-darwin-back-end>)
 end class;
 
-register-back-end(<llvm-x86-darwin-back-end>, #"llvm", #"x86", #"darwin");
+register-back-end(<llvm-x86-darwin-back-end>, #"llvm", #"x86-darwin");
 
 define method llvm-back-end-target-triple
     (back-end :: <llvm-x86-darwin-back-end>) => (triple :: <string>);
@@ -139,7 +151,7 @@ define class <llvm-x86_64-darwin-back-end> (<llvm-x86_64-back-end>,
 end class;
 
 register-back-end(<llvm-x86_64-darwin-back-end>,
-                  #"llvm", #"x86_64", #"darwin");
+                  #"llvm", #"x86_64-darwin");
 
 define method llvm-back-end-target-triple
     (back-end :: <llvm-x86_64-darwin-back-end>) => (triple :: <string>);
@@ -152,7 +164,7 @@ define class <llvm-x86-linux-back-end> (<llvm-x86-back-end>,
                                         <llvm-unix-back-end>)
 end class;
 
-register-back-end(<llvm-x86-linux-back-end>, #"llvm", #"x86", #"linux");
+register-back-end(<llvm-x86-linux-back-end>, #"llvm", #"x86-linux");
 
 define method llvm-back-end-target-triple
     (back-end :: <llvm-x86-linux-back-end>) => (triple :: <string>);
@@ -165,7 +177,7 @@ define class <llvm-x86_64-linux-back-end> (<llvm-x86_64-back-end>,
                                            <llvm-unix-back-end>)
 end class;
 
-register-back-end(<llvm-x86_64-linux-back-end>, #"llvm", #"x86_64", #"linux");
+register-back-end(<llvm-x86_64-linux-back-end>, #"llvm", #"x86_64-linux");
 
 define method llvm-back-end-target-triple
     (back-end :: <llvm-x86_64-linux-back-end>) => (triple :: <string>);
@@ -178,11 +190,17 @@ define class <llvm-x86-freebsd-back-end> (<llvm-x86-back-end>,
                                           <llvm-unix-back-end>)
 end class;
 
-register-back-end(<llvm-x86-freebsd-back-end>, #"llvm", #"x86", #"freebsd");
+register-back-end(<llvm-x86-freebsd-back-end>, #"llvm", #"x86-freebsd");
 
 define method llvm-back-end-target-triple
     (back-end :: <llvm-x86-freebsd-back-end>) => (triple :: <string>);
   "i386-unknown-freebsd"
+end method;
+
+define method llvm-back-end-unwind-exception-size
+    (back-end :: <llvm-x86-freebsd-back-end>)
+ => (number-words :: <integer>)
+  5
 end method;
 
 // x86_64-freebsd
@@ -192,9 +210,24 @@ define class <llvm-x86_64-freebsd-back-end> (<llvm-x86_64-back-end>,
 end class;
 
 register-back-end(<llvm-x86_64-freebsd-back-end>,
-                  #"llvm", #"x86_64", #"freebsd");
+                  #"llvm", #"x86_64-freebsd");
 
 define method llvm-back-end-target-triple
     (back-end :: <llvm-x86_64-freebsd-back-end>) => (triple :: <string>);
   "x86_64-unknown-freebsd"
+end method;
+
+
+/// LLVM Thread-local storage platform support
+
+define method llvm-thread-local-support?
+    (back-end :: <llvm-back-end>)
+ => (support? :: <boolean>)
+  #t
+end method;
+
+define method llvm-thread-local-support?
+    (back-end :: <llvm-windows-back-end>)
+ => (support? :: <boolean>)
+  #f
 end method;

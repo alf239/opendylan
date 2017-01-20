@@ -8,14 +8,14 @@ define function install-interactive-layer-sources
     (layer :: <interactive-layer>, sr*)
   // see install-library-description-sources
   let cr* = map-as(<compilation-record-vector>,
-		   method (sr :: <source-record>)
-		     make(<interactive-compilation-record>,
-			  library: #f,
-			  source-record: sr)
-		   end method,
-		   sr*);
+                   method (sr :: <source-record>)
+                     make(<interactive-compilation-record>,
+                          library: #f,
+                          source-record: sr)
+                   end method,
+                   sr*);
   let known = layer.interactive-layer-base.library-description-compilation-records.size;
-  // Number the compilation records to be contiguous with the known set, so that 
+  // Number the compilation records to be contiguous with the known set, so that
   // the "name" of the compilation record doesn't change when there's a merge.
   for (cr in cr*, index from known by 1)
     cr.compilation-record-sequence-number := index;
@@ -28,32 +28,6 @@ define method note-definitions-updated (layer :: <interactive-layer>) => ()
   // Interactive compilation doesn't invalidate databases.
 end method;
 
-/*
-in: dfmc-debug;
-
-define function itest-sr (text, #key module = "internal")
- make(access(projects-implementation,<string-template-source-record>),
-      contents: as(<byte-vector>,text),
-      module: as(<symbol>, module),
-      name: "Test");
-end function;
-
-define function itest (text, #key module = "internal",
-		                  library = "dylan",
-		                  target = list("New target"))
-  execute-source
-    (lookup-interactive-context(target, lookup-library-description(library)),
-     #"no-context",
-     list(itest-sr(text, module: module)));
-end function;
-
-define function htest (text, #key module = "functional-extensions-internals",
-		                  library = "functional-extensions",
-		                  target = list("New target"))
-  itest(text, module: module, library: library, target: target)
-end function;
-*/
-
 define function ensure-layer-compiled (layer :: <interactive-layer>, flags, #key heap? = #t)
   ensure-library-models-computed(layer);
   // ensure-library-models-finished(layer);
@@ -64,9 +38,9 @@ define function ensure-layer-compiled (layer :: <interactive-layer>, flags, #key
   ensure-library-optimized(layer);
   heap? & ensure-layer-heaps-computed(layer, flags);
 end function;
-  
+
 define function ensure-layer-heaps-computed (layer :: <interactive-layer>,
-					     flags :: <sequence>)
+                                             flags :: <sequence>)
   debug-out(#"internal", "Heaping:");
   timing-compilation-phase ("Heaping" of layer)
 
@@ -74,9 +48,9 @@ define function ensure-layer-heaps-computed (layer :: <interactive-layer>,
 
     for (cr in compilation-context-records(layer))
       unless (cr.compilation-record-model-heap)
-	progress-line("Computing heap for %s", cr);
-	with-dependent ($compilation of cr)
-	  apply(compute-and-install-compilation-record-heap, cr, flags);
+        progress-line("Computing heap for %s", cr);
+        with-dependent ($compilation of cr)
+          apply(compute-and-install-compilation-record-heap, cr, flags);
         end;
       end;
     end;
@@ -101,16 +75,16 @@ define function execute-source
         debug-assert(~layer.compiled-to-definitions?);
         compute-library-definitions(layer);
         debug-assert(~any?(compilation-record-model-heap,
-			   layer.compilation-context-records));
+                           layer.compilation-context-records));
         ensure-layer-compiled(layer, flags, heap?: ~interpret?);
         // ALL SET, NOW DOWNLOAD!
         let tid
-	  = if (interpret?)
-	      ensure-library-interpreted(layer, trace?: trace?, results?: #t); 
-	    else 
-	      skip-link? | apply(link-and-download, current-back-end(),
-				 layer, runtime-context, flags);
-	    end if;
+          = if (interpret?)
+              ensure-library-interpreted(layer, trace?: trace?, results?: #t);
+            else
+              skip-link? | apply(link-and-download, current-back-end(),
+                                 layer, runtime-context, flags);
+            end if;
         merge-interactive-layer(layer, tid);
         tid
       end dynamic-bind;
@@ -165,25 +139,22 @@ define method execute-definition-removal
   end with-program-conditions;
 end /* function */;
 
-define method macroexpand-source 
+define method macroexpand-source
     (ld :: <library-description>, sr :: <source-record>,
-       #key expansion-stream :: false-or(<stream>) = #f, 
-            trace-stream :: false-or(<stream>) = #f)
+       #key expansion-stream :: false-or(<stream>) = #f)
  => (warnings :: <sequence>)
   let ild = lookup-interactive-context(#"dummy-macroexpansion-target", ld);
   block ()
-    macroexpand-source(ild, sr, 
-                       expansion-stream: expansion-stream,
-                       trace-stream: trace-stream);
+    macroexpand-source(ild, sr,
+                       expansion-stream: expansion-stream);
   cleanup
     close-library-description(ild);
   end;
 end method;
 
-define method macroexpand-source 
+define method macroexpand-source
     (ild :: <interactive-library-description>, sr :: <source-record>,
-       #key expansion-stream :: false-or(<stream>) = #f, 
-            trace-stream :: false-or(<stream>) = #f)
+       #key expansion-stream :: false-or(<stream>) = #f)
  => (warnings :: <sequence>)
   let sr* = list(sr);
   // with-program-conditions
@@ -195,8 +166,7 @@ define method macroexpand-source
         block ()
           install-interactive-layer-sources(layer, sr*);
           debug-assert(~layer.compiled-to-definitions?);
-          with-macroexpansion-output 
-              (expansion-stream: expansion-stream, trace-stream: trace-stream)
+          with-macroexpansion-output (expansion-stream: expansion-stream)
             compute-library-definitions(layer);
           end;
           debug-assert(~any?(compilation-record-model-heap,

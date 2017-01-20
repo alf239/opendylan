@@ -10,14 +10,14 @@ define sideways method emit-mainfile
   let c-file = #f;
   with-build-area-output (stream = ld, base: "_main", type: "c")
     write(stream, "#include <stdlib.h>\n");
-    write(stream, "#include \"run-time.h\"\n\n");
+    write(stream, "#include \"opendylan/run-time.h\"\n\n");
 
     format(stream, "int main (int argc, char *argv[]) {\n");
     format(stream, "  extern void %s ();\n", glue-name(lib-name));
-    format(stream, "  extern D %s;\n", command-arguments-name());
-    format(stream, "  extern D %s;\n", command-name-name());
+    format(stream, "  extern %s %s;\n", $dylan-type-string, command-arguments-name());
+    format(stream, "  extern %s %s;\n", $dylan-type-string, command-name-name());
 
-    write (stream, "  D args = primitive_make_vector((argc > 0) ? argc - 1 : 0);\n");
+    format(stream, "  %s args = primitive_make_vector((argc > 0) ? argc - 1 : 0);\n", $dylan-type-string);
     write (stream, "  int i;\n");
     format(stream, "  if (argc > 0)\n");
     format(stream, "    %s = primitive_raw_as_string(argv[0]);\n", command-name-name());
@@ -27,7 +27,7 @@ define sideways method emit-mainfile
     write (stream, "    primitive_vector_element_setter\n");
     write (stream, "      (primitive_raw_as_string(argv[i]), args,\n");
     write (stream, "       primitive_raw_as_integer(i - 1));\n");
-    format(stream, "  %s = (D)args;\n", command-arguments-name());
+    format(stream, "  %s = (%s)args;\n", command-arguments-name(), $dylan-type-string);
     format(stream, "  %s();\n", glue-name(lib-name));
     format(stream, "  return(0);\n");
     format(stream, "}\n");
@@ -44,7 +44,7 @@ define sideways method emit-gluefile
     let cr-init-names = cr-init-names(ld, cr-names);
     let rt-init-names = list(glue-name-raw("Run_Time"));
     let init-names = concatenate(rt-init-names, used-glue-names, cr-init-names);
-    write (stream, "#include \"run-time.h\"\n\n");
+    write (stream, "#include \"opendylan/run-time.h\"\n\n");
     format(stream, "void %s () __attribute__((constructor));\n", glue-name(lib-name));
     format(stream, "void %s () {\n", glue-name(lib-name));
     for (name in init-names)

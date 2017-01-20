@@ -1,4 +1,4 @@
-AC_INIT([Open Dylan], [2012.1])
+AC_INIT([Open Dylan], [2014.1])
 AC_PREREQ(2.50)
 
 # Directory for config.guess etc.
@@ -10,52 +10,64 @@ AC_CONFIG_AUX_DIR(build-aux)
 
 srcdir=`(cd $srcdir; pwd)`
 
-SUPPORT_GC_MPS=no
-SUPPORT_GC_BOEHM=yes
-GC_USE_STATIC_BOEHM=false
+SUPPORT_HARP=
+SUPPORT_LLVM=
+BDW_GC_STATIC=
+BDW_GC_MODULE=bdw-gc
+ADDITIONAL_RUNTIME_TARGET_PLATFORMS=
 
 AC_CANONICAL_TARGET
-case $target in
+
+MULTIARCH=$host
+case $host in
   i*86-*-linux*)
-      OPEN_DYLAN_PLATFORM_NAME=x86-linux;
-      RUNTIME_SOURCES=sources/lib/run-time;
-      SUPPORT_GC_MPS=yes;
-      SUPPORT_GC_BOEHM=no
+      OPEN_DYLAN_TARGET_PLATFORM=x86-linux;
+      MULTIARCH=i386-linux-gnu
+      SUPPORT_HARP=yes
+      SUPPORT_LLVM=yes
     ;;
   i*86-*-freebsd*)
-      OPEN_DYLAN_PLATFORM_NAME=x86-freebsd;
-      RUNTIME_SOURCES=sources/lib/run-time;
-      SUPPORT_GC_MPS=yes;
-      SUPPORT_GC_BOEHM=no
+      OPEN_DYLAN_TARGET_PLATFORM=x86-freebsd;
+      BDW_GC_MODULE=bdw-gc-threaded
+      SUPPORT_HARP=yes
+      SUPPORT_LLVM=yes
     ;;
   i*86-*-darwin*)
-      OPEN_DYLAN_PLATFORM_NAME=x86-darwin;
-      RUNTIME_SOURCES=sources/dfmc/c-run-time
-      GC_USE_STATIC_BOEHM=true
+      OPEN_DYLAN_TARGET_PLATFORM=x86-darwin;
+      ADDITIONAL_RUNTIME_TARGET_PLATFORMS="x86_64-darwin";
+      BDW_GC_STATIC=true
+      SUPPORT_LLVM=yes
     ;;
   x86_64-*-darwin*)
-      OPEN_DYLAN_PLATFORM_NAME=x86-darwin;
-      RUNTIME_SOURCES=sources/dfmc/c-run-time
-      GC_USE_STATIC_BOEHM=true
+      OPEN_DYLAN_TARGET_PLATFORM=x86-darwin;
+      ADDITIONAL_RUNTIME_TARGET_PLATFORMS="x86_64-darwin";
+      BDW_GC_STATIC=true
+      SUPPORT_LLVM=yes
     ;;
-  powerpc-*-darwin*)
-      OPEN_DYLAN_PLATFORM_NAME=ppc-darwin;
-      RUNTIME_SOURCES=sources/dfmc/c-run-time
-    ;;
-  amd64-*-freebsd*)
-      OPEN_DYLAN_PLATFORM_NAME=amd64-freebsd;
-      RUNTIME_SOURCES=sources/dfmc/c-run-time
+  amd64-*-freebsd* | x86_64-*-freebsd*)
+      OPEN_DYLAN_TARGET_PLATFORM=x86_64-freebsd;
+      BDW_GC_MODULE=bdw-gc-threaded
     ;;
   x86_64-*-linux*)
-      OPEN_DYLAN_PLATFORM_NAME=x86_64-linux;
-      RUNTIME_SOURCES=sources/dfmc/c-run-time
+      OPEN_DYLAN_TARGET_PLATFORM=x86_64-linux;
+      MULTIARCH=x86_64-linux-gnu
+      SUPPORT_LLVM=yes
+    ;;
+  arm-*-linux*)
+      OPEN_DYLAN_TARGET_PLATFORM=arm-linux;
+    ;;
+  i*86-*-netbsd*)
+      OPEN_DYLAN_TARGET_PLATFORM=x86-netbsd;
+    ;;
+  amd64-*-netbsd* | x86_64-*-netbsd*)
+      OPEN_DYLAN_TARGET_PLATFORM=x86_64-netbsd;
     ;;
   *)
-      AC_MSG_ERROR([The $target platform is not supported.])
+      AC_MSG_ERROR([The $host platform is not supported.])
     ;;
 esac
-AC_SUBST(OPEN_DYLAN_PLATFORM_NAME)
-AC_SUBST(RUNTIME_SOURCES)
+AC_SUBST(OPEN_DYLAN_TARGET_PLATFORM)
+AC_SUBST(ADDITIONAL_RUNTIME_TARGET_PLATFORMS)
 
 AM_INIT_AUTOMAKE
 
@@ -78,112 +90,138 @@ done
 AC_CHECK_PROGS(DYLANCOMPILER, dylan-compiler opendylan minimal-console-compiler, no)
 test "$DYLANCOMPILER" = no && AC_MSG_ERROR([
 dylan-compiler, opendylan or minimal-console-compiler is required to bootstrap Open Dylan. Please download and install a build from http://opendylan.org/download/index.html])
-test "$DYLANCOMPILER" = dylan-compiler && DYLANCOMPILER="$DYLANCOMPILER -build"
-test "$DYLANCOMPILER" = opendylan && DYLANCOMPILER="$DYLANCOMPILER -build"
-test "$DYLANCOMPILER" = minimal-console-compiler && DYLANCOMPILER="$DYLANCOMPILER -build"
+# In 2014.1 and later we need -verbose so fdmake.pl gets warning count summaries.
+AC_MSG_CHECKING(if $DYLANCOMPILER supports the -verbose flag)
+if $DYLANCOMPILER -version -verbose >/dev/null 2>&1 ; then
+  DYLANCOMPILER="$DYLANCOMPILER -verbose -build"
+  AC_MSG_RESULT(yes)
+else
+  test "$DYLANCOMPILER" = dylan-compiler && DYLANCOMPILER="$DYLANCOMPILER -build"
+  test "$DYLANCOMPILER" = opendylan && DYLANCOMPILER="$DYLANCOMPILER -build"
+  test "$DYLANCOMPILER" = minimal-console-compiler && DYLANCOMPILER="$DYLANCOMPILER -build"
+  AC_MSG_RESULT(no)
+fi
 AC_SUBST(DYLANCOMPILER)
 
 # TODO: figure out the bootstrap type given the fdcompile version
-bootstrap_target=1-stage-bootstrap
+#       as we may be able to just do a 1-stage-bootstrap. But for now,
+#       default to a 3-stage-bootstrap to be safe.
+bootstrap_target=3-stage-bootstrap
 AC_SUBST(bootstrap_target)
 
-AC_PROG_CC([clang gcc cc])
+AC_PROG_CC([clang-3.5 clang gcc cc])
+AC_PROG_CXX([clang++-3.5 clang++ g++ c++])
+
+if test -n "$SUPPORT_LLVM"; then
+    AC_MSG_CHECKING([whether Clang is new enough])
+    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if __clang_major__ < 3 || (__clang_major__ == 3 && __clang_minor__ < 5)
+#error This version of Clang is too old to be used with the dylan-compiler LLVM back-end
+#endif
+]])],
+        [AC_MSG_RESULT([yes])],
+        [AC_MSG_RESULT([no])
+         SUPPORT_LLVM=])
+fi
+AC_SUBST(SUPPORT_LLVM)
 
 AC_CHECK_PROGS([MAKE],[gnumake gmake make],[AC_MSG_ERROR([Unable to find a make program.])])
 if ! $MAKE --version | grep -q "GNU" 2> /dev/null; then
   AC_MSG_ERROR([OpenDylan requires GNU make to build.])
 fi
 
+AC_DEFUN([CANONICALIZE_COLLECTOR_NAME],
+[AS_CASE(${$1},
+[mps|MPS], [$1=MPS],
+[gc|boehm|Boehm|BDW|BDW_GC], [$1=BDW_GC],
+[malloc], [$1=MALLOC],
+AC_MSG_ERROR([Collector name `${$1}' is unrecognized.]))])
+
+AC_ARG_WITH(harp-collector,
+            AS_HELP_STRING([--with-harp-collector=mps|boehm|malloc],
+                           [Which GC to use with the HARP back-end]),
+            [HARP_COLLECTOR=$withval],
+            [HARP_COLLECTOR=mps])
+AS_IF([test -n "$SUPPORT_HARP"],
+      [AC_MSG_CHECKING([which GC to use with the HARP back-end])
+       AC_MSG_RESULT($HARP_COLLECTOR)])
+CANONICALIZE_COLLECTOR_NAME(HARP_COLLECTOR)
+AC_SUBST(HARP_COLLECTOR)
+
+AC_ARG_WITH(c-collector,
+            AS_HELP_STRING([--with-c-collector=boehm|malloc],
+                           [Which GC to use with the C back-end]),
+            [C_COLLECTOR=$withval],
+            [C_COLLECTOR=boehm])
+AC_MSG_CHECKING([which GC to use with the C back-end ])
+AC_MSG_RESULT($C_COLLECTOR)
+CANONICALIZE_COLLECTOR_NAME(C_COLLECTOR)
+AC_SUBST(C_COLLECTOR)
+
+AC_ARG_WITH(llvm-collector,
+            AS_HELP_STRING([--with-llvm-collector=boehm|malloc],
+                           [Which GC to use with the LLVM back-end]),
+            [LLVM_COLLECTOR=$withval],
+            [LLVM_COLLECTOR=boehm])
+AS_IF([test -n "$SUPPORT_LLVM"],
+      [AC_MSG_CHECKING([which GC to use with the LLVM back-end ])
+       AC_MSG_RESULT($LLVM_COLLECTOR)])
+CANONICALIZE_COLLECTOR_NAME(LLVM_COLLECTOR)
+AC_SUBST(LLVM_COLLECTOR)
+
 AC_ARG_WITH(mps,
-            AS_HELP_STRING([--with-mps=PATH],
-                           [Path to MPS distribution and build.]))
+           AS_HELP_STRING([--with-mps=DIR],
+                          [Memory Pool System (MPS) source directory]))
+
+AS_IF([test -n "$SUPPORT_HARP" && test x$HARP_COLLECTOR = xMPS],
+      [VALIDATE_MPS=yes])
+
+AS_IF([test -n "$SUPPORT_LLVM" && test x$LLVM_COLLECTOR = xMPS],
+      [VALIDATE_MPS=yes])
+
+AS_IF([test -n "$VALIDATE_MPS"],
+      [MPS_CFLAGS="-I${with_mps}/code"
+       MPS_LIBS=
+       save_CPPFLAGS="$CPPFLAGS"
+       CPPFLAGS="$CPPFLAGS $MPS_CFLAGS"
+       AC_CHECK_HEADER([mps.h], [],
+                       [AC_MSG_ERROR([Incorrect path to MPS specified. Please make sure you specified an absolute path to the root MPS directory using --with-mps=DIR])])
+       CPPFLAGS="$save_CPPFLAGS"
+       # This is to help catch people who haven't updated to the new MPS yet.
+       AS_IF([test ! -f ${with_mps}/code/mps.c],
+             [AC_MSG_ERROR([You have an old version of MPS and need to update.])])])
+AC_SUBST(MPS_CFLAGS)
+AC_SUBST(MPS_LIBS)
 
 AC_ARG_WITH(gc,
-            AS_HELP_STRING([--with-gc=PATH],
-                           [Path of Boehm GC installation.]))
-
-AS_IF([test x${GC_USE_STATIC_BOEHM} == xtrue],
-      [
-        GC_LIB_NAME=libgc.a
-      ],
-      [
-        AS_IF([test x${OPEN_DYLAN_PLATFORM_NAME} == xx86-darwin],
-              [
-                GC_LIB_NAME=libgc.dylib
-              ],
-              [
-                GC_LIB_NAME=libgc.so
-              ])
-      ]
-)
-
-AS_IF([test x$with_mps != x],
-      [
-        AS_IF([test x${SUPPORT_GC_MPS} == xno],
-          [
-            AC_MSG_ERROR([The platform that you are building for requires the Boehm GC.])
-          ]
-        )
-        GC_CFLAGS="-DGC_USE_MPS -I${with_mps}/code"
-        GC_CHOICE="mps"
-        old_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="-I${with_mps}/code"
-        AC_CHECK_HEADER([mps.h],[],[AC_MSG_ERROR([Incorrect path to MPS specified. Please make sure you specified an absolute path to the root MPS directory.])])
-        CPPFLAGS=$old_CPPFLAGS
-        # This is to help catch people who haven't updated to the new MPS yet.
-        AC_CHECK_FILE([${with_mps}/code/lii4gc.gmk],[AC_MSG_ERROR([You have an old version of MPS and need to update.])],[])
-      ]
-)
-AS_IF([test x$with_gc != x],
-      [
-        AS_IF([test x${SUPPORT_GC_BOEHM} == xno],
-          [
-            AC_MSG_ERROR([The platform that you are building for requires the MPS GC.])
-          ]
-        )
-        GC_CFLAGS="-DGC_USE_BOEHM -DGC_THREADS -I${with_gc}/include"
-        GC_LFLAGS="-L${with_gc}/lib -lgc"
-        AC_CHECK_FILE([${with_gc}/lib/${GC_LIB_NAME}],
-                      [
-                        GC_LIBRARY="${with_gc}/lib/${GC_LIB_NAME}"
-                      ],
-                      [])
-        GC_CHOICE="boehm"
-      ]
-)
-AS_IF([test x${with_gc}x${with_mps} == xx],
-      [
-        AS_IF([test x${SUPPORT_GC_BOEHM} == xno],
-          [
-            AC_MSG_ERROR([The platform that you are building for requires the MPS GC.])
-          ]
-        )
-        GC_CFLAGS="-DGC_USE_BOEHM -DGC_THREADS"
-        GC_LFLAGS="-lgc"
-        GC_CHOICE="boehm"
-        AC_CHECK_FILE([/usr/lib/${GC_LIB_NAME}],
-                      [
-                        GC_LIBRARY="/usr/lib/${GC_LIB_NAME}"
-                      ],
-                      [
-                        AC_CHECK_FILE([/usr/local/lib/${GC_LIB_NAME}],
-                                      [
-                                        GC_LIBRARY="/usr/local/lib/${GC_LIB_NAME}"
-                                      ],
-                                      [])
-                      ])
-      ]
-)
-AS_IF([test x${GC_CHOICE}x${GC_LIBRARY} == xboehmx],
-      [
-        AC_MSG_ERROR([Could not find ${GC_LIB_NAME}. Please specify the path to the Boehm GC installation via --with-gc])
-      ]
-)
-AC_SUBST(GC_CFLAGS)
-AC_SUBST(GC_LFLAGS)
-AC_SUBST(GC_LIBRARY)
-AC_SUBST(GC_CHOICE)
-AC_SUBST(GC_USE_STATIC_BOEHM)
+            AS_HELP_STRING([--with-gc=DIR],
+                           [Directory prefix where the Boehm-Demers-Weiser Garbage Collector is installed]),
+            [BDW_GC_CFLAGS="-I${with_gc}/include"
+             BDW_GC_LIBS="-L${with_gc}/lib -lgc"
+             save_CPPFLAGS="$CPPFLAGS"
+             save_LIBS="$LIBS"
+             LIBS="$BDW_GC_LIBS $LIBS"
+             AC_CHECK_LIB(gc, [GC_malloc],
+                          [],
+                          [AC_MSG_ERROR([Could not find the Boehm-Demers-Weiser Garbage Collector. Please specify the prefix directory using --with-gc=DIR, or omit --with-gc to search using pkg-config.])])
+             CPPFLAGS="$save_CPPFLAGS"
+             LIBS="$save_LIBS"],
+            [PKG_CHECK_MODULES(BDW_GC, $BDW_GC_MODULE,
+                               [AS_IF([test -n "$BDW_GC_STATIC"],
+                                      [AC_MSG_CHECKING(if static gc library is present)
+                                       BDW_GC_LIBDIR=`$PKG_CONFIG --variable=libdir $BDW_GC_MODULE`
+                                       BDW_GC_STATIC_LIB=$BDW_GC_LIBDIR/libgc.a
+                                       AS_IF([test -f "$BDW_GC_STATIC_LIB"],
+                                             [AC_MSG_RESULT(yes)],
+                                             [AC_MSG_RESULT(no)
+                                              BDW_GC_STATIC=
+                                              BDW_GC_STATIC_LIB=])])],
+                               [AC_CHECK_LIB(gc, [GC_malloc],
+                                             [],
+                                             [AC_MSG_ERROR([Could not find the Boehm-Demers-Weiser Garbage Collector. Please specify the prefix directory using --with-gc=DIR, or omit --with-gc to search using pkg-config.])])
+                                BDW_GC_LIBS=-lgc])])
+AC_SUBST(BDW_GC_STATIC)
+AC_SUBST(BDW_GC_STATIC_LIB)
 
 # We don't want to build generated code with warnings enabled usually.
 # The exception to this is if the person running configure has passed
@@ -200,12 +238,9 @@ AS_IF([echo "$CFLAGS" | grep -q -- "-W" 2> /dev/null],
 )
 AC_SUBST(DISABLE_WARNINGS_CFLAGS)
 
-# for now, replace mps only in pentium-linux
-# gc is also replaced in sources/dfmc/c-run-time
 AC_CONFIG_FILES(Makefile
                 sources/jamfiles/Makefile
                 sources/jamfiles/config.jam
-                sources/lib/run-time/Makefile
-                sources/dfmc/c-run-time/Makefile)
+                sources/lib/run-time/Makefile)
 
 AC_OUTPUT

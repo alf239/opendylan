@@ -6,12 +6,12 @@ License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define method external-lambda? (o :: <&c-callable-function>) => (well?)
-  o.binding-name
+  o.c-function-name
 end method;
 
 
 define method emit-parameter-type
-    (back-end :: <c-back-end>, stream :: <stream>, 
+    (back-end :: <c-back-end>, stream :: <stream>,
      o :: <&raw-struct-type>, #key index :: false-or(<integer>))
   format-emit*(back-end, stream, "^", o);
 end method;
@@ -23,31 +23,23 @@ define method emit-lambda-body-using-function
     (back-end :: <c-back-end>, stream :: <stream>, o :: <&iep>,
      function :: <&c-callable-function>)
   dynamic-bind (*current-environment* = o.environment)
-    allocate-registers(function); 
+    allocate-registers(function);
     write(stream, "{\n");
     for (parameter in o.parameters,
-	 type in function.c-signature.^signature-required)
+         type in function.c-signature.^signature-required)
       if (instance?(type, <&raw-aggregate-type>))
-	write(stream, "  void * ");
-	format-emit*(back-end, stream, "% = ", parameter);
-	write(stream, "&tmp_");
-	format-emit*(back-end, stream, "%", parameter);
-	write(stream, ";\n");
+        write(stream, "  void * ");
+        format-emit*(back-end, stream, "% = ", parameter);
+        write(stream, "&tmp_");
+        format-emit*(back-end, stream, "%", parameter);
+        write(stream, ";\n");
       end;
     end;
 
-    let volatile?
-      = block (result)
-          for-computations (c in o)
-            if (instance?(c, <block>) & ~c.entry-state.local-entry-state?)
-              result(#t);
-            end if;
-          end for-computations;
-          #f
-        end block; 
+    let volatile? = need-volatile-locals?(o);
     for (tmp in o.environment.temporaries)
       if (used?(tmp))
-	emit-local-definition(back-end, stream, tmp, volatile?);
+        emit-local-definition(back-end, stream, tmp, volatile?);
       end if;
     end for;
     unless (empty?(o.environment.closure))
@@ -64,37 +56,16 @@ define method emit-lambda-interface-using-function
     (back-end :: <c-back-end>, stream :: <stream>, o :: <&iep>,
      fun :: <&c-callable-function>)
  => ();
-  emit-c-callable-lambda-interface
-    (back-end, stream, o, fun, current-os-name());
-end;
-
-define method emit-c-callable-lambda-interface
-    (back-end :: <c-back-end>, stream :: <stream>, o :: <&iep>,
-     fun :: <&c-callable-function>, os :: <object>)
-  let global-name = fun.binding-name;
+  let global-name = fun.c-function-name;
   unless (global-name)
     write(stream, "static ");
   end;
   emit-return-types(back-end, stream, o);
-  format-emit*(back-end, stream, " ^ ", o);
-  if (fun.parameters)
-    emit-parameters(back-end, stream, o, o.parameters, fun.c-signature);
-  else
-    emit-signature-types(back-end, stream, o, fun.signature-spec, fun.c-signature);
+  if (target-os-name() == #"win32")
+    unless (empty?(fun.c-modifiers))
+      format-emit*(back-end, stream, " ~", fun.c-modifiers)
+    end;
   end if;
-end method;
-
-define method emit-c-callable-lambda-interface
-    (back-end :: <c-back-end>, stream :: <stream>, o :: <&iep>,
-     fun :: <&c-callable-function>, os == #"win32")
-  let global-name = fun.binding-name;
-  unless (global-name)
-    write(stream, "static ");
-  end;
-  emit-return-types(back-end, stream, o);
-  unless (empty?(fun.c-modifiers))
-    format-emit*(back-end, stream, " ~", fun.c-modifiers)
-  end;
   format-emit*(back-end, stream, " ^ ", o);
   if (fun.parameters)
     emit-parameters(back-end, stream, o, o.parameters, fun.c-signature);

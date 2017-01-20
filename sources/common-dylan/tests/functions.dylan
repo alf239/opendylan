@@ -27,7 +27,7 @@ end function-test list-locator;
 define common-extensions function-test concatenate! ()
   let my-list = #(3, 4);
   check("test concatenate! on a list", \=, concatenate!(my-list, #(5), #(6)),
-	#(3, 4, 5, 6));
+        #(3, 4, 5, 6));
   check("concatenate! should have not affected my-list", \=, my-list, #(3, 4));
   let my-stretchy-vector = make(<stretchy-vector>);
   add!(my-stretchy-vector, 3);
@@ -37,11 +37,11 @@ define common-extensions function-test concatenate! ()
   add!(my-stretchy-vector-afterwards, 4);
   add!(my-stretchy-vector-afterwards, 5);
   add!(my-stretchy-vector-afterwards, 6);
-  check("test concatenate! on a stretchy-vector", \=, 
-	concatenate!(my-stretchy-vector, #(5, 6)),
-	my-stretchy-vector-afterwards);
+  check("test concatenate! on a stretchy-vector", \=,
+        concatenate!(my-stretchy-vector, #(5, 6)),
+        my-stretchy-vector-afterwards);
   check("concatenate! should have changed my-stretchy-vector",
-	\=, my-stretchy-vector, my-stretchy-vector-afterwards);
+        \=, my-stretchy-vector, my-stretchy-vector-afterwards);
 end function-test concatenate!;
 
 define constant $test-error-message = "Test Error";
@@ -59,11 +59,11 @@ define common-extensions function-test condition-to-string ()
               condition-to-string(make(<simple-error>, format-string: "Hello")),
               "Hello");
   check-instance?("condition-to-string of a type error produces a string",
-		  <string>,
-		  begin
-		    let error = make(<type-error>, value: 10, type: <class>);
-		    condition-to-string(error)
-		  end);
+                  <string>,
+                  begin
+                    let error = make(<type-error>, value: 10, type: <class>);
+                    condition-to-string(error)
+                  end);
   check-equal("condition-to-string of an error with a condition-to-string method",
               condition-to-string(make(<test-error>)),
               $test-error-message)
@@ -89,11 +89,11 @@ end function-test difference;
 define common-extensions function-test false-or ()
   let new-type = #f;
   check-instance?("False-or returns type",
-		  <type>, new-type := false-or(<string>));
+                  <type>, new-type := false-or(<string>));
   check-instance?(format-to-string("%s is false-or(<string>)", "abc"),
-		  new-type, "abc");
+                  new-type, "abc");
   check-instance?("#f is false-or(<string>)",
-		  new-type, #f);
+                  new-type, #f);
   check-false("#t is not false-or(<string>)",
               instance?(#t, new-type));
 end function-test false-or;
@@ -101,21 +101,21 @@ end function-test false-or;
 define common-extensions function-test find-element ()
   //---*** Do all collections by using dylan-test-suite collection code
   let list1 = #("oh", "we", "like", "sheep", "like");
-  check("test find-element", \=, 
-	find-element(list1, method (the-element) (the-element = "like") end),
-	"like");
+  check("test find-element", \=,
+        find-element(list1, method (the-element) (the-element = "like") end),
+        "like");
   check("test failure find-element", \=,
-	find-element(list1, method (the-element) (the-element = "thermos") end),
-	#f);
+        find-element(list1, method (the-element) (the-element = "thermos") end),
+        #f);
   check("test failure find-element with failure as symbol", \=,
-	find-element(list1, method (the-element) (the-element = "thermos") end,  
-		     failure: #"heckfire"), #"heckfire");
+        find-element(list1, method (the-element) (the-element = "thermos") end,
+                     failure: #"heckfire"), #"heckfire");
   check("test find-element with skip: 1", \=,
-	find-element(list1, method (the-element) (the-element = "like") end,
-		     skip: 1), "like");
+        find-element(list1, method (the-element) (the-element = "like") end,
+                     skip: 1), "like");
   check("skip: is too big", \=,
-	find-element(list1, method (the-element) (the-element = "like") end,
-		     skip: 2), #f);
+        find-element(list1, method (the-element) (the-element = "like") end,
+                     skip: 2), #f);
 end function-test find-element;
 
 //---*** NOTE: The <double-float> results will have to be changed if
@@ -142,62 +142,56 @@ define common-extensions function-test float-to-string ()
   //---*** NOTE: Our runtime should catch 0.0 / 0.0 and signal an invalid
   //---***       float operation error rather than generating a {NaN}.
   check-equal("float-to-string(0.0 / 0.0)",
-	      float-to-string(0.0 / 0.0),
-	      "{NaN}");
+              float-to-string(0.0 / 0.0),
+              "{NaN}");
   check-equal("float-to-string(0.0d0 / 0.0d0)",
-	      float-to-string(0.0d0 / 0.0d0),
-	      "{NaN}d0");
+              float-to-string(0.0d0 / 0.0d0),
+              "{NaN}d0");
   //---*** NOTE: When we implement floating point exception control,
   //---***       replace the above two checks with the following:
 /*
   check-equal("float-to-string(0.0 / 0.0)",
-	      float-to-string(with-floating-exceptions-disabled ()
-				0.0 / 0.0
-			      end),
-	      "{NaN}");
+              float-to-string(with-floating-exceptions-disabled ()
+                                0.0 / 0.0
+                              end),
+              "{NaN}");
   check-equal("float-to-string(0.0d0 / 0.0d0)",
-	      float-to-string(with-floating-exceptions-disabled ()
-				0.0d0 / 0.0d0
-			      end),
-	      "{NaN}d0");
+              float-to-string(with-floating-exceptions-disabled ()
+                                0.0d0 / 0.0d0
+                              end),
+              "{NaN}d0");
   check-equal("float-to-string(1.0 / 0.0)",
-	      float-to-string(with-floating-exceptions-disabled ()
-				1.0 / 0.0
-			      end),
-	      "+{infinity}");
+              float-to-string(with-floating-exceptions-disabled ()
+                                1.0 / 0.0
+                              end),
+              "+{infinity}");
   check-equal("float-to-string(1.0d0 / 0.0d0)",
-	      float-to-string(with-floating-exceptions-disabled ()
-				1.0d0 / 0.0d0
-			      end),
-	      "+{infinity}d0");
+              float-to-string(with-floating-exceptions-disabled ()
+                                1.0d0 / 0.0d0
+                              end),
+              "+{infinity}d0");
   check-equal("float-to-string(-1.0 / 0.0)",
-	      float-to-string(with-floating-exceptions-disabled ()
-				-1.0 / 0.0
-			      end),
-	      "-{infinity}");
+              float-to-string(with-floating-exceptions-disabled ()
+                                -1.0 / 0.0
+                              end),
+              "-{infinity}");
   check-equal("float-to-string(-1.0d0 / 0.0d0)",
-	      float-to-string(with-floating-exceptions-disabled ()
-				-1.0d0 / 0.0d0
-			      end),
-	      "-{infinity}d0");
+              float-to-string(with-floating-exceptions-disabled ()
+                                -1.0d0 / 0.0d0
+                              end),
+              "-{infinity}d0");
 */
 end function-test float-to-string;
 
 define common-extensions function-test ignorable ()
-  check-true("ignorable doesn't crash",
-             begin
-               ignorable(test-function);
-               #t
-             end)
-end function-test ignorable;
+  assert-no-errors(ignorable(this-is-undefined),
+                   "ignorable doesn't crash on undefined variables");
+end;
 
 define common-extensions function-test ignore ()
-  check-true("ignore doesn't crash",
-             begin
-               ignore(test-function);
-               #t
-             end)
-end function-test ignore;
+  assert-no-errors(ignore(this-is-undefined),
+                   "ignore doesn't crash on undefined variables");
+end;
 
 define constant $integer-string-mappings
   = #[#[0,     10,  "0"],
@@ -220,18 +214,18 @@ define common-extensions function-test integer-to-string ()
                 integer-to-string(integer, base: base), string)
   end;
   check-equal("integer-to-string(10, size: 6)",
-	      integer-to-string(10, size: 6),
-	      "000010");
+              integer-to-string(10, size: 6),
+              "000010");
   check-equal("integer-to-string(10, size: 6, fill: ' ')",
-	      integer-to-string(10, size: 6, fill: ' '),
-	      "    10");
+              integer-to-string(10, size: 6, fill: ' '),
+              "    10");
   check-equal("integer-to-string(127, base: 2, size: 8)",
-	      integer-to-string(127, base: 2, size: 8),
-	      "01111111");
+              integer-to-string(127, base: 2, size: 8),
+              "01111111");
   check-no-errors("integer-to-string($minimum-integer)",
-		  integer-to-string($minimum-integer));
+                  integer-to-string($minimum-integer));
   check-no-errors("integer-to-string($maximum-integer)",
-		  integer-to-string($maximum-integer));
+                  integer-to-string($maximum-integer));
 end function-test integer-to-string;
 
 define common-extensions function-test number-to-string ()
@@ -241,12 +235,12 @@ end function-test number-to-string;
 define common-extensions function-test one-of ()
   let new-type = #f;
   check-instance?("one-of returns type",
-		  <type>,
-		  new-type := one-of(#"one", #t));
+                  <type>,
+                  new-type := one-of(#"one", #t));
   check-instance?(format-to-string("%s is one-of(%=, #t)", #"one", #"one"),
-		  new-type, #"one");
+                  new-type, #"one");
   check-instance?(format-to-string("#t is one-of(%=, #t)", #"one"),
-		  new-type, #t);
+                  new-type, #t);
   check-false(format-to-string("#f is one-of(%=, #t)", #"one"),
               instance?(#f, new-type));
 end function-test one-of;
@@ -264,7 +258,7 @@ define common-extensions function-test position ()
                 3);
     check-false("test position with wrong item",
                 position(sequence, 'w'));
-    check-false("test posision with skip greater than existance", 
+    check-false("test position with skip greater than existence",
                 position(sequence, 'a', skip: 2));
 
     check-equal("test position with start at first",
@@ -278,7 +272,7 @@ define common-extensions function-test position ()
     check-false("test position with skip and end",
                 position(sequence, 'a', end: 3, skip: 1));
   end for;
-  check-equal("test position using test: \\<", 
+  check-equal("test position using test: \\<",
               position(#(1, 2, 3, 4), 3, test: \<),
               3);
 end function-test position;
@@ -437,20 +431,20 @@ define common-extensions function-test string-to-integer ()
                 string-to-integer(string, base: base), integer)
   end;
   check-no-errors("string-to-integer of minimum integer",
-		  string-to-integer(integer-to-string($minimum-integer)));
+                  string-to-integer(integer-to-string($minimum-integer)));
   check-no-errors("string-to-integer of maximum integer",
-		  string-to-integer(integer-to-string($maximum-integer)));
+                  string-to-integer(integer-to-string($maximum-integer)));
 end function-test string-to-integer;
 
 define common-extensions function-test subclass ()
   let new-type = #f;
   check-instance?("subclass returns type",
-		  <type>,
-		  new-type := subclass(<string>));
+                  <type>,
+                  new-type := subclass(<string>));
   check-instance?(format-to-string("<string> is subclass(<string>)"),
-		  new-type, <string>);
+                  new-type, <string>);
   check-instance?(format-to-string("<byte-string> is subclass(<string>)"),
-		  new-type, <byte-string>);
+                  new-type, <byte-string>);
   check-false(format-to-string("<object> is not subclass(<string>)"),
               instance?(<object>, new-type));
 end function-test subclass;
@@ -489,37 +483,6 @@ end function-test exit-application;
 define common-extensions function-test register-application-exit-function ()
   //---*** Fill this in...
 end function-test register-application-exit-function;
-
-define common-extensions function-test format-to-string ()
-  check-instance?("format-to-string returns a string",
-		  <string>,
-		  format-to-string("Hello"));
-  check-condition("format-to-string crashes when missing an argument",
-		  <error>, format-to-string("Hello %s"));
-  check-condition("format-to-string crashes with argument of wrong type",
-		  <error>, format-to-string("Hello %c", 10));
-  check-condition("format-to-string crashes with invalid directive %z",
-		  <error>, format-to-string("Hello %z", 10));
-  check-equal("format-to-string(\"%d\", 10)",
-	      format-to-string("%d", 10),
-	      "10");
-  check-equal("format-to-string(\"%b\", 7)",
-	      format-to-string("%b", 7),
-	      "111");
-  check-equal("format-to-string(\"%o\", 16)",
-	      format-to-string("%o", 16),
-	      "20");
-  check-equal("format-to-string(\"%x\", 257)",
-	      format-to-string("%x", 257),
-	      "101");
-  check-equal("format-to-string(\"%c\", 'a')",
-	      format-to-string("%c", 'a'),
-	      "a");
-  check-equal("format-to-string(\"%%\")",
-	      format-to-string("%%"),
-	      "%");
-  format-object-tests()
-end function-test format-to-string;
 
 define common-extensions function-test unfound ()
   //---*** Fill this in...
@@ -560,54 +523,86 @@ define common-extensions function-test false? ()
 end function-test false?;
 
 
-/// simple-io module
+/// simple-format module
 
-define simple-io function-test format-out ()
+define simple-format function-test format-out ()
   check-false("format-out doesn't crash", format-out("Hello"));
   check-condition("format-out crashes when missing an argument",
-		  <error>, format-out("Hello %s"));
+                  <error>, format-out("Hello %s"));
   check-condition("format-out crashes with argument of wrong type",
-		  <error>, format-out("Hello %c", 10));
+                  <error>, format-out("Hello %c", 10));
   check-condition("format-out crashes with invalid directive %z",
-		  <error>, format-out("Hello %z", 10));
+                  <error>, format-out("Hello %z", 10));
 end function-test format-out;
+
+define simple-format function-test format-to-string ()
+  check-instance?("format-to-string returns a string",
+                  <string>,
+                  format-to-string("Hello"));
+  check-condition("format-to-string crashes when missing an argument",
+                  <error>, format-to-string("Hello %s"));
+  check-condition("format-to-string crashes with argument of wrong type",
+                  <error>, format-to-string("Hello %c", 10));
+  check-condition("format-to-string crashes with invalid directive %z",
+                  <error>, format-to-string("Hello %z", 10));
+  check-equal("format-to-string(\"%d\", 10)",
+              format-to-string("%d", 10),
+              "10");
+  check-equal("format-to-string(\"%b\", 7)",
+              format-to-string("%b", 7),
+              "111");
+  check-equal("format-to-string(\"%o\", 16)",
+              format-to-string("%o", 16),
+              "20");
+  check-equal("format-to-string(\"%x\", 257)",
+              format-to-string("%x", 257),
+              "101");
+  check-equal("format-to-string(\"%c\", 'a')",
+              format-to-string("%c", 'a'),
+              "a");
+  check-equal("format-to-string(\"%%\")",
+              format-to-string("%%"),
+              "%");
+  format-object-tests();
+  format-function-tests();
+end function-test format-to-string;
 
 define constant $format-object-mappings
   = vector(vector(10, "10", "10"),
-	   vector('a', "a", "'a'"),
-	   vector('Z', "Z", "'Z'"),
-	   vector(#"symbol", "#\"symbol\""),
-	   vector(#"symbol", "#\"symbol\""),
-	   vector(#f, "#f"),
-	   vector(#t, "#t"),
-	   vector(<object>, "<object>", "{<class>: <object>}"),
-	   vector(find-key, "find-key", "{<incremental-generic-function>: find-key}"),
-	   vector("10", "10", "\"10\""));
+           vector('a', "a", "'a'"),
+           vector('Z', "Z", "'Z'"),
+           vector(#"symbol", "#\"symbol\""),
+           vector(#"symbol", "#\"symbol\""),
+           vector(#f, "#f"),
+           vector(#t, "#t"),
+           vector(<object>, "<object>", "{<class>: <object>}"),
+           vector(find-key, "find-key", "{<incremental-generic-function>: find-key}"),
+           vector("10", "10", "\"10\""));
 
 define constant $format-complex-object-mappings
   = vector(vector(#(), "size 0"),
-	   vector(pair(1, 2), "1, 2"),
-	   vector(range(from: 0, to: 10), "0 to 10"),
-	   vector(range(from: 10, to: 1, by: -1), "10 to 1 by -1"),
-	   vector(range(from: 10, by: -1), "10 by -1"),
-	   vector(make(<array>, dimensions: #(2, 3)), "2 x 3"),
-	   vector(as(<vector>, #(1, 'a', "Hello")),
-		  "1, 'a', \"Hello\""),
-	   vector(singleton(10), "10"),
-	   vector(type-union(<integer>, <string>), 
-		  "<integer>, <string>"),
-	   vector(type-union(singleton(#f), <string>),
-		  "#f, <string>"));
+           vector(pair(1, 2), "1, 2"),
+           vector(range(from: 0, to: 10), "0 to 10"),
+           vector(range(from: 10, to: 1, by: -1), "10 to 1 by -1"),
+           vector(range(from: 10, by: -1), "10 by -1"),
+           vector(make(<array>, dimensions: #(2, 3)), "2 x 3"),
+           vector(as(<vector>, #(1, 'a', "Hello")),
+                  "1, 'a', \"Hello\""),
+           vector(singleton(10), "10"),
+           vector(type-union(<integer>, <string>),
+                  "<integer>, <string>"),
+           vector(type-union(singleton(#f), <string>),
+                  "#f, <string>"));
 
 define function test-print-name
     (object, pretty-name :: <string>, unique-name :: <string>)
  => ()
   check-equal(format-to-string("format-to-string(\"%%s\", %s)", unique-name),
-	      format-to-string("%s", object),
-	      pretty-name);
+              format-to-string("%s", object),
+              pretty-name);
   check-equal(format-to-string("format-to-string(\"%%=\", %s)", unique-name),
-	      format-to-string("%=", object),
-	      unique-name);
+              format-to-string("%=", object),
+              unique-name);
 end function test-print-name;
 
 define function format-object-tests
@@ -628,9 +623,127 @@ define function format-object-tests
   let class-name = format-to-string("%s", object-class(type));
   let expected-name
     = format-to-string("{%s: <string>, {%s: 10, <character>}}",
-		       class-name, class-name);
+                       class-name, class-name);
   test-print-name(type, expected-name, expected-name)
 end function format-object-tests;
+
+define generic test-print-1 () => ();
+define generic test-print-2 ();
+define generic test-print-3 (a :: <integer>) => num;
+define generic test-print-4 (a :: <number>, #rest args) => (num :: <integer>);
+define generic test-print-5 (a :: <string>, #key test) => (num :: <integer>, #rest vals);
+define generic test-print-6 (a :: <string>, #key #all-keys) => (#rest vals :: <string>);
+define generic test-print-7 (a :: subclass(<string>)) => ();
+define generic test-print-8 (a :: false-or(<string>)) => ();
+define generic test-print-9 (a :: type-union(<integer>, <float>)) => ();
+define generic test-print-10 (a :: one-of(#"a", #"b")) => ();
+define generic test-print-11
+    (a :: limited(<integer>, min: 0), b :: limited(<integer>, max: 64))
+ => (c :: limited(<integer>, min: 0, max: 64));
+define generic test-print-12
+    (a :: limited(<vector>, of: <float>),
+     b :: limited(<vector>, of: <double-float>, size: 4))
+ => (c :: false-or(limited(<array>, of: <float>, dimensions: #[2, 2])));
+
+define method test-print-1 () => ()
+end method test-print-1;
+
+define method test-print-2 ()
+end method test-print-2;
+
+define method test-print-3 (a :: <integer>) => (num)
+  #f
+end method test-print-3;
+
+define method test-print-4 (a :: <number>, #rest args) => (num :: <integer>)
+  0
+end method test-print-4;
+
+define method test-print-5 (a :: <string>, #key test) => (num :: <integer>, #rest vals)
+  0
+end method test-print-5;
+
+define method test-print-6 (a :: <string>, #key #all-keys) => (#rest vals :: <string>)
+end method test-print-6;
+
+define method test-print-7 (a :: subclass(<string>)) => ()
+end method test-print-7;
+
+define method test-print-8 (a :: false-or(<string>)) => ()
+end method test-print-8;
+
+define method test-print-9 (a :: type-union(<integer>, <float>)) => ()
+end method test-print-9;
+
+define method test-print-10 (a :: one-of(#"a", #"b")) => ()
+end method test-print-10;
+
+define method test-print-11
+    (a :: limited(<integer>, min: 0), b :: limited(<integer>, max: 64))
+ => (c :: limited(<integer>, min: 0, max: 64))
+  0
+end method test-print-11;
+
+define method test-print-12
+    (a :: limited(<vector>, of: <float>),
+     b :: limited(<vector>, of: <double-float>, size: 4))
+ => (c :: false-or(limited(<array>, of: <float>, dimensions: #[2, 2])))
+  #f
+end method test-print-12;
+
+define constant $format-function-mappings
+  = vector(vector(test-print-1,
+                  "{<sealed-generic-function>: test-print-1}",
+                  "{<simple-method>: ??? () => ()}"),
+           vector(test-print-2,
+                  "{<sealed-generic-function>: test-print-2}",
+                  "{<simple-method>: ??? () => (#rest)}"),
+           vector(test-print-3,
+                  "{<sealed-generic-function>: test-print-3}",
+                  "{<simple-method>: ??? (<integer>) => (<object>)}"),
+           vector(test-print-4,
+                  "{<sealed-generic-function>: test-print-4}",
+                  "{<simple-method>: ??? (<number>, #rest) => (<integer>)}"),
+           vector(test-print-5,
+                  "{<sealed-generic-function>: test-print-5}",
+                  "{<keyword-method>: ??? (<string>, #key test:) => (<integer>, #rest)}"),
+           vector(test-print-6,
+                  "{<sealed-generic-function>: test-print-6}",
+                  "{<keyword-method>: ??? (<string>, #key #all-keys) => (#rest <string>)}"),
+           vector(test-print-7,
+                  "{<sealed-generic-function>: test-print-7}",
+                  "{<simple-method>: ??? (subclass(<string>)) => ()}"),
+           vector(test-print-8,
+                  "{<sealed-generic-function>: test-print-8}",
+                  "{<simple-method>: ??? (false-or(<string>)) => ()}"),
+           vector(test-print-9,
+                  "{<sealed-generic-function>: test-print-9}",
+                  "{<simple-method>: ??? (type-union(<integer>, <float>)) => ()}"),
+           vector(test-print-10,
+                  "{<sealed-generic-function>: test-print-10}",
+                  "{<simple-method>: ??? (one-of(#\"a\", #\"b\")) => ()}"),
+           vector(test-print-11,
+                  "{<sealed-generic-function>: test-print-11}",
+                  "{<simple-method>: ??? (limited(<integer>, min: 0), limited(<integer>, max: 64)) => (limited(<integer>, min: 0, max: 64))}"),
+           vector(test-print-12,
+                  "{<sealed-generic-function>: test-print-12}",
+                  "{<simple-method>: ??? (limited(<simple-vector>, of: <float>), limited(<simple-vector>, of: <double-float>, size: 4)) => (false-or(limited(<array>, of: <float>, dimensions: #[2, 2])))}"));
+
+define function format-function-tests
+    () => ()
+  for (mapping in $format-function-mappings)
+    let gf = mapping[0];
+    let gf-expected-text = mapping[1];
+    check-equal(format-to-string("format-to-string(\"%%=\", %s)", gf-expected-text),
+                format-to-string("%=", gf),
+                gf-expected-text);
+    let meth = generic-function-methods(gf).first;
+    let meth-expected-text = mapping[2];
+    check-equal(format-to-string("format-to-string(\"%%=\", %s)", meth-expected-text),
+                format-to-string("%=", meth),
+                meth-expected-text);
+  end for;
+end function format-function-tests;
 
 
 /// simple-random tests
@@ -639,7 +752,7 @@ end function format-object-tests;
 define method chi-square
     (N :: <integer>, range :: <integer>) => (chi-square :: <integer>)
   let f = make(<simple-object-vector>, size: range, fill: 0);
-  for (i from 0 below N) 
+  for (i from 0 below N)
     let rand = random(range);
     f[rand] := f[rand] + 1;
   end;
@@ -658,9 +771,17 @@ end function-test random;
 
 /// simple-profiling tests
 
+define simple-profiling function-test start-profiling ()
+  //---*** Fill this in...
+end function-test start-profiling;
+
 define simple-profiling function-test start-profiling-type ()
   //---*** Fill this in...
 end function-test start-profiling-type;
+
+define simple-profiling function-test stop-profiling ()
+  //---*** Fill this in...
+end function-test stop-profiling;
 
 define simple-profiling function-test stop-profiling-type ()
   //---*** Fill this in...
@@ -846,3 +967,37 @@ define common-extensions function-test scale-float ()
               as(<double-float>, -float-radix(1.0d0)),
               scale-float(-1.0d0, 1));
 end function-test scale-float;
+
+define inline function classify-single-float (bits)
+ => (classification :: <float-classification>)
+  classify-float(encode-single-float(as(<machine-word>, bits)))
+end function classify-single-float;
+
+define inline function classify-double-float (low-bits, high-bits)
+ => (classification :: <float-classification>)
+  classify-float(encode-double-float(as(<machine-word>, low-bits),
+                                     as(<machine-word>, high-bits)))
+end function classify-double-float;
+
+// These values came from http://www.astro.umass.edu/~weinberg/a732/notes07_01.pdf
+define common-extensions function-test classify-float ()
+  assert-equal(classify-single-float(#x00000000), #"zero");
+  assert-equal(classify-single-float(#x80000000), #"zero");
+  assert-equal(classify-single-float(#x7f800000), #"infinite");
+  assert-equal(classify-single-float(#xff800000), #"infinite");
+  assert-equal(classify-single-float(#x00000001), #"subnormal");
+  assert-equal(classify-single-float(#x007fffff), #"subnormal");
+  assert-equal(classify-single-float(#x00800000), #"normal");
+  assert-equal(classify-single-float(#x7f7fffff), #"normal");
+  assert-equal(classify-single-float(#x7fc00000), #"nan");
+
+  assert-equal(classify-double-float(#x00000000, #x00000000), #"zero");
+  assert-equal(classify-double-float(#x00000000, #x80000000), #"zero");
+  assert-equal(classify-double-float(#x00000000, #x7ff00000), #"infinite");
+  assert-equal(classify-double-float(#x00000000, #xfff00000), #"infinite");
+  assert-equal(classify-double-float(#x00000001, #x00000000), #"subnormal");
+  assert-equal(classify-double-float(#xffffffff, #x000fffff), #"subnormal");
+  assert-equal(classify-double-float(#x00000000, #x00100000), #"normal");
+  assert-equal(classify-double-float(#xffffffff, #x7fefffff), #"normal");
+  assert-equal(classify-double-float(#x00000000, #x7ff80000), #"nan");
+end function-test classify-float;

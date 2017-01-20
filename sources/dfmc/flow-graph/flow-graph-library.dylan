@@ -24,12 +24,12 @@ define module dfmc-flow-graph
   use dfmc-imports;
   use dfmc-namespace;
   use dfmc-modeling,
-    export: 
-      {frame-size,
-       name, name-setter, 
-       body, body-setter,
-       environment, environment-setter,
-       function, function-setter};
+    export:
+      { frame-size,
+        name, name-setter,
+        body, body-setter,
+        environment, environment-setter,
+        function, function-setter };
   use dfmc-reader;
 
   export
@@ -40,7 +40,7 @@ define module dfmc-flow-graph
     $strong-closure-entry,
     do-over-lambda-users,
     analyze-environments;
-  
+
   export // computations
     <computation>,
     previous-computation, previous-computation-setter,
@@ -61,7 +61,7 @@ define module dfmc-flow-graph
     walk-all-lambda-computations,
     walk-computation-references,
     walk-lambda-references, walk-all-lambda-references,
-    
+
     <nop-computation>,
     <nop>,
     <value-reference>,
@@ -78,8 +78,8 @@ define module dfmc-flow-graph
     <make-closure>,
       lambda-make-closure,
       computation-closure-method, computation-closure-method-setter,
-      computation-init-closure, computation-init-closure-setter, 
-      computation-init-closure?, 
+      computation-init-closure, computation-init-closure-setter,
+      computation-init-closure?,
       method-top-level?,
       computation-top-level-closure?,
       computation-signature-value, computation-signature-value-setter,
@@ -87,7 +87,7 @@ define module dfmc-flow-graph
       closure-has-dynamic-extent?, closure-has-dynamic-extent?-setter,
     <initialize-closure>,
       computation-closure, computation-closure-setter,
-    <assignment>, 
+    <assignment>,
       assigned-binding,
     <set!>,
     <any-definition>,
@@ -110,9 +110,9 @@ define module dfmc-flow-graph
     <binary-merge>,
       merge-left-value, merge-right-value,
       merge-left-value-setter, merge-right-value-setter,
-      merge-left-previous-computation, 
+      merge-left-previous-computation,
       merge-right-previous-computation,
-      merge-left-previous-computation-setter, 
+      merge-left-previous-computation-setter,
       merge-right-previous-computation-setter,
     <if-merge>,
     <loop-merge>,
@@ -122,7 +122,7 @@ define module dfmc-flow-graph
       loop-merge-argument,  loop-merge-argument-setter,
       loop-merge-initial?,  loop-merge-initial?-setter,
     <bind-exit-merge>,
-    <any-slot-value>, 
+    <any-slot-value>,
     <slot-value>,
       computation-instance, computation-instance-setter,
       computation-guaranteed-initialized?,
@@ -130,7 +130,7 @@ define module dfmc-flow-graph
       computation-slot-offset, computation-slot-offset-setter,
     <slot-value-setter>,
       computation-new-value, computation-new-value-setter,
-    <any-repeated-slot-value>, 
+    <any-repeated-slot-value>,
       computation-index-tagged?, computation-index-tagged?-setter,
     <repeated-slot-value>,
       computation-repeated-byte?,
@@ -149,9 +149,9 @@ define module dfmc-flow-graph
     call-congruent?, call-congruent?-setter,
     <stack-vector>,
     <function-call>,
-    // *** function, function-setter,
+    // *** function, function-setter
     <primitive-call>,
-    primitive, primitive-setter,
+    primitive,
     <primitive-indirect-call>,
     <c-variable-pointer-call>,
       c-variable, c-variable-setter,
@@ -162,7 +162,7 @@ define module dfmc-flow-graph
     <end-with-stack-structure>,
       begin-wss, begin-wss-setter,
     <simple-call>,
-      call-inlining-depth, call-inlining-depth-setter, 
+      call-inlining-depth, call-inlining-depth-setter,
     <method-call>,
       next-methods, next-methods-setter,
     <engine-node-call>,
@@ -190,7 +190,7 @@ define module dfmc-flow-graph
     // *** body, body-setter,
     <bind-exit>,
     <unwind-protect>,
-    protected-temporary, 
+    protected-temporary,
     protected-end, protected-end-setter,
     cleanups, cleanups-setter,
     cleanups-end, cleanups-end-setter,
@@ -221,11 +221,11 @@ define module dfmc-flow-graph
     <adjust-multiple-values>,
     <adjust-multiple-values-rest>,
     number-of-required-values,
-    
+
     \for-lambda,
     \for-used-lambda, do-used-lambdas, lambda-used?, lambda-users,
-    \for-all-lambdas, do-all-lambdas, 
-    \for-all-used-lambdas, 
+    \for-all-lambdas, do-all-lambdas,
+    \for-all-used-lambdas,
     \for-computations,
     do-used-value-references,
 
@@ -269,7 +269,7 @@ define module dfmc-flow-graph
     <lexical-optional-variable>,
     <lexical-rest-variable>,
     <lexical-keyword-variable>,
-    // *** frame-size, 
+    // *** frame-size,
     frame-size-setter,
     <lexical-environment>,
     $top-level-environment,
@@ -290,7 +290,7 @@ define module dfmc-flow-graph
     temporaries, temporaries-setter,
     \for-temporary,
     add-temporary!, remove-temporary!,
-    clear-temporaries!,	 
+    clear-temporaries!,
     ensure-lambda-body,
     add-inner!,
     extract-lambda,
@@ -305,7 +305,7 @@ define module dfmc-flow-graph
     lambda-environment,
     lookup,
     inner-environment?;
-    
+
   export // temporaries
     <temporary>,
     <named-temporary-mixin>,
@@ -340,9 +340,9 @@ define module dfmc-flow-graph
   export // utilities
     lambda-has-free-lexical-references?,
     final-computation,
-    join!, 
-    join-1x1!, join-1x1-t!, 
-    join-2x1!, join-2x1-t!, 
+    join!,
+    join-1x1!, join-1x1-t!,
+    join-2x1!, join-2x1-t!,
     join-2x2!, join-2x2-t!,
     redirect-previous-computations!,
     redirect-next-computations!,
@@ -376,7 +376,7 @@ define module dfmc-flow-graph
 
     add-to-queue!,
     queue-head,
-    queue-pop, 
+    queue-pop,
     reverse-queue!,
     add-to-queue!,
     print-queue-out,
@@ -401,4 +401,21 @@ define module dfmc-flow-graph
     number-temporaries,
     estimated-copier-table-size,
     current-dfm-copier;
+
+  export
+    //for compiler internals
+    init-flow-graph,
+    tracing-dfm?,
+    trace-dfm-phase,
+    trace-dfm-node,
+    trace-dfm-nodes,
+    node-id,
+
+    //set by a client
+    *trace-dfm-outputter*,
+    *trace-dfm-callback*,
+    *trace-dfm-method-printer*,
+    *trace-dfm-method*,
+    *trace-dfm-library*,
+    *trace-dfm-file*;
 end module;

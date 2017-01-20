@@ -2,80 +2,83 @@
 Integers
 ********
 
+.. current-library:: dylan
+.. current-module:: dylan
+
 Introduction
 ============
 
-This chapter describes the Common Dylan implementation of arithmetic
+This chapter describes the Open Dylan implementation of arithmetic
 functions, especially integer arithmetic. It describes a number of
 extensions to the Dylan language, which are available from the Dylan
 library. It also describes a generic arithmetic facility that, through
 the use of other libraries, allows you to extend arithmetic to special
-number types, such as “big” (64-bit) integers.
+number types, such as "big" (64-bit) integers.
 
 Throughout this chapter, arguments are instances of the class specified
 by the argument name (ignoring any numeric suffixes), unless otherwise
 noted. Thus, the arguments *integer*, *integer1*, and *integer2* would
-all be instances of the class ``<integer>``.
+all be instances of the class :drm:`<integer>`.
 
 The goals of the extensions to the Dylan language described in this
 chapter are as follows:
 
-Provide arithmetic operations that are closed over small integers.
+* Provide arithmetic operations that are closed over small integers.
 
-This allows type inference to propagate small integer declarations more
-widely, because there is no possibility of automatic coercion into some
-more general format.
+  This allows type inference to propagate small integer declarations more
+  widely, because there is no possibility of automatic coercion into some
+  more general format.
 
-Make the arithmetic operations that are closed over small integers
-easily accessible to programmers.
+* Make the arithmetic operations that are closed over small integers
+  easily accessible to programmers.
 
-Allow the Dylan library to be described in such a way that only small
-integers are present by default, moving support for infinite precision
-integer arithmetic to the Big-Integers library, which must be explicitly
-used.
+* Allow the Dylan library to be described in such a way that only small
+  integers are present by default, moving support for infinite precision
+  integer arithmetic to the Big-Integers library, which must be explicitly
+  used.
 
-Support infinite precision integer arithmetic through the Big-Integers
-library.
+* Support infinite precision integer arithmetic through the Big-Integers
+  library.
 
-.. note:: Using that library in another library does not have a negative
-   effect on the correctness or performance of other libraries in the same
-   application that do not use it.
+  .. note:: Using that library in another library does not have a negative
+     effect on the correctness or performance of other libraries in the same
+     application that do not use it.
 
-Maintain compatibility with the DRM specification.
+* Maintain compatibility with the DRM specification.
 
-In particular, the extensions support the production of efficient code
-for programs written to be portable with respect to the DRM
-specification. Use of implementation-specific types or operations in
-order to get reasonable efficiency is not required. This precludes
-relegating the ``<integer>`` class and *limited-<integer>* types to
-inefficient implementations.
+  In particular, the extensions support the production of efficient code
+  for programs written to be portable with respect to the DRM
+  specification. Use of implementation-specific types or operations in
+  order to get reasonable efficiency is not required. This precludes
+  relegating the :drm:`<integer>` class and *limited-<integer>* types to
+  inefficient implementations.
 
-.. note:: When there are several distinct interfaces with the same name
-   but in different modules, the notation *interface* *#* *module* is used
-   in this chapter to remove ambiguity.
+  .. note:: When there are several distinct interfaces with the same name
+     but in different modules, the notation *interface* *#* *module* is used
+     in this chapter to remove ambiguity.
 
-Specify that the class ``<integer>`` has a finite,
-implementation-dependent range, bounded by the constants
-*$minimum-integer* and *$maximum-integer*.
+* Specify that the class :drm:`<integer>` has a finite,
+  implementation-dependent range, bounded by the constants
+  ``$minimum-integer`` and ``$maximum-integer``.
 
-The representation for integers must be at least 28 bits, including the
-sign. That is, the minimum conforming value for *$maximum-integer* is
-2*27* -1 and the maximum conforming value for *$minimum-integer* is
--2*27*.
+  The representation for integers must be at least 28 bits, including the
+  sign. That is, the minimum conforming value for ``$maximum-integer`` is
+  ``2^27`` -1 and the maximum conforming value for ``$minimum-integer`` is
+  ``-2^27``.
 
-*Rationale:* Restricting ``<integer>`` in this way allows the programmer
-to stay in the efficient range without requiring exact knowledge of what
-that range might be. The full generality of extended precision integers
-is provided by the Big-Integers library, for programmers who actually
-need that functionality.
+  .. note:: *Rationale:* Restricting :drm:`<integer>` in this way allows the programmer
+     to stay in the efficient range without requiring exact knowledge of what
+     that range might be. The full generality of extended precision integers
+     is provided by the Big-Integers library, for programmers who actually
+     need that functionality.
 
-Define the type ``<machine-number>`` to be the type union of ``<float>`` and
-``<integer>``.
+* Define the type ``<machine-number>`` to be the type union of :drm:`<float>` and
+  :drm:`<integer>`.
 
 The Dylan library provides implementations of the generic functions and
 functions described in this chapter. If the result of one of these
-operations is specified to be an instance of ``<integer>`` and the
-mathematically correct result cannot be represented as an ``<integer>``
+operations is specified to be an instance of :drm:`<integer>` and the
+mathematically correct result cannot be represented as an :drm:`<integer>`
 then an error is signaled. This removes fully generic arithmetic from
 the Dylan library. In particular, it removes extended integers, ratios,
 and rectangular complex numbers.
@@ -97,90 +100,69 @@ uses the Dylan library.
 Ranges
 ------
 
-The initialization arguments for ``<range>`` must all be instances of
-``<machine-number>`` rather than ``<real>``.
+The initialization arguments for :drm:`<range>` must all be instances of
+``<machine-number>`` rather than :drm:`<real>`.
 
 Specific constructors
 ---------------------
 
 The following specific constructors are available for use with the class
-``<integer>``.
+:drm:`<integer>`.
 
-limited
--------
+.. generic-function:: limited
 
-G.f. method
-'''''''''''
+   Defines a new type that represents a subset of the class :drm:`<integer>`.
 
-Summary
+   :signature: limited *integer-class* #key *min* *max* => *limited-type*
 
-Defines a new type that represents a subset of the class ``<integer>``.
+   :parameter integer-class: The singleton(<integer>).
+   :parameter min: The lower bound of the range. The default is
+     ``$minimum-integer``.
+   :parameter max: The upper bound of the range. The default is ``$maximum-integer``.
 
-Arguments
+   :description:
 
--  *singleton(<integer>)*
--  *min:* The lower bound of the range. The default is
-   *$minimum-integer*.
--  *max: The upper bound of the range. The default is $maximum-integer*
+     The *integer-class* argument is the class :drm:`<integer>`, and all other
+     arguments are instances of :drm:`<integer>`. The range of :drm:`<integer>` is
+     bounded by default.
 
-Signature
+.. function:: range
 
-limited *integer-class* #key *min* *max* => *limited-type*
+   This function is used to specify ranges of numbers.
 
-Description
+   :signature: range (#key from:, to:, above:, below:, by:, size:) => <range>
 
-The *integer-class* argument is the class ``<integer>``, and all other
-arguments are instances of ``<integer>``. The range of ``<integer>`` is
-bounded by default.
+   :description:
 
-range
------
-
-Function
-''''''''
-
-Summary
-
-This function is used to specify ranges of numbers.
-
-Arguments
-
-Signature
-
-range (#key from:, to:, above:, below:, by:, size:) => <range>
-
-Description
-
-All of the supplied arguments must be instances of ``<machine-number>``.
+      All of the supplied arguments must be instances of ``<machine-number>``.
 
 Equality comparisons
 --------------------
 
-The *=* function compares two objects and returns *#t* if the values of
+The ``=`` function compares two objects and returns ``#t`` if the values of
 the two objects are equal to each other, that is of the same magnitude.
 
-=
+.. generic-function:: =
+   :open:
 
-~
+   Tests its arguments to see if they are of the same magnitude.
 
-Generic function, Sealed domain, G.f. method
-''''''''''''''''''''''''''''''''''''''''''''
+   :signature: = *object1* *object2* => *boolean*
 
-Summary
+.. method:: =
+   :sealed:
+   :specializer: <complex>
 
-Tests its arguments to see if they are of the same magnitude.
+   Tests its arguments to see if they are of the same magnitude.
 
-Signature
+   :signature: = *complex1* *complex2* => *boolean*
 
-= *object1* *object2* => *boolean* (*Generic function*)
- = *complex1* *complex2* => *boolean* (*Sealed domain*)
- = *machine-number1* *machine-number2* => *boolean* (*G.f. method*)
+.. method:: =
+   :specializer: <machine-number>
 
-Value
+   Tests its arguments to see if they are of the same magnitude.
 
-``<boolean>``
-
-Other available methods are described in the *Dylan Reference Manual*.
+   :signature: = *machine-number1* *machine-number2* => *boolean*
 
 Magnitude comparisons
 ---------------------
@@ -188,26 +170,27 @@ Magnitude comparisons
 The Dylan library provides the following interfaces for testing the
 magnitude of two numbers:
 
-<
+.. generic-function:: <
+   :open:
 
-~
+   Returns #t if its first argument is less than its second argument.
 
-Generic function, Sealed domain, G.f. method
-''''''''''''''''''''''''''''''''''''''''''''
+   :signature: < *object1* *object2* => *boolean*
 
-Summary
+.. method:: <
+   :sealed:
+   :specializer: <complex>
 
-Returns #t if its first argument is less than its second argument.
+   Returns #t if its first argument is less than its second argument.
 
-Signature
+   :signature: < *complex1* *complex2* => *boolean*
 
-::
+.. method:: <
+   :specializer: <machine-number>
 
-    < *object1* *object2* => *boolean* (*Generic function*)*
-    < *complex1* *complex2* (*Sealed domain*)
-    < *machine-number1* *machine-number2* => *boolean* (*G.f. method*)
+   Returns #t if its first argument is less than its second argument.
 
-Other available methods are described in the *Dylan Reference Manual*.
+   :signature: < *machine-number1* *machine-number2* => *boolean*
 
 Properties of numbers
 ---------------------
@@ -215,121 +198,135 @@ Properties of numbers
 Various number properties can be tested using the following predicates
 in the Dylan library:
 
-odd?
-----
+.. generic-function:: odd?
+   :open:
 
-Open generic function, Sealed domain, G.f. method
-'''''''''''''''''''''''''''''''''''''''''''''''''
+   Tests whether the argument supplied represents an odd value.
 
-Summary
+   :signature: odd? *object* => *boolean*
 
-Tests whether the argument supplied represents an odd value.
+.. method:: odd?
+   :sealed:
+   :specializer: <complex>
 
-Signature
+   Tests whether the argument supplied represents an odd value.
 
-::
+   :signature: odd? *complex* => *boolean*
 
-    odd? *object* => *boolean* (*Open generic function*)
-    odd? *complex* => *boolean* (*Sealed domain*)
-    odd? *integer* => *boolean* (*G.f. method*)
+.. method:: odd?
+   :specializer: <integer>
 
-even?
------
+   Tests whether the argument supplied represents an odd value.
 
-Open generic function, Sealed domain, G.f. method
-'''''''''''''''''''''''''''''''''''''''''''''''''
+   :signature: odd? *integer* => *boolean*
 
-Summary
+.. generic-function:: even?
+   :open:
 
-Tests whether the argument supplied represents an even value
+   Tests whether the argument supplied represents an even value
 
-Signature
+   :signature: even? *object* => *boolean*
 
-::
+.. method:: even?
+   :sealed:
+   :specializer: <complex>
 
-    even? *object* => *boolean* (*Open generic function*)
-    even? *complex* *=>* *boolean* (*Sealed domain*)
-    even? *integer* => *boolean* (*G.f. method*)
+   Tests whether the argument supplied represents an even value
 
-zero?
+   :signature: even? *complex* => *boolean*
 
-Open generic function
+.. method:: even?
+   :specializer: <integer>
 
-zero? *object* => *boolean*
+   Tests whether the argument supplied represents an even value
 
-zero?
+   :signature: even? *integer* => *boolean*
 
-Sealed domain
+.. generic-function:: zero?
+   :open:
 
-zero? *complex*
+   Tests whether the argument supplied represents a zero value.
 
-zero?
+   :signature: zero? *object* => *boolean*
 
-G.f. method
+.. method:: zero?
+   :specializer: <complex>
+   :sealed:
 
-zero? *machine-number* => *boolean*
+   Tests whether the argument supplied represents a zero value.
 
-Tests whether the argument supplied represents a zero value.
+   :signature: zero? *complex* => *boolean*
 
-positive?
+.. method:: zero?
+   :specializer: <machine-number>
 
-Open generic function
+   Tests whether the argument supplied represents a zero value.
 
-positive? *object* => *boolean*
+   :signature: zero? *machine-number* => *boolean*
 
-positive?
+.. generic-function:: positive?
+   :open:
 
-Sealed domain
+   Tests whether the argument supplied represents a positive value.
 
-positive? *complex*
+.. method:: positive?
+   :sealed:
+   :specializer: <complex>
 
-positive?
+   Tests whether the argument supplied represents a positive value.
 
-G.f. method
+   :signature: positive? *complex*
 
-positive? *machine-number* => *boolean*
+.. method:: positive?
+   :specializer: <machine-number>
 
-Tests whether the argument supplied represents a positive value.
+   Tests whether the argument supplied represents a positive value.
 
-negative?
+   :signature: positive? *machine-number* => *boolean*
 
-Open generic function
+.. generic-function:: negative?
+   :open:
 
-negative? *object* => *boolean*
+   Tests whether the argument supplied represents a negative value.
 
-negative?
+   :signature: negative? *object* => *boolean*
 
-Sealed domain
+.. method:: negative?
+   :sealed:
+   :specializer: <complex>
 
-negative? *complex*
+   Tests whether the argument supplied represents a negative value.
 
-negative?
+   :signature: negative? *complex* => *boolean*
 
-G.f. method
+.. method:: negative?
+   :specializer: <machine-number>
 
-negative? *machine-number* => *boolean*
+   Tests whether the argument supplied represents a negative value.
 
-Tests whether the argument supplied represents a negative value.
+   :signature: negative? *machine-number* => *boolean*
 
-integral?
+.. generic-function:: integral?
+   :open:
 
-Open generic function
+   Tests whether the argument supplied represents an integral value.
 
-integral? *object* => *boolean*
+   :signature: integral? *object* => *boolean*
 
-integral?
+.. method:: integral?
+   :sealed:
+   :specializer: <complex>
 
-Sealed domain
+   Tests whether the argument supplied represents an integral value.
 
-integral? *complex*
+   :signature: integral? *complex*
 
-integral?
+.. method:: integral?
+   :specializer: <machine-number>
 
-G.f. method
+   Tests whether the argument supplied represents an integral value.
 
-integral? *machine-number* => *boolean*
-
-Tests whether the argument supplied represents an integral value.
+   :signature: integral? *machine-number* => *boolean*
 
 Arithmetic operations
 ---------------------
@@ -699,7 +696,7 @@ Function
 logbit? *index* *integer* => *boolean*
 
 Tests the value of a particular bit in its integer argument. The *index*
-argument is an instance of ``<integer>``.
+argument is an instance of :drm:`<integer>`.
 
 ash
 
@@ -728,7 +725,7 @@ Returns the greatest common divisor of its two arguments.
 Collections
 -----------
 
-The keys for sequences are always instances of ``<integer>``. This means
+The keys for sequences are always instances of :drm:`<integer>`. This means
 that certain kinds of collections cannot be sequences; very large (or
 unbounded) sparse arrays are an example.
 
@@ -736,7 +733,7 @@ The table protocol
 ------------------
 
 The following functions in the Dylan library are extended. Note that the
-hash IDs for tables are always instances of ``<integer>``.
+hash IDs for tables are always instances of :drm:`<integer>`.
 
 merge-hash-codes
 
@@ -747,9 +744,9 @@ merge-hash-codes *id1* *state1* *id2* *state2* #key *ordered?*
 
 Returns a hash code created from the merging of two argument hash codes.
 The *id* arguments are hash IDs, and the *state* arguments are hash
-states (instances of ``<object>``). The *ordered?* argument is an
-instance of ``<boolean>``. The returned merged values are instances of
-``<integer>`` and ``<object>``, as determined by the name of each argument.
+states (instances of :drm:`<object>`). The *ordered?* argument is an
+instance of :drm:`<boolean>`. The returned merged values are instances of
+:drm:`<integer>` and :drm:`<object>`, as determined by the name of each argument.
 
 object-hash
 
@@ -783,7 +780,7 @@ be equivalent to those in the Dylan library. But when you use additional
 implementation libraries, the arithmetic operators are extended.
 
 The Big-Integers library is one such implementation library. It provides
-a 64-bit implementation of ``<integer>``.
+a 64-bit implementation of :drm:`<integer>`.
 
 The standard integer implementation in the Dylan library is actually
 part of the following class hierarchy:
@@ -800,9 +797,9 @@ part of the following class hierarchy:
 classes. You do not need to use them.)
 
 The modules in the Generic-Arithmetic library export
-``<abstract-integer>`` with the name ``<integer>``. They also export a full
+``<abstract-integer>`` with the name :drm:`<integer>`. They also export a full
 set of arithmetic operators that use instances of ``<abstract-integer>``
-rather than instances of ``<integer>`` (in the Dylan library naming
+rather than instances of :drm:`<integer>` (in the Dylan library naming
 scheme). However, those operators just fall back to the Dylan library
 operators until you include an implementation library, such as
 Big-Integers, in your application.
@@ -810,7 +807,7 @@ Big-Integers, in your application.
 When you use the Big-Integers library, the arithmetic operators exported
 by Generic-Arithmetic are enhanced to extend their results to 64-bit
 integers. If a result is small enough to fit in a Dylan library
-``<integer>``, it will be fitted into one.
+:drm:`<integer>`, it will be fitted into one.
 
 Note that the Generic-Arithmetic library uses the same naming
 conventions for arithmetic operators as used by the Dylan library. This
@@ -827,10 +824,10 @@ an implementation library with Generic-Arithmetic.
 Ranges
 ------
 
-The Generic-Arithmetic library defines the class ``<range>``, which is in
+The Generic-Arithmetic library defines the class :drm:`<range>`, which is in
 most respects functionally equivalent to *<range>#Dylan*, but uses
 generic arithmetic operations in its implementation so that the
-initialization arguments can be instances of ``<real>``, rather than
+initialization arguments can be instances of :drm:`<real>`, rather than
 being restricted to ``<machine-number>``.
 
 Classes
@@ -849,7 +846,7 @@ Function
 range #key *from* *to* *above* *below* *by* *size* => *range*
 
 This function is identical to the function *range#Dylan*, except that
-all of the supplied arguments must be instances of ``<real>``.
+all of the supplied arguments must be instances of :drm:`<real>`.
 
 Arithmetic operations
 ---------------------
@@ -942,33 +939,20 @@ The Dylan-Excluding-Arithmetic module imports and re-exports all of the
 interfaces exported by the *dylan* module from the Dylan library, except
 for the following excluded interfaces:
 
-<integer>
-
-range
-
-+ - \* /
-
-negative
-
-floor ceiling round truncate
-
-floor/ ceiling/ round/ truncate/
-
-modulo remainder
-
-^
-
-abs
-
-logior logxor logand lognot
-
-logbit?
-
-ash
-
-lcm gcd
-
-for
+* :drm:`<integer>`
+* :drm:`range`
+* :drm:`+` :drm:`-` :drm:`*` :drm:`/`
+* :drm:`negative`
+* :drm:`floor` :drm:`ceiling` :drm:`round` :drm:`truncate`
+* :drm:`floor/` :drm:`ceiling/` :drm:`round/` :drm:`truncate/`
+* :drm:`modulo` :drm:`remainder`
+* :drm:`^`
+* :drm:`abs`
+* :drm:`logior` :drm:`logxor` :drm:`logand` :drm:`lognot`
+* :drm:`logbit?`
+* :drm:`ash`
+* :drm:`lcm` :drm:`gcd`
+* :drm:`for`
 
 The Dylan-Arithmetic module
 ---------------------------
@@ -1005,45 +989,40 @@ This section provides an example of extending the basic Dylan arithmetic
 features using the Generic-Arithmetic library and the Big-Integers
 implementation library.
 
-To use special arithmetic features, an a library’s *define* *library*
+To use special arithmetic features, a library's ``define library``
 declaration must use at least the following libraries:
 
-common-dylan
-
-generic-arithmetic
-
-*special-arithmetic-implementation-library*
+* common-dylan
+* generic-arithmetic
+* *special-arithmetic-implementation-library*
 
 So for Big-Integers you would write:
 
-define library foo
+.. code-block:: dylan
 
-use common-dylan;
-
-use generic-arithmetic;
-
-use big-integers;
-
-…
-
-end library foo;
+    define library foo
+      use common-dylan;
+      use generic-arithmetic;
+      use big-integers;
+      ...
+    end library foo;
 
 Next you have to declare a module. There are three ways of using
 big-integer arithmetic that we can arrange with a suitable module
 declaration:
 
-Replace all integer arithmetic with the big-integer arithmetic
-
-Use both, with normal arithmetic remaining the default
-
-Use both, with the big-integer arithmetic becoming the default
+#. Replace all integer arithmetic with the big-integer arithmetic
+#. Use both, with normal arithmetic remaining the default
+#. Use both, with the big-integer arithmetic becoming the default
 
 To get one of the three different effects described above, you need to
-arrange the *define* *module* declaration accordingly. To replace all
+arrange the ``define module`` declaration accordingly. To replace all
 integer arithmetic with big-integer arithmetic, include the following in
-your *define* *module* declaration:
+your ``define module`` declaration:
 
-use generic-arithmetic-common-dylan;
+.. code-block:: dylan
+
+    use generic-arithmetic-common-dylan;
 
 (Note that the module definition should not use the Big-Integers module.
 The Big-Integers library is used as a side-effects library only, that
@@ -1060,63 +1039,67 @@ You can take a different approach that reduces the cost of big-integer
 arithmetic. Under this approach you leave normal integer arithmetic
 unchanged, and get access to big-integer arithmetic when you need it. To
 do this, use the same libraries but instead of using the
-*common-dylan-generic-arithmetic* module, include the following in your
-*define* *module* declaration:
+``common-dylan-generic-arithmetic`` module, include the following in your
+``define module`` declaration:
 
-use common-dylan;
+.. code-block:: dylan
 
-use generic-arithmetic, prefix: "ga/"; // use any prefix you like
+    use common-dylan;
+    use generic-arithmetic, prefix: "ga/"; // use any prefix you like
 
 This imports the big-integer arithmetic binding names, but gives them a
-prefix *ga/*, using the standard renaming mechanism available in module
+prefix ``ga/``, using the standard renaming mechanism available in module
 declarations. Thus you gain access to big arithmetic using renamed
 classes and operations like:
 
-ga/<integer>
+.. code-block:: dylan
 
-ga/+
+    ga/<integer>
+    ga/+
+    ga/-
+    ga/*
+    ...
 
-ga/-
-
-ga/\*
-
-…
-
-The operations take either instances of ``<integer>`` or *ga/<integer>* (a
-subclass of ``<integer>``) and return instances of *ga/<integer>*.
+The operations take either instances of :drm:`<integer>` or ``ga/<integer>`` (a
+subclass of :drm:`<integer>`) and return instances of ``ga/<integer>``.
 
 Note that having imported the big-integer operations under new names,
 you have to use prefix rather than infix syntax when calling them. For
 example:
 
-ga/+ (5, 4);
+.. code-block:: dylan
+
+    ga/+ (5, 4);
 
 not:
 
-5 ga/+ 4;
+.. code-block:: dylan
 
-The existing functions like *+* and *-* will only accept ``<integer>``
-instances and *ga/<integer>* instances small enough to be represented as
-``<integer>`` instances.
+    5 ga/+ 4;
+
+The existing functions like ``+`` and ``-`` will only accept :drm:`<integer>`
+instances and ``ga/<integer>`` instances small enough to be represented as
+:drm:`<integer>` instances.
 
 Under this renaming scheme, reduced performance will be confined to the
-*ga/* operations. Other operations, such as loop index increments and
+``ga/`` operations. Other operations, such as loop index increments and
 decrements, will retain their efficiency.
 
 Finally, you can make big-integer arithmetic the default but keep normal
-arithmetic around for when you need it. Your *define* *module*
+arithmetic around for when you need it. Your ``define module``
 declaration should contain:
 
-use generic-arithmetic-common-dylan;
+.. code-block:: dylan
 
-use dylan-arithmetic, prefix: "dylan/"; //use any prefix you like
+    use generic-arithmetic-common-dylan;
+    use dylan-arithmetic, prefix: "dylan/"; //use any prefix you like
 
 The Big-Integers library
 ========================
 
-The Big-Integers library exports a module called *big-integers*, which
+The Big-Integers library exports a module called ``big-integers``, which
 imports and re-exports all of the interfaces exported by the
-*generic-arithmetic* module of the Generic-Arithmetic library.
+``generic-arithmetic`` module of the Generic-Arithmetic library.
 
 The Big-Integers library modifies the behavior of functions provided by
 the Dylan library as described in this section.
@@ -1141,8 +1124,8 @@ equivalent to ``<abstract-integer>``. The argument
 *abstract-integer-class* is the class ``<abstract-integer>``.
 
 If both *min* and *max* are supplied, and both are instances of
-``<integer>``, then the result type is equivalent to calling *limited* on
-``<integer>`` with those same bounds.
+:drm:`<integer>`, then the result type is equivalent to calling *limited* on
+:drm:`<integer>` with those same bounds.
 
 The Limited Integer Type Protocol is extended to account for limited
 ``<abstract-integer>`` types.
@@ -1223,7 +1206,7 @@ limited
  (<integer>,
  min: y, max: z)
 
-*y* and *z* are both instances of ``<integer>``.
+*y* and *z* are both instances of :drm:`<integer>`.
 
 limited
  (<abstract-integer>,
@@ -1233,7 +1216,7 @@ limited
 limited
  (<integer>, min: y)
 
-*y* is an instance of ``<integer>``.
+*y* is an instance of :drm:`<integer>`.
 
 limited
  (<abstract-integer>,
@@ -1243,14 +1226,14 @@ limited
 limited
  (<integer>, max: z)
 
-*z* is an instance of ``<integer>``.
+*z* is an instance of :drm:`<integer>`.
 
 Type disjointness is modified as follows to account for limited
 ``<abstract-integer>`` types.
 
 A limited integer type is disjoint from a class if their base types are
-disjoint or the class is ``<integer>`` and the range of the limited
-integer type is disjoint from the range of ``<integer>`` (that is, from
+disjoint or the class is :drm:`<integer>` and the range of the limited
+integer type is disjoint from the range of :drm:`<integer>` (that is, from
 *$minimum-integer* to *$maximum-integer*).
 
 Equality comparisons

@@ -21,9 +21,9 @@ Types specific to file system operations
 The File-System module contains a number of types specifically designed
 for use by interfaces in the module.
 
-- :class:`<file-type>`
-- :class:`<pathname>`
-- :class:`<copy/rename-disposition>`
+- :type:`<file-type>`
+- :type:`<pathname>`
+- :type:`<copy/rename-disposition>`
 
 Manipulating files
 ------------------
@@ -91,10 +91,10 @@ File-System module.
 
    :signature: copy-file *old-file* *new-file* #key *if-exists* => ()
 
-   :parameter old-file: An instance of :class:`<pathname>`.
-   :parameter new-file: An instance of :class:`<pathname>`.
+   :parameter old-file: An instance of :type:`<pathname>`.
+   :parameter new-file: An instance of :type:`<pathname>`.
    :parameter #key if-exists: An instance of
-     :class:`<copy/rename-disposition>`. Default value: ``#"signal"``.
+     :type:`<copy/rename-disposition>`. Default value: ``#"signal"``.
 
    :description:
 
@@ -102,17 +102,17 @@ File-System module.
      action of this function is controlled by the value of *if-exists*. The
      default is to prompt you before overwriting an existing file.
 
-   See also
+   :seealso:
 
-   - :class:`<copy/rename-disposition>`
-   - :class:`rename-file`
+     - :type:`<copy/rename-disposition>`
+     - :class:`rename-file`
 
-.. class:: <copy/rename-disposition>
+.. type:: <copy/rename-disposition>
 
    The type that represents possible actions when overwriting existing
    files.
 
-   :superclasses: one-of(#"signal", #"replace")
+   :equivalent: ``one-of(#"signal", #"replace")``
 
    :description:
 
@@ -130,10 +130,10 @@ File-System module.
      - :func:`copy-file`
      - :func:`rename-file`
 
-   See also
+   :seealso:
 
-   - :func:`copy-file`
-   - :func:`rename-file`
+     - :func:`copy-file`
+     - :func:`rename-file`
 
 .. function:: create-directory
 
@@ -141,9 +141,9 @@ File-System module.
 
    :signature: create-directory *parent* *name* => *directory*
 
-   :parameter parent: An instance of :class:`<pathname>`.
-   :parameter name: An instance of ``<string>``.
-   :value directory: An instance of :class:`<pathname>`.
+   :parameter parent: An instance of :type:`<pathname>`.
+   :parameter name: An instance of :drm:`<string>`.
+   :value directory: An instance of :type:`<pathname>`.
 
    :description:
 
@@ -151,9 +151,9 @@ File-System module.
      value of this function can be used with :drm:`concatenate` to
      create pathnames of entities in the new directory.
 
-   See also
+   :seealso:
 
-   - :func:`delete-directory`
+     - :func:`delete-directory`
 
 .. function:: delete-directory
 
@@ -161,17 +161,17 @@ File-System module.
 
    :signature: delete-directory *directory* => ()
 
-   :parameter directory: An instance of :class:`<pathname>`.
+   :parameter directory: An instance of :type:`<pathname>`.
 
    :description:
 
      Deletes the specified directory. Whether or not the directory must
      be empty before it can be deleted is platform dependent.
 
-   See also
+   :seealso:
 
-   - :func:`create-directory`
-   - :func:`delete-file`
+     - :func:`create-directory`
+     - :func:`delete-file`
 
 .. function:: delete-file
 
@@ -179,7 +179,7 @@ File-System module.
 
    :signature: delete-file *file* => ()
 
-   :parameter file: An instance of :class:`<pathname>`.
+   :parameter file: An instance of :type:`<pathname>`.
 
    :description:
 
@@ -194,8 +194,8 @@ File-System module.
 
    :signature: do-directory *function* *directory* => ()
 
-   :parameter function: An instance of ``<function>``.
-   :parameter directory: An instance of :class:`<pathname>`.
+   :parameter function: An instance of :drm:`<function>`.
+   :parameter directory: An instance of :type:`<pathname>`.
 
    :description:
 
@@ -205,12 +205,12 @@ File-System module.
 
        *function* *directory* *name* *type* => ()
 
-     where *directory* is an instance of :class:`<pathname>`, *name* is
-     an instance of ``<byte-string>``, and *type* is an instance of
-     :class:`<file-type>`.
+     where *directory* is an instance of :type:`<pathname>`, *name* is
+     an instance of :drm:`<byte-string>`, and *type* is an instance of
+     :type:`<file-type>`.
 
      Within *function*, the values of *directory* and *name* can be
-     concatenated to generate a :class:`<pathname>` suitable for use by
+     concatenated to generate a :type:`<pathname>` suitable for use by
      the other functions in the module.
 
      The following calls are equivalent:
@@ -236,8 +236,8 @@ File-System module.
 
    :signature: ensure-directories-exist *file* => *created?*
 
-   :parameter file: An instance of :class:`<pathname>`.
-   :value created?: An instance of ``<boolean>``.
+   :parameter file: An instance of :type:`<pathname>`.
+   :value created?: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -267,9 +267,9 @@ File-System module.
 
        ensure-directories-exist("C:\\USERS\\JOHN\\FOO.TEXT")
 
-   See also
+   :seealso:
 
-   - :func:`create-directory`
+     - :func:`create-directory`
 
 .. function:: file-exists?
 
@@ -277,8 +277,8 @@ File-System module.
 
    :signature: file-exists? *file* => *exists?*
 
-   :parameter file: An instance of :class:`<pathname>`.
-   :value exists?: An instance of ``<boolean>``.
+   :parameter file: An instance of :type:`<pathname>`.
+   :value exists?: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -291,9 +291,9 @@ File-System module.
 
    :signature: file-properties *file* => *properties*
 
-   :parameter file: An instance of :class:`<pathname>`.
+   :parameter file: An instance of :type:`<pathname>`.
    :value properties: An instance of a concrete subclass of
-     ``<explicit-key-collection>``.
+     :drm:`<explicit-key-collection>`.
 
    :description:
 
@@ -306,10 +306,10 @@ File-System module.
 
        file-properties() [#"size"]
 
-   See also
+   :seealso:
 
-   - :gf:`file-property`
-   - :func:`file-property-setter`
+     - :gf:`file-property`
+     - :func:`file-property-setter`
 
 .. generic-function:: file-property
    :sealed:
@@ -318,11 +318,10 @@ File-System module.
 
    :signature: file-property *file* #key *key* => *property*
 
-   :parameter file: An instance of :class:`<pathname>`.
+   :parameter file: An instance of :type:`<pathname>`.
    :parameter #key key: One of ``#"author"``, ``#"size"``,
      ``#"creation-date"``, ``#"access-date"``, ``#"modification-date"``,
-     ``#"write-date"``, ``#"readable?"``, ``#"writeable?"``,
-     ``#"executable?"``.
+     ``#"readable?"``, ``#"writeable?"``, ``#"executable?"``.
    :value property: The value of the property specified by *key*. The
      type of the value returned depends on the value of *key*: see the
      description for details.
@@ -341,7 +340,7 @@ File-System module.
        +==========================+===============================+
        | ``#"author"``            | ``false-or(<string>)``        |
        +--------------------------+-------------------------------+
-       | ``#"size"``              | ``<integer>``                 |
+       | ``#"size"``              | :drm:`<integer>`              |
        +--------------------------+-------------------------------+
        | ``#"creation-date"``     | :class:`<date>`               |
        +--------------------------+-------------------------------+
@@ -349,28 +348,25 @@ File-System module.
        +--------------------------+-------------------------------+
        | ``#"modification-date"`` | :class:`<date>`               |
        +--------------------------+-------------------------------+
-       | ``#"write-date"``        | :class:`<date>`               |
+       | ``#"readable?"``         | :drm:`<boolean>`              |
        +--------------------------+-------------------------------+
-       | ``#"readable?"``         | ``<boolean>``                 |
+       | ``#"writeable?"``        | :drm:`<boolean>`              |
        +--------------------------+-------------------------------+
-       | ``#"writeable?"``        | ``<boolean>``                 |
-       +--------------------------+-------------------------------+
-       | ``#"executable?"``       | ``<boolean>``                 |
+       | ``#"executable?"``       | :drm:`<boolean>`              |
        +--------------------------+-------------------------------+
 
      Not all platforms implement all of the above keys. Some platforms
      may support additional keys. The ``#"author"`` key is supported on
      all platforms but may return ``#f`` if it is not meaningful on a
-     given platform. The ``#"modification-date"`` and ``#"write-date"``
-     keys are identical. Use of an unsupported key signals an error.
+     given platform. Use of an unsupported key signals an error.
 
      All keys listed above are implemented by Win32, though note that
      ``#"author"`` always returns ``#f``.
 
-   See also
+   :seealso:
 
-   - :gf:`file-property-setter`
-   - :func:`file-properties`
+     - :gf:`file-property-setter`
+     - :func:`file-properties`
 
 .. generic-function:: file-property-setter
    :sealed:
@@ -381,11 +377,10 @@ File-System module.
 
    :parameter new-value: The type of this depends on the value of *key*.
      See the description for details.
-   :parameter file: An instance of :class:`<pathname>`.
+   :parameter file: An instance of :type:`<pathname>`.
    :parameter key: One of ``#"author"``, ``#"size"``,
      ``#"creation-date"``, ``#"access-date"``, ``#"modification-date"``,
-     ``#"write-date"``, ``#"readable?"``, ``#"writeable?"``,
-     ``#"executable?"``.
+     ``#"readable?"``, ``#"writeable?"``, ``#"executable?"``.
    :value new-value: The type of this depends on the value of *key*. See
      the description for details.
 
@@ -404,7 +399,7 @@ File-System module.
        +==========================+===============================+
        | ``#"author"``            | ``false-or(<string>)``        |
        +--------------------------+-------------------------------+
-       | ``#"size"``              | ``<integer>``                 |
+       | ``#"size"``              | :drm:`<integer>`              |
        +--------------------------+-------------------------------+
        | ``#"creation-date"``     | :class:`<date>`               |
        +--------------------------+-------------------------------+
@@ -412,13 +407,11 @@ File-System module.
        +--------------------------+-------------------------------+
        | ``#"modification-date"`` | :class:`<date>`               |
        +--------------------------+-------------------------------+
-       | ``#"write-date"``        | :class:`<date>`               |
+       | ``#"readable?"``         | :drm:`<boolean>`              |
        +--------------------------+-------------------------------+
-       | ``#"readable?"``         | ``<boolean>``                 |
+       | ``#"writeable?"``        | :drm:`<boolean>`              |
        +--------------------------+-------------------------------+
-       | ``#"writeable?"``        | ``<boolean>``                 |
-       +--------------------------+-------------------------------+
-       | ``#"executable?"``       | ``<boolean>``                 |
+       | ``#"executable?"``       | :drm:`<boolean>`              |
        +--------------------------+-------------------------------+
 
      Note that *file-property-setter* returns the value that was set, and so
@@ -426,22 +419,21 @@ File-System module.
      value of *key*.
 
      Not all platforms implement all of the above keys. Some platforms may
-     support additional keys. The ``#"modification-date"`` and ``#"write-date"``
-     keys are identical. Use of an unsupported key signals an error.
+     support additional keys. Use of an unsupported key signals an error.
 
      The only property that can be set on Win32 is ``#"writeable?"``.
 
-   See also
+   :seealso:
 
-   - :gf:`file-property`
-   - :func:`file-properties`
+     - :gf:`file-property`
+     - :func:`file-properties`
 
 .. class:: <file-system-error>
 
    Error type signaled when any other functions in the File-System
    module signal an error.
 
-   :superclasses: <error>, :class:`<simple-condition>`
+   :superclasses: :drm:`<error>`, :class:`<simple-condition>`
 
    :description:
 
@@ -455,8 +447,8 @@ File-System module.
 
    :signature: file-type *file* => *file-type*
 
-   :parameter file: An instance of :class:`<pathname>`.
-   :value file-type: An instance of :class:`<file-type>`.
+   :parameter file: An instance of :type:`<pathname>`.
+   :value file-type: An instance of :type:`<file-type>`.
 
    :description:
 
@@ -464,11 +456,11 @@ File-System module.
      file system entity can either be a file, a directory, or a link to
      another file or directory.
 
-.. class:: <file-type>
+.. type:: <file-type>
 
    The type representing all possible types of a file system entity.
 
-   :superclasses: one-of(#"file", #"directory", #"link")
+   :equivalent: ``one-of(#"file", #"directory", #"link")``
 
    :description:
 
@@ -488,7 +480,7 @@ File-System module.
 
    :signature: home-directory () => *home-directory*
 
-   :value home-directory: An instance of :class:`<pathname>`.
+   :value home-directory: An instance of :type:`<pathname>`.
 
    :description:
 
@@ -496,15 +488,16 @@ File-System module.
      of this function can be used with concatenate to create pathnames
      of entities in the home directory.
 
-.. class:: <pathname>
+.. type:: <pathname>
 
    The type representing a file system entity.
 
-   :superclasses: <string>
+   :equivalent: ``type-union(<string>, <file-system-locator>)``
 
    :description:
 
-     A type that identifies a file system entity.
+     A type that identifies a file system entity. This can be either a
+     :drm:`<string>` or a :class:`<file-system-locator>`.
 
    :operations:
 
@@ -528,10 +521,10 @@ File-System module.
 
    :signature: rename-file *old-file* *new-file* #key *if-exists* => ()
 
-   :parameter old-file: An instance of :class:`<pathname>`.
-   :parameter new-file: An instance of :class:`<pathname>`.
+   :parameter old-file: An instance of :type:`<pathname>`.
+   :parameter new-file: An instance of :type:`<pathname>`.
    :parameter if-exists: An instance of
-     :class:`<copy/rename-disposition>`. Default value: ``#"signal"``.
+     :type:`<copy/rename-disposition>`. Default value: ``#"signal"``.
 
    :description:
 
@@ -542,10 +535,10 @@ File-System module.
      This operation may fail if the source and destination are not on
      the same file system.
 
-   See also
+   :seealso:
 
-   - :func:`copy-file`
-   - :class:`<copy/rename-disposition>`
+     - :func:`copy-file`
+     - :type:`<copy/rename-disposition>`
 
 .. function:: root-directories
 
@@ -554,7 +547,7 @@ File-System module.
 
    :signature: root-directories () => *roots*
 
-   :value roots: An instance of ``<sequence>``.
+   :value roots: An instance of :drm:`<sequence>`.
 
    :description:
 
@@ -567,7 +560,7 @@ File-System module.
 
    :signature: temp-directory () => *temp-directory*
 
-   :value temp-directory: An instance of :class:`<pathname>`, or false.
+   :value temp-directory: An instance of :type:`<pathname>`, or false.
 
    :description:
 
@@ -584,19 +577,19 @@ File-System module.
 
    :signature: working-directory () => *working-directory*
 
-   :value working-directory: An instance of :class:`<pathname>`.
+   :value working-directory: An instance of :type:`<pathname>`.
 
    :description:
 
-     Returns the :class:`<pathname>` of the current working directory in
+     Returns the :type:`<pathname>` of the current working directory in
      the current process on the local machine. You can use the return
      value of ``working-directory`` in conjunction with
      :drm:`concatenate` to specify pathnames of entities in the working
      directory.
 
-   See also
+   :seealso:
 
-   - :func:`working-directory-setter`
+     - :func:`working-directory-setter`
 
 .. function:: working-directory-setter
 
@@ -604,8 +597,8 @@ File-System module.
 
    :signature: working-directory-setter *directory* => *directory*
 
-   :parameter directory: An instance of :class:`<pathname>`.
-   :value directory: An instance of :class:`<pathname>`.
+   :parameter directory: An instance of :type:`<pathname>`.
+   :value directory: An instance of :type:`<pathname>`.
 
    :description:
 
@@ -633,6 +626,6 @@ File-System module.
 
        working-directory() := "C:\\USERS\\JOHN\\";
 
-   See also
+   :seealso:
 
-   - :func:`working-directory`
+     - :func:`working-directory`

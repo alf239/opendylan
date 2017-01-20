@@ -12,8 +12,9 @@ define library parser-compiler
 end;
 
 define module parser-compiler
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use streams;
+  use format-out;
   use format;
   use standard-io;
   use operating-system;

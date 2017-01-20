@@ -26,7 +26,7 @@ end library;
 
 define module user-projects
   use dylan;
-  use common-extensions, exclude: { format-to-string };
+  use common-extensions;
   use threads;
   use machine-word-lowlevel,
     import: { machine-word-unsigned-shift-left, machine-word-unsigned-shift-right };
@@ -55,7 +55,7 @@ define module user-projects
   use dfmc-common;
   use dfmc-derived-information,
     import: { project-library-definition,
-	     compilation-context-library-name };
+              compilation-context-library-name };
   export
     <system-project>,
     <user-project>,

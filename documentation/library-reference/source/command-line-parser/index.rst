@@ -26,16 +26,16 @@ Quick Start
 
 Let's say you want to parse a command line that looks like this::
 
-  frob --name=zoo --debug -r a -r b -r c one two three
+  frob --name=zoo --debug -r a -r b -r c --choice=foo one two three
 
-The "frob" command accepts a --name argument that takes a value, a
-boolean --debug (or --nodebug) a -r argument that may be repeated, and
-then any number of positional arguments (here "one", "two", and
-"three").  Here's how to create a parser for the frob command:
+The "frob" command accepts a ``--name`` argument that takes a value, a
+boolean ``--debug`` (or ``--nodebug``) a ``-r`` argument that may be
+repeated, and then at least one positional argument (here "one", "two",
+and "three").  Here's how to create a parser for the frob command:
 
 .. code-block:: dylan
 
-  let parser = make(<command-line-parser>);
+  let parser = make(<command-line-parser>, min-positional-options: 1);
   add-option(parser,
              make(<parameter-option>,
                   names: #("name"),
@@ -51,9 +51,14 @@ then any number of positional arguments (here "one", "two", and
                   names: #("r"),
                   variable: "RAD",  // shows up in --help output
                   help: "Free radicals"));
+  add-option(parser,
+             make(<choice-option>,
+                  names: #("choice"),
+                  choices: #("foo", "bar", "baz"),
+                  default: "foo"));
 
-There is also a :class:`<keyed-option>` which is not shown here.
-See the reference section for more info.
+There are additional option classes not shown here.  See the reference
+section for more info.
 
 Now parse the command line:
 
@@ -75,6 +80,7 @@ And to access the option values:
   let debug? :: <boolean> = get-option-value(parser, "debug");
   let name :: false-or(<string>) = get-option-value(parser, "name");
   let dash-r :: <deque> = get-option-value(parser, "r");
+  let choice :: <string> = get-option-value(parser, "choice");
   let args :: <sequence> = positional-options(parser);
 
 
@@ -82,7 +88,7 @@ Reference
 =========
 
 
-The COMMAND-LINE-PARSER module
+The command-line-parser Module
 ------------------------------
 
 .. class:: <command-line-parser>
@@ -90,7 +96,7 @@ The COMMAND-LINE-PARSER module
 
    Encapsulates a set of command-line options.
 
-   :superclasses: <object>
+   :superclasses: :drm:`<object>`
 
    :keyword provide-help-option?:
 
@@ -102,18 +108,32 @@ The COMMAND-LINE-PARSER module
 
    :keyword help-option:
 
-     A ``<flag-option>`` that will be added to the parser as the
+     A :class:`<flag-option>` that will be added to the parser as the
      option that signals a request for help.  The main purpose of this
      init keyword is to make it possible to use something other than
      ``--help`` and ``-h`` to request help.  This keyword has no
      effect if ``provide-help-option?`` is ``#f``.
+
+   :keyword min-positional-options:
+
+     The minimum number of positional (unnamed) options.  An
+     :drm:`<integer>`, defaulting to zero.  If fewer positional
+     options than this are supplied, :class:`<usage-error>` is
+     signaled.
+
+   :keyword max-positional-options:
+
+     The maximum number of positional (unnamed) options.  An
+     :drm:`<integer>`, defaulting to ``$maximum-integer``.  If more
+     positional options than this are supplied, :class:`<usage-error>`
+     is signaled.
 
 .. class:: <command-line-parser-error>
    :open:
 
    Superclass of all errors signaled by this library.
 
-   :superclasses: <format-string-condition>, <error>
+   :superclasses: :class:`<format-string-condition>`, :drm:`<error>`
 
 
 .. class:: <usage-error>
@@ -121,12 +141,12 @@ The COMMAND-LINE-PARSER module
 
    Signaled when a command-line cannot be parsed.
 
-   :superclasses: <command-line-parser-error>
+   :superclasses: :class:`<command-line-parser-error>`
 
    :description:
 
      This is commonly handled by calling ``exit-application(2)`` since
-     the error has already been displayed on ``*standard-error*``.
+     the error has already been displayed on :var:`*standard-error*`.
 
 .. class:: <help-requested>
    :sealed:
@@ -134,13 +154,13 @@ The COMMAND-LINE-PARSER module
    Signaled when help was explicitly requested via the help option,
    usually ``--help``.
 
-   :superclasses: <usage-error>
+   :superclasses: :class:`<usage-error>`
 
    :description:
 
      This is commonly handled by calling ``exit-application(0)`` since
      the command-line synopsis has already been displayed on
-     ``*standard-output*``.
+     :var:`*standard-output*`.
 
 
 .. function:: add-option
@@ -153,7 +173,7 @@ The COMMAND-LINE-PARSER module
    :description:
 
      If any of the option names specified are already used by other
-     options then ``<command-line-parser-error>`` is signaled.
+     options then :class:`<command-line-parser-error>` is signaled.
 
 .. function:: parse-command-line
 
@@ -162,8 +182,8 @@ The COMMAND-LINE-PARSER module
 
    :signature: parse-command-line (parser argv) => ()
    :parameter parser: An instance of :class:`<command-line-parser>`.
-   :parameter argv: An instance of ``<sequence>``.  Normally the value
-     returned by ``application-arguments()`` is passed here.
+   :parameter argv: An instance of :drm:`<sequence>`.  Normally the value
+     returned by :func:`application-arguments` is passed here.
    :parameter #key usage: As for :func:`print-synopsis`.
    :parameter #key description: As for :func:`print-synopsis`.
    :description:
@@ -190,13 +210,13 @@ The COMMAND-LINE-PARSER module
    :parameter parser: An instance of :class:`<command-line-parser>`.
    :parameter stream: An instance of :class:`<stream>`.
 
-   :parameter #key usage: An instance of ``<string>`` or ``#f``.  A
+   :parameter #key usage: An instance of :drm:`<string>` or ``#f``.  A
      brief synopsis of the overall command-line syntax.  The default
-     is ``#f``, in which case "Usage: <application-name> [options]\n"
+     is ``#f``, in which case "Usage: <application-name> [options]\\n"
      will be displayed, where <application-name> is the result of
      calling ``locator-base(application-name())``.
 
-   :parameter #key description: An instance of ``<string>`` or ``#f``.
+   :parameter #key description: An instance of :drm:`<string>` or ``#f``.
      This is displayed after ``usage`` and before the detailed list of
      options.  This is intended to be a sentence or short paragraph.
 
@@ -205,9 +225,9 @@ The COMMAND-LINE-PARSER module
    Returns the sequence of command line arguments that remain after
    all optional arguments have been consumed.
 
-   :signature: positional-options (parser) => (args :: ``<sequence>``)
-   :parameter object: An instance of ``<object>``.
-   :value #rest results: An instance of ``<object>``.
+   :signature: positional-options (parser) => (args :: :drm:`<sequence>`)
+   :parameter object: An instance of :drm:`<object>`.
+   :value #rest results: An instance of :drm:`<object>`.
 
 .. function:: option-present?
 
@@ -215,8 +235,8 @@ The COMMAND-LINE-PARSER module
 
    :signature: option-present? (parser name) => (present?)
    :parameter parser: An instance of :class:`<command-line-parser>`.
-   :parameter name: An instance of ``<string>``.
-   :value present?: An instance of ``<boolean>``.
+   :parameter name: An instance of :drm:`<string>`.
+   :value present?: An instance of :drm:`<boolean>`.
    :description:
 
      If called before :func:`parse-command-line` has been called on the
@@ -230,8 +250,8 @@ The COMMAND-LINE-PARSER module
    :signature: get-option-value (parser long-name) => (value)
 
    :parameter parser: An instance of :class:`<command-line-parser>`.
-   :parameter long-name: An instance of ``<string>``.
-   :value value: An instance of ``<object>``.
+   :parameter long-name: An instance of :drm:`<string>`.
+   :value value: An instance of :drm:`<object>`.
 
 
 
@@ -245,7 +265,7 @@ Option Classes
 
    Superclass of all other option types.
 
-   :superclasses: <object>
+   :superclasses: :drm:`<object>`
 
    :keyword names:
 
@@ -261,7 +281,7 @@ Option Classes
      via the ``parse-option-parameter`` generic function.  Clients may
      implement that function for their own types to extend the parser.
 
-     Predefined types include ``<integer>``, ``subclass(<float>)``,
+     Predefined types include :drm:`<integer>`, ``subclass(<float>)``,
      ``subclass(<sequence>)``.
 
    :keyword help:
@@ -293,7 +313,7 @@ Option Classes
 .. class:: <flag-option>
    :sealed:
 
-   Defines a flag option, i.e., one defines a boolean value.
+   Defines a simple flag option, i.e., one that specifies a boolean value.
 
    :superclasses: :class:`<option>`
 
@@ -419,7 +439,7 @@ Option Classes
    :description:
 
      These are a bit obscure. The best example is gcc's ``-D`` option.
-     The final value is a ``<string-table>`` containing each specified
+     The final value is a :class:`<string-table>` containing each specified
      key, with one of the following values:
 
      * ``#t``: The user specified "-Dkey"
@@ -436,7 +456,7 @@ Option Classes
 .. macro:: option-parser-definer
 
 
-The OPTION-PARSER-PROTOCOL module
+The option-parser-protocol Module
 ---------------------------------
 
 This module exports an API that can be used to extend the existing

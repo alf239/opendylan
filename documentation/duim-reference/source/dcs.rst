@@ -2,6 +2,9 @@
 DUIM-DCs Library
 ****************
 
+.. current-library:: duim-dcs
+.. current-module:: duim-dcs
+
 Overview
 ========
 
@@ -19,56 +22,47 @@ The class hierarchy for DUIM-DCs
 ================================
 
 A number of base classes are exposed in the DUIM-DCs library, each of
-which is a subclass of *<object>*. They are shown in Table `Overall
-class hierarchy for the DUIM-DCs library`_.
+which is a subclass of :drm:`<object>`. They are shown in the following table
 
-Overall class hierarchy for the DUIM-DCs library
-                                                
++----------+--------------+------------------------------+
+| <object> |              |                              |
++----------+--------------+------------------------------+
+|          | <pen>        |                              |
++----------+--------------+------------------------------+
+|          | <brush>      |                              |
++----------+--------------+------------------------------+
+|          | <palette>    |                              |
++----------+--------------+------------------------------+
+|          | <ink>        | See `Subclasses of \<ink\>`_ |
++----------+--------------+------------------------------+
+|          | <text-style> |                              |
++----------+--------------+------------------------------+
+|          |              | <device-font>                |
++----------+--------------+------------------------------+
 
-.. figure:: images/dcs-2.png
-   :align: center
-   :alt: 
-
-<object>
-
-<pen>
-
-<brush>
-
-<palette>
-
-<ink>
-
-See `Subclasses of <ink>`_
-
-<text-style>
-
-<device-font>
-
--  *<pen>* This is protocol class for pens. A pen is used to draw 1
-   dimensional graphics such as lines or outline, using a specific color
-   or pattern.
--  *<brush>* The protocol class for brushes. Brushes are used to fill in
-   2 dimensional areas with a specific color or pattern.
--  *<palette>* The protocol class for palettes. A palette provides a set
-   of colors which can be made available to an application.
--  *<ink>* This class can be thought of as anything that can be drawn.
-   As the name implies, an ink describes the color and opacity features
-   used by a given pen or brush. That is, the pen and brush define the
-   drawing style (outlining or filling, respectively), and an ink is
-   used to describe the color or pattern that is drawn. This class has a
-   number of subclasses, described in `Subclasses of
-   <ink>`_.
--  *<text-style>* The protocol class for text styles. A text style is a
-   portable way of describing the appearance of a piece of text on
-   screen (its font family, size, weight, and so on) in an abstract
-   fashion. Because the fonts available on a particular computer may not
-   necessarily match the fonts available on the computer of the
-   programmer, DUIM provides a portable model which allows the most
-   suitable font on the user’s machine to be chosen at run-time.
--  *<device-font>* The protocol class for device-specific fonts, that
-   is, fonts that are resident on a particular device. This is a direct
-   subclass of *<text-style>*.
+- :class:`<pen>` This is protocol class for pens. A pen is used to draw 1
+  dimensional graphics such as lines or outline, using a specific color
+  or pattern.
+- :class:`<brush>` The protocol class for brushes. Brushes are used to fill in
+  2 dimensional areas with a specific color or pattern.
+- :class:`<palette>` The protocol class for palettes. A palette provides a set
+  of colors which can be made available to an application.
+- :class:`<ink>` This class can be thought of as anything that can be drawn.
+  As the name implies, an ink describes the color and opacity features
+  used by a given pen or brush. That is, the pen and brush define the
+  drawing style (outlining or filling, respectively), and an ink is
+  used to describe the color or pattern that is drawn. This class has a
+  number of subclasses, described in `Subclasses of \<ink\>`_.
+- :class:`<text-style>` The protocol class for text styles. A text style is a
+  portable way of describing the appearance of a piece of text on
+  screen (its font family, size, weight, and so on) in an abstract
+  fashion. Because the fonts available on a particular computer may not
+  necessarily match the fonts available on the computer of the
+  programmer, DUIM provides a portable model which allows the most
+  suitable font on the user's machine to be chosen at run-time.
+- :class:`<device-font>` The protocol class for device-specific fonts, that
+  is, fonts that are resident on a particular device. This is a direct
+  subclass of :class:`<text-style>`.
 
 Subclasses of <ink>
 -------------------
@@ -76,38 +70,33 @@ Subclasses of <ink>
 A number of subclasses of <ink> are exposed by the DUIM-DCs library, as
 follows:
 
--  *<color>* The class of all colors available on the system. This is a
-   direct subclass of *<ink>*.
--  *<image>* The class of all images, such as icons and bitmap images.
-   Images may often be acquired from an outside source, such as a file
-   on disk. This is a direct subclass of *<ink>*.
--  *<stencil>* A stencil is a special kind of pattern that contains only
-   opacities, that is, it provides a layer of transparency. This can be
-   useful, for instance, when overlaying a color onto an image, so as to
-   provide the impression of shading. This is a direct subclass of
-   *<image>*.
--  *<pattern>* A pattern is a bounded rectangular arrangement of color,
-   like a checkerboard. Drawing a pattern draws a different design in
-   each rectangular cell of the pattern. This is a direct subclass of
-   *<stencil>*.
+- :class:`<color>` The class of all colors available on the system. This is a
+  direct subclass of :class:`<ink>`.
+- :class:`<image>` The class of all images, such as icons and bitmap images.
+  Images may often be acquired from an outside source, such as a file
+  on disk. This is a direct subclass of :class:`<ink>`.
+- :class:`<stencil>` A stencil is a special kind of pattern that contains only
+  opacities, that is, it provides a layer of transparency. This can be
+  useful, for instance, when overlaying a color onto an image, so as to
+  provide the impression of shading. This is a direct subclass of
+  :class:`<image>`.
+- :class:`<pattern>` A pattern is a bounded rectangular arrangement of color,
+  like a checkerboard. Drawing a pattern draws a different design in
+  each rectangular cell of the pattern. This is a direct subclass of
+  :class:`<stencil>`.
 
 Error classes provided by DUIM-DCs
 ----------------------------------
 
 Two error classes are provided by the DUIM-DCs library, both of which
-are immediate subclasses of *<error>*.
+are immediate subclasses of :class:`<error>`.
 
-*<color-not-found>*
-                   
-
-This class of error is signalled when a color is requested but is not
-available on the user’s system.
-                                                                                                     
-
--  *<palette-full>* This class of error is signalled when an attempt is
-   made to add a color to a palette, and the palette cannot accept any
-   more colors. The number of colors in a palette depends on the color
-   depth of the connected monitor.
+- :class:`<color-not-found>` This class of error is signalled when a color is
+  requested but is not available on the user's system.
+- :class:`<palette-full>` This class of error is signalled when an attempt is
+  made to add a color to a palette, and the palette cannot accept any
+  more colors. The number of colors in a palette depends on the color
+  depth of the connected monitor.
 
 DUIM-DCs Module
 ===============
@@ -115,5057 +104,2640 @@ DUIM-DCs Module
 This section contains a complete reference of all the interfaces that
 are exported from the *duim-dcs* module.
 
-\=
---
+.. generic-function:: \=
 
-G.f. method
+   Returns ``#t`` if two objects are equal.
 
-Summary
+   :signature: = *color1 color2* => *boolean*
+   :signature: = *pen1* *pen2* => *boolean*
+   :signature: = *brush1* *brush2* => *boolean*
+   :signature: = *text-style1* *text-style2* => *value*
 
-Returns *#t* if two objects are equal.
+   :parameter color1: An instance of type :class:`<color>`.
+   :parameter color2: An instance of type :class:`<color>`.
+   :parameter pen1: An instance of type :class:`<pen>`.
+   :parameter pen2: An instance of type :class:`<pen>`.
+   :parameter brush1: An instance of type :class:`<brush>`.
+   :parameter brush2: An instance of type :class:`<brush>`.
+   :parameter text-style1: An instance of type :class:`<text-style>`.
+   :parameter text-style2: An instance of type :class:`<text-style>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Signature
+   :description:
 
-.. code-block:: dylan
+     Returns ``#t`` if two objects are equal.
 
-    = *color1 color2* => *boolean*
-    = *pen1* *pen2* => *boolean*
-    = *brush1* *brush2* => *boolean*
-    = *text-style1* *text-style2* => *value*
+.. generic-function:: add-colors
 
-Arguments
+   Adds one or more colors to a palette and returns the updated palette.
 
--  *color1* An instance of type `<color>`_.
--  *color2* An instance of type `<color>`_.
--  *pen1* An instance of type `<pen>`_.
--  *pen2* An instance of type `<pen>`_.
--  *brush1* An instance of type `<brush>`_.
--  *brush2* An instance of type `<brush>`_.
--  *text-style1* An instance of type `See
-   <text-style>`_.
--  *text-style2* An instance of type `See
-   <text-style>`_.
+   :signature: add-colors *palette* *#rest* *colors* => *palette*
 
-Values
+   :parameter palette: An instance of type :class:`<palette>`.
+   :parameter colors: Instances of type :class:`<color>`.
+   :value palette: An instance of type :class:`<palette>`.
 
--  *boolean* An instance of type *<boolean>*.
+   :description:
 
-Description
+     Adds *colors* to *palette* and returns the updated palette.
 
-Returns *#t* if two objects are equal.
+.. constant:: $background
 
-add-colors
-----------
+   An indirect ink that uses the medium's background design.
 
-Generic function
-''''''''''''''''
+   :type: :class:`<ink>`
 
-Summary
-       
+   :description:
 
-Adds one or more colors to a palette and returns the updated palette.
+     An indirect ink that uses the medium's background design.
 
-Signature
-         
+   :seealso:
 
-*add-colors* *palette* *#rest* *colors* => *palette*
-                                                    
+     - :class:`<palette>`
+     - :gf:`image-height`
 
-Arguments
-         
+.. constant:: $black
 
--  *palette* An instance of type `<palette>`_.
--  *colors* Instances of type `<color>`_.
+   The usual definition of black.
 
-Values
-      
+   :type: :class:`<color>`
 
--  *palette* An instance of type `<palette>`_.
+   :description:
 
-Description
-           
+     The usual definition black, the absence of all colors. In the *rgb*
+     color model, its value is *000*.
 
-Adds *colors* to *palette* and returns the updated palette.
+   :seealso:
 
-$background
------------
+     - :class:`<color>`
 
-Constant
-''''''''
+.. constant:: $blue
 
-Summary
-       
+   The usual definition of the color blue.
 
-An indirect ink that uses the medium's background design.
+   :type: :class:`<color>`
 
-Type
-    
+   :description:
 
-`<ink>`_
-                            
+     The usual definition of the color blue.
 
-Description
-           
+   :seealso:
 
-An indirect ink that uses the medium's background design.
+     - :class:`<color>`
 
-See also
-        
+.. constant:: $boole-clr
 
-`<palette>`_
+   The logical operator that is always 0.
 
-`image-height`_
+   :type: :drm:`<integer>`
 
-$black
-------
+   :description:
 
-Constant
-''''''''
+     The logical operator that is always 0. It is a suitable first argument
+     to the *boole* function.
 
-Summary
-       
+.. constant:: $boole-set
 
-The usual definition of black.
+   The logical operator that is always 1.
 
-Type
-    
+   :type: :drm:`<integer>`
 
-`<color>`_
-                              
+   :description:
 
-Description
-           
+     The logical operator that is always 1. It is a suitable first argument
+     to the *boole* function.
 
-The usual definition black, the absence of all colors. In the *rgb*
-color model, its value is *000*.
+.. constant:: $boole-1
 
-See also
-        
+   The logical operator that is always the same as the first integer
+   argument to the *boole* function.
 
-`<color>`_
+   :type: :drm:`<integer>`
 
-$blue
------
+   :description:
 
-Constant
-''''''''
+     The logical operator that is always the same as the first integer
+     argument to the *boole* function. It is a suitable first argument to the
+     *boole* function.
 
-Summary
-       
+.. constant:: $boole-2
 
-The usual definition of the color blue.
+   The logical operator that is always the same as the second integer
+   argument to the *boole* function.
 
-Type
-    
+   :type: :drm:`<integer>`
 
-`<color>`_
-                              
+   :description:
 
-Description
-           
+     The logical operator that is always the same as the second integer
+     argument to the *boole* function. It is a suitable first argument to the
+     *boole* function.
 
-The usual definition of the color blue.
+.. constant:: $boole-c1
 
-See also
-        
+   The logical operator that is always the same as the complement of the
+   first integer argument to the *boole* function.
 
-`<color>`_
+   :type: :drm:`<integer>`
 
-$boole-clr
-----------
+   :description:
 
-Constant
-''''''''
+     The logical operator that is always the same as the complement of the
+     first integer argument to the *boole* function. It is a suitable first
+     argument to the *boole* function.
 
-Summary
-       
+.. constant:: $boole-c2
 
-The logical operator that is always 0.
+   The logical operator that is always the same as the complement of the
+   second integer argument to the *boole* function.
 
-Type
-    
+   :type: :drm:`<integer>`
 
-*<integer>*
-           
+   :description:
 
-Description
-           
+     The logical operator that is always the same as the complement of the
+     second integer argument to the *boole* function. It is a suitable first
+     argument to the *boole* function.
 
-The logical operator that is always 0. It is a suitable first argument
-to the *boole* function.
+.. constant:: $boole-and
 
-$boole-set
-----------
+   The logical operator *and*.
 
-Constant
-''''''''
+   :type: :drm:`<integer>`
 
-Summary
-       
+   :description:
 
-The logical operator that is always 1.
+     The logical operator *and*. It is a suitable first argument to the
+     *boole* function.
 
-Type
-    
+.. constant:: $boole-ior
 
-*<integer>*
-           
+   The logical operator *inclusive* *or*.
 
-Description
-           
+   :type: :drm:`<integer>`
 
-The logical operator that is always 1. It is a suitable first argument
-to the *boole* function.
+   :description:
 
-$boole-1
---------
+     The logical operator *inclusive* *or*. It is a suitable first argument
+     to the *boole* function.
 
-Constant
-''''''''
+.. constant:: $boole-xor
 
-Summary
-       
+   The logical operator *exclusive* *or*.
 
-The logical operator that is always he same as the first integer
-argument to the *boole* function.
+   :type: :drm:`<integer>`
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     The logical operator *exclusive* *or*. It is a suitable first argument
+     to the *boole* function.
 
-Description
-           
+.. constant:: $boole-eqv
 
-The logical operator that is always the same as the first integer
-argument to the *boole* function. It is a suitable first argument to the
-*boole* function.
+   The logical operator *equivalence* (*exclusive* *nor*).
 
-$boole-2
---------
+   :type: :drm:`<integer>`
 
-Constant
-''''''''
+   :description:
 
-Summary
-       
+     The logical operator *equivalence* (*exclusive* *nor*). It is a
+     suitable first argument to the *boole* function.
 
-The logical operator that is always he same as the second integer
-argument to the *boole* function.
+.. constant:: $boole-nand
 
-Type
-    
+   The logical operator *not-and*.
 
-*<integer>*
-           
+   :type: :drm:`<integer>`
 
-Description
-           
+   :description:
 
-The logical operator that is always the same as the second integer
-argument to the *boole* function. It is a suitable first argument to the
-*boole* function.
+     The logical operator *not-and*. It is a suitable first argument to the
+     *boole* function.
 
-$boole-c1
----------
+.. constant:: $boole-nor
 
-Constant
-''''''''
+   The logical operator *not-or*.
 
-Summary
-       
+   :type: :drm:`<integer>`
 
-The logical operator that is always he same as the complement of the
-first integer argument to the *boole* function.
+   :description:
 
-Type
-    
+     The logical operator *not-or*. It is a suitable first argument to the
+     *boole* function.
 
-*<integer>*
-           
+.. constant:: $boole-andc1
 
-Description
-           
+   The logical operator that is the *and* of the complement of the first
+   integer argument to the *boole* function with the second.
 
-The logical operator that is always the same as the complement of the
-first integer argument to the *boole* function. It is a suitable first
-argument to the *boole* function.
+   :type: :drm:`<integer>`
 
-$boole-c2
----------
+   :description:
 
-Constant
-''''''''
+     The logical operator that is the *and* of the complement of the first
+     integer argument to the *boole* function with the second. It is a
+     suitable first argument to the *boole* function.
 
-Summary
-       
+.. constant:: $boole-andc2
 
-The logical operator that is always he same as the complement of the
-second integer argument to the *boole* function.
+   The logical operator that is the *and* of the first integer argument to
+   the *boole* function with the second with the complement of the second.
 
-Type
-    
+   :type: :drm:`<integer>`
 
-*<integer>*
-           
+   :description:
 
-Description
-           
+     The logical operator that is *and* of the first integer argument to the
+     *boole* function with the complement of the second. It is a suitable
+     first argument to the boole function.
 
-The logical operator that is always the same as the complement of the
-second integer argument to the *boole* function. It is a suitable first
-argument to the *boole* function.
+.. constant:: $boole-orc1
 
-$boole-and
-----------
+   The logical operator that is the *or* of the complement of the first
+   integer argument to the *boole* function with the second.
 
-Constant
-''''''''
+   :type: :drm:`<integer>`
 
-Summary
-       
+   :description:
 
-The logical operator *and*.
+     The logical operator that is the *or* of the complement of the first
+     integer argument to the *boole* function with the second. It is a
+     suitable first argument to the *boole* function.
 
-Type
-    
+.. constant:: $boole-orc2
 
-*<integer>*
-           
+   The logical operator that is the *or* of the first integer argument to
+   the *boole* function with the second with the complement of the second.
 
-Description
-           
+   :type: :drm:`<integer>`
 
-The logical operator *and*. It is a suitable first argument to the
-*boole* function.
+   :description:
 
-$boole-ior
-----------
+     The logical operator that is *or* of the first integer argument to the
+     *boole* function with the complement of the second. It is a suitable
+     first argument to the *boole* function.
 
-Constant
-''''''''
+.. constant:: $bricks-stipple
 
-Summary
-       
+   A stipple pattern for use in creating a patterned brush with horizontal
+   and vertical lines in the pattern of the mortar in a brick wall.
 
-The logical operator *inclusive* *or*.
+   :type: :class:`<array>`
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     A stipple pattern for use in creating a patterned brush with horizontal
+     and vertical lines in the pattern of the mortar in a brick wall.
+  
+   :seealso:
 
-Description
-           
+     - :gf:`brush-stipple`
 
-The logical operator *inclusive* *or*. It is a suitable first argument
-to the *boole* function.
+.. class:: <brush>
+   :abstract:
+   :instantiable:
 
-$boole-xor
-----------
+   The protocol class for brushes.
 
-Constant
-''''''''
+   :superclasses: :drm:`<object>`
 
-Summary
-       
+   :keyword foreground: An instance of type :class:`<ink>`.
+   :keyword background: An instance of type :class:`<ink>`.
+   :keyword mode: An instance of type :drm:`<integer>`.
+   :keyword fill-style: An instance of type ``false-or(<integer>)``. Default value: ``#f``.
+   :keyword fill-rule: An instance of type ``false-or(<integer>)``. Default value: ``#f``.
+   :keyword tile: An instance of type ``false-or(<integer>)``. Default value: ``#f``.
+   :keyword stipple: An instance of type ``false-or(<integer>)``. Default value: ``#f``.
+   :keyword ts-x: An instance of ``false-or(<integer>)``. Default value: ``#f``.
+   :keyword ts-y: An instance of ``false-or(<integer>)``. Default value: ``#f``.
 
-The logical operator *exclusive* *or*.
+   :description:
 
-Type
-    
+     The protocol class for brushes.
 
-*<integer>*
-           
+   :operations:
 
-Description
-           
+     The following operations are exported from the *DUIM-DCs* module.
 
-The logical operator *exclusive* *or*. It is a suitable first argument
-to the *boole* function.
+     - :gf:`=`
+     - :gf:`brush?`
+     - :gf:`brush-background`
+     - :gf:`brush-fill-rule`
+     - :gf:`brush-fill-style`
+     - :gf:`brush-foreground`
+     - :gf:`brush-mode`
+     - :gf:`brush-stipple`
+     - :gf:`brush-stretch-mode`
+     - :gf:`brush-tile`
+     - :gf:`brush-ts-x`
+     - :gf:`brush-ts-y`
 
-$boole-eqv
-----------
+   :seealso:
 
-Constant
-''''''''
+     - :gf:`make`
 
-Summary
-       
+.. generic-function:: brush?
 
-The logical operator *equivalence* (*exclusive* *nor*).
+   Returns ``#t`` if its argument is a brush.
 
-Type
-    
+   :signature: brush? *object* => *boolean*
 
-*<integer>*
-           
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Description
-           
+   :description:
 
-The logical operator *equivalence* (*exclusive* *nor*). It is a
-suitable first argument to the *boole* function.
+     Returns ``#t`` if its argument is a brush.
 
-$boole-nand
------------
+.. generic-function:: brush-background
 
-Constant
-''''''''
+   Returns the ink that is the background color of a brush.
 
-Summary
-       
+   :signature: brush-background *brush* => *ink*
 
-The logical operator *not-and*.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value ink: An instance of type :class:`<ink>`.
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     Returns the *ink* that is the background color of *brush*.
 
-Description
-           
+   :seealso:
 
-The logical operator *not-and*. It is a suitable first argument to the
-*boole* function.
+     - :gf:`brush-fill-rule`
 
-$boole-nor
-----------
+.. generic-function:: brush-fill-rule
 
-Constant
-''''''''
+   Returns the fill rule of the brush.
 
-Summary
-       
+   :signature: brush-fill-rule *brush* => *fill-rule*
 
-The logical operator *not-or*.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value fill-rule: An instance of type ``fill-rule`` or :drm:`<boolean>`.
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     Returns the fill rule for *brush*, or ``#f`` if *brush* does not have a
+     fill rule.
 
-Description
-           
+   :seealso:
 
-The logical operator *not-or*. It is a suitable first argument to the
-*boole* function.
+     - :gf:`brush-fill-style`
 
-$boole-andc1
-------------
+.. generic-function:: brush-fill-style
 
-Constant
-''''''''
+   Returns the fill style of the brush.
 
-Summary
-       
+   :signature: brush-fill-style *brush* => *fill-style*
 
-The logical operator that is the *and* of the complement of the first
-integer argument to the *boole* function with the second.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value fill-style: An instance of ``fill-style`` or :drm:`<boolean>`.
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     Returns the fill style of *brush*, or ``#f``, if *brush* does not have a
+     fill style.
 
-Description
-           
+   :seealso:
 
-The logical operator that is the *and* of the complement of the first
-integer argument to the *boole* function with the second. It is a
-suitable first argument to the *boole* function.
+     - :gf:`brush-fill-rule`
 
-$boole-andc2
-------------
+.. generic-function:: brush-foreground
 
-Constant
-''''''''
+   Returns the ink that is the foreground color of a brush.
 
-Summary
-       
+   :signature: brush-foreground *brush* => *ink*
 
-The logical operator that is the *and* of the first integer argument to
-the *boole* function with the second with the complement of the second.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value ink: An instance of type :class:`<ink>`.
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     Returns the *ink* that is the foreground color of *brush*.
 
-Description
-           
+   :seealso:
 
-The logical operator that is *and* of the first integer argument to the
-*boole* function with the complement of the second. It is a suitable
-first argument to the boole function.
+     - :gf:`brush-stipple`
 
-$boole-orc1
------------
+.. generic-function:: brush-mode
 
-Constant
-''''''''
+   Returns an integer representing the drawing mode of a brush.
 
-Summary
-       
+   :signature: brush-mode *brush* => *integer*
 
-The logical operator that is the *or* of the complement of the first
-integer argument to the *boole* function with the second.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value integer: An instance of type :drm:`<integer>`. Default value: :const:`$boole-1`.
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     Returns an integer representing the drawing mode of *brush*.
 
-Description
-           
+   :seealso:
 
-The logical operator that is the *or* of the complement of the first
-integer argument to the *boole* function with the second. It is a
-suitable first argument to the *boole* function.
+     - :const:`$boole-1`
 
-$boole-orc2
------------
+.. generic-function:: brush-stipple
 
-Constant
-''''''''
+   Returns the stipple pattern of a brush.
 
-Summary
-       
+   :signature: brush-stipple *brush* => *stipple*
 
-The logical operator that is the *or* of the first integer argument to
-the *boole* function with the second with the complement of the second.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value stipple: A *(stipple)* or ``#f``.
 
-Type
-    
+   :description:
 
-*<integer>*
-           
+     Returns the stipple pattern of *brush*.
 
-Description
-           
+   :seealso:
 
-The logical operator that is *or* of the first integer argument to the
-*boole* function with the complement of the second. It is a suitable
-first argument to the *boole* function.
+     - :gf:`brush-tile`
+     - :gf:`brush-fill-rule`
+     - :gf:`brush-fill-style`
 
-$bricks-stipple
----------------
+.. generic-function:: brush-stretch-mode
 
-Constant
-''''''''
+   Returns the stretch mode of the brush.
 
-Summary
-       
+   :signature: brush-stretch-mode *brush* => *stretch-mode*
 
-A stipple pattern for use in creating a patterned brush with horizontal
-and vertical lines in the pattern of the mortar in a brick wall.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value stretch-mode: An instance of *stretch-mode* or :drm:`<boolean>`.
 
-Type
-    
+   :description:
 
-*<array>*
-         
+     Returns the stretch mode of the brush.
 
-Description
-           
+.. generic-function:: brush-tile
 
-A stipple pattern for use in creating a patterned brush with horizontal
-and vertical lines in the pattern of the mortar in a brick wall.
+   Returns the tile pattern of a brush.
 
-See also
-        
+   :signature: brush-tile *brush* => *image*
 
-`brush-stipple`_
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value image: An instance of type :class:`<image>`.
 
-<brush>
--------
+   :description:
 
-Abstract instantiable class
-'''''''''''''''''''''''''''
+     Returns the tile pattern of *brush*.
 
-Summary
-       
+   :seealso:
 
-The protocol class for brushes.
+     - :gf:`brush-stipple`
+     - :gf:`brush-ts-x`
+     - :gf:`brush-ts-y`
 
-Superclasses
-            
+.. generic-function:: brush-ts-x
 
-*<object>*
-          
+   Returns the value of the *x* coordinate that is used to align the
+   brush's tile or stipple pattern.
 
-Init-keywords
-             
+   :signature: brush-ts-x *brush* => *value*
 
--  *foreground:* An instance of type `<ink>`_.
--  *background:* An instance of type `<ink>`_.
--  *mode:* An instance of type *<integer>*.
--  *fill-style:* An instance of type *false-or(<integer>)*. Default
-   value: *#f*.
--  *fill-rule:* An instance of type *false-or(<integer>)*.** Default
-   value: *#f*.
--  *tile:* An instance of type *false-or(<integer>)*.** Default value:
-   *#f*.
--  *stipple:* An instance of type *false-or(<integer>)*.** Default
-   value: *#f*.
--  *ts-x:* An instance of *false-or(<integer>).* Default value: *#f*.
--  *ts-y:* An instance of *false-or(<integer>).* Default value: *#f*.
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value value: An instance of type ``false-or(<integer>)``.
 
-Description
-           
+   :description:
 
-The protocol class for brushes.
+     Returns the value of the *x* coordinate that is used to align the tile
+     or stipple pattern of *brush*. If *brush* has no tile or stipple
+     pattern, *brush-ts-x* returns ``#f``.
 
-Operations
-          
+   :seealso:
 
-The following operations are exported from the *DUIM-DCs* module.
+     - :gf:`brush-ts-y`
 
-`=`_ `brush?`_ `See
-brush-background`_ `See
-brush-fill-rule`_ `See
-brush-fill-style`_ `See
-brush-foreground`_ `brush-mode`_
-`brush-stipple`_ `See
-brush-stretch-mode`_ `brush-tile`_
-`brush-ts-x`_ `brush-ts-y`_
+.. generic-function:: brush-ts-y
 
-See also
-        
+   Returns the value of the *y* coordinate that is used to align the
+   brush's tile or stipple pattern.
 
-`make`_
+   :signature: brush-ts-y *brush* => *value*
 
-brush?
-------
+   :parameter brush: An instance of type :class:`<brush>`.
+   :value value: An instance of type ``false-or(<integer>)``.
 
-Generic function
-''''''''''''''''
+   :description:
 
-Summary
-       
+     Returns the value of the *y* coordinate that is used to align the tile
+     or stipple pattern of *brush*. If *brush* has no tile or stipple
+     pattern, *brush-ts-y* returns ``#f``.
 
-Returns *#t* if its argument is a brush.
+   :seealso:
 
-Signature
-         
+     - :gf:`brush-ts-x`
 
-*brush?* *object* => *boolean*
-                              
+.. class:: <color>
+   :abstract:
+   :instantiable:
 
-Arguments
-         
+   The protocol class for colors.
 
--  *object* An instance of type *<object>*.
+   :superclasses: :class:`<ink>`
 
-Values
-      
+   :keyword red: An instance of type :drm:`<real>`.
+   :keyword green: An instance of type :drm:`<real>`.
+   :keyword blue: An instance of type :drm:`<real>`.
+   :keyword intensity: An instance of type ``limited(<real>, min: 0, max: sqrt(3))``.
+   :keyword hue: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :keyword saturation: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :keyword opacity: An instance of type ``limited(<real>, min: 0, max: 1)``.
 
--  *boolean* An instance of type *<boolean>*.
+   :description:
 
-Description
-           
+     The :class:`<color>` class is the protocol class for a color, and is a subclass
+     of :class:`<ink>`. A member of the class :class:`<color>` is an
+     ink that represents the intuitive definition of color: white, black,
+     red, pale yellow, and so forth. The visual appearance of a single point
+     is completely described by its color. Drawing a color sets the color of
+     every point in the drawing plane to that color, and sets the opacity to
+     1.
 
-Returns *#t* if its argument is a brush.
+     The ``red:``, ``green:``, and ``blue:`` init-keywords represent the red,
+     green, and blue components of the color. For an 8-bit color scheme,
+     these can take any real number in the range 0 to 255.
 
-brush-background
-----------------
+     The intensity describes the brightness of the color. An intensity of 0
+     is black.
 
-Generic function
-''''''''''''''''
+     The hue of a color is the characteristic that is represented by a name
+     such as red, green, blue and so forth. This is the main attribute of a
+     color that distinguishes it from other colors.
 
-Summary
-       
+     The saturation describes the amount of white in the color. This is what
+     distinguishes pink from red.
 
-Returns the ink that is the background color of a brush.
+     Opacity controls how new color output covers previous color output (that
+     is, the final appearance when one color is painted on top of another).
+     Opacity can vary from totally opaque (a new color completely obliterates
+     the old color) to totally transparent (a new color has no effect
+     whatsoever; the old color remains unchanged). Intermediate opacity
+     values result in color blending so that the earlier color shows through
+     what is drawn on top of it.
 
-Signature
-         
+     All of the standard instantiable color classes provided by DUIM are
+     immutable.
 
-*brush-background* *brush* => *ink*
-                                   
+     A color can be specified by four real numbers between 0 and 1
+     (inclusive), giving the amounts of red, green, blue, and opacity
+     (*alpha*). Three 0's for the RGB components mean black; three 1's mean
+     white. The intensity-hue-saturation color model is also supported, but
+     the red-green-blue color model is the primary model we will use in the
+     specification.
 
-Arguments
-         
+     An opacity may be specified by a real number between 0 and 1
+     (inclusive). 0 is completely transparent, 1 is completely opaque,
+     fractions are translucent. The opacity of a color is the degree to which
+     it hides the previous contents of the drawing plane when it is drawn.
 
--  *brush* An instance of type `<brush>`_.
+   :operations:
 
-Values
-      
+     The following operations are exported from the *DUIM-DCs* module.
 
--  *ink* An instance of type `<ink>`_.
+     - :gf:`=`
+     - :gf:`color?`
+     - :gf:`color-rgb`
+     - :gf:`color-ihs`
+     - :gf:`color-luminosity`
 
-Description
-           
+   :seealso:
 
-Returns the *ink* that is the background color of *brush*.
+     - :gf:`color?`
+     - :gf:`color-ihs`
+     - :gf:`color-luminosity`
+     - :class:`<color-not-found>`
+     - :gf:`color-palette?`
+     - :gf:`color-rgb`
+     - :class:`<ink>`
 
-See also
-        
+.. generic-function:: color?
 
-`brush-fill-rule`_
+   Returns ``#t`` if object is a color.
 
-brush-fill-rule
----------------
+   :signature: color? *object* => *boolean*
 
-Generic function
-''''''''''''''''
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Summary
-       
+   :description:
 
-Returns the fill rule of the brush.
+     Returns ``#t`` if object is a color, otherwise returns ``#f``.
 
-Signature
-         
+   :seealso:
 
-*brush-fill-rule* *brush* => *fill-rule*
-                                        
+     - :class:`<color>`
+     - :gf:`color-ihs`
+     - :gf:`color-luminosity`
+     - :class:`<color-not-found>`
+     - :gf:`color-palette?`
+     - :gf:`color-rgb`
 
-Arguments
-         
+.. generic-function:: color-ihs
 
--  *brush* An instance of type `<brush>`_.
+   Returns four values, the intensity, hue, saturation, and opacity
+   components of a color.
 
-Values
-      
+   :signature: color-ihs *color* => *intensity* *hue* *saturation* *opacity*
 
--  *fill-rule* An instance of type *fill-rule* or *<boolean>*.
+   :parameter color: An instance of type :class:`<color>`.
+   :value intensity: An instance of type ``limited(<real>, min: 0, max: sqrt(3))``.
+   :value hue: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :value saturation: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :value opacity: An instance of type ``limited(<real>, min: 0, max: 1)``.
 
-Description
-           
+   :description:
 
-Returns the fill rule for *brush*, or *#f* if *brush* does not have a
-fill rule.
+     Returns four values, the *intensity*, *hue,* *saturation*, and
+     *opacity* components of the color *color*. The first value is a real
+     number between *0* and *sqrt{3* } (inclusive). The second and third
+     values are real numbers between *0* and ``1`` (inclusive).
 
-See also
-        
+   :seealso:
 
-`brush-fill-style`_
+     - :class:`<color>`
+     - :gf:`color?`
+     - :gf:`color-luminosity`
+     - :gf:`color-palette?`
+     - :gf:`color-rgb`
 
-brush-fill-style
-----------------
+.. generic-function:: color-luminosity
 
-Generic function
-''''''''''''''''
+   Returns the brightness of a color.
 
-Summary
-       
+   :signature: color-luminosity* *color* => *luminosity*
 
-Returns the fill style of the brush.
+   :parameter color: An instance of type :class:`<color>`.
+   :value luminosity: An instance of type ``limited(<real>, min: 0, max: 1)``.
 
-Signature
-         
+   :description:
 
-*brush-fill-style* *brush* => *fill-style*
-                                          
+     Returns the brightness of color *color* as real number between *0* and
+     ``1``. The value is the solution of a function that describes the
+     perception of the color by the human retina.
 
-Arguments
-         
+   :seealso:
 
--  *brush* An instance of type `<brush>`_.
+     - :class:`<color>`
+     - :gf:`color?`
+     - :gf:`color-ihs`
+     - :gf:`color-palette?`
+     - :gf:`color-rgb`
 
-Values
-      
+.. class:: <color-not-found>
+   :sealed:
+   :concrete:
 
--  *fill-style* An instance of *fill-style* or *<boolean>*.
+   The class of the error that is signalled when a color that is not
+   available is requested.
 
-Description
-           
+   :superclasses: :class:`<error>`
 
-Returns the fill style of *brush*, or *#f*, if *brush* does not have a
-fill style.
+   :keyword color: An instance of type :class:`<color>`.
 
-See also
-        
+   :description:
 
-`brush-fill-rule`_.
+     The class of the error that is signalled when a color that is not
+     available is requested. The ``color:`` init-keyword is used to specify the
+     color that was requested but was not available.
 
-brush-foreground
-----------------
+   :operations:
 
-Generic function
-''''''''''''''''
+     - None.
 
-Summary
-       
+   :seealso:
 
-Returns the ink that is the foreground color of a brush.
+     - :class:`<color>`
+     - :gf:`find-color`
+     - :gf:`remove-colors`
+     - :gf:`find-color`
 
-Signature
-         
+.. generic-function:: color-palette?
 
-*brush-foreground* *brush* => *ink*
-                                   
+   Returns ``#t`` if the stream or medium supports color.
 
-Arguments
-         
+   :signature: color-palette? *palette* => *boolean*
 
--  *brush* An instance of type `<brush>`_.
+   :parameter palette: An instance of type :class:`<palette>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Values
-      
+   :description:
 
--  *ink* An instance of type `<ink>`_.
+     Returns ``#t`` if the stream or medium supports color.
 
-Description
-           
+   :seealso:
 
-Returns the *ink* that is the foreground color of *brush*.
+     - :class:`<color>`
+     - :gf:`color?`
+     - :gf:`color-ihs`
+     - :gf:`color-luminosity`
+     - :gf:`color-rgb`
 
-See also
-        
+.. generic-function:: color-rgb
 
-`brush-stipple`_.
+   Returns four values, the red, green, blue, and opacity components of a
+   color.
 
-brush-mode
-----------
+   :signature: color-rgb *color* => *ref* *green* *blue* *opacity*
 
-Generic function
-''''''''''''''''
+   :parameter color: An instance of type :class:`<color>`.
+   :value red: An instance of type ``limited(<real>, min: 0, max: 1)``
+   :value gree: n An instance of type ``limited(<real>, min: 0, max: 1)``
+   :value blue: An instance of type ``limited(<real>, min: 0, max: 1)``
+   :value opacity: An instance of type ``limited(<real>, min: 0, max: 1)``.
 
-Summary
-       
+   :description:
 
-Returns an integer representing the drawing mode of a brush.
+     Returns four values, the *red*, *green*, *blue*, and *opacity*
+     components of the color *color.* The values are real numbers between 0
+     and 1 (inclusive).
 
-Signature
-         
+   :seealso:
 
-*brush-mode* *brush* => *integer*
-                                 
+     - :class:`<color>`
+     - :gf:`color?`
+     - :gf:`color-ihs`
+     - :gf:`color-luminosity`
+     - :gf:`color-palette?`
 
-Arguments
-         
+.. generic-function:: contrasting-colors-limit
 
--  *brush* An instance of type `<brush>`_.
+   Returns the number of contrasting colors that can be rendered on the
+   current platform.
 
-Values
-      
+   :signature: contrasting-colors-limit *port* => *integer*
 
--  *integer* An instance of type *<integer>*. Default value: *$boole-1*
-   .
+   :parameter port: An instance of type :class:`<silica>`
 
-Description
-           
+   :value integer: An instance of type :drm:`<integer>`.
 
-Returns an integer representing the drawing mode of *brush*.
+   :description:
 
-See also
-        
+     Returns the number of contrasting colors (or stipple patterns if port is
+     monochrome or grayscale) that can be rendered on any medium on the port
+     *port*. Implementations are encouraged to make this as large as
+     possible, but it must be at least 8. All classes that obey the medium
+     protocol must implement a method for this generic function.
+  
+   :seealso:
 
-`$boole-1`_.
+     - :gf:`contrasting-dash-patterns-limit`
+     - :gf:`make-contrasting-colors`
 
-brush-stipple
--------------
+.. generic-function:: contrasting-dash-patterns-limit
 
-Generic function
-''''''''''''''''
+   Returns the number of contrasting dash patterns that the specified port
+   can generate.
 
-Summary
-       
+   :signature: contrasting-dash-patterns-limit *port* => *no-of-patterns*
 
-Returns the stipple pattern of a brush.
+   :parameter port: An instance of type :class:`<silica>`.
+   :value no-of-patterns: An instance of type :drm:`<integer>`.
 
-Signature
-         
+   :description:
 
-*brush-stipple* *brush* => *stipple*
-                                    
+     Returns the number of contrasting dash patterns that the specified port
+     can generate.
 
-Arguments
-         
+   :seealso:
 
--  *brush* An instance of type `<brush>`_.
+     - :gf:`contrasting-colors-limit`
+     - :gf:`make-contrasting-dash-patterns`
 
-Values
-      
+.. constant:: $cross-hatch
 
--  *stipple* A *(stipple)* or *#f*.
+   A stipple pattern for use in creating a patterned brush with alternating
+   solid and dashed lines.
 
-Description
-           
+   :type: :class:`<array>`
 
-Returns the stipple pattern of *brush*.
+   :description:
 
-See also
-        
+     A stipple pattern for use in creating a patterned brush with alternating
+     solid and dashed lines.
 
-`brush-tile`_
+   :seealso:
 
-`brush-fill-rule`_
+     - :class:`<color>`.
 
-`brush-fill-style`_
+.. constant:: $cyan
 
-brush-stretch-mode
-------------------
+   The usual definition for the color cyan.
 
-Generic function
-''''''''''''''''
+   :type: :class:`<color>`
 
-Summary
-       
+   :description:
 
-Returns the stretch mode of the brush.
+     The usual definition for the color cyan.
 
-Signature
-         
+   :seealso:
 
-*brush-stretch-mode* *brush* => *stretch-mode*
-                                              
+     - :class:`<color>`.
 
-Arguments
-         
+.. constant:: $dash-dot-dot-pen
 
--  *brush* An instance of type `<brush>`_.
+   A pen that draws a line with two dots between each dash.
 
-Values
-      
+   :type: :class:`<pen>`
 
--  *stretch-mode* An instance of *stretch-mode* or *<boolean>*.
+   :description:
 
-Description
-           
+     A pen that draws a line with two dots between each dash. The line width
+     is ``1`` and ``dashes:`` is ``#[4, 1, 1, 1, 1, 1]``.
 
-Returns the stretch mode of the brush.
+   :seealso:
 
-brush-tile
-----------
+     - :class:`<pen>`
+     - :const:`$solid-pen`
+     - :const:`$magenta`
+     - :const:`$dash-dot-pen`
+     - :const:`$dotted-pen`
 
-Generic function
-''''''''''''''''
+.. constant:: $dash-dot-pen
 
-Summary
-       
+   A pen that draws a dashed and dotted line.
 
-Returns the tile pattern of a brush.
+   :type: :class:`<pen>`
 
-Signature
-         
+   :description:
 
-*brush-tile* *brush* => *image*
-                               
+     A pen that draws a dashed and dotted line. The line width is ``1`` and
+     ``dashes:`` is ``#[4, 1, 1, 1]``.
 
-Arguments
-         
+   :seealso:
 
--  *brush* An instance of type `<brush>`_.
+     - :class:`<pen>`
+     - :const:`$solid-pen`
+     - :const:`$magenta`
+     - :const:`$dash-dot-pen`
+     - :const:`$dotted-pen`
 
-Values
-      
+.. constant:: $dashed-pen
 
--  *image* An instance of type *<image>*.
+   A pen that draws a dashed line.
 
-Description
-           
+   :type: :class:`<pen>`
 
-Returns the tile pattern of *brush*.
+   :description:
 
-See also
-        
+     A pen that draws a dashed line. The line width is ``1`` and ``dashes:`` is
+     ``#t``.
 
-`brush-stipple`_.
+   :seealso:
 
-`brush-ts-x`_ and `brush-ts-y`_.
+     - :class:`<pen>`
+     - :const:`$solid-pen`
+     - :const:`$magenta`
+     - :const:`$dash-dot-pen`
+     - :const:`$dotted-pen`
 
-brush-ts-x
-----------
+.. generic-function:: default-background
 
-Generic function
-''''''''''''''''
+   Returns the ink that is the default background of its argument.
 
-Summary
-       
+   :signature: default-foreground *object* => *background*
 
-Returns the value of the *x* coordinate that is used to align the
-brush’s tile or stipple pattern.
+   :parameter object: An instance of type :drm:`<object>`.
+   :value background: An instance of type :class:`<ink>`.
 
-Signature
-         
+   :description:
 
-*brush-ts-x* *brush* => *value*
-                               
+     Returns the ink that is the default background of its argument.
 
-Arguments
-         
+   :seealso:
 
--  *brush* An instance of type `<brush>`_.
+     - :gf:`brush-fill-style`
+     - :gf:`default-background-setter`
+     - :gf:`default-foreground`
 
-Values
-      
+.. generic-function:: default-background-setter
 
--  *value* An instance of type *false-or(<integer>)*.
+   Sets the default background.
 
-Description
-           
+   :signature: default-foreground-setter *background* *object* => *background*
 
-Returns the value of the *x* coordinate that is used to align the tile
-or stipple pattern of *brush*. If *brush* has no tile or stipple
-pattern, *brush-ts-x* returns *#f.*
+   :parameter background: An instance of type :class:`<ink>`.
+   :parameter object: An instance of type :drm:`<object>`.
+   :value background: An instance of type :class:`<ink>`.
 
-See also
-        
+   :description:
 
-`brush-ts-y`_.
+     Sets the default background for *object*.
 
-brush-ts-y
-----------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :gf:`brush-fill-style`
+     - :gf:`default-background`
+     - :gf:`default-foreground-setter`
 
-Summary
-       
+.. generic-function:: default-foreground
 
-Returns the value of the *y* coordinate that is used to align the
-brush’s tile or stipple pattern.
+   Returns the ink that is the default foreground of its argument.
 
-Signature
-         
+   :signature: default-foreground *object* => *foreground*
 
-*brush-ts-y* *brush* => *value*
-                               
+   :parameter object: An instance of type :drm:`<object>`.
+   :value foreground: An instance of type :class:`<ink>`.
 
-Arguments
-         
+   :description:
 
--  *brush* An instance of type `<brush>`_.
+     Returns the ink that is the default foreground of its argument.
 
-Values
-      
+   :seealso:
 
--  *value* An instance of type *false-or(<integer>)*.
+     - :gf:`brush-fill-rule`
+     - :gf:`default-background`
+     - :gf:`default-foreground-setter`
 
-Description
-           
+.. generic-function:: default-foreground-setter
 
-Returns the value of the *y* coordinate that is used to align the tile
-or stipple pattern of *brush*. If *brush* has no tile or stipple
-pattern, *brush-ts-y* returns *#f.*
+   Sets the default foreground.
 
-See also
-        
+   :signature: default-foreground-setter *foreground* *object* => *foreground*
 
-`brush-ts-x`_.
+   :parameter foreground: An instance of type :class:`<ink>`.
+   :parameter object: An instance of type :drm:`<object>`.
+   :value foreground: An instance of type :class:`<ink>`.
 
-<color>
--------
+   :description:
 
-Abstract instantiable class
-'''''''''''''''''''''''''''
+     Sets the default foreground for *object*.
 
-Summary
-       
+   :seealso:
 
-The protocol class for colors.
+     - :gf:`brush-fill-rule`
+     - :gf:`default-background-setter`
+     - :gf:`default-foreground`
 
-Superclasses
-            
+.. generic-function:: default-text-style
 
-`<ink>`_
-                            
+   Returns the default text style for its argument.
 
-Init-keywords
-             
+   :signature: default-text-style *object* => *text-style*
 
--  *red:* An instance of type *<real>*.
--  *green:* An instance of type *<real>*.
--  *blue:* An instance of type *<real>*.
--  *intensity:* An instance of type *limited(<real>, min: 0, max:
-   sqrt(3()*.
--  *hue:* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *saturation:* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *opacity:* An instance of type *limited(<real>, min: 0, max: 1)*.
+   :parameter object: An instance of type :drm:`<object>`.
+   :value text-style: An instance of type :class:`<text-style>`.
 
-Description
-           
+   :description:
 
-The *<color>* class is the protocol class for a color, and is a subclass
-of `<ink>`_. A member of the class *<color>* is an
-ink that represents the intuitive definition of color: white, black,
-red, pale yellow, and so forth. The visual appearance of a single point
-is completely described by its color. Drawing a color sets the color of
-every point in the drawing plane to that color, and sets the opacity to
-1.
+     Returns the default text style for its argument.This function is used to
+     merge against if the text style is not fully specified, or if no text
+     style is specified.
 
-The *red:*, *green:*, and *blue:* init-keywords represent the red,
-green, and blue components of the color. For an 8-bit color scheme,
-these can take any real number in the range 0 to 255.
+   :seealso:
 
-The intensity describes the brightness of the color. An intensity of 0
-is black.
+     - :gf:`default-text-style-setter`
 
-The hue of a color is the characteristic that is represented by a name
-such as red, green, blue and so forth. This is the main attribute of a
-color that distinguishes it from other colors.
+.. generic-function:: default-text-style-setter
 
-The saturation describes the amount of white in the color. This is what
-distinguishes pink from red.
+   Sets the default text style.
 
-Opacity controls how new color output covers previous color output (that
-is, the final appearance when one color is painted on top of another).
-Opacity can vary from totally opaque (a new color completely obliterates
-the old color) to totally transparent (a new color has no effect
-whatsoever; the old color remains unchanged). Intermediate opacity
-values result in color blending so that the earlier color shows through
-what is drawn on top of it.
+   :signature: default-text-style-setter *text-style* *object* => *text-style*
 
-All of the standard instantiable color classes provided by DUIM are
-immutable.
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :parameter object: An instance of type :drm:`<object>`.
+   :value text-style: An instance of type :class:`<text-style>`.
 
-A color can be specified by four real numbers between 0 and 1
-(inclusive), giving the amounts of red, green, blue, and opacity
-(*alpha*). Three 0's for the RGB components mean black; three 1's mean
-white. The intensity-hue-saturation color model is also supported, but
-the red-green-blue color model is the primary model we will use in the
-specification.
+   :description:
 
-An opacity may be specified by a real number between 0 and 1
-(inclusive). 0 is completely transparent, 1 is completely opaque,
-fractions are translucent. The opacity of a color is the degree to which
-it hides the previous contents of the drawing plane when it is drawn.
+     Sets the default text style.
 
-Operations
-          
+   :seealso:
 
-The following operations are exported from the *DUIM-DCs* module.
+     - :gf:`default-text-style`
 
-`=`_ `color?`_ `See
-color-rgb`_ `color-ihs`_ `See
-color-luminosity`_
+.. class:: <device-font>
+   :sealed:
+   :concrete:
 
-See also
-        
+   The protocol class for device-specific fonts.
 
-`color?`_
+   :superclasses: :class:`<text-style>`
 
-`color-ihs`_
+   :keyword port:
+   :keyword font-name:
 
-`color-luminosity`_
+   :description:
 
-`<color-not-found>`_
+     The protocol class for device-specific fonts.
 
-`color-palette?`_
+   :operations:
 
-`color-rgb`_
+    - None.
 
-`<ink>`_
+   :seealso:
 
-color?
-------
+     - :gf:`<text-style>`
 
-Generic function
-''''''''''''''''
+.. constant:: $diagonal-hatch-down
 
-Summary
-       
+   A stipple pattern for use in creating a patterned brush with alternating
+   dashes and spaces.
 
-Returns *#t* if object is a color.
+   :type: :class:`<array>`
 
-Signature
-         
+   :description:
 
-*color?* *object* => *boolean*
-                              
+     A stipple pattern for use in creating a patterned brush with alternating
+     dashes and spaces, the first line starting with a dash, followed by a
+     space, and the second line starting with a space followed by a dash.
 
-Arguments
-         
+   :seealso:
 
--  *object* An instance of type *<object>*.
+     - :gf:`brush-stipple`
 
-Values
-      
+.. constant:: $diagonal-hatch-up
 
--  *boolean* An instance of type *<boolean>*.
+   A stipple pattern for use in creating a patterned brush with alternating
+   dashes and spaces.
 
-Description
-           
+   :type: :class:`<array>`
 
-Returns *#t* if object is a color, otherwise returns *#f*.
+   :description:
 
-See also
-        
+     A stipple pattern for use in creating a patterned brush with alternating
+     dashes and spaces, the first line starting with a space, followed by a
+     dash, and the second line starting with a dash followed by a space.
 
-`<color>`_
+   :seealso:
 
-`color-ihs`_
+     - :gf:`brush-stipple`
 
-`color-luminosity`_
+.. constant:: $dotted-pen
 
-`<color-not-found>`_
+   A pen that draws a dotted line.
 
-`color-palette?`_
+   :type: :class:`<pen>`
 
-`color-rgb`_
+   :description:
 
-color-ihs
----------
+     A pen that draws a dotted line. The line width is ``1`` and ``dashes:`` is
+     ``#[1, 1]``.
 
-Generic function
-''''''''''''''''
+   :seealso:
 
-Summary
-       
+     - :class:`<pen>`
+     - :const:`$solid-pen`
+     - :const:`$dash-dot-pen`
 
-Returns four values, the intensity, hue, saturation, and opacity
-components of a color.
+.. generic-function:: find-color
 
-Signature
-         
+   Looks up and returns a color by name.
 
-*color-ihs* *color* => *intensity* *hue* *saturation* *opacity*
-                                                               
+   :signature: find-color *name* *palette* #key *error?* => *color*
 
-Arguments
-         
+   :parameter name: An instance of type :drm:`<string>`.
+   :parameter palette: An instance of type :class:`<palette>`.
+   :parameter error?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
+   :value color: An instance of type :class:`<color>`.
 
--  *color* An instance of type `<color>`_.
+   :description:
 
-Values
-      
+     Looks up and returns a color by name. This is a list of the commonly
+     provided color names that can be looked up with *find-color*:
 
--  *intensity* An instance of type *limited(<real>, min: 0, max:
-   sqrt(3()*.
--  *hue* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *saturation* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *opacity* An instance of type *limited(<real>, min: 0, max: 1)*.
+     - alice-blue
+     - antique-white
+     - aquamarine
+     - azure
+     - beige
+     - bisque
+     - black
+     - blanched-almond
+     - blue
+     - blue-violet
+     - brown
+     - burlywood
+     - cadet-blue
+     - chartreuse
+     - chocolate
+     - coral
+     - cornflower-blue
+     - cornsilk
+     - cyan
+     - dark-goldenrod
+     - dark-green
+     - dark-khaki
+     - dark-olive-green
+     - dark-orange
+     - dark-orchid
+     - dark-salmon
+     - dark-sea-green
+     - dark-slate-blue
+     - dark-slate-gray
+     - dark-turquoise
+     - dark-violet
+     - deep-pink
+     - deep-sky-blue
+     - dim-gray
+     - dodger-blue
+     - firebrick
+     - floral-white
+     - forest-green
+     - gainsboro
+     - ghost-white
+     - gold
+     - goldenrod
+     - gray
+     - green
+     - green-yellow
+     - honeydew
+     - hot-pink
+     - indian-red
+     - ivory
+     - khaki
+     - lavender
+     - lavender-blush
+     - lawn-green
+     - lemon-chiffon
+     - light-blue
+     - light-coral
+     - light-cyan
+     - light-goldenrod
+     - light-goldenrod-yellow
+     - light-gray
+     - light-pink
+     - light-salmon
+     - light-sea-green
+     - light-sky-blue
+     - light-slate-blue
+     - light-slate-gray
+     - light-steel-blue
+     - light-yellow
+     - lime-green
+     - linen
+     - magenta
+     - maroon
+     - medium-aquamarine
+     - medium-blue
+     - medium-orchid
+     - medium-purple
+     - medium-sea-green
+     - medium-slate-blue
+     - medium-spring-green
+     - medium-turquoise
+     - medium-violet-red
+     - midnight-blue
+     - mint-cream
+     - misty-rose
+     - moccasin
+     - navajo-white
+     - navy-blue
+     - old-lace
+     - olive-drab
+     - orange
+     - orange-red
+     - orchid
+     - pale-goldenrod
+     - pale-green
+     - pale-turquoise
+     - pale-violet-red
+     - papaya-whip
+     - peach-puff
+     - peru
+     - pink
+     - plum
+     - powder-blue
+     - purple
+     - red
+     - rosy-brown
+     - royal-blue
+     - saddle-brown
+     - salmon
+     - sandy-brown
+     - sea-green
+     - seashell
+     - sienna
+     - sky-blue
+     - slate-blue
+     - slate-gray
+     - snow
+     - spring-green
+     - steel-blue
+     - tan
+     - thistle
+     - tomato
+     - turquoise
+     - violet
+     - violet-red
+     - wheat
+     - white
+     - white-smoke
+     - yellow
+     - yellow-green
 
-Description
-           
+     Application programs can define other colors; these are provided because
+     they are commonly used in the X Windows community, not because there is
+     anything special about these particular colors.
 
-Returns four values, the *intensity*, *hue,* *saturation*, and
-*opacity* components of the color *color*. The first value is a real
-number between *0* and *sqrt{3* } (inclusive). The second and third
-values are real numbers between *0* and *1* (inclusive).
+   :seealso:
 
-See also
-        
+     - :gf:`stencil?`
+     - :gf:`contrasting-dash-patterns-limit`
+     - :const:`$black`
+     - :const:`$red`
+     - :const:`$yellow`
+     - :const:`$green`
+     - :const:`$blue`
+     - :const:`$magenta`
 
-`<color>`_
+.. constant:: $foreground
 
-`color?`_
+   An indirect ink that uses the medium's foreground design.
 
-`color-luminosity`_
+   :type: :class:`<ink>`
 
-`color-palette?`_
+   :description:
 
-`color-rgb`_
+     An indirect ink that uses the medium's foreground design.
 
-color-luminosity
-----------------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :class:`<ink>`
+     - :class:`<palette>`
 
-Summary
-       
+.. generic-function:: fully-merged-text-style?
 
-Returns the brightness of a color.
+   Returns ``#t`` if the specified text style is completely specified.
 
-Signature
-         
+   :signature: fully-merged-text-style? *text-style* => *boolean*
 
-*color-luminosity* *color* => *luminosity*
-                                          
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Arguments
-         
+   :description:
 
--  *color* An instance of type `<color>`_.
+     Returns ``#t`` if the specified text style is completely specified.
 
-Values
-      
+   :seealso:
 
--  *luminosity* An instance of type *limited(<real>, min: 0, max: 1)*.
+     - :gf:`merge-text-styles`
 
-Description
-           
+.. constant:: $green
 
-Returns the brightness of color *color* as real number between *0* and
-*1*. The value is the solution of a function that describes the
-perception of the color by the human retina.
+   The usual definition of the color green.
 
-See also
-        
+   :type: :class:`<color>`
 
-`<color>`_
+   :description:
 
-`color?`_
+     The usual definition of the color green.
 
-`color-ihs`_
+   :seealso:
 
-`color-palette?`_
+     - :class:`<color>`
 
-`color-rgb`_
+.. constant:: $hearts-stipple
 
-<color-not-found>
------------------
+   A stipple pattern for use in creating a patterned brush that draws a
+   heart shape.
 
-Sealed concrete class
-'''''''''''''''''''''
+   :type: :class:`<array>`
 
-Summary
-       
+   :description:
 
-The class of the error that is signalled when a color that is not
-available is requested.
+     A stipple pattern for use in creating a patterned brush that draws a
+     heart shape.
 
-Superclasses
-            
+   :seealso:
 
-<error>
-       
+     - :gf:`brush-stipple`
 
-Superclasses
-            
+.. constant:: $horizontal-hatch
 
-*<error>*
-         
+   A stipple pattern for use in creating a patterned brush with alternating
+   horizontal rows of lines and spaces.
 
-Init-keywords
-             
+   :type: :class:`<array>`
 
--  *color:* An instance of type `<color>`_.
+   :description:
 
-Description
-           
+     A stipple pattern for use in creating a patterned brush with alternating
+     horizontal rows of lines and spaces.
 
-The class of the error that is signalled when a color that is not
-available is requested. The *color:* init-keyword is used to specify the
-color that was requested but was not available.
+   :seealso:
 
-Operations
-          
+     - :gf:`brush-stipple`
 
--  None.
+.. class:: <image>
+   :abstract:
 
-See also
-        
+   The class for objects that are images.
 
-`<color>`_
+   :superclasses: :class:`<ink>`
 
-`find-color`_
+   :description:
 
-`remove-colors`_`find-color`_
+     The class for objects that are images.
 
-color-palette?
---------------
+   :operations:
 
-Generic function
-''''''''''''''''
+     The following operation is exported from the *DUIM-DCs* module.
 
-Summary
-       
+     - :gf:`image?`
 
-Returns *#t* if the stream or medium supports color.
+     The following operation is exported from the *DUIM-Graphics* module.
 
-Signature
-         
+     - :class:`<graphics>`
 
-*color-palette?* *palette* => *boolean*
-                                       
+   :seealso:
 
-Arguments
-         
+     - :gf:`image?`
+     - :gf:`image-depth`
+     - :gf:`image-height`
+     - :gf:`image-width`
+     - :class:`<ink>`
 
--  *palette* An instance of type `<palette>`_.
+.. generic-function:: image?
 
-Values
-      
+   Returns ``#t`` if its argument is an image.
 
--  *boolean* An instance of type *<boolean>*.
+   :signature: image? *object* => *boolean*
 
-Description
-           
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Returns *#t* if the stream or medium supports color.
+   :description:
 
-See also
-        
+     Returns ``#t`` if its argument is an image.
 
-`<color>`_
+   :seealso:
 
-`color?`_
+     - :class:`<image>`
+     - :gf:`image-depth`
+     - :gf:`image-height`
+     - :gf:`image-width`
 
-`color-ihs`_
+.. generic-function:: image-depth
 
-`color-luminosity`_
+   Returns the depth of an image.
 
-`color-rgb`_
+   :signature: image-depth *image* => *depth*
 
-color-rgb
----------
+   :parameter image: An instance of type :class:`<image>`.
+   :value depth: An instance of type :drm:`<real>`.
 
-Generic function
-''''''''''''''''
+   :description:
 
-Summary
-       
+     Returns the depth of the image *image*.
 
-Returns four values, the red, green, blue, and opacity components of a
-color.
+   :seealso:
 
-Signature
-         
+     - :class:`<image>`
+     - :gf:`image?`
+     - :gf:`image-height`
+     - :gf:`image-width`
 
-*color-rgb* *color* => *ref* *green* *blue* *opacity*
-                                                     
+.. generic-function:: image-height
 
-Arguments
-         
+   Returns the height of an image.
 
--  *color* An instance of type `<color>`_.
+   :signature: image-height *image* => *height*
 
-Values
-      
+   :parameter image: An instance of type :class:`<image>`.
+   :value height: An instance of type :drm:`<real>`.
 
--  *red* An instance of type *limited(<real>, min: 0, max: 1)*
--  *gree* n An instance of type *limited(<real>, min: 0, max: 1)*
--  *blue* An instance of type *limited(<real>, min: 0, max: 1)*
--  *opacity* An instance of type *limited(<real>, min: 0, max: 1)*.
+   :description:
 
-Description
-           
+     Returns the height of the image *image*.
 
-Returns four values, the *red*, *green*, *blue*, and *opacity*
-components of the color *color.* The values are real numbers between 0
-and 1 (inclusive).
+   :seealso:
 
-See also
-        
+     - :class:`<image>`
+     - :gf:`image?`
+     - :gf:`image-depth`
+     - :gf:`image-width`
 
-`<color>`_
+.. generic-function:: image-width
 
-`color?`_
+   Returns the width of an image.
 
-`color-ihs`_
+   :signature: image-width *image* => *width*
 
-`color-luminosity`_
+   :parameter image: An instance of type :class:`<image>`.
+   :value width: An instance of type :drm:`<real>`.
 
-`color-palette?`_
+   :description:
 
-contrasting-colors-limit
-------------------------
+     Returns the width of the image *image*.
 
-Generic function
-''''''''''''''''
+   :seealso:
 
-Summary
-       
+     - :class:`<image>`
+     - :gf:`image?`
+     - :gf:`image-depth`
+     - :gf:`image-height`
 
-Returns the number of contrasting colors that can be rendered on the
-current platform.
+.. class:: <ink>
+   :abstract:
 
-Signature
-         
+   The class of objects that represent a way of arranging colors and
+   opacities in the drawing plane.
 
-*contrasting-colors-limit* *port* => *integer*
-                                              
+   :superclasses: :drm:`<object>`
 
-Arguments
-         
+   :description:
 
--  *port* An instance of type ` <silica.htm#11606>`_.
+     The class of objects that represent a way of arranging colors and
+     opacities in the drawing plane. Intuitively, it is anything that can be
+     drawn with. An ink is anything that can be used in medium-foreground,
+     medium-background, medium-ink, or the foreground or background of a
+     brush.
 
-Values
-      
+   :operations:
 
--  *integer* An instance of type *<integer>*.
+     The following operation is exported from the *DUIM-DCs* module.
 
-Description
-           
+     - :gf:`ink?`
 
-Returns the number of contrasting colors (or stipple patterns if port is
-monochrome or grayscale) that can be rendered on any medium on the port
-*port*. Implementations are encouraged to make this as large as
-possible, but it must be at least 8. All classes that obey the medium
-protocol must implement a method for this generic function.
+   :seealso:
 
-See also
-        
+     - :gf:`ink?`
 
-`contrasting-dash-patterns-limit`_
+.. generic-function:: ink?
 
-`make-contrasting-colors`_
+   Returns ``#t`` if its argument is an ink.
 
-contrasting-dash-patterns-limit
--------------------------------
+   :signature: ink? *object* => *boolean*
 
-Generic function
-''''''''''''''''
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Summary
-       
+   :description:
 
-Returns the number of contrasting dash patterns that the specified port
-can generate.
+     Returns ``#t`` if *object* is an ink, otherwise returns ``#f``.
 
-Signature
-         
+   :seealso:
 
-*contrasting-dash-patterns-limit* *port* => *no-of-patterns*
-                                                            
+     - :class:`<ink>`
 
-Arguments
-         
+.. constant:: $magenta
 
--  *port* An instance of type ` <silica.htm#11606>`_.
+   The usual definition of the color magenta.
 
-Values
-      
+   :type: :class:`<color>`
 
--  *no-of-patterns* An instance of type *<integer>*.
+   :description:
 
-Description
-           
+     The usual definition of the color magenta.
 
-Returns the number of contrasting dash patterns that the specified port
-can generate.
+   :seealso:
 
-See also
-        
+     - :class:`<color>`
 
-`contrasting-colors-limit`_
+.. generic-function:: make
 
-`make-contrasting-dash-patterns`_
+   Returns an object that is of the same type as the class given as its
+   argument.
 
-$cross-hatch
-------------
+   :signature: make *(class* *==* *<pen>)* *#key* *width* *units* *dashes* *joint-shape* *cap-shape* => *pen*
+   :signature: *make* *(class* *==* *<brush>)* *#key* *foreground* *background* *mode* *fill-style* *fill-rule* *tile* *stipple* *ts-x* *ts-y* => *brush*
 
-Constant
-''''''''
+   :parameter (class==<pen>): The class :class:`<pen>`.
+   :parameter width: An instance of type :class:`<pen-width>`. Default value: ``1``.
+   :parameter units: An instance of type :class:`<pen-units>`. Default value: ``#"normal"``.
+   :parameter dashes: An instance of type :class:`<pen-dashes>`. Default value: ``#f``.
+   :parameter joint-shape: An instance of type :class:`<pen-joint-shape>`. Default value: ``#"miter"``.
+   :parameter cap-shape: An instance of type :class:`<pen-cap-shape>`. Default value: ``#"butt"``.
+   :parameter (class==<brush>): The class :class:`<brush>`.
+   :parameter foreground: An instance of type :class:`<ink>`. Default value: :const:`$foreground`.
+   :parameter background: An instance of type :class:`<ink>`. Default value: :const:`$background`.
+   :parameter mode: An instance of type :drm:`<integer>`. Default value: :const:`$boole-1`.
+   :parameter fill-style: A *(fill-style)* or ``#f``. Default value: ``#f``.
+   :parameter fill-rule: A *(fill-rule)* or ``#f``. Default value: ``#f``.
+   :parameter tile: An *(image)* or ``#f``. Default value: ``#f``.
+   :parameter stipple: A *(stipple)* or ``#f``. Default value: ``#f``.
+   :parameter ts-x: An instance of ``false-or(<integer>)``. Default value: ``#f``.
+   :parameter ts-y: An instance of ``false-or(<integer>)``. Default value: ``#f``.
+   :value pen: An instance of type :class:`<pen>`.
+   :value brush: An instance of type :class:`<brush>`.
 
-Summary
-       
+   :description:
 
-A stipple pattern for use in creating a patterned brush with alternating
-solid and dashed lines.
+     Returns an object that is of the same type as the class given as its
+     argument. Default values for the keywords that specify object are
+     provided, or the keywords can be given explicitly to override the
+     defaults.
 
-Type
-    
+   :seealso:
 
-*<array>*
-         
+     - :class:`<brush>`
+     - :class:`<pen>`
 
-Description
-           
+.. generic-function:: make-color-for-contrasting-color
 
-A stipple pattern for use in creating a patterned brush with alternating
-solid and dashed lines.
+   Returns a color that is recognizably different from the main color.
 
-See also
-        
+   :signature: make-color-for-contrasting-color *ink* => *color*
 
-`<color>`_.
+   :parameter ink: An instance of type :class:`<ink>`.
+   :value color: An instance of type :class:`<color>`.
 
-$cyan
------
+   :description:
 
-Constant
-''''''''
+     Returns a color that is recognizably different from the main color.
 
-Summary
-       
+   :seealso:
 
-The usual definition for the color cyan.
+     - :func:`make-contrasting-colors`
 
-Type
-    
+.. function:: make-contrasting-colors
 
-`<color>`_
-                              
+   Returns a vector of colors with recognizably different appearance.
 
-Description
-           
+   :signature: make-contrasting-colors *n* #key *k* => *colors*
 
-The usual definition for the color cyan.
+   :parameter n: An instance of type :drm:`<integer>`.
+   :parameter k: An instance of type :drm:`<integer>`.
 
-See also
-        
+   :parameter colors: An instance of type ``limited(<sequence>, of: <color>)``.
 
-`<color>`_.
+   :description:
 
-$dash-dot-dot-pen
------------------
+     Returns a vector of n colors with recognizably different appearance.
+     Elements of the vector are guaranteed to be acceptable values for the
+     ``brush:`` argument to the drawing functions, and do not include
+     :const:`$foreground`, :const:`$background`, or *nil*. Their class is otherwise
+     unspecified. The vector is a fresh object that may be modified.
 
-Constant
-''''''''
+     If *k* is supplied, it must be an integer between ``0`` and ``n - 1``
+     (inclusive), in which case *make-contrasting-colors* returns the *k* th
+     color in the vector rather than the whole vector.
 
-Summary
-       
+     If the implementation does not have *n* different contrasting colors,
+     *make-contrasting-colors* signals an error. This does not happen unless
+     *n* is greater than eight.
+  
+     The rendering of the color is a true color or a stippled pattern,
+     depending on whether the output medium supports color.
 
-A pen that draws a line with two dots between each dash.
+   :seealso:
 
-Type
-    
+     - :gf:`contrasting-colors-limit`
+     - :const:`$green`
+     - :gf:`make-color-for-contrasting-color`
+     - :gf:`make-contrasting-dash-patterns`
 
-`<pen>`_
-                            
+.. function:: make-contrasting-dash-patterns
 
-Description
-           
+   Returns a vector of dash patterns with recognizably different
+   appearances.
 
-A pen that draws a line with two dots between each dash. The line width
-is *1* and *dashes:* is *#[4, 1, 1, 1, 1, 1]*.
+   :signature: make-contrasting-dash-patterns *n* *#key* *k* => *dashes*
 
-See also
-        
+   :parameter n: An instance of type :drm:`<integer>`.
+   :parameter k: An instance of type :drm:`<integer>`.
+   :value dashes: An instance of type :drm:`<vector>`.
 
-`<pen>`_
+   :description:
 
-`$solid-pen`_
+     Returns a vector of *n* dash patterns with recognizably different
+     appearances. If the keyword *k* is supplied,
+     *make-contrasting-dash-patterns* returns the *k* th pattern. If there
+     are not n different dash patterns, an error is signalled.
 
-`$magenta`_
+     The argument *n* represents the number of dash patterns.
 
-`$dash-dot-pen`_
+     The argument *k* represents the index in the vector of dash patterns
+     indicating the pattern to use.
 
-`$dotted-pen`_
+   :seealso:
 
-$dash-dot-pen
--------------
+     - :gf:`contrasting-dash-patterns-limit`
+     - :gf:`make-contrasting-colors`
 
-Constant
-''''''''
+.. function:: make-device-font
 
-Summary
-       
+   Returns a device-specific font.
 
-A pen that draws a dashed and dotted line.
+   :signature: make-device-font *port* *font* => *device-font*
 
-Type
-    
+   :parameter port: An instance of type :class:`<silica>`.
+   :parameter font: An instance of type :drm:`<object>`.
+   :value device-font: A font object or the name of a font.
 
-`<pen>`_
-                            
+   :description:
 
-Description
-           
+     Returns a device-specific font. Text styles are mapped to fonts for a
+     port, a character set, and a text style. All ports must implement
+     methods for the generic functions, for all classes of text style.
 
-A pen that draws a dashed and dotted line. The line width is *1* and
-*dashes:* is *#[4, 1, 1, 1]*.
+     The objects used to represent a font mapping are unspecified and are
+     likely to vary from port to port. For instance, a mapping might be some
+     sort of font object on one type of port, or might simply be the name of
+     a font on another.
 
-See also
-        
+     Part of initializing a port is to define the mappings between text
+     styles and font names for the port's host window system.
 
-`<pen>`_
+.. function:: make-gray-color
 
-`$solid-pen`_
+   Returns a member of class :class:`<color>`.
 
-`$magenta`_
+   :signature: make-gray-color *luminosity* #key *opacity* => *color*
 
-`$dash-dot-pen`_
+   :parameter luminosity: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :parameter opacity: An instance of type ``limited(<real>, min: 0, max: 1)``. Default value: ``1.0``.
+   :value color: An instance of type :class:`<color>`.
 
-`$dotted-pen`_
+   :description:
 
-$dashed-pen
------------
+     Returns a member of class :class:`<color>`. The *luminance* is a real number
+     between *0* and ``1`` (inclusive). On a black-on-white display device, *0*
+     means black, ``1`` means white, and the values in between are shades of
+     gray. On a white-on-black display device, *0* means white, ``1`` means
+     black, and the values in between are shades of gray.
 
-Constant
-''''''''
+   :seealso:
 
-Summary
-       
+     - :gf:`make-ihs-color`
+     - :gf:`make-rgb-color`
 
-A pen that draws a dashed line.
+.. function:: make-ihs-color
 
-Type
-    
+   Returns a member of the class :class:`<color>`.
 
-`<pen>`_
-                            
+   :signature: make-ihs-color *intensity* *hue* *saturation* #key *opacity* => *color*
+   :parameter intensity: An instance of type ``limited(<real>, min: 0, max: sqrt(3))``.
+   :parameter hue: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :parameter saturation: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :parameter opacity: An instance of type ``limited(<real>, min: 0, max: 1)``. Default value: ``1.0``.
+   :value color: An instance of type :class:`<color>`.
 
-Description
-           
+   :description:
 
-A pen that draws a dashed line. The line width is *1* and *dashes:* is
-*#t*.
+     Returns a member of class :class:`<color>`. The *intensity* argument is a real
+     number between *0* and sqrt(*3*) (inclusive). The *hue* and
+     *saturation* arguments are real numbers between 0 and 1 (inclusive).
 
-See also
-        
+   :seealso:
 
-`<pen>`_
+     - :gf:`make-gray-color`
+     - :gf:`make-rgb-color`
 
-`$solid-pen`_
+.. generic-function:: make-palette
 
-`$magenta`_
+   Returns a member of the class :class:`<palette>`.
 
-`$dash-dot-pen`_
+   :signature: make-palette *port* *#key* => *palette*
 
-`$dotted-pen`_
+   :parameter port: An instance of type :class:`<silica>`.
+   :value palette: An instance of type :class:`<palette>`.
 
-default-background
-------------------
+   :description:
 
-Generic function
-''''''''''''''''
+     Returns a member of the class :class:`<palette>`.
 
-Summary
-       
+.. function:: make-pattern
 
-Returns the ink that is the default background of its argument.
+   Returns a pattern generated from a two-dimensional array.
 
-Signature
-         
+   :signature: make-pattern *array* *colors* => *pattern*
 
-*default-foreground* *object* => *background*
-                                             
+   :parameter array: An instance of type :class:`<array>`.
+   :parameter colors: An instance of type ``limited(<sequence>, of: <color>)``.
+   :value pattern: An instance of type :class:`<pattern>`.
 
-Arguments
-         
+   :description:
 
--  *object* An instance of type *<object>*.
+     Returns a pattern design that has *(array-dimension* *array* *0)* cells
+     in the vertical direction and *(array-dimension* *array* *1}* cells in
+     the horizontal direction. *array* must be a two-dimensional array of
+     non-negative integers less than the length of *designs*. *designs* must
+     be a sequence of designs. The design in cell*i,j* of the resulting
+     pattern is the *n* th element of *designs*, if *n* is the value of
+     *(aref* *array* *i j* *)*. For example, *array* can be a bit-array and
+     *designs* can be a list of two designs, the design drawn for 0 and the
+     one drawn for 1. Each cell of a pattern can be regarded as a hole that
+     allows the design in it to show through. Each cell might have a
+     different design in it. The portion of the design that shows through a
+     hole is the portion on the part of the drawing plane where the hole is
+     located. In other words, incorporating a design into a pattern does not
+     change its alignment to the drawing plane, and does not apply a
+     coordinate transformation to the design. Drawing a pattern collects the
+     pieces of designs that show through all the holes and draws the pieces
+     where the holes lie on the drawing plane. The pattern is completely
+     transparent outside the area defined by the array.
 
-Values
-      
+     Each cell of a pattern occupies a 1 by 1 square. You can use
+     :gf:`transform-region` to scale the pattern to a different cell size and
+     shape, or to rotate the pattern so that the rectangular cells become
+     diamond-shaped. Applying a coordinate transformation to a pattern does not
+     affect the designs that make up the pattern. It only changes the position,
+     size, and shape of the cells' holes, allowing different portions of the
+     designs in the cells to show through.  Consequently, applying
+     *make-rectangular-tile* to a pattern of nonuniform designs can produce
+     a different appearance in each tile. The pattern cells' holes are tiled, but
+     the designs in the cells are not tiled and a different portion of each of
+     those designs shows through in each tile.
 
--  *background* An instance of type `<ink>`_.
+.. function:: make-rgb-color
 
-Description
-           
+   Returns a member of class :class:`<color>`.
 
-Returns the ink that is the default background of its argument.
+   :signature: make-rgb-color *red* *green* *blue* #key *opacity* => *color*
 
-See also
-        
+   :parameter red: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :parameter green: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :parameter blue: An instance of type ``limited(<real>, min: 0, max: 1)``.
+   :parameter opacity: An instance of type ``limited(<real>, min: 0, max: 1)``. Default value: ``1.0``.
+   :value color: An instance of type :class:`<color>`.
 
-`brush-fill-style`_.
+   :description:
 
-`default-background-setter`_.
+     Returns a member of class :class:`<color>`. The *red*, *green*, and*blue*
+     arguments are real numbers between 0 and 1 (inclusive) that specify the
+     values of the corresponding color components.
 
-`default-foreground`_
+     When all three color components are 1, the resulting color is white.
+     When all three color components are 0, the resulting color is black.
 
-default-background-setter
--------------------------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :gf:`make-gray-color`
+     - :gf:`make-ihs-color`
 
-Summary
-       
+.. function:: make-stencil
 
-Sets the default background.
+   Returns a pattern design generated from a two-dimensional array.
 
-Signature
-         
+   :signature: make-stencil *array* => *stencil*
 
-*default-foreground-setter* *background* *object* => *background*
-                                                                 
+   :parameter array: An instance of type :class:`<array>`.
+   :value stencil: An instance of type :class:`<stencil>`.
 
-Arguments
-         
+   :description:
 
--  *background* An instance of type `<ink>`_.
--  *object* An instance of type *<object>*.
+     Returns a pattern design that has (*array-dimension* *array* *0*) cells
+     in the vertical direction and (*array-dimension* *array* *1*) cells in
+     the horizontal direction. *array* must be a two-dimensional array of
+     real numbers between 0 and 1 (inclusive) that represent opacities. The
+     design in cell *i,j* of the resulting pattern is the value of
+     ``(make-opacity (aref array i j))``.
 
-Values
-      
+.. function:: make-text-style
 
--  *background* An instance of type `<ink>`_.
+   Returns an instance of :class:`<text-style>`.
 
-Description
-           
+   :signature: make-text-style *family* *weight* *slant* *size* #key *underline?* *strikeout?* => *text-style*
 
-Sets the default background for *object*.
+   :parameter family: An instance of type ``one-of(#"fix", #"serif", #"sans-serif", #f)``.
+   :parameter weight: An instance of type ``one-of(#"normal", #"condensed", #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold", #"extra-bold", #"black", #f)``.
+   :parameter slant: An instance of type ``one-of(#"roman", #"italic", #"oblique", #f)``.
+   :parameter size: An instance of :drm:`<integer>`, or an instance of type ``one-of(#"normal", #"tiny", #"very-small", #"small", #"large", #"very-large:", #"huge", #"smaller", #"larger", #f)``.
+   :parameter underline?: An instance of type :drm:`<boolean>`.
+   :parameter strikeout?: An instance of type :drm:`<boolean>`.
+   :value text-style: An instance of type :class:`<text-style>`.
 
-See also
-        
+   :description:
 
-`brush-fill-style`_.
+     Returns an instance of :class:`<text-style>`.
 
-`default-background`_.
+     Text style objects have components for family, face, and size. Not all
+     of these attributes need be supplied for a given text style object. Text
+     styles can be merged in much the same way as pathnames are merged;
+     unspecified components in the style object (that is, components that
+     have ``#f`` in them) may be filled in by the components of a default style
+     object. A text style object is called *fully specified* if none of its
+     components is ``#f``, and the size component is not a relative size (that
+     is, neither ``#"smaller"`` nor ``#"larger"``).
 
-`default-foreground-setter`_
+     If *size* is an integer, it represents the size of the font in printer's
+     points.
 
-default-foreground
-------------------
+     Implementations are permitted to extend legal values for family, face,
+     and size.
 
-Generic function
-''''''''''''''''
+   :seealso:
 
-Summary
-       
+     - :const:`$solid-pen`
 
-Returns the ink that is the default foreground of its argument.
+.. generic-function:: merge-text-styles
 
-Signature
-         
+   Merges two text styles and returns a new text style that is the same as
+   the first, except that unspecified components in are filled in from the
+   second.
 
-*default-foreground* *object* => *foreground*
-                                             
+   :signature: merge-text-styles *text-style* *default-style* => *text-style*
 
-Arguments
-         
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :parameter default-style: An instance of type :class:`<text-style>`.
+   :value text-style: An instance of type :class:`<text-style>`.
 
--  *object* An instance of type *<object>*.
+   :description:
 
-Values
-      
+     Merges the text styles *text-style* with *default-style*, that is,
+     returns a new text style that is the same as *text-style,* except that
+     unspecified components in style1 are filled in from *default-style*.
+     For convenience, the two arguments may be also be style specs. Note that
+     default-style must be a *fully specified* text style.
 
--  *foreground* An instance of type `<ink>`_.
+     When merging the sizes of two text styles, if the size from the first
+     style is a relative size, the resulting size is either the next smaller
+     or next larger size than is specified by *default-style*. The ordering
+     of sizes, from smallest to largest, is ``#"tiny"``, ``#"very-small"``,
+     ``#"small"``, ``#"normal"``, ``#"large"``, ``#"very-large"``, and ``#"huge"``.
 
-Description
-           
+   :seealso:
 
-Returns the ink that is the default foreground of its argument.
+     - :gf:`default-background-setter`
 
-See also
-        
+.. class:: <palette>
+   :abstract:
+   :instantiable:
 
-`brush-fill-rule`_.
+   The protocol class for color palettes.
 
-`default-background`_
+   :superclasses: :drm:`<object>`
 
-`default-foreground-setter`_
+   :description:
 
-default-foreground-setter
--------------------------
+     The protocol class for color palettes.
 
-Generic function
-''''''''''''''''
+   :operations:
 
-Summary
-       
+    - :gf:`add-colors`
+    - :gf:`do-add-colors`
+    - :gf:`remove-colors`
+    - :gf:`do-remove-colors`
+    - :gf:`color-palette?`
+    - :gf:`dynamic-palette?`
 
-Sets the default foreground.
+   :seealso:
 
-Signature
-         
+     - :gf:`palette?`
 
-*default-foreground-setter* *foreground* *object* => *foreground*
-                                                                 
+.. generic-function:: palette?
 
-Arguments
-         
+   Returns ``#t`` if an object is a palette.
 
--  *foreground* An instance of type `<ink>`_.
--  *object* An instance of type *<object>*.
+   :signature: palette? *object* => *boolean*
 
-Values
-      
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
--  *foreground* An instance of type `<ink>`_.
+   :description:
 
-Description
-           
+     Returns ``#t`` if the object *object* is a palette. A palette is a color
+     map that maps 16 bit colors into a, for example, 8 bit display.
 
-Sets the default foreground for *object*.
+   :seealso:
 
-See also
-        
+     - :class:`<palette>`
 
-`brush-fill-rule`_.
+.. class:: <palette-full>
+   :sealed:
+   :concrete:
 
-`default-background-setter`_
+   The class for errors that are signalled when a color palette is full.
 
-`default-foreground`_
+   :superclasses: :class:`<error>`
+   :keyword palette:
 
-default-text-style
-------------------
+   :description:
 
-Generic function
-''''''''''''''''
+     The class for errors that are signalled when a color palette is full.
 
-Summary
-       
+   :seealso:
 
-Returns the default text style for its argument.
+     - :class:`<palette>`
 
-Signature
-         
+.. constant:: $parquet-stipple
 
-*default-text-style* *object* => *text-style*
-                                             
+   A stipple pattern for use in creating a patterned brush that looks like
+   a parquet floor.
 
-Arguments
-         
+   :type: :class:`<array>`
 
--  *object* An instance of type *<object>*.
+   :description:
 
-Values
-      
+     A stipple pattern for use in creating a patterned brush that looks like
+     a parquet floor.
 
--  *text-style* An instance of type *<text-style>*.
+   :seealso:
 
-Description
-           
+     - :gf:`brush-stipple`
 
-Returns the default text style for its argument.This function is used to
-merge against if the text style is not fully specified, or if no text
-style is specified.
+.. class:: <pattern>
+   :sealed:
+   :concrete:
 
-See also
-        
+   The class for patterns.
 
-`default-text-style-setter`_.
+   :superclasses: :class:`<stencil>`
 
-default-text-style-setter
--------------------------
+   :keyword colors: An instance of type ``limited(<sequence>, of: <color>)``.
 
-Generic function
-''''''''''''''''
+   :description:
 
-Summary
-       
+     The class for patterns. A pattern is a bounded rectangular arrangement
+     of color, like a checkerboard. Drawing a pattern draws a different
+     design in each rectangular cell of the pattern.
 
-Sets the default text style.
+   :operations:
 
-Signature
-         
+     The following operation is exported from the *DUIM-DCs* module.
 
-*default-text-style-setter* *text-style* *object* => *text-style*
-                                                                 
+     - :gf:`pattern?`
 
-Arguments
-         
+   :seealso:
 
--  *text-style* An instance of type *<text-style>*.
--  *object* An instance of type *<object>*.
+     - :class:`<stencil>`
+     - :gf:`make-pattern`
 
-Values
-      
+.. generic-function:: pattern?
 
--  *text-style* An instance of type *<text-style>*.
+   Returns ``#t`` if its argument is a pattern.
 
-Description
-           
+   :signature: pattern? *object* => *boolean*
 
-Sets the default text style.
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-See also
-        
+   :description:
 
-`default-text-style`_
+     Returns ``#t`` if *object* is a pattern.
 
-<device-font>
--------------
+   :seealso:
 
-Sealed concrete class
-'''''''''''''''''''''
+     - :gf:`make-pattern`
 
-Summary
-       
+.. class:: <pen>
+   :abstract:
+   :instantiable:
 
-The protocol class for device-specific fonts.
+   The protocol class for pens.
 
-Superclasses
-            
+   :superclasses: :drm:`<object>`
 
-<*text-style>*
-              
+   :keyword width: An instance of type :drm:`<integer>`. Default value: ``1``.
+   :keyword units: An instance of type ``one-of(#"normal", #"point", #"device")`` . Default value: ``#"normal"``.
+   :keyword dashes: An instance of ``type-union(<boolean>, <sequence>)``. Default value: ``#f``.
+   :keyword joint-shape: An instance of type ``one-of(#"miter", #"bevel", #"round", #"none")``. Default value: ``#"miter"``.
+   :keyword cap-shape: An instance of type ``one-of(#"butt", #"square", #"round", #"no-end-point")``. Default value: ``#"butt"``.
 
-Init-keywords
-             
+   :description:
 
--  *port:*
--  *font-name:*
+     The protocol class for pens. A pen imparts ink to a medium.
 
-Description
-           
+   :operations:
 
-The protocol class for device-specific fonts.
+     The following operations are exported from the *DUIM-DCs* module.
 
-Operations
-          
+     - :gf:`=`
+     - :gf:`pen?`
+     - :gf:`pen-cap-shape`
+     - :gf:`pen-dashes`
+     - :gf:`pen-joint-shape`
+     - :gf:`pen-units`
+     - :gf:`pen-width`
 
--  None.
+   :seealso:
 
-See also
-        
+     - :class:`<ink>`
+     - :gf:`make`
+     - :gf:`pen?`
+     - :gf:`pen-cap-shape`
+     - :gf:`pen-dashes`
+     - :gf:`pen-joint-shape`
+     - :gf:`pen-units`
+     - :gf:`pen-width`
 
-`<text-style>`_.
+.. generic-function:: pen?
 
-$diagonal-hatch-down
---------------------
+   Returns ``#t`` if its argument is a pen.
 
-Constant
-''''''''
+   :signature: pen? *object* => *boolean*
 
-Summary
-       
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-A stipple pattern for use in creating a patterned brush with alternating
-dashes and spaces.
+   :description:
 
-Type
-    
+     Returns ``#t`` if *object* is a pen, otherwise returns ``#f``.
 
-*<array>*
-         
+   :seealso:
 
-Description
-           
+     - :class:`<pen>`
+     - :gf:`pen-cap-shape`
+     - :gf:`pen-dashes`
+     - :gf:`pen-joint-shape`
+     - :gf:`pen-units`
+     - :gf:`pen-width`
 
-A stipple pattern for use in creating a patterned brush with alternating
-dashes and spaces, the first line starting with a dash, followed by a
-space, and the second line starting with a space followed by a dash.
+.. generic-function:: pen-cap-shape
 
-See also
-        
+   Returns the shape of the end of a line or an arc drawn by the pen.
 
-`brush-stipple`_.
+   :signature: pen-cap-shape *pen* => *value*
 
-$diagonal-hatch-up
-------------------
+   :parameter pen: An instance of type :class:`<pen>`.
+   :value value: An instance of type ``one-of(#"butt", #"square", #"round", #"no-end-point")``.
 
-Constant
-''''''''
+   :description:
 
-Summary
-       
+     Returns the shape of the end of a line or an arc drawn by *pen*.
 
-A stipple pattern for use in creating a patterned brush with alternating
-dashes and spaces.
+   :seealso:
 
-Type
-    
+     - :gf:`make-contrasting-dash-patterns`
+     - :class:`<pen>`
+     - :gf:`pen?`
+     - :gf:`pen-dashes`
+     - :gf:`pen-joint-shape`
+     - :gf:`pen-units`
+     - :gf:`pen-width`
 
-*<array>*
-         
+.. generic-function:: pen-dashes
 
-Description
-           
+   Returns ``#t`` if the lines drawn by a pen are dashed.
 
-A stipple pattern for use in creating a patterned brush with alternating
-dashes and spaces, the first line starting with a space, followed by a
-dash, and the second line starting with a dash followed by a space.
+   :signature: pen-dashes *pen* => *value*
 
-See also
-        
+   :parameter pen: An instance of type :class:`<pen>`.
+   :value value: An instance of type ``type-union(<boolean>, <sequence>)``.
 
-`brush-stipple`_.
+   :description:
 
-$dotted-pen
------------
+     Returns ``#t`` if the lines drawn by *pen* are dashed. The sequence is a
+     vector of integers indicating the pattern of dashes. There must be an
+     even number of integers. The odd elements in the list indicate the
+     length of the inked dashes and the even elements indicate the length of
+     the gaps between dashes.
 
-Constant
-''''''''
+   :seealso:
 
-Summary
-       
+     - :class:`<pen>`
+     - :gf:`pen?`
+     - :gf:`pen-cap-shape`
+     - :gf:`pen-joint-shape`
+     - :gf:`pen-units`
+     - :gf:`pen-width`
 
-A pen that draws a dotted line.
+.. generic-function:: pen-joint-shape
 
-Type
-    
+   Returns the shape of the joints between line segments of a closed,
+   unfilled figure.
 
-`<pen>`_
-                            
+   :signature: pen-joint-shape *pen* => *value*
 
-Description
-           
+   :parameter pen: An instance of type :class:`<pen>`.
+   :parameter value: An instance of type ``one-of(#"miter", #"bevel", #"round", #"none")``.
 
-A pen that draws a dotted line. The line width is *1* and *dashes:* is
-*#[1, 1]*.
+   :description:
 
-See also
-        
+     Returns the shape of the joints between line segments of a closed,
+     unfilled figure drawn by *pen*.
 
-`<pen>`_
+   :seealso:
 
-`$solid-pen`_
+     - :gf:`make-contrasting-dash-patterns`
+     - :class:`<pen>`
+     - :gf:`pen?`
+     - :gf:`pen-cap-shape`
+     - :gf:`pen-dashes`
+     - :gf:`pen-units`
+     - :gf:`pen-width`
 
-`$dash-dot-pen`_
+.. generic-function:: pen-units
 
-find-color
-----------
+   Returns the units in which the pen width is specified.
 
-Generic function
-''''''''''''''''
+   :signature: pen-units *pen* => *value*
 
-Summary
-       
+   :parameter pen: An instance of type :class:`<pen>`.
+   :value value: An instance of type ``one-of(#"normal", #"point", #"device")``.
 
-Looks up and returns a color by name.
+   :description:
 
-Signature
-         
+     Returns the units in which the pen width is specified. They may be
+     normal, points, or device-dependent. A width of ``#"normal"`` is a
+     comfortably visible thin line.
 
-*find-color* *name* *palette* #key *error?* => *color*
-                                                      
+   :seealso:
 
-Arguments
-         
+     - :gf:`make-contrasting-dash-patterns`
+     - :class:`<pen>`
+     - :gf:`pen?`
+     - :gf:`pen-cap-shape`
+     - :gf:`pen-dashes`
+     - :gf:`pen-joint-shape`
+     - :gf:`pen-width`
 
--  *name* An instance of type *<string>*.
--  *palette* An instance of type `<palette>`_.
--  *error?* An instance of type *<boolean>*. Default value: *#f*.
+.. generic-function:: pen-width
 
-Values
-      
+   Returns the pen-width, that is how wide a stroke the pen draws, of its
+   argument.
 
--  *color* An instance of type `<color>`_.
+   :signature: pen-width *pen* => *width*
 
-Description
-           
+   :parameter pen: An instance of type :class:`<pen>`.
+   :value width: An instance of type :class:`<pen-width>`. The units that specify the width of the pen may be ``#"normal"``, ``#"points"``, or ``#"device"``.
 
-Looks up and returns a color by name. `Common color
-names`_ lists the commonly provided color names that can
-be looked up with *find-color*.
+   :description:
 
-Common color names
-                  
+     Returns the pen width, that is how wide a stroke the pen draws, of *pen*
+     . A width of ``#"normal"`` is a comfortably visible thin line.
 
-.. figure:: images/dcs-2.png
-   :align: center
-   :alt: 
-alice-blue
+   :seealso:
 
-antique-white
+     - :gf:`make-contrasting-dash-patterns`
+     - :class:`<pen>`
+     - :gf:`pen?`
+     - :gf:`pen-cap-shape`
+     - :gf:`pen-dashes`
+     - :gf:`pen-joint-shape`
+     - :gf:`pen-units`
 
-aquamarine
+.. generic-function:: read-image
 
-azure
+   Reads an image.
 
-beige
+   :signature: read-image *resource-id* *#key image-type:* *image-type* *#all-keys* => *image*
 
-bisque
+   :parameter locator: An instance of type ``type-union(<string>, <locator>)``.
+   :parameter image-type: On Windows, an instance of type ``one-of(#"bitmap", #"icon")``.
+   :value image: An instance of type :class:`<image>`.
 
-black
+   :description:
 
-blanched-almond
+     Reads an image from the location *resource-id*. This function calls
+     *read-image-as*.
 
-blue
+   :seealso:
 
-blue-violet
+     - :gf:`read-image-as`
 
-brown
+.. generic-function:: read-image-as
 
-burlywood
+   Reads an image.
 
-cadet-blue
+   :signature: read-image-as *class* *locator* *image-type* #key #all-keys => *image*
 
-chartreuse
+   :parameter class: An instance of type :drm:`<object>`.
+   :parameter locator: An instance of type :drm:`<string>`.
+   :parameter image-type: On Windows, ``#"bitmap"`` or ``#"icon"``.
+   :value image: An instance of type :class:`<image>`.
 
-chocolate
+   :description:
 
-coral
+     Reads the image in the location pointed to be *locator*, as an instance
+     of a particular class*.* This function is called by *read-image.*
 
-cornflower-blue
+     The *class* represents the class that the image is read as an instance
+     of.
 
-cornsilk
+   :seealso:
 
-cyan
+     - :gf:`read-image`
 
-dark-goldenrod
+.. constant:: $red
 
-dark-green
+   The usual definition of the color red.
 
-dark-khaki
+   :type: :class:`<color>`
 
-dark-olive-green
+   :description:
 
-dark-orange
+     The usual definition of the color red.
 
-dark-orchid
+   :seealso:
 
-dark-salmon
+     - :const:`$blue`
 
-dark-sea-green
+.. generic-function:: remove-colors
 
-dark-slate-blue
+   Removes one or more colors from a palette and returns the updated
+   palette.
 
-dark-slate-gray
+   :signature: remove-colors *palette* *#rest* *colors* => *palette*
 
-dark-turquoise
+   :parameter palette: An instance of type :class:`<palette>`.
+   :parameter colors: Instances of type :class:`<color>`.
+   :value palette:
 
-dark-violet
+   :description:
 
-deep-pink
+     Removes *colors* from *palette* and returns the updated palette.
 
-deep-sky-blue
+.. constant:: $solid-pen
 
-dim-gray
+   A pen that draws a solid line.
 
-dodger-blue
+   :type: :class:`<pen>`
 
-firebrick
+   :description:
 
-floral-white
+     A pen that draws a solid line. The width of the line is ``1``, and
+     ``dashes:`` is ``#f``.
 
-forest-green
+   :seealso:
 
-gainsboro
+     - :class:`<pen>`
+     - :func:`make`
+     - :const:`$dash-dot-pen`
+     - :const:`$dotted-pen`
 
-ghost-white
+.. class:: <stencil>
+   :concrete:
+   :sealed:
 
-gold
+   The class for stencils.
 
-goldenrod
+   :superclasses: :class:`<image>`
 
-gray
+   :keyword array: An instance of type :class:`<array>`. Required.
+   :keyword transform: An instance of type :class:`<transform>`. Default value: ``#f``.
 
-green
+   :description:
 
-green-yellow
+     The class for stencils. A *stencil* is a special kind of pattern that
+     contains only opacities.
 
-honeydew
+   :operations:
 
-hot-pink
+     The following operations are exported from the *DUIM-DCs* module.
 
-indian-red
+     - :gf:`image-height`
+     - :gf:`image-width`
+     - :gf:`stencil?`
 
-ivory
+     The following operation is exported from the *DUIM-Geometry* module.
 
-khaki
+     - :gf:`box-edges`
 
-lavender
+   :seealso:
 
-lavender-blush
+     - :class:`<image>`
+     - :gf:`make-pattern`
+     - :gf:`stencil?`
 
-lawn-green
+.. generic-function:: stencil?
 
-lemon-chiffon
+   Returns ``#t`` if its argument is a stencil.
 
-light-blue
+   :signature: stencil? *object* => *boolean*
 
-light-coral
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-light-cyan
+   :description:
 
-light-goldenrod
+     Returns ``#t`` if its argument is a stencil.
 
-light-goldenrod-yellow
+   :seealso:
 
-light-gray
+     - :func:`make-pattern`
+     - :class:`<stencil>`
 
-light-pink
+.. class:: <text-style>
+   :abstract:
+   :instantiable:
 
-light-salmon
+   The protocol class for text styles.
 
-light-sea-green
+   :superclasses: :drm:`<object>`
 
-light-sky-blue
+   :keyword family: An instance of type ``one-of(#"fix", #"serif", #"sans-serif", #f)``. Default value: ``#f``.
+   :keyword weight: An instance of type ``one-of(#"normal", #"condensed", #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold", #"extra-bold", #"black", #f)``.
+   :keyword slant: An instance of type ``one-of(#"roman", #"italic", #"oblique", #f)``.
+   :keyword size: An instance of :drm:`<integer>`, or an instance of type ``one-of(#"normal", #"tiny", #"very-small", #"small", #"large", #"very-large:", #"huge", #"smaller", #"larger", #f)``. Default value: ``#f``.
+   :keyword underline?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
+   :keyword strikeout?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
 
-light-slate-blue
+   :description:
 
-light-slate-gray
+     The protocol class for text styles. When specifying a particular
+     appearance for rendered characters, there is a tension between
+     portability and access to specific font for a display device. DUIM
+     provides a portable mechanism for describing the desired *text style* in
+     abstract terms. Each port defines a mapping between these abstract style
+     specifications and particular device-specific fonts. In this way, an
+     application programmer can specify the desired text style in abstract
+     terms secure in the knowledge that an appropriate device font will be
+     selected at run time. However, some applications may require direct
+     access to particular device fonts. The text style mechanism supports
+     specifying device fonts by name, allowing the programmer to sacrifice
+     portability for control.
 
-light-steel-blue
+     If ``size:`` is specified as an integer, then it represents the font size
+     in printer's points.
 
-light-yellow
+   :operations:
 
-lime-green
+     The following operations are exported from the *DUIM-DCs* module.
 
-linen
+     - :gf:`=`
+     - :gf:`fully-merged-text-style?`
+     - :gf:`merge-text-styles`
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-magenta
+     The following operations are exported from the *DUIM-Sheets* module.
 
-maroon
+     - :gf:`medium-default-text-style`
+     - :gf:`medium-default-text-style-setter`
+     - :gf:`medium-merged-text-style`
+     - :gf:`medium-text-style`
+     - :gf:`medium-text-style-setter`
 
-medium-aquamarine
+   :seealso:
 
-medium-blue
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-medium-orchid
+.. generic-function:: text-style?
 
-medium-purple
+   Returns ``#t`` if its argument is a text-style.
 
-medium-sea-green
+   :signature: text-style? *object* => *text-style?*
 
-medium-slate-blue
+   :parameter object: An instance of type :drm:`<object>`.
+   :value text-style?: An instance of type :drm:`<boolean>`.
 
-medium-spring-green
+   :description:
 
-medium-turquoise
+     Returns ``#t`` if its argument is a text-style.
 
-medium-violet-red
+   :seealso:
 
-midnight-blue
+     - :gf:`<text-style>`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-mint-cream
+.. generic-function:: text-style-components
 
-misty-rose
+   Returns the components of a text style as the values family, face,
+   slant, size, underline and strikeout.
 
-moccasin
+   :signature: text-style-components *text-style* => *family* *weight* *slant* *size* *underline?* *strikeout?*
 
-navajo-white
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value family: An instance of type ``one-of(#"fix", #"serif", #"sans-serif", #f)``.
+   :value weight: An instance of type ``one-of(#"normal", #"condensed", #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold", #"extra-bold", #"black", #f)``.
+   :parameter slant: An instance of type ``one-of(#"roman", #"italic", #"oblique", #f)``.
+   :value size: An instance of :drm:`<integer>`, or an instance of type ``one-of(#"normal", #"tiny", #"very-small", #"small", #"large", #"very-large:", #"huge", #"smaller", #"larger", #f)``. Default value: ``#f``.
+   :value underline?: An instance of type :drm:`<boolean>`.
+   :value strikeout?: An instance of type :drm:`<boolean>`.
 
-navy-blue
+   :description:
 
-old-lace
+     Returns the components of the text style *text-style* as the values
+     family, face, slant, size, underline and strikeout.
 
-olive-drab
+   :seealso:
 
-orange
+     - :class:`<text-style>`
+     - :gf:`text-style?`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-orange-red
+.. generic-function:: text-style-family
 
-orchid
+   Returns the family component of the specified text style.
 
-pale-goldenrod
+   :signature: text-style-family *text-style* => *family*
 
-pale-green
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value family: An instance of type ``one-of(#"fix", #"serif", #"sans-serif", #f)``.
 
-pale-turquoise
+   :description:
 
-pale-violet-red
+     Returns the family component of the specified text style.
 
-papaya-whip
+   :seealso:
 
-peach-puff
+     - :class:`<text-style>`
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-peru
+.. generic-function:: text-style-size
 
-pink
+   Returns the style component of the specified text style.
 
-plum
+   :signature: text-style-size *text-style* => *size*
 
-powder-blue
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value size: An instance of :drm:`<integer>`, or an instance of type ``one-of(#"normal", #"tiny", #"very-small", #"small", #"large", #"very-large:", #"huge", #"smaller", #"larger", #f)``. Default value: ``#f``.
 
-purple
+   :description:
 
-red
+     Returns the style component of the specified text style.
 
-rosy-brown
+   :seealso:
 
-royal-blue
+     - :class:`<text-style>`
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-saddle-brown
+.. generic-function:: text-style-slant
 
-salmon
+   Returns the slant component of the specified text style.
 
-sandy-brown
+   :signature: text-style-slant *text-style* => *slant*
 
-sea-green
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value slant: An instance of type ``one-of(#"roman", #"italic", #"oblique", #f)``.
 
-seashell
+   :description:
 
-sienna
+     Returns the slant component of the specified text style.
 
-sky-blue
+   :seealso:
 
-slate-blue
+     - :class:`<text-style>`
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-slate-gray
+.. generic-function:: text-style-strikeout?
 
-snow
+   Returns ``#t`` if the text style includes a line through it, striking it
+   out.
 
-spring-green
+   :signature: text-style-strikeout? *text-style* => *strikeout?*
 
-steel-blue
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value strikeout?: An instance of type :drm:`<boolean>`.
 
-tan
+   :description:
 
-thistle
+     Returns ``#t`` if the text style includes a line through it, striking it
+     out.
 
-tomato
+   :seealso:
 
-turquoise
+     - :class:`<text-style>`
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-underline?`
+     - :gf:`text-style-weight`
 
-violet
+.. generic-function:: text-style-underline?
 
-violet-red
+   Returns ``#t`` if the text style is underlined.
 
-wheat
+   :signature: text-style-underline? *text-style* => *underline?*
 
-white
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value underline?: An instance of type :drm:`<boolean>`.
 
-white-smoke
+   :description:
 
-yellow
+     Returns ``#t`` if the text style is underlined.
 
-yellow-green
+   :seealso:
 
-Application programs can define other colors; these are provided because
-they are commonly used in the X Windows community, not because there is
-anything special about these particular colors.
+     - :class:`<text-style>`
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-weight`
 
-See also
-        
+.. generic-function:: text-style-weight
 
-`$black`_
+   Returns the weight component of the specified text style.
 
-`stencil?`_
+   :signature: text-style-weight *text-style* => *weight*
 
-`$red`_
+   :parameter text-style: An instance of type :class:`<text-style>`.
+   :value weight: An instance of type ``one-of(#"normal", #"condensed", #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold", #"extra-bold", #"black", #f)``.
 
-`$yellow`_
+   :description:
 
-`$green`_
+     Returns the weight component of the text style.
 
-`$blue`_
+   :seealso:
 
-`$magenta`_
+     - :class:`<text-style>`
+     - :gf:`text-style?`
+     - :gf:`text-style-components`
+     - :gf:`text-style-family`
+     - :gf:`text-style-size`
+     - :gf:`text-style-slant`
+     - :gf:`text-style-strikeout?`
+     - :gf:`text-style-underline?`
 
-`contrasting-dash-patterns-limit`_
+.. constant:: $tiles-stipple
 
-$foreground
------------
+   A stipple pattern for use in creating a patterned brush with lines and
+   spaces suggesting tiles
 
-Constant
-''''''''
+   :type: :class:`<array>`
 
-Summary
-       
+   :description:
 
-An indirect ink that uses the medium's foreground design.
+     A stipple pattern for use in creating a patterned brush with lines and
+     spaces suggesting tiles
 
-Type
-    
+   :seealso:
 
-`<ink>`_
-                            
+     - :gf:`brush-stipple`
 
-Description
-           
+.. constant:: $vertical-hatch
 
-An indirect ink that uses the medium's foreground design.
+      A stipple pattern for use in creating a patterned brush with alternating
+      vertical columns of lines and spaces.
 
-See also
-        
+   :type: :class:`<array>`
 
-`<ink>`_
+   :description:
 
-`<palette>`_
+     A stipple pattern for use in creating a patterned brush with alternating
+     vertical columns of lines and spaces.
 
-fully-merged-text-style?
-------------------------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :gf:`brush-stipple`
 
-Summary
-       
+.. constant:: $white
 
-Returns *#t* if the specified text style is completely specified.
+   The usual definition of white.
 
-Signature
-         
+   :type: :class:`<color>`
 
-fully-merged-text-style? *text-style* => *boolean*
-                                                  
+   :description:
 
-Arguments
-         
+     The usual definition of white. In the *rgb* color model, its value is
+     *111*.
 
--  *text-style* An instance of type *<text-style>*.
+   :seealso:
 
-Values
-      
+     - :class:`<color>`
 
--  *boolean* An instance of type *<boolean>*.
+.. generic-function:: write-image
 
-Description
-           
+   Writes out a copy of an image to disk (or other designated medium).
 
-Returns *#t* if the specified text style is completely specified.
+   :signature: write-image *image* *locator* => ()
 
-See also
-        
+   :parameter image: An instance of type :class:`<image>`.
+   :parameter locator: An instance of type :drm:`<string>`.
 
-`merge-text-styles`_
+   :description:
 
-$green
-------
+     Writes out a copy of *image* to the designated medium *locator*.
 
-Constant
-''''''''
+.. constant:: $xor-brush
 
-Summary
-       
+   A standard brush with the drawing property of *$boole-xor*.
 
-The usual definition of the color green.
+   :type: :class:`<brush>`
 
-Type
-    
+   :description:
 
-`<color>`_
-                              
+     A standard brush with the drawing property of *$boole-xor*.
 
-Description
-           
+.. constant:: $yellow
 
-The usual definition of the color green.
+   The usual definition of the color yellow.
 
-See also
-        
+   :type: :class:`<color>`
 
-`<color>`_
+   :description:
 
-$hearts-stipple
----------------
+     The usual definition of the color yellow.
 
-Constant
-''''''''
+   :seealso:
 
-Summary
-       
-
-A stipple pattern for use in creating a patterned brush that draws a
-heart shape.
-
-Type
-    
-
-*<array>*
-         
-
-Description
-           
-
-A stipple pattern for use in creating a patterned brush that draws a
-heart shape.
-
-See also
-        
-
-`brush-stipple`_
-
-$horizontal-hatch
------------------
-
-Constant
-''''''''
-
-Summary
-       
-
-A stipple pattern for use in creating a patterned brush with alternating
-horizontal rows of lines and spaces.
-
-Type
-    
-
-*<array>*
-         
-
-Description
-           
-
-A stipple pattern for use in creating a patterned brush with alternating
-horizontal rows of lines and spaces.
-
-See also
-        
-
-`brush-stipple`_.
-
-<image>
--------
-
-Abstract class
-''''''''''''''
-
-Summary
-       
-
-The class for objects that are images.
-
-Superclasses
-            
-
-`<ink>`_
-                            
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The class for objects that are images.
-
-Operations
-          
-
-The following operation is exported from the *DUIM-DCs* module.
-
-`image?`_
-
-The following operation is exported from the *DUIM-Graphics* module.
-
-` <graphics.htm#64653>`_
-
-See also
-        
-
-`image?`_
-
-`image-depth`_
-
-`image-height`_
-
-`image-width`_
-
-`<ink>`_
-
-image?
-------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if its argument is an image.
-
-Signature
-         
-
-*image?* *object* => *boolean*
-                              
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if its argument is an image.
-
-See also
-        
-
-`<image>`_
-
-`image-depth`_
-
-`image-height`_
-
-`image-width`_
-
-image-depth
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the depth of an image.
-
-Signature
-         
-
-*image-depth* *image* => *depth*
-                                
-
-Arguments
-         
-
--  *image* An instance of type *<image>*.
-
-Values
-      
-
--  *depth* An instance of type *<real>*.
-
-Description
-           
-
-Returns the depth of the image *image*.
-
-See also
-        
-
-`<image>`_
-
-`image?`_
-
-`image-height`_
-
-`image-width`_
-
-image-height
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the height of an image.
-
-Signature
-         
-
-*image-height* *image* => *height*
-                                  
-
-Arguments
-         
-
--  *image* An instance of type *<image>*.
-
-Values
-      
-
--  *height* An instance of type *<real>*.
-
-Description
-           
-
-Returns the height of the image *image*.
-
-See also
-        
-
-`<image>`_
-
-`image?`_
-
-`image-depth`_
-
-`image-width`_
-
-image-width
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the width of an image.
-
-Signature
-         
-
-*image-width* *image* => *width*
-                                
-
-Arguments
-         
-
--  *image* An instance of type *<image>*.
-
-Values
-      
-
--  *width* An instance of type *<real>*.
-
-Description
-           
-
-Returns the width of the image *image*.
-
-See also
-        
-
-`<image>`_
-
-`image?`_
-
-`image-depth`_
-
-`image-height`_
-
-<ink>
------
-
-Abstract class
-''''''''''''''
-
-Summary
-       
-
-The class of objects that represent a way of arranging colors and
-opacities in the drawing plane.
-
-Superclasses
-            
-
-*<object>*
-          
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The class of objects that represent a way of arranging colors and
-opacities in the drawing plane. Intuitively, it is anything that can be
-drawn with. An ink is anything that can be used in medium-foreground,
-medium-background, medium-ink, or the foreground or background of a
-brush.
-
-Operations
-          
-
-The following operation is exported from the *DUIM-DCs* module.
-
-`ink?`_
-
-See also
-        
-
-`ink?`_
-
-ink?
-----
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if its argument is an ink.
-
-Signature
-         
-
-*ink?* *object* => *boolean*
-                            
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if *object* is an ink, otherwise returns *#f*.
-
-See also
-        
-
-`<ink>`_
-
-$magenta
---------
-
-Constant
-''''''''
-
-Summary
-       
-
-The usual definition of the color magenta.
-
-Type
-    
-
-`<color>`_
-                              
-
-Description
-           
-
-The usual definition of the color magenta.
-
-See also
-        
-
-`<color>`_
-
-make
-----
-
-G.f. method
-'''''''''''
-
-Summary
-       
-
-Returns an object that is of the same type as the class given as its
-argument.
-
-Signature
-         
-
-*make* *(class* *==* *<pen>)* *#key* *width* *units* *dashes*
-*joint-shape* *cap-shape* => *pen*
-                                                                                                
-
-*make* *(class* *==* *<brush>)* *#key* *foreground* *background* *mode*
-*fill-style* *fill-rule* *tile* *stipple* *ts-x* *ts-y* => *brush*
-                                                                                                                                          
-
-Arguments
-         
-
--  *(class==<pen>)* The class `<pen>`_.
--  *width* An instance of type *<pen-width>*. Default value: *1*.
--  *units* An instance of type *<pen-units>*. Default value:
-   *#"normal"*.
--  *dashes* An instance of type *<pen-dashes>*. Default value: *#f*.
--  *joint-shape* An instance of type *<pen-joint-shape>*. Default
-   value: *#"miter"*.
--  *cap-shape* An instance of type *<pen-cap-shape>*. Default value:
-   *#"butt"*.
--  *(class==<brush>)* The class `<brush>`_.
--  *foreground* An instance of type `<ink>`_.
-   Default value: *$foreground*.
--  *background* An instance of type `<ink>`_.
-   Default value: *$background*.
--  *mode* An instance of type *<integer>*. Default value: *$boole-1*.
--  *fill-style* A *(fill-style)* or *#f*.** Default value: *#f*.
--  *fill-rule* A *(fill-rule)* or *#f*.** Default value: *#f*.
--  *tile* An *(image)* or *#f*.** Default value: *#f*.
--  *stipple* A *(stipple)* or *#f*.** Default value: *#f*.
--  *ts-x* An instance of *false-or(<integer>).* Default value: *#f*.
--  *ts-y* An instance of *false-or(<integer>).* Default value: *#f*.
-
-Values
-      
-
--  *pen* An instance of type `<pen>`_.
--  *brush* An instance of type `<brush>`_.
-
-Description
-           
-
-Returns an object that is of the same type as the class given as its
-argument. Default values for the keywords that specify object are
-provided, or the keywords can be given explicitly to override the
-defaults.
-
-See also
-        
-
-`<brush>`_
-
-`<pen>`_
-
-make-color-for-contrasting-color
---------------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns a color that is recognizably different from the main color.
-
-Signature
-         
-
-*make-color-for-contrasting-color* *ink* => *color*
-                                                   
-
-Arguments
-         
-
--  *ink* An instance of type `<ink>`_.
-
-Values
-      
-
--  *color* An instance of type `<color>`_.
-
-Description
-           
-
-Returns a color that is recognizably different from the main color.
-
-See also
-        
-
-`make-contrasting-colors`_
-
-make-contrasting-colors
------------------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a vector of colors with recognizably different appearance.
-
-Signature
-         
-
-*make-contrasting-colors* *n* #key *k* => *colors*
-                                                  
-
-Arguments
-         
-
--  *n* An instance of type *<integer>*.
--  *k* An instance of type *<integer>*.
-
-Values
-      
-
--  *colors* An instance of type *limited(<sequence>, of:* `See
-   <color>`_*)*.
-
-Description
-           
-
-Returns a vector of n colors with recognizably different appearance.
-Elements of the vector are guaranteed to be acceptable values for the
-*brush:* argument to the drawing functions, and do not include
-*$foreground*, *$background*, or *nil*. Their class is otherwise
-unspecified. The vector is a fresh object that may be modified.
-
-If *k* is supplied, it must be an integer between *0* and *n* - *1*
-(inclusive), in which case *make-contrasting-colors* returns the *k* th
-color in the vector rather than the whole vector.
-
-If the implementation does not have *n* different contrasting colors,
-*make-contrasting-colors* signals an error. This does not happen unless
-*n* is greater than eight.
-
-The rendering of the color is a true color or a stippled pattern,
-depending on whether the output medium supports color.
-
-See also
-        
-
-`contrasting-colors-limit`_
-
-`$green`_
-
-`make-color-for-contrasting-color`_
-
-`make-contrasting-dash-patterns`_
-
-make-contrasting-dash-patterns
-------------------------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a vector of dash patterns with recognizably different
-appearances.
-
-Signature
-         
-
-*make-contrasting-dash-patterns* *n* *#key* *k* => *dashes*
-                                                           
-
-Arguments
-         
-
--  *n* An instance of type *<integer>*.
--  *k* An instance of type *<integer>*.
-
-Values
-      
-
--  *dashes* An instance of type *<vector>*.
-
-Description
-           
-
-Returns a vector of *n* dash patterns with recognizably different
-appearances. If the keyword *k* is supplied,
-*make-contrasting-dash-patterns* returns the *k* th pattern. If there
-are not n different dash patterns, an error is signalled.
-
-The argument *n* represents the number of dash patterns.
-
-The argument *k* represents the index in the vector of dash patterns
-indicating the pattern to use.
-
-See also
-        
-
-`contrasting-dash-patterns-limit`_
-
-`make-contrasting-colors`_
-
-make-device-font
-----------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a device-specific font.
-
-Signature
-         
-
-*make-device-font* *port* *font* => *device-font*
-                                                 
-
-Arguments
-         
-
--  *port* An instance of type ` <silica.htm#11606>`_.
--  *font* An instance of type *<object>*.
-
-Values
-      
-
--  *device-font* A font object or the name of a font.
-
-Description
-           
-
-Returns a device-specific font. Text styles are mapped to fonts for a
-port, a character set, and a text style. All ports must implement
-methods for the generic functions, for all classes of text style.
-
-The objects used to represent a font mapping are unspecified and are
-likely to vary from port to port. For instance, a mapping might be some
-sort of font object on one type of port, or might simply be the name of
-a font on another.
-
-Part of initializing a port is to define the mappings between text
-styles and font names for the port's host window system.
-
-make-gray-color
----------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a member of class *<color>*.
-
-Signature
-         
-
-*make-gray-color* *luminosity* #key *opacity* => *color*
-                                                        
-
-Arguments
-         
-
--  *luminosity* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *opacity* An instance of type *limited(<real>, min: 0, max: 1)*.
-   Default value: *1.0*.
-
-Values
-      
-
--  *color* An instance of type `<color>`_.
-
-Description
-           
-
-Returns a member of class *<color>*. The *luminance* is a real number
-between *0* and *1* (inclusive). On a black-on-white display device, *0*
-means black, *1* means white, and the values in between are shades of
-gray. On a white-on-black display device, *0* means white, *1* means
-black, and the values in between are shades of gray.
-
-See also
-        
-
-`make-ihs-color`_
-
-`make-rgb-color`_
-
-make-ihs-color
---------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a member of the class *<color>*.
-
-Signature
-         
-
-*make-ihs-color* *intensity* *hue* *saturation* #key *opacity* =>
-*color*
-                                                                         
-
-Arguments
-         
-
--  *intensity* An instance of type *limited(<real>, min: 0, max:
-   sqrt(3))*.
--  *hue* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *saturation* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *opacity* An instance of type *limited(<real>, min: 0, max: 1)*.
-   Default value: *1.0*.
-
-Values
-      
-
--  *color* An instance of type `<color>`_.
-
-Description
-           
-
-Returns a member of class *<color>*. The *intensity* argument is a real
-number between *0* and sqrt(*3*) (inclusive). The *hue* and
-*saturation* arguments are real numbers between 0 and 1 (inclusive).
-
-See also
-        
-
-`make-gray-color`_
-
-`make-rgb-color`_
-
-make-palette
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns a member of the class *<palette>*.
-
-Signature
-         
-
-*make-palette* *port* *#key* => *palette*
-                                         
-
-Arguments
-         
-
--  *port* An instance of type ` <silica.htm#11606>`_.
-
-Values
-      
-
--  *palette* An instance of type `<palette>`_.
-
-Description
-           
-
-Returns a member of the class `<palette>`_.
-
-make-pattern
-------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a pattern generated from a two-dimensional array.
-
-Signature
-         
-
-*make-pattern* *array* *colors* => *pattern*
-                                            
-
-Arguments
-         
-
--  *array* An instance of type *<array>*.
--  *colors* An instance of type *limited(<sequence>, of:* `See
-   <color>`_*)*.
-
-Values
-      
-
--  *pattern* An instance of type *<pattern>*.
-
-Description
-           
-
-Returns a pattern design that has *(array-dimension* *array* *0)* cells
-in the vertical direction and *(array-dimension* *array* *1}* cells in
-the horizontal direction. *array* must be a two-dimensional array of
-non-negative integers less than the length of *designs*. *designs* must
-be a sequence of designs. The design in cell*i,j* of the resulting
-pattern is the *n* th element of *designs*, if *n* is the value of
-*(aref* *array* *i j* *)*. For example, *array* can be a bit-array and
-*designs* can be a list of two designs, the design drawn for 0 and the
-one drawn for 1. Each cell of a pattern can be regarded as a hole that
-allows the design in it to show through. Each cell might have a
-different design in it. The portion of the design that shows through a
-hole is the portion on the part of the drawing plane where the hole is
-located. In other words, incorporating a design into a pattern does not
-change its alignment to the drawing plane, and does not apply a
-coordinate transformation to the design. Drawing a pattern collects the
-pieces of designs that show through all the holes and draws the pieces
-where the holes lie on the drawing plane. The pattern is completely
-transparent outside the area defined by the array.
-
-Each cell of a pattern occupies a 1 by 1 square. You can use `See
-transform-region <geom.htm#33126>`_ to scale the pattern to a different
-cell size and shape, or to rotate the pattern so that the rectangular
-cells become diamond-shaped. Applying a coordinate transformation to a
-pattern does not affect the designs that make up the pattern. It only
-changes the position, size, and shape of the cells' holes, allowing
-different portions of the designs in the cells to show through.
-Consequently, applying *make-rectangular-tile* to a pattern of
-nonuniform designs can produce a different appearance in each tile. The
-pattern cells' holes are tiled, but the designs in the cells are not
-tiled and a different portion of each of those designs shows through in
-each tile.
-
-make-rgb-color
---------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a member of class *<color>*.
-
-Signature
-         
-
-*make-rgb-color* *red* *green* *blue* #key *opacity* => *color*
-                                                               
-
-Arguments
-         
-
--  *red* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *green* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *blue* An instance of type *limited(<real>, min: 0, max: 1)*.
--  *opacity* An instance of type *limited(<real>, min: 0, max: 1)*.
-   Default value: *1.0*.
-
-Values
-      
-
--  *color* An instance of type `<color>`_.
-
-Description
-           
-
-Returns a member of class *<color>*. The *red*, *green*, and*blue*
-arguments are real numbers between 0 and 1 (inclusive) that specify the
-values of the corresponding color components.
-
-When all three color components are 1, the resulting color is white.
-When all three color components are 0, the resulting color is black.
-
-See also
-        
-
-`make-gray-color`_
-
-`make-ihs-color`_
-
-make-stencil
-------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a pattern design generated from a two-dimensional array.
-
-Signature
-         
-
-*make-stencil* *array* => *stencil*
-                                   
-
-Arguments
-         
-
--  *array* An instance of type *<array>*.
-
-Values
-      
-
--  *stencil* An instance of type *<stencil>*.
-
-Description
-           
-
-Returns a pattern design that has (*array-dimension* *array* *0*) cells
-in the vertical direction and (*array-dimension* *array* *1*) cells in
-the horizontal direction. *array* must be a two-dimensional array of
-real numbers between 0 and 1 (inclusive) that represent opacities. The
-design in cell *i,j* of the resulting pattern is the value of
-*(make-opacity (aref* *array* *i j))*.
-
-make-text-style
----------------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns an instance of *<text-style>*.
-
-Signature
-         
-
-*make-text-style* *family* *weight* *slant* *size* #key *underline?*
-*strikeout?* => *text-style*
-                                                                                                 
-
-Arguments
-         
-
--  *family* An instance of type *one-of(#"fix", #"serif", #"sans-serif",
-   #f)*.
--  *weight* An instance of type *one-of(#"normal", #"condensed",
-   #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold",
-   #"extra-bold", #"black", #f)*.
--  *slant* An instance of type *one-of(#"roman", #"italic", #"oblique",
-   #f)*.
--  *size* An instance of *<integer>*, or an instance of type
-   *one-of(#"normal", #"tiny", #"very-small", #"small", #"large",
-   #"very-large:", #"huge", #"smaller", #"larger", #f)*.
--  *underline?* An instance of type *<boolean>*.
--  *strikeout?* An instance of type *<boolean>*.
-
-Values
-      
-
--  *text-style* An instance of type *<text-style>*.
-
-Description
-           
-
-Returns an instance of *<text-style>*.
-
-Text style objects have components for family, face, and size. Not all
-of these attributes need be supplied for a given text style object. Text
-styles can be merged in much the same way as pathnames are merged;
-unspecified components in the style object (that is, components that
-have *#f* in them) may be filled in by the components of a default style
-object. A text style object is called *fully specified* if none of its
-components is *#f*, and the size component is not a relative size (that
-is, neither *#"smaller"* nor *#"larger"*).
-
-If *size* is an integer, it represents the size of the font in printer’s
-points.
-
-Implementations are permitted to extend legal values for family, face,
-and size.
-
-See also
-        
-
-`$solid-pen`_.
-
-merge-text-styles
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Merges two text styles and returns a new text style that is the same as
-the first, except that unspecified components in are filled in from the
-second.
-
-Signature
-         
-
-*merge-text-styles* *text-style* *default-style* => *text-style*
-                                                                
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
--  *default-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *text-style* An instance of type *<text-style>*.
-
-Description
-           
-
-Merges the text styles *text-style* with *default-style*, that is,
-returns a new text style that is the same as *text-style,* except that
-unspecified components in style1 are filled in from *default-style*.
-For convenience, the two arguments may be also be style specs. Note that
-default-style must be a *fully specified* text style.
-
-When merging the sizes of two text styles, if the size from the first
-style is a relative size, the resulting size is either the next smaller
-or next larger size than is specified by *default-style*. The ordering
-of sizes, from smallest to largest, is *#"tiny"*, *#"very-small"*,
-*#"small"*, *#"normal"*, *#"large"*,*#"very-large"*, and *#"huge"*.
-
-See also
-        
-
-`default-background-setter`_.
-
-<palette>
----------
-
-Abstract instantiable class
-'''''''''''''''''''''''''''
-
-Summary
-       
-
-The protocol class for color palettes.
-
-Superclasses
-            
-
-*<object>*
-          
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The protocol class for color palettes.
-
-Operations
-          
-
-` <silica.htm#25428>`_ ` <silica.htm#39992>`_ ` <frames.htm#29202>`_
-` <frames.htm#56600>`_ ` <silica.htm#84661>`_
-
-See also
-        
-
-`palette?`_
-
-palette?
---------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if an object is a palette.
-
-Signature
-         
-
-*palette?* *object* => *boolean*
-                                
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if the object *object* is a palette. A palette is a color
-map that maps 16 bit colors into a, for example, 8 bit display.
-
-See also
-        
-
-`<palette>`_
-
-<palette-full>
---------------
-
-Sealed concrete class
-'''''''''''''''''''''
-
-Summary
-       
-
-The class for errors that are signalled when a color palette is full.
-
-Superclasses
-            
-
-*<error>*
-         
-
-Init-keywords
-             
-
--  *palette:*
-
-Description
-           
-
-The class for errors that are signalled when a color palette is full.
-
-See also
-        
-
-`<palette>`_
-
-$parquet-stipple
-----------------
-
-Constant
-''''''''
-
-Summary
-       
-
-A stipple pattern for use in creating a patterned brush that looks like
-a parquet floor.
-
-Type
-    
-
-*<array>*
-         
-
-Description
-           
-
-A stipple pattern for use in creating a patterned brush that looks like
-a parquet floor.
-
-See also
-        
-
-`brush-stipple`_.
-
-<pattern>
----------
-
-Sealed concrete class
-'''''''''''''''''''''
-
-Summary
-       
-
-The class for patterns.
-
-Superclasses
-            
-
-*<stencil>*
-           
-
-Init-keywords
-             
-
--  *colors:* An instance of type *limited(<sequence> of: `See
-   <color>`_)*.
-
-Description
-           
-
-The class for patterns. A pattern is a bounded rectangular arrangement
-of color, like a checkerboard. Drawing a pattern draws a different
-design in each rectangular cell of the pattern.
-
-Operations
-          
-
-The following operation is exported from the *DUIM-DCs* module.
-
--  `pattern?`_
-
-See also
-        
-
-`<stencil>`_
-
-`make-pattern`_
-
-pattern?
---------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if its argument is a pattern.
-
-Signature
-         
-
-*pattern?* *object* => *boolean*
-                                
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if *object* is a pattern.
-
-See also
-        
-
-`make-pattern`_
-
-<pen>
------
-
-Abstract instantiable class
-'''''''''''''''''''''''''''
-
-Summary
-       
-
-The protocol class for pens.
-
-Superclasses
-            
-
-*<object>*
-          
-
-Init-keywords
-             
-
--  *width:* An instance of type *<integer>*. Default value: *1*.
--  *units:* An instance of type *one-of(#"normal", #"point", #"device")*
-   . Default value: *#"normal"*.
--  *dashes:* An instance of type *union(<boolean>, <sequence>)*.
-   Default value: *#f*.
--  *joint-shape:* An instance of type *one-of(#"miter", #"bevel",
-   #"round", #"none")*. Default value: *#"miter"*.
--  *cap-shape:* An instance of type *one-of(#"butt", #"square",
-   #"round", #"no-end-point")*. Default value: *#"butt"*.
-
-Description
-           
-
-The protocol class for pens. A pen imparts ink to a medium.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-DCs* module.
-
-`=`_ `pen?`_ `See
-pen-cap-shape`_ `pen-dashes`_ `See
-pen-joint-shape`_ `pen-units`_ `See
-pen-width`_
-
-See also
-        
-
-`<ink>`_
-
-`make`_
-
-`pen?`_
-
-`pen-cap-shape`_
-
-`pen-dashes`_
-
-`pen-joint-shape`_
-
-`pen-units`_
-
-`pen-width`_
-
-pen?
-----
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if its argument is a pen.
-
-Signature
-         
-
-*pen?* *object* => *boolean*
-                            
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if *object* is a pen, otherwise returns *#f*.
-
-See also
-        
-
-`<pen>`_
-
-`pen-cap-shape`_
-
-`pen-dashes`_
-
-`pen-joint-shape`_
-
-`pen-units`_
-
-`pen-width`_
-
-pen-cap-shape
--------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the shape of the end of a line or an arc drawn by the pen.
-
-Signature
-         
-
-*pen-cap-shape* *pen* => *value*
-                                
-
-Arguments
-         
-
--  *pen* An instance of type `<pen>`_.
-
-Values
-      
-
--  *value* An instance of type *one-of(#"butt", #"square", #"round",
-   #"no-end-point")*.
-
-Description
-           
-
-Returns the shape of the end of a line or an arc drawn by *pen*.
-
-See also
-        
-
-`make-contrasting-dash-patterns`_
-
-`<pen>`_
-
-`pen?`_
-
-`pen-dashes`_
-
-`pen-joint-shape`_
-
-`pen-units`_
-
-`pen-width`_
-
-pen-dashes
-----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if the lines drawn by a pen are dashed.
-
-Signature
-         
-
-*pen-dashes* *pen* => *value*
-                             
-
-Arguments
-         
-
--  *pen* An instance of type `<pen>`_.
-
-Values
-      
-
--  *value* An instance of type *type-union(<boolean>, <sequence>)*.
-
-Description
-           
-
-Returns *#t* if the lines drawn by *pen* are dashed. The sequence is a
-vector of integers indicating the pattern of dashes. There must be an
-even number of integers. The odd elements in the list indicate the
-length of the inked dashes and the even elements indicate the length of
-the gaps between dashes.
-
-See also
-        
-
-`<pen>`_
-
-`pen?`_
-
-`pen-cap-shape`_
-
-`pen-joint-shape`_
-
-`pen-units`_
-
-`pen-width`_
-
-pen-joint-shape
----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the shape of the joints between line segments of a closed,
-unfilled figure.
-
-Signature
-         
-
-*pen-joint-shape* *pen* => *value*
-                                  
-
-Arguments
-         
-
--  *pen* An instance of type `<pen>`_.
-
-Values
-      
-
--  *value* An instance of type *one-of(#"miter", #"bevel", #"round",
-   #"none")*.
-
-Description
-           
-
-Returns the shape of the joints between line segments of a closed,
-unfilled figure drawn by *pen*.
-
-See also
-        
-
-`make-contrasting-dash-patterns`_
-
-`<pen>`_
-
-`pen?`_
-
-`pen-cap-shape`_
-
-`pen-dashes`_
-
-`pen-units`_
-
-`pen-width`_
-
-pen-units
----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the units in which the pen width is specified.
-
-Signature
-         
-
-*pen-units* *pen* => *value*
-                            
-
-Arguments
-         
-
--  *pen* An instance of type `<pen>`_.
-
-Values
-      
-
--  *value* An instance of type *one-of(#"normal", #"point", #"device")*
-   .
-
-Description
-           
-
-Returns the units in which the pen width is specified. They may be
-normal, points, or device-dependent. A width of *#"normal"* is a
-comfortably visible thin line.
-
-See also
-        
-
-`make-contrasting-dash-patterns`_
-
-`<pen>`_
-
-`pen?`_
-
-`pen-cap-shape`_
-
-`pen-dashes`_
-
-`pen-joint-shape`_
-
-`pen-width`_
-
-pen-width
----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the pen-width, that is how wide a stroke the pen draws, of its
-argument.
-
-Signature
-         
-
-*pen-width* *pen* => *width*
-                            
-
-Arguments
-         
-
--  *pen* An instance of type `<pen>`_.
-
-Values
-      
-
--  *width* An instance of type *<pen-width>*. The units that specify
-   the width of the pen may be *#"normal"*, *#"points"*, or
-   *#"device"*.
-
-Description
-           
-
-Returns the pen width, that is how wide a stroke the pen draws, of *pen*
-. A width of *#"normal"* is a comfortably visible thin line.
-
-See also
-        
-
-`make-contrasting-dash-patterns`_
-
-`<pen>`_
-
-`pen?`_
-
-`pen-cap-shape`_
-
-`pen-dashes`_
-
-`pen-joint-shape`_
-
-`pen-units`_
-
-read-image
-----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Reads an image.
-
-Signature
-         
-
-*read-image* *resource-id* *#key image-type:* *image-type* *#all-keys*
-=> *image*
-                                                                                 
-
-Arguments
-         
-
--  *locator* An instance of type *type-union(<string>, <locator>)*.
--  *image-type* On Windows, an instance of type *one-of(#"bitmap",
-   #"icon")*.
-
-Values
-      
-
--  *image* An instance of type *<image>*.
-
-Description
-           
-
-Reads an image from the location *resource-id*. This function calls
-*read-image-as*.
-
-See also
-        
-
-`read-image-as`_.
-
-read-image-as
--------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Reads an image.
-
-Signature
-         
-
-*read-image-as* *class* *locator* *image-type* #key #all-keys => *image*
-                                                                        
-
-Arguments
-         
-
--  *class* An instance of type *<object>*.
--  *locator* An instance of type *<string>*.
--  *image-type* On Windows, *#"bitmap"* or *#"icon"*.
-
-Values
-      
-
--  *image* An instance of type *<image>*.
-
-Description
-           
-
-Reads the image in the location pointed to be *locator*, as an instance
-of a particular class*.* This function is called by *read-image.*
-
-The *class* represents the class that the image is read as an instance
-of.
-
-See also
-        
-
-`read-image`_
-
-$red
-----
-
-Constant
-''''''''
-
-Summary
-       
-
-The usual definition of the color red.
-
-Type
-    
-
-`<color>`_
-                              
-
-Description
-           
-
-The usual definition of the color red.
-
-See also
-        
-
-See the class `$blue`_.
-
-remove-colors
--------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Removes one or more colors from a palette and returns the updated
-palette.
-
-Signature
-         
-
-*remove-colors* *palette* *#rest* *colors* => *palette*
-                                                       
-
-Arguments
-         
-
--  *palette* An instance of type `<palette>`_.
--  *colors* Instances of type `<color>`_.
-
-Values
-      
-
-*palette*
-
-Description
-           
-
-Removes *colors* from *palette* and returns the updated palette.
-
-$solid-pen
-----------
-
-Constant
-''''''''
-
-Summary
-       
-
-A pen that draws a solid line.
-
-Type
-    
-
-`<pen>`_
-                            
-
-Description
-           
-
-A pen that draws a solid line. The width of the line is *1*, and
-*dashes:* is *#f.*
-
-See also
-        
-
-See the class `<pen>`_ and the constants `See
-make`_, `$dash-dot-pen`_, and `See
-$dotted-pen`_.
-
-<stencil>
----------
-
-Sealed concrete class
-'''''''''''''''''''''
-
-Summary
-       
-
-The class for stencils.
-
-Superclasses
-            
-
-*<image>*
-         
-
-Init-keywords
-             
-
--  *array:* An instance of type *<array>*. Required.
--  *transform:* An instance of type `<transform> <geom.htm#33417>`_.
-   Default value: *#f*.
-
-Description
-           
-
-The class for stencils. A *stencil* is a special kind of pattern that
-contains only opacities.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-DCs* module.
-
-`image-height`_ `image-width`_
-`stencil?`_
-
-The following operation is exported from the *DUIM-Geometry* module.
-
-`box-edges <geom.htm#52858>`_
-
-See also
-        
-
-`<image>`_
-
-`make-pattern`_
-
-`stencil?`_
-
-stencil?
---------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if its argument is a stencil.
-
-Signature
-         
-
-stencil? *object* => *boolean*
-                              
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if its argument is a stencil.
-
-See also
-        
-
-`make-pattern`_.
-
-`<stencil>`_
-
-<text-style>
-------------
-
-Abstract instantiable class
-'''''''''''''''''''''''''''
-
-Summary
-       
-
-The protocol class for text styles.
-
-Superclasses
-            
-
-*<object>*
-          
-
-Init-keywords
-             
-
--  *family:* An instance of type *one-of(#"fix", #"serif",
-   #"sans-serif", #f)*. Default value: *#f*.
--  *weight:* An instance of type *one-of(#"normal", #"condensed",
-   #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold",
-   #"extra-bold", #"black", #f)*.
--  *slant:* An instance of type *one-of(#"roman", #"italic", #"oblique",
-   #f)*.
--  *size:* An instance of *<integer>*, or an instance of type
-   *one-of(#"normal", #"tiny", #"very-small", #"small", #"large",
-   #"very-large:", #"huge", #"smaller", #"larger", #f)*. Default value:
-   *#f*.
--  *underline?:* An instance of type *<boolean>*. Default value: *#f*.
--  *strikeout?:* An instance of type *<boolean>*. Default value: *#f*.
-
-Description
-           
-
-The protocol class for text styles. When specifying a particular
-appearance for rendered characters, there is a tension between
-portability and access to specific font for a display device. DUIM
-provides a portable mechanism for describing the desired *text style* in
-abstract terms. Each port defines a mapping between these abstract style
-specifications and particular device-specific fonts. In this way, an
-application programmer can specify the desired text style in abstract
-terms secure in the knowledge that an appropriate device font will be
-selected at run time. However, some applications may require direct
-access to particular device fonts. The text style mechanism supports
-specifying device fonts by name, allowing the programmer to sacrifice
-portability for control.
-
-If *size:* is specified as an integer, then it represents the font size
-in printer’s points.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-DCs* module.
-
-`=`_ `fully-merged-text-style?`_
-`merge-text-styles`_ `See
-text-style?`_ `See
-text-style-components`_ `See
-text-style-family`_ `See
-text-style-size`_ `See
-text-style-slant`_ `See
-text-style-strikeout?`_ `See
-text-style-underline?`_ `See
-text-style-weight`_
-
-The following operations are exported from the *DUIM-Sheets* module.
-
-` <silica.htm#32535>`_ ` <silica.htm#47453>`_ ` <silica.htm#26061>`_
-` <silica.htm#19634>`_ ` <silica.htm#96248>`_ ` <silica.htm#20511>`_
-` <silica.htm#39545>`_ ` <silica.htm#66055>`_ ` <silica.htm#79518>`_
-
-See also
-        
-
-`text-style?`_
-
-`text-style-components`_
-
-`text-style-family`_
-
-`text-style-size`_
-
-`text-style-slant`_
-
-`text-style-strikeout?`_
-
-`text-style-underline?`_
-
-`text-style-weight`_
-
-text-style?
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if its argument is a text-style.
-
-Signature
-         
-
-*text-style?* *object* => *text-style?*
-                                       
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *text-style?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if its argument is a text-style.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style-components`_
-
-`text-style-family`_
-
-`text-style-size`_
-
-`text-style-slant`_
-
-`text-style-strikeout?`_
-
-`text-style-underline?`_
-
-`text-style-weight`_
-
-text-style-components
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the components of a text style as the values family, face,
-slant, size, underline and strikeout.
-
-Signature
-         
-
-*text-style-components* *text-style* => *family* *weight* *slant* *size*
-*underline?* *strikeout?*
-                                                                                                  
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *family* An instance of type *one-of(#"fix", #"serif", #"sans-serif",
-   #f)*.
--  *weight* An instance of type *one-of(#"normal", #"condensed",
-   #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold",
-   #"extra-bold", #"black", #f)*.
--  *slant* An instance of type *one-of(#"roman", #"italic", #"oblique",
-   #f)*.
--  *size* An instance of *<integer>*, or an instance of type
-   *one-of(#"normal", #"tiny", #"very-small", #"small", #"large",
-   #"very-large:", #"huge", #"smaller", #"larger", #f)*. Default value:
-   *#f*.
--  *underline?* An instance of type *<boolean>*.
--  *strikeout?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns the components of the text style *text-style* as the values
-family, face, slant, size, underline and strikeout.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style?`_
-
-`text-style-family`_
-
-`text-style-size`_
-
-`text-style-slant`_
-
-`text-style-strikeout?`_
-
-`text-style-underline?`_
-
-`text-style-weight`_
-
-text-style-family
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the family component of the specified text style.
-
-Signature
-         
-
-*text-style-family* *text-style* => *family*
-                                            
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *family* An instance of type *one-of(#"fix", #"serif", #"sans-serif",
-   #f)*.
-
-Description
-           
-
-Returns the family component of the specified text style.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style?`_
-
-`text-style-components`_
-
-`text-style-size`_
-
-`text-style-slant`_
-
-`text-style-strikeout?`_
-
-`text-style-underline?`_
-
-`text-style-weight`_
-
-text-style-size
----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the style component of the specified text style.
-
-Signature
-         
-
-*text-style-size* *text-style* => *size*
-                                        
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *size* An instance of *<integer>*, or an instance of type
-   *one-of(#"normal", #"tiny", #"very-small", #"small", #"large",
-   #"very-large:", #"huge", #"smaller", #"larger", #f)*. Default value:
-   *#f*.
-
-Description
-           
-
-Returns the style component of the specified text style.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style?`_
-
-`text-style-components`_
-
-`text-style-family`_
-
-`text-style-slant`_
-
-`text-style-strikeout?`_
-
-`text-style-underline?`_
-
-`text-style-weight`_
-
-text-style-slant
-----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the slant component of the specified text style.
-
-Signature
-         
-
-*text-style-slant* *text-style* => *slant*
-                                          
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *slant* An instance of type *one-of(#"roman", #"italic", #"oblique",
-   #f)*.
-
-Description
-           
-
-Returns the slant component of the specified text style.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style?`_
-
-`text-style-components`_
-
-`text-style-family`_
-
-`text-style-size`_
-
-`text-style-strikeout?`_
-
-`text-style-underline?`_
-
-`text-style-weight`_
-
-text-style-strikeout?
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if the text style includes a line through it, striking it
-out.
-
-Signature
-         
-
-*text-style-strikeout?* *text-style* => *strikeout?*
-                                                    
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *strikeout?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if the text style includes a line through it, striking it
-out.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style?`_
-
-`text-style-components`_
-
-`text-style-family`_
-
-`text-style-size`_
-
-`text-style-slant`_
-
-`text-style-underline?`_
-
-`text-style-weight`_
-
-text-style-underline?
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if the text style is underlined.
-
-Signature
-         
-
-*text-style-underline?* *text-style* => *underline?*
-                                                    
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *underline?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if the text style is underlined.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style?`_
-
-`text-style-components`_
-
-`text-style-family`_
-
-`text-style-size`_
-
-`text-style-slant`_
-
-`text-style-strikeout?`_
-
-`text-style-weight`_
-
-text-style-weight
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the weight component of the specified text style.
-
-Signature
-         
-
-*text-style-weight* *text-style* => *weight*
-                                            
-
-Arguments
-         
-
--  *text-style* An instance of type *<text-style>*.
-
-Values
-      
-
--  *weight* An instance of type *one-of(#"normal", #"condensed",
-   #"thin", #"extra-light", #"light", #"medium", #"demibold", #"bold",
-   #"extra-bold", #"black", #f)*.
-
-Description
-           
-
-Returns the weight component of the text style.
-
-See also
-        
-
-`<text-style>`_
-
-`text-style?`_
-
-`text-style-components`_
-
-`text-style-family`_
-
-`text-style-size`_
-
-`text-style-slant`_
-
-`text-style-strikeout?`_
-
-`text-style-underline?`_
-
-$tiles-stipple
---------------
-
-Constant
-''''''''
-
-Summary
-       
-
-A stipple pattern for use in creating a patterned brush with lines and
-spaces suggesting tiles
-
-Type
-    
-
-*<array>*
-         
-
-Description
-           
-
-A stipple pattern for use in creating a patterned brush with lines and
-spaces suggesting tiles
-
-See also
-        
-
-`brush-stipple`_.
-
-$vertical-hatch
----------------
-
-Constant
-''''''''
-
-Summary
-       
-
-A stipple pattern for use in creating a patterned brush with alternating
-vertical columns of lines and spaces.
-
-Type
-    
-
-*<array>*
-         
-
-Description
-           
-
-A stipple pattern for use in creating a patterned brush with alternating
-vertical columns of lines and spaces.
-
-See also
-        
-
-`brush-stipple`_.
-
-$white
-------
-
-Constant
-''''''''
-
-Summary
-       
-
-The usual definition of white.
-
-Type
-    
-
-`<color>`_
-                              
-
-Description
-           
-
-The usual definition of white. In the *rgb* color model, its value is
-*111*.
-
-See also
-        
-
-`<color>`_
-
-write-image
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Writes out a copy of an image to disk (or other designated medium).
-
-Signature
-         
-
-*write-image* *image* *locator* => ()
-                                     
-
-Arguments
-         
-
--  *image* An instance of type *<image>*.
--  *locator* An instance of type *<string>*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Writes out a copy of *image* to the designated medium *locator*.
-
-$xor-brush
-----------
-
-Constant
-''''''''
-
-Summary
-       
-
-A standard brush with the drawing property of *$boole-xor*.
-
-Type
-    
-
-`<brush>`_
-                              
-
-Description
-           
-
-A standard brush with the drawing property of *$boole-xor*.
-
-$yellow
--------
-
-Constant
-''''''''
-
-Summary
-       
-
-The usual definition of the color yellow.
-
-Type
-    
-
-`<color>`_
-                              
-
-Description
-           
-
-The usual definition of the color yellow.
-
-See also
-        
-
-`<color>`_
-
-
+     - :class:`<color>`

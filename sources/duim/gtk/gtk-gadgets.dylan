@@ -28,7 +28,7 @@ define open abstract class <gtk-gadget-mixin>
   //   init-keyword: gtk-fixed-height?:;
 end class <gtk-gadget-mixin>;
 
-define open generic %gtk-fixed-width?
+define generic %gtk-fixed-width?
     (gadget :: <gtk-gadget-mixin>)
  => (fixed? :: <boolean>);
 
@@ -38,7 +38,7 @@ define method %gtk-fixed-width?
   #f;
 end method;
 
-define open generic %gtk-fixed-height?
+define generic %gtk-fixed-height?
     (gadget :: <gtk-gadget-mixin>)
  => (fixed? :: <boolean>);
 
@@ -64,21 +64,21 @@ define method widget-attributes
   let text-style = get-default-text-style(_port, gadget);
   let foreground
     = if (default-foreground(gadget))
-	vector(foreground:, allocate-color(foreground, port-default-palette(_port)))
+        vector(foreground:, allocate-color(foreground, port-default-palette(_port)))
       else
-	#[]
+        #[]
       end;
   let background
     = if (default-background(gadget))
-	vector(background:, allocate-color(background, port-default-palette(_port)))
+        vector(background:, allocate-color(background, port-default-palette(_port)))
       else
-	#[]
+        #[]
       end;
   let font
     = if (default-text-style(gadget))
-	vector(text-style:, text-style-mapping(_port, text-style).%font-name)
+        vector(text-style:, text-style-mapping(_port, text-style).%font-name)
       else
-	#[]
+        #[]
       end;
   values(foreground, background, font)
 end method widget-attributes;
@@ -88,7 +88,7 @@ end method widget-attributes;
 define method do-compose-space
     (gadget :: <gtk-gadget-mixin>, #key width, height)
  => (space-req :: <space-requirement>)
-  duim-debug-message("do-compose-space(%= , %d, %d)", gadget, width, height);
+  duim-debug-message("do-compose-space(%= , %=, %=)", gadget, width, height);
   let mirror = sheet-direct-mirror(gadget);
   if (mirror)
     let widget = mirror-widget(mirror);
@@ -116,13 +116,13 @@ define method widget-size
  => (width :: <integer>, height :: <integer>)
   with-stack-structure (request :: <GtkRequisition>)
     with-gdk-lock
-      gtk-widget-size-request(widget, request);
+      gtk-widget-get-preferred-size(widget, null-pointer(<GtkRequisition>), request);
     end;
     duim-debug-message("widget-size for %= is %=x%=",
                        widget,
-                       request.GtkRequisition-width,
-                       request.GtkRequisition-height);
-    values(request.GtkRequisition-width, request.GtkRequisition-height)
+                       request.gtk-requisition-width,
+                       request.gtk-requisition-height);
+    values(request.gtk-requisition-width, request.gtk-requisition-height)
   end
 end method widget-size;
 
@@ -159,16 +159,16 @@ define sealed method text-or-image-from-gadget-label
   select (label by instance?)
     <string> =>
       values(add-gadget-label-postfix(gadget, label),
-	     #f, mnemonic, index);
+             #f, mnemonic, index);
 /*---*** Not ready yet!
     <gtk-bitmap>, <gtk-icon> =>
       values(if (mnemonic) as(<string>, vector(mnemonic)) else "" end,
-	     label, mnemonic, index);
+             label, mnemonic, index);
 */
     <image> =>
       //---*** Decode the image and return a pixmap or something
       values("<image>",
-	     #f, mnemonic, index);
+             #f, mnemonic, index);
   end
 end method text-or-image-from-gadget-label;
 
@@ -179,7 +179,7 @@ define sealed method note-gadget-enabled
   next-method();
   let widget = gadget-widget(gadget);
   widget & with-gdk-lock
-    gtk-widget-set-sensitive(widget, $true)
+    gtk-widget-set-sensitive(widget, #t)
   end
 end method note-gadget-enabled;
 
@@ -189,7 +189,7 @@ define sealed method note-gadget-disabled
   next-method();
   let widget = gadget-widget(gadget);
   widget & with-gdk-lock
-    gtk-widget-set-sensitive(widget, $false)
+    gtk-widget-set-sensitive(widget, #f)
   end
 end method note-gadget-disabled;
 
@@ -217,7 +217,7 @@ define method handle-command-for-id
     (sheet :: <sheet>, id :: <integer>) => (handled? :: <boolean>)
   let frame = sheet-frame(sheet);
   select (id)
-    $IDOK => 
+    $IDOK =>
       duim-debug-message("Handling IDOK for %=", sheet);
       activate-default-button(frame);
     $IDCANCEL =>
@@ -226,9 +226,9 @@ define method handle-command-for-id
     otherwise =>
       let gadget = id->gadget(sheet, id);
       if (gadget)
-	handle-gadget-activation(gadget)
+        handle-gadget-activation(gadget)
       else
-	handle-id-activation(frame, id)
+        handle-id-activation(frame, id)
       end;
   end
 end method handle-command-for-id;
@@ -245,8 +245,8 @@ define method activate-default-button
   let gadget = gtk-sheet-with-focus();
   duim-debug-message("  Handling IDOK: focus currently %=", gadget);
   let activated? = instance?(gadget, <action-gadget>)
-		   & gadget-enabled?(gadget)
-		   & activate-gtk-gadget(gadget);
+                   & gadget-enabled?(gadget)
+                   & activate-gtk-gadget(gadget);
   // If we didn't activate the gadget, try to activate the default button
   unless (activated?)
     let button = frame-default-button(frame);
@@ -290,7 +290,7 @@ define sealed method cancel-frame
   #f
 end method cancel-frame;
 
-define sealed method cancel-gadget 
+define sealed method cancel-gadget
     (gadget :: <gadget>) => (handled? :: <boolean>)
   #f
 end method cancel-gadget;
@@ -301,7 +301,7 @@ end method cancel-gadget;
 
 /// Labels
 
-define sealed class <gtk-label> 
+define sealed class <gtk-label>
     (<gtk-gadget-mixin>,
      <label>,
      <leaf-pane>,
@@ -322,7 +322,7 @@ define method %gtk-fixed-height?
   #t;
 end method;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <label>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-label>, #f)
@@ -450,7 +450,7 @@ define method %gtk-fixed-height?
   #t;
 end method;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <push-button>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-push-button>, #f)
@@ -459,7 +459,7 @@ end method class-for-make-pane;
 define sealed method make-gtk-mirror
     (gadget :: <gtk-push-button>)
  => (mirror :: <gadget-mirror>)
-  let (text, image, mnemonic, index) 
+  let (text, image, mnemonic, index)
     = text-or-image-from-gadget-label(gadget);
   if (image)
     ignoring("image label")
@@ -507,7 +507,7 @@ define method %gtk-fixed-height?
   #t;
 end method;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <radio-button>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-radio-button>, #f)
@@ -516,7 +516,7 @@ end method class-for-make-pane;
 define sealed method make-gtk-mirror
     (gadget :: <gtk-radio-button>)
  => (mirror :: <gadget-mirror>)
-  let (text, image, mnemonic, index) 
+  let (text, image, mnemonic, index)
     = text-or-image-from-gadget-label(gadget);
   if (image)
     ignoring("image label")
@@ -527,14 +527,21 @@ define sealed method make-gtk-mirror
         = if (push-button-like?(gadget))
             gtk-toggle-button-new-with-label(c-string)
           else
-            gtk-radio-button-new-with-label(null-pointer(<GSList>), c-string)
+            let first-mirror = any?(sheet-direct-mirror,
+                                    gadget-box-buttons(gadget.button-gadget-box));
+            let group = if (first-mirror)
+                          gtk-radio-button-get-group(first-mirror.mirror-widget)
+                        else
+                          null-pointer(<GSList>)
+                        end if;
+            gtk-radio-button-new-with-label(group, c-string)
           end;
       assert(~null-pointer?(widget), "gtk-toggle/radio-button-new-with-label failed");
       make(<gadget-mirror>,
            widget: widget,
            sheet:  gadget)
-    end
-  end
+    end with-gdk-lock
+  end with-c-string
 end method make-gtk-mirror;
 
 define method update-mirror-attributes
@@ -544,8 +551,11 @@ define method update-mirror-attributes
   let widget = mirror-widget(mirror);
   with-gdk-lock
     with-disabled-event-handler (mirror, #"clicked")
-      gtk-toggle-button-set-active
-        (widget, if (selected?) $true else $false end)
+      // If we set active on a radio button we enter a loop where
+      // value-changed-gadget-event are generated.
+      if (push-button-like?(gadget))
+        gtk-toggle-button-set-active(widget, selected?)
+      end if
     end
   end
 end method update-mirror-attributes;
@@ -590,7 +600,7 @@ end method class-for-make-pane;
 define sealed method make-gtk-mirror
     (gadget :: <gtk-check-button>)
  => (mirror :: <gadget-mirror>)
-  let (text, image, mnemonic, index) 
+  let (text, image, mnemonic, index)
     = text-or-image-from-gadget-label(gadget);
   if (image)
     ignoring("image label")
@@ -618,8 +628,7 @@ define method update-mirror-attributes
   let widget = mirror-widget(mirror);
   with-gdk-lock
     with-disabled-event-handler (mirror, #"clicked")
-      gtk-toggle-button-set-active
-        (widget, if (selected?) $true else $false end)
+      gtk-toggle-button-set-active(widget, selected?)
     end
   end
 end method update-mirror-attributes;
@@ -664,7 +673,7 @@ define sealed method update-mirror-attributes
 end method update-mirror-attributes;
 
 // This is called right after gadget buffer text changes in DUIM
-define sealed method note-gadget-text-changed 
+define sealed method note-gadget-text-changed
     (gadget :: <gtk-text-gadget-mixin>) => ()
   gtk-debug("note-gadget-text-changed");
   next-method();
@@ -745,7 +754,7 @@ define method widget-range-bounds (widget, range == #f)
 end method widget-range-bounds;
 
 define method widget-range-bounds (widget, range :: <text-range>)
- => (start-pos :: <integer>, end-pos :: <integer>)  
+ => (start-pos :: <integer>, end-pos :: <integer>)
   let start-pos = range.text-range-start;
   let end-pos = range.text-range-end;
   if (start-pos < end-pos)
@@ -801,7 +810,7 @@ define abstract class <gtk-text-field-mixin>
   keyword gtk-fixed-height?: = #t;
 end class <gtk-text-field-mixin>;
 
-define open generic %gtk-text-visibility
+define generic %gtk-text-visibility
     (gadget :: <gtk-text-field-mixin>)
  => (fixed? :: <boolean>);
 
@@ -818,15 +827,14 @@ define sealed method make-gtk-mirror
     let max = text-field-maximum-size(gadget);
     let text = gadget-text-buffer(gadget);
     let visibility = %gtk-text-visibility(gadget);
-    let widget = if (max)
-                   gtk-entry-new-with-max-length(max)
-                 else
-                   gtk-entry-new();
-                 end;
+    let widget = gtk-entry-new();
     assert(~null-pointer?(widget), "gtk-entry-new failed");
+    if (max)
+      gtk-entry-set-max-length(widget, max)
+    end;
     // Note that this is happening before install-event-handlers, so don't
     // need to disable events.
-    gtk-entry-set-visibility(widget, if (visibility) 1 else 0 end);
+    gtk-entry-set-visibility(widget, visibility);
     unless (empty?(text))
       with-c-string (c-text = text)
         gtk-entry-set-text(widget, c-text);
@@ -860,7 +868,7 @@ define sealed class <gtk-text-field>
      <text-field>,
      <leaf-pane>,
      <sealed-constructor-mixin>)
-  keyword gtk-text-visibility: = $true;
+  keyword gtk-text-visibility: = #t;
 end class <gtk-text-field>;
 
 define method %gtk-text-visibility
@@ -869,7 +877,7 @@ define method %gtk-text-visibility
   #t
 end method %gtk-text-visibility;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <text-field>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-text-field>, #f)
@@ -882,7 +890,7 @@ define sealed class <gtk-password-field>
      <password-field>,
      <leaf-pane>,
      <sealed-constructor-mixin>)
-  keyword gtk-text-visibility: = $false;
+  keyword gtk-text-visibility: = #f;
 end class <gtk-password-field>;
 
 define method %gtk-text-visibility
@@ -891,7 +899,7 @@ define method %gtk-text-visibility
   #f
 end method %gtk-text-visibility;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <password-field>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-password-field>, #f)
@@ -907,7 +915,7 @@ define sealed class <gtk-text-editor>
      <sealed-constructor-mixin>)
 end class <gtk-text-editor>;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <text-editor>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-text-editor>, #f)
@@ -997,15 +1005,15 @@ define method %gtk-fixed-width?
   #t;
 end method;
 
-define sealed method class-for-make-pane 
-    (framem :: <gtk-frame-manager>, class == <scroll-bar>, 
+define sealed method class-for-make-pane
+    (framem :: <gtk-frame-manager>, class == <scroll-bar>,
      #key orientation = #"horizontal")
  => (class :: <class>, options :: false-or(<sequence>))
   values(select (orientation)
-	   #"horizontal" => <gtk-horizontal-scroll-bar>;
-	   #"vertical"   => <gtk-vertical-scroll-bar>;
-	 end,
-	 #f)
+           #"horizontal" => <gtk-horizontal-scroll-bar>;
+           #"vertical"   => <gtk-vertical-scroll-bar>;
+         end,
+         #f)
 end method class-for-make-pane;
 
 define function gadget-range-values
@@ -1014,9 +1022,9 @@ define function gadget-range-values
   let range = gadget-value-range(gadget);
   let n = range.size;
   select (n)
-    0 => 
+    0 =>
       values(0, 0, 0);
-    1 => 
+    1 =>
       let start = range[0];
       values(start, start, 0);
     otherwise =>
@@ -1060,7 +1068,7 @@ define sealed method make-gtk-mirror
     let widget = select(gadget-orientation(gadget))
                    #"horizontal" => gtk-hscrollbar-new(adj);
                    #"vertical"   => gtk-vscrollbar-new(adj);
-	         end;
+                 end;
     assert(~null-pointer?(widget), "gtk-h/vscrollbar-new failed");
     // --- Does DUIM have anything to select/deselect smooth scrolling?
     // gtk-range-set-update-policy(widget, $gtk-update-discontinuous);
@@ -1122,18 +1130,14 @@ define sealed method note-scroll-bar-changed
       adjustment.@step-increment := step-inc;
       adjustment.@page-increment := page-inc;
       adjustment.@page-size := page-size;
-      // --- TODO: cache gtk-signal-lookup
-      with-c-string (name = "changed")
-        gtk-signal-emitv-by-name(adjustment, name, null-pointer(<GtkArg>));
-      end;
     end
   end;
 end method note-scroll-bar-changed;
 
-
+
 /// List gadgets
 
-define sealed class <gtk-list-control-mixin> 
+define sealed class <gtk-list-control-mixin>
     (<gtk-gadget-mixin>,
      <collection-gadget>,
      <sealed-constructor-mixin>)
@@ -1185,25 +1189,23 @@ define sealed method handle-gtk-select-row-event
   let widget = mirror-widget(mirror);
   let selection = gtk-tree-view-get-selection(widget);
   let new-selection = make(<stretchy-vector>);
-  
-  with-stack-structure (model :: <GtkTreeModel*>)
-    let selected-paths
-      = glist-to-vector
-      (gtk-tree-selection-get-selected-rows(selection, model),
-       <GtkTreePath>);
-    
-    for (path in selected-paths)
-      with-stack-structure (iter :: <GtkTreeIter>)
-        gtk-tree-model-get-iter(model[0], iter, path);
-        with-stack-structure (value :: <GValue>)
-          g-value-nullify(value);
-          gtk-tree-model-get-value(model[0], iter, 0, value);
-          add!(new-selection, g-value-to-dylan(value));
-        end;
+
+  let (selected-path-list, model)
+    = gtk-tree-selection-get-selected-rows(selection);
+  let selected-paths
+    = glist-to-vector(selected-path-list, <GtkTreePath>);
+
+  for (path in selected-paths)
+    with-stack-structure (iter :: <GtkTreeIter>)
+      gtk-tree-model-get-iter(model, iter, path);
+      with-stack-structure (value :: <GValue>)
+        g-value-nullify(value);
+        gtk-tree-model-get-value(model, iter, 0, value);
+        add!(new-selection, g-value-to-dylan(value));
       end;
     end;
   end;
-  
+
   gtk-debug("  Selection now %=", new-selection);
   distribute-selection-changed-callback(gadget, new-selection);
   #t
@@ -1213,33 +1215,33 @@ define sealed method handle-gtk-button-press-event
     (gadget :: <gtk-list-control-mixin>, event :: <GdkEventButton>)
  => (handled? :: <boolean>)
   gtk-debug("Pressed button %=, type %=",
-            event.GdkEventButton-button,
-            select (event.GdkEventButton-type)
+            event.gdk-event-button-button,
+            select (event.gdk-event-button-type)
               $GDK-BUTTON-PRESS  => "button press";
               $GDK-2BUTTON-PRESS => "double click";
               $GDK-3BUTTON-PRESS => "treble click";
-              otherwise => event.GdkEventButton-type;
+              otherwise => event.gdk-event-button-type;
             end);
-  if (event.GdkEventButton-type == $GDK-2BUTTON-PRESS)
+  if (event.gdk-event-button-type == $GDK-2BUTTON-PRESS)
     gtk-debug("Double clicked on list control!");
     when (gadget-activate-callback(gadget))
       distribute-activate-callback(gadget);
     end;
     #t
-  elseif ((event.GdkEventButton-type == $GDK-BUTTON-PRESS) & (event.GdkEventButton-button == 3)) //right click
+  elseif ((event.gdk-event-button-type == $GDK-BUTTON-PRESS) & (event.gdk-event-button-button == 3)) //right click
     gtk-debug("right clicked on list control!");
     when (gadget-popup-menu-callback(gadget))
       gtk-set-button-time(event);
       handle-event(gadget,
                    make(<popup-menu-gadget-event>,
-			gadget: gadget,
-			target: 0,
-                        x: round(event.GdkEventButton-x),
-                        y: round(event.GdkEventButton-y)));
+                        gadget: gadget,
+                        target: 0,
+                        x: round(event.gdk-event-button-x),
+                        y: round(event.gdk-event-button-y)));
       //XXX: fix this when there is some spare time
       //distribute-popup-menu-callback(gadget, 0,
-      //                               x: round(event.GdkEventButton-x),
-      //                               y: round(event.GdkEventButton-y));
+      //                               x: round(event.gdk-event-button-x),
+      //                               y: round(event.gdk-event-button-y));
     end;
     #t
   end
@@ -1250,15 +1252,15 @@ define method glist-to-vector
  => (vector :: <stretchy-object-vector>)
   let vector = make(<stretchy-object-vector>);
   local method process-list
-	    (GList :: <GList>)
-	  case
-	    null-pointer?(GList) =>
-	      #f;
-	    otherwise =>
-	      add!(vector, c-type-cast(type, glist.GList-data));
-	      process-list(glist.GList-next);
-	  end
-	end;
+            (GList :: <GList>)
+          case
+            null-pointer?(GList) =>
+              #f;
+            otherwise =>
+              add!(vector, c-type-cast(type, glist.g-list-data));
+              process-list(glist.g-list-next);
+          end
+        end;
   process-list(GList);
   vector
 end method glist-to-vector;
@@ -1357,13 +1359,13 @@ end method handle-selection-changed;
 
 // List boxes
 
-define sealed class <gtk-list-box> 
+define sealed class <gtk-list-box>
     (<gtk-tree-view-control-mixin>,
      <list-box>,
      <leaf-pane>)
 end class <gtk-list-box>;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <list-box>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-list-box>, #f)
@@ -1376,7 +1378,7 @@ define sealed method make-gtk-mirror
     let widget = gtk-tree-view-new();
     let renderer = gtk-cell-renderer-text-new();
     let column = gtk-tree-view-column-new();
-    gtk-tree-view-column-pack-start(column, renderer, 0);
+    gtk-tree-view-column-pack-start(column, renderer, #f);
     gtk-tree-view-column-add-attribute(column, renderer, "text", 1);
     gtk-tree-view-append-column(widget, column);
     make(<gadget-mirror>,
@@ -1389,13 +1391,13 @@ end method make-gtk-mirror;
 // List controls
 
 //---*** Need to implement add-item etc...
-define sealed class <gtk-list-control> 
+define sealed class <gtk-list-control>
     (<gtk-tree-view-control-mixin>,
      <list-control>,
      <leaf-pane>)
 end class <gtk-list-control>;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <list-control>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-list-control>, #f)
@@ -1408,7 +1410,7 @@ define sealed method make-gtk-mirror
     let widget = gtk-tree-view-new();
     let renderer = gtk-cell-renderer-text-new();
     let column = gtk-tree-view-column-new();
-    gtk-tree-view-column-pack-start(column, renderer, 0);
+    gtk-tree-view-column-pack-start(column, renderer, #f);
     gtk-tree-view-column-add-attribute(column, renderer, "text", 1);
     gtk-tree-view-append-column(widget, column);
     make(<gadget-mirror>,
@@ -1443,7 +1445,7 @@ end;
 define method do-compose-space
     (gadget :: <scrolled-mixin>, #key width, height)
  => (space-req :: <space-requirement>)
-  duim-debug-message("do-compose-space(%= , %d, %d)", gadget, width, height);
+  duim-debug-message("do-compose-space(%= , %=, %=)", gadget, width, height);
   let mirror = sheet-direct-mirror(gadget);
   if (mirror)
     let widget = scrolled-window(mirror);
@@ -1480,14 +1482,14 @@ end;
 
 // Table controls
 
-define sealed class <gtk-table-control> 
+define sealed class <gtk-table-control>
     (<scrolled-mixin>,
      <gtk-tree-view-control-mixin>,
      <table-control>,
      <leaf-pane>)
 end class <gtk-table-control>;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <table-control>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-table-control>, #f)
@@ -1503,12 +1505,12 @@ define sealed method make-gtk-mirror
     for (c in columns, i from 1)
       let renderer = gtk-cell-renderer-text-new();
       let column = gtk-tree-view-column-new();
-      gtk-tree-view-column-pack-start(column, renderer, 0);
+      gtk-tree-view-column-pack-start(column, renderer, #f);
       gtk-tree-view-column-add-attribute(column, renderer, "text", i);
-      //gtk-tree-view-column-set-resizable(column, 1);
+      //gtk-tree-view-column-set-resizable(column, #t);
       gtk-tree-view-append-column(widget, column);
     end;
-    gtk-tree-view-set-fixed-height-mode(widget, 1);
+    gtk-tree-view-set-fixed-height-mode(widget, #t);
     let scrolled-win
       = init-scrolled-window(widget, gadget);
     make(<scrolled-mirror>,
@@ -1676,7 +1678,7 @@ define sealed method make-gtk-mirror
     let widget = gtk-tree-view-new();
     let renderer = gtk-cell-renderer-text-new();
     let column = gtk-tree-view-column-new();
-    gtk-tree-view-column-pack-start(column, renderer, 0);
+    gtk-tree-view-column-pack-start(column, renderer, #f);
     gtk-tree-view-column-add-attribute(column, renderer, "text", 1);
     gtk-tree-view-append-column(widget, column);
     let type-vector = make(<GType*>, element-count: 2);
@@ -1765,7 +1767,7 @@ define sealed method do-expand-node
     (pane :: <gtk-tree-control>, node :: <gtk-tree-node>) => ()
   with-gdk-lock
     let path = gtk-tree-model-get-path(pane.store-model, node.gtk-iter);
-    gtk-tree-view-expand-row(pane.sheet-direct-mirror.mirror-widget , path, $false)
+    gtk-tree-view-expand-row(pane.sheet-direct-mirror.mirror-widget , path, #f)
   end;
 end method do-expand-node;
 
@@ -1827,11 +1829,11 @@ define method handle-row-expanded
       // If no items have ever been added, do it now
       let children-predicate = tree-control-children-predicate(tree);
       when (children-predicate(node-object(node)))
-	let children-generator = tree-control-children-generator(tree);  
-	let objects = children-generator(node-object(node));
-	let nodes = map-as(<simple-vector>,
-			   method (object) make-node(tree, object) end, objects);
-	do-add-nodes(tree, node, nodes)
+        let children-generator = tree-control-children-generator(tree);
+        let objects = children-generator(node-object(node));
+        let nodes = map-as(<simple-vector>,
+                           method (object) make-node(tree, object) end, objects);
+        do-add-nodes(tree, node, nodes)
       end;
       node-state(node) := #"expanded"
     end
@@ -1854,14 +1856,14 @@ end;
 
 /// Option boxes
 
-define sealed class <gtk-option-box> 
+define sealed class <gtk-option-box>
     (<gtk-list-control-mixin>,
      <option-box>,
      <leaf-pane>,
      <sealed-constructor-mixin>)
 end class <gtk-option-box>;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <option-box>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-option-box>, #f)
@@ -1897,7 +1899,7 @@ end method note-gadget-value-changed;
 
 /// Combo boxes
 
-define sealed class <gtk-combo-box> 
+define sealed class <gtk-combo-box>
     (<gtk-list-control-mixin>,
      <combo-box>,
      <leaf-pane>,
@@ -1908,7 +1910,7 @@ define method %gtk-fixed-height? (obj :: <gtk-combo-box>) => (res :: <boolean>)
   #t;
 end;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <combo-box>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-combo-box>, #f)
@@ -1918,7 +1920,7 @@ define sealed method make-gtk-mirror
     (gadget :: <gtk-combo-box>)
  => (mirror :: <gadget-mirror>)
   with-gdk-lock
-    let widget = gtk-combo-box-entry-new();
+    let widget = gtk-combo-box-text-new-with-entry();
     make(<gadget-mirror>,
          widget: widget,
          sheet:  gadget)
@@ -1929,7 +1931,7 @@ define method update-mirror-attributes
     (gadget :: <gtk-combo-box>, mirror :: <gadget-mirror>) => ()
   next-method();
   with-gdk-lock
-    gtk-combo-box-entry-set-text-column(mirror.mirror-widget, 1);
+    mirror.mirror-widget.@entry-text-column := 1;
   end
 end;
 
@@ -1943,7 +1945,7 @@ end;
 
 define method handle-changed-selection (gadget :: <gtk-combo-box>) => (handled? :: <boolean>)
   let widget = mirror-widget(sheet-direct-mirror(gadget));
-  let text = as(<byte-string>, gtk-combo-box-get-active-text(widget));
+  let text = as(<byte-string>, gtk-combo-box-text-get-active-text(widget));
   distribute-text-changed-callback(gadget, text);
   #t
 end;
@@ -1953,7 +1955,7 @@ define method handle-changing-selection (gadget :: <gtk-combo-box>) => (handled?
   let row = gtk-combo-box-get-active(widget);
   let text =
     if (row = -1)
-      as(<byte-string>, gtk-combo-box-get-active-text(widget));
+      as(<byte-string>, gtk-combo-box-text-get-active-text(widget));
     else
       let gtkentry = gtk-bin-get-child(widget);
       gtk-entry-set-text(gtkentry, gadget-items(gadget)[row]);
@@ -1984,7 +1986,7 @@ define sealed class <gtk-viewport>
      <sealed-constructor-mixin>)
 end class <gtk-viewport>;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <viewport>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-viewport>, #f)
@@ -1994,12 +1996,13 @@ define method make-gtk-mirror
     (sheet :: <gtk-viewport>)
  => (mirror :: <widget-mirror>)
   with-gdk-lock
-   let widget = gtk-viewport-new(gtk-adjustment-new(0.0d0, 0.0d0, 0.0d0, 0.0d0, 0.0d0, 0.0d0), 
+   let widget = gtk-viewport-new(gtk-adjustment-new(0.0d0, 0.0d0, 0.0d0, 0.0d0, 0.0d0, 0.0d0),
                                  gtk-adjustment-new(0.0d0, 0.0d0, 0.0d0, 0.0d0, 0.0d0, 0.0d0));
-//   gtk-widget-set-size-request(widget, 200, 200);
+   let layout = gtk-fixed-new();
    make(<drawing-area-mirror>,
         widget: widget,
-        sheet:  sheet);
+        sheet:  sheet,
+        layout: layout);
   end
 end method;
 
@@ -2016,7 +2019,7 @@ define sealed class <gtk-border>
   sealed slot %brush :: false-or(type-union(<standard-brush>, <ink>)) = #f;
 end class <gtk-border>;
 
-define sealed method class-for-make-pane 
+define sealed method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <border>, #key label)
  => (class :: <class>, options :: false-or(<sequence>))
   let border-class = if (label) <gtk-group-box> else <gtk-border> end;
@@ -2030,10 +2033,10 @@ define sealed method do-compose-space
  => (space-req :: <space-requirement>)
   let thickness*2 = $gadget-border-thickness * 2;
   space-requirement+(pane,
-		     next-method(pane,
-				 width:  width  & width  - thickness*2,
-				 height: height & height - thickness*2),
-		     width: thickness*2, height: thickness*2)
+                     next-method(pane,
+                                 width:  width  & width  - thickness*2,
+                                 height: height & height - thickness*2),
+                     width: thickness*2, height: thickness*2)
 end method do-compose-space;
 
 define sealed method do-allocate-space
@@ -2049,7 +2052,7 @@ end method do-allocate-space;
 
 define sealed method handle-repaint
     (pane :: <gtk-border>, medium :: <gtk-medium>, region :: <region>) => ()
-  ignore(region);	// not worth checking
+  ignore(region);        // not worth checking
   let (left, top, right, bottom) = box-edges(pane);
   draw-border(pane, medium, border-type(pane), left, top, right, bottom)
 end method handle-repaint;
@@ -2069,16 +2072,16 @@ define sealed method draw-border
       rect.bottom-value := bottom;
       let (edges, flags)
         = select (type)
-	    #"flat", #"none" =>
-	      values(0, %logior($BF-FLAT, $BF-RECT));
-	    #f, #"sunken", #"input", #"output" =>
-	      values($EDGE-SUNKEN, $BF-RECT);
-	    #"raised" =>
-	      values($EDGE-RAISED, $BF-RECT);
-	    #"ridge" =>
-	      values($EDGE-BUMP,   $BF-RECT);
-	    #"groove" =>
-	      values($EDGE-ETCHED, $BF-RECT);
+            #"flat", #"none" =>
+              values(0, %logior($BF-FLAT, $BF-RECT));
+            #f, #"sunken", #"input", #"output" =>
+              values($EDGE-SUNKEN, $BF-RECT);
+            #"raised" =>
+              values($EDGE-RAISED, $BF-RECT);
+            #"ridge" =>
+              values($EDGE-BUMP,   $BF-RECT);
+            #"groove" =>
+              values($EDGE-ETCHED, $BF-RECT);
           end;
       check-result("DrawEdge", DrawEdge(hdc, rect, edges, flags))
     end
@@ -2117,14 +2120,14 @@ define method %gtk-fixed-width?
 end method;
 
 define sealed method class-for-make-pane
-    (framem :: <gtk-frame-manager>, class == <slider>, 
+    (framem :: <gtk-frame-manager>, class == <slider>,
      #key orientation = #"horizontal")
  => (class :: <class>, options :: false-or(<sequence>))
   values(select (orientation)
-	   #"horizontal" => <gtk-horizontal-slider>;
-	   #"vertical"   => <gtk-vertical-slider>;
-	 end,
-	 #f)
+           #"horizontal" => <gtk-horizontal-slider>;
+           #"vertical"   => <gtk-vertical-slider>;
+         end,
+         #f)
 end method class-for-make-pane;
 
 define sealed method make-gtk-mirror
@@ -2171,7 +2174,7 @@ define sealed class <gtk-tool-bar>
   slot %separator :: false-or(<separator>) = #f;
 end class <gtk-tool-bar>;
 
-define method class-for-make-pane 
+define method class-for-make-pane
     (framem :: <gtk-frame-manager>, class == <tool-bar>, #key)
  => (class :: <class>, options :: false-or(<sequence>))
   values(<gtk-tool-bar>, #f)
@@ -2234,21 +2237,21 @@ define sealed method class-for-make-pane
 end method class-for-make-pane;
 
 define sealed method make-gadget-control
-    (gadget :: <gtk-status-bar>, 
-     parent :: <HWND>, 
+    (gadget :: <gtk-status-bar>,
+     parent :: <HWND>,
      options :: <options-type>,
      #key x, y, width, height)
  => (handle :: <HWND>)
   let handle :: <HWND>
     = CreateWindowEx(0,
-		     $STATUSCLASSNAME,
-		     "",
-		     %logior(options, $SBARS-SIZEGRIP),
-		     0, 0, 0, 0,
-		     parent,
-		     $null-hMenu,
-		     application-instance-handle(),
-		     $NULL-VOID);
+                     $STATUSCLASSNAME,
+                     "",
+                     %logior(options, $SBARS-SIZEGRIP),
+                     0, 0, 0, 0,
+                     parent,
+                     $null-hMenu,
+                     application-instance-handle(),
+                     $NULL-VOID);
   check-result("CreateWindowEx (STATUSCLASSNAME)", handle);
   handle
 end method make-gadget-control;
@@ -2260,10 +2263,10 @@ define sealed method do-compose-space
   // obscured by the resize grip
   let extra-width :: <integer> = GetSystemMetrics($SM-CXVSCROLL);
   let space-req = next-method(gadget,
-			      width:  width & (width - extra-width),
-			      height: height);
+                              width:  width & (width - extra-width),
+                              height: height);
   space-requirement+(gadget, space-req,
-		     width: extra-width, min-width: extra-width, max-width: extra-width)
+                     width: extra-width, min-width: extra-width, max-width: extra-width)
 end method do-compose-space;
 
 //---*** We should be more careful that the height is set up right, taking
@@ -2287,19 +2290,19 @@ define sealed method do-allocate-space
     let final-x    :: <integer> = 0;
     duim-debug-message("Laying out %=:", gadget);
     for (i :: <integer> from 0 below n-children,
-	 child in children)
+         child in children)
       let (left, top, right, bottom) = sheet-device-edges(child);
       ignore(left);
       min-height := max(min-height, bottom - top);
       final-x    := right;
-      duim-debug-message("  part %d has right edge at %d", i, right);
+      duim-debug-message("  part %= has right edge at %=", i, right);
       pointer-value(widths, index: i) := right
     end;
     // Allocate a little extra space so the size grip doesn't
     // overlap the final part
     pointer-value(widths, index: n-parts - 1) := final-x + extra-width;
     inc!(min-height, $status-bar-border * 2);
-    duim-debug-message("  fixed height %d", min-height);
+    duim-debug-message("  fixed height %=", min-height);
     SendMessage(handle, $SB-SETMINHEIGHT, min-height, 0);
     SendMessage(handle, $SB-SETPARTS, n-parts, pointer-address(widths))
   end;
@@ -2310,16 +2313,16 @@ define sealed method do-allocate-space
   else
     // Otherwise, ensure the part that holds the size grip has no border
     SendMessage(handle, $SB-SETTEXT,
-		%logior(n-parts - 1, $SBT-NOBORDERS), 
-		pointer-address($empty-c-string))
+                %logior(n-parts - 1, $SBT-NOBORDERS),
+                pointer-address($empty-c-string))
   end;
   // Remove the borders for the non-label parts
   for (i :: <integer> from 0 below n-children,
        child in children)
     unless (instance?(child, <label>))
-      SendMessage(handle, $SB-SETTEXT, 
-		  %logior(i, $SBT-NOBORDERS), 
-		  pointer-address($empty-c-string));
+      SendMessage(handle, $SB-SETTEXT,
+                  %logior(i, $SBT-NOBORDERS),
+                  pointer-address($empty-c-string));
     end
   end
 end method do-allocate-space;
@@ -2338,8 +2341,8 @@ define sealed method make-gadget-mirror
   let part-number
     = position(children, gadget)
       | error("Gadget %= not a direct child of status bar %=",
-	      gadget, status-bar);
-  make(<status-label-mirror>, 
+              gadget, status-bar);
+  make(<status-label-mirror>,
        sheet: gadget,
        status-bar: status-bar,
        part-number: part-number)
@@ -2351,17 +2354,17 @@ define sealed method update-mirror-label
   let primary-label = status-bar-label-pane(status-bar);
   let label
     = if (status-bar-simple?(status-bar) & gadget = primary-label)
-	status-bar-simple-text(status-bar)
+        status-bar-simple-text(status-bar)
       else
-	defaulted-gadget-label(gadget)
+        defaulted-gadget-label(gadget)
       end;
   let label :: <string> = if (instance?(label, <string>)) label else "" end;
   let handle = window-handle(status-bar);
   let part-number = status-label-part-number(mirror);
   with-c-string (c-string = label)
     SendMessage(handle, $SB-SETTEXT,
-		%logior(part-number, 0),
-		pointer-address(c-string));
+                %logior(part-number, 0),
+                pointer-address(c-string));
     UpdateWindow(handle)
   end
 end method update-mirror-label;

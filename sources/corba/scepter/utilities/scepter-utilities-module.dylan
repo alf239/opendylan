@@ -6,7 +6,7 @@ License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define module scepter-utilities
-  use generic-arithmetic-common-dylan, exclude: { <union>, format-to-string };
+  use generic-arithmetic-common-dylan, exclude: { <union> };
   use standard-io;
   use format;
   use streams;
@@ -17,7 +17,7 @@ define module scepter-utilities
 
   export          // from indenting.dylan
     \with-indented-body,
-    <indenting-stream>,
+    <scepter-indenting-stream>,
     indent+,
     indent-;
 

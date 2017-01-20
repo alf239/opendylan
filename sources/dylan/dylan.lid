@@ -1,33 +1,33 @@
 Library:   dylan
 Major-Version: 2
 Minor-Version: 1
-Target-Type:	dll
+Target-Type:        dll
 Files:     dfmc-boot
            macros
            thread-macros
-	   packed-slots
+           packed-slots
            debugging
-	   boot
+           boot
            dispatch-prologue
-	   new-dispatch
-	   slot-dispatch
-	   discrimination
-	   dispatch-caches
-	   comparison
+           new-dispatch
+           slot-dispatch
+           discrimination
+           dispatch-caches
+           comparison
            functional
            thread
            condition
-	   condition-extras
+           condition-extras
            object
+           machine-word-lowlevel
            character
            unicode-character
            number
            conversion-tagged-integer
-	   machine-word-lowlevel
-	   machine-word-constants
+           machine-word-constants
            integer
-	   double-integer-basics
-           float    
+           double-integer-basics
+           float
            collection-macros
            collection
            accumulator
@@ -39,41 +39,41 @@ Files:     dfmc-boot
            mutable-key-collection
            mutable-sequence
            stretchy-collection
-           array
-           multidimensional-array
-           limited-array
            vector
            vector-speed
            limited-vector
            stretchy-vector
            limited-stretchy-vector
+           array
+           multidimensional-array
+           limited-array
            symbol
            string
            string-speed
            unicode-string
-           list 
+           list
            list-speed
-           limited-list
            deque
            range
            miscellaneous
            extras
            type
-	   signature
+           signature
            function
+           limited-function
            method
            generic-function
-	   dispatch
+           dispatch
            singleton
            slot-descriptor
-	   slot-descriptor-dynamic
+           slot-descriptor-dynamic
            class
-	   class-dynamic
+           class-dynamic
            limited-integer
            union
            subclass
-	   speed
-	   dylan-c-ffi-stubs
+           speed
+           dylan-c-ffi-stubs
            portable-container
            return-codes
            finalization
@@ -89,9 +89,9 @@ Files:     dfmc-boot
            ordered-collection
            incremental
            domain
-	   shut-down
+           shut-down
            dylan-mm
-	   initialize-thread
+           initialize-thread
            dylan-spy
 Linker-Options: $(rtlibs)
 C-Libraries: $(rtclibs)

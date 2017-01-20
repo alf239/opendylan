@@ -5,12 +5,21 @@ Copyright:    Original Code is Copyright 2004 Gwydion Dylan Maintainers
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
+define constant $platform-variable = "OPEN_DYLAN_TARGET_PLATFORM";
+define constant $default-platform = $platform-name;
+
+define function target-platform-name ()
+ => (platform-name :: <symbol>)
+  as(<symbol>, environment-variable($platform-variable) | $default-platform)
+end function target-platform-name;
+
 define function main(name, arguments)
   let state = make(<jam-state>);
 
   // Useful built-in variables
   jam-variable(state, "OS") := vector(as(<string>, $os-name));
   jam-variable(state, "OSPLAT") := vector(as(<string>, $machine-name));
+  jam-variable(state, "TARGET_PLATFORM") := vector(as(<string>, target-platform-name()));
 
   select($os-name)
     #"win32" =>
@@ -56,9 +65,9 @@ define function main(name, arguments)
   block ()
     let handler <warning>
       = method (w :: <warning>, next :: <function>)
-          format(*standard-error*, "djam: %s\n", w);
+          format-err("djam: %s\n", w);
         end;
-    
+
     let targets = make(<stretchy-vector>);
     let force? = #f;
     iterate loop(i :: <integer> = 0)
@@ -96,11 +105,11 @@ define function main(name, arguments)
       jam-target-build(state, #["all"],
                        force?: force?, progress-callback: progress);
     else
-      jam-target-build(state, targets, 
+      jam-target-build(state, targets,
                        force?: force?, progress-callback: progress);
     end if;
   exception (e :: <error>)
-    format(*standard-error*, "djam: %s\n", e);
+    format-err("djam: %s\n", e);
     exit-application(1);
   end block;
 end function;

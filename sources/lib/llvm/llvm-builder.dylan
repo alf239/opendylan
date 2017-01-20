@@ -27,6 +27,26 @@ define sealed method make
   apply(next-method, <llvm-concrete-builder>, keys)
 end method;
 
+define macro with-builder-function
+  { with-builder-function(?builder:expression, ?function:expression)
+      ?:body
+    end }
+    => { let builder :: <llvm-builder> = ?builder;
+         let save-function = builder.llvm-builder-function;
+         let save-bb = builder.llvm-builder-basic-block;
+         let save-dbg = builder.llvm-builder-dbg;
+         block ()
+           builder.llvm-builder-function := ?function;
+           builder.llvm-builder-basic-block := #f;
+           builder.llvm-builder-dbg := #f;
+           ?body
+         cleanup
+           builder.llvm-builder-dbg := save-dbg;
+           builder.llvm-builder-basic-block := save-bb;
+           builder.llvm-builder-function := save-function;
+         end block }
+end macro;
+
 
 /// Value transformation
 
@@ -52,6 +72,11 @@ end function;
 
 
 /// Global variables
+
+define generic llvm-builder-define-global
+    (builder :: <llvm-builder>, name :: <string>,
+     value :: <llvm-constant-value>)
+ => (value :: <llvm-constant-value>);
 
 define method llvm-builder-define-global
     (builder :: <llvm-builder>, name :: <string>,
@@ -116,6 +141,20 @@ define function llvm-builder-global
          := make(<llvm-symbolic-constant>, name: name))
 end function;
 
+define function llvm-builder-global-defined?
+    (builder :: <llvm-builder>, name :: <string>)
+ => (defined? :: <boolean>);
+  let global-table = builder.llvm-builder-module.llvm-global-table;
+  let definition
+    = element(global-table, name, default: #f);
+  definition
+    & if (instance?(definition, <llvm-symbolic-constant>))
+        slot-initialized?(definition, llvm-placeholder-value-forward)
+      else
+        #t
+      end if
+end function;
+
 
 /// Local variables
 
@@ -153,6 +192,23 @@ define function llvm-builder-local
   element(builder-function.llvm-function-value-table, name, default: #f)
     | (element(builder-function.llvm-function-value-table, name)
          := make(<llvm-symbolic-value>, name: name))
+end function;
+
+define function llvm-builder-local-defined?
+    (builder :: <llvm-builder>, name :: <string>)
+ => (defined? :: <boolean>);
+  let builder-function
+    = builder.llvm-builder-function
+    | error("llvm-builder-function is not set");
+  let value-table = builder-function.llvm-function-value-table;
+  let definition
+    = element(value-table, name, default: #f);
+  definition
+    & if (instance?(definition, <llvm-symbolic-constant>))
+        slot-initialized?(definition, llvm-placeholder-value-forward)
+      else
+        #t
+      end if
 end function;
 
 
@@ -209,10 +265,34 @@ define inline method builder-insert
   instruction
 end method;
 
+define macro with-insert-before-terminator
+  { with-insert-before-terminator(?builder:expression, ?bb:expression)
+      ?:body
+    end }
+    => { // Temporarily switch to the given basic block
+	 let current-bb = ?builder.llvm-builder-basic-block;
+	 ?builder.llvm-builder-basic-block := ?bb;
+
+	 // Temporarily remove the block terminator
+	 let instructions = ?bb.llvm-basic-block-instructions;
+	 let terminator :: <llvm-terminator-instruction> = instructions.last;
+	 instructions.size := instructions.size - 1;
+
+	 // Execute the given body
+	 block ()
+	   ?body
+	 cleanup
+	   // Put the terminator back at the end and restore the previous
+	   // basic block
+	   add!(instructions, terminator);
+	   ?builder.llvm-builder-basic-block := current-bb;
+	 end block }
+end macro;
+
 
 /// Metadata attachments
 
-define method ins--dbg
+define function ins--dbg
     (builder :: <llvm-builder>,
      line-number :: <integer>, column-number :: <integer>,
      scope :: <llvm-metadata-value>,
@@ -234,7 +314,7 @@ define method ins--dbg
     builder.llvm-builder-dbg
       := make(<llvm-named-metadata>, name: "dbg", operands: list(node));
   end if;
-end method;
+end function;
 
 define inline function builder-metadata
     (builder :: <llvm-builder>, metadata :: <list>)
@@ -408,10 +488,14 @@ define instruction-set
   fcmp false;
 
   op gep (value, #rest indices)
-    => make(<llvm-gep-instruction>,
-            operands: map(curry(llvm-builder-value, builder),
-                          concatenate(vector(value), indices)),
-            metadata: builder-metadata(builder, #()));
+    => begin
+         let gep = make(<llvm-gep-instruction>,
+                        operands: map(curry(llvm-builder-value, builder),
+                                      concatenate(vector(value), indices)),
+                        metadata: builder-metadata(builder, #()));
+         gep.llvm-value-type;
+         gep
+       end;
 
   op gep-inbounds (value, #rest indices)
     => make(<llvm-gep-instruction>,
@@ -452,7 +536,7 @@ define instruction-set
             operands: vector(vec1, vec2, mask),
             metadata: builder-metadata(builder, metadata));
 
-  op phi (#rest operands)
+  op phi (operands :: <sequence>)
     => let operands = map(curry(llvm-builder-value, builder), operands);
        let type = llvm-value-type(operands[0]);
        llvm-constrain-type(llvm-value-type(operands[1]), $llvm-label-type);
@@ -465,7 +549,7 @@ define instruction-set
             metadata: builder-metadata(builder, #()));
 
   op landingpad (type :: <llvm-type>, personality, clauses :: <sequence>,
-                 #key metadata :: <list> = #(), cleanup?)
+                 #key metadata :: <list> = #(), cleanup? :: <boolean> = #f)
     => make(<llvm-landingpad-instruction>,
             type: type,
             operands: concatenate(vector(llvm-builder-value(builder, personality)),
@@ -476,19 +560,7 @@ define instruction-set
   op call (fnptrval :: <llvm-value>, args :: <sequence>,
            #rest options, #key metadata :: <list> = #(), #all-keys)
     => let args = map(curry(llvm-builder-value, builder), args);
-       let fnptrtype = type-forward(fnptrval.llvm-value-type);
-       let return-type
-         = if (instance?(fnptrtype, <llvm-pointer-type>))
-             let pointee
-               = type-forward(fnptrtype.llvm-pointer-type-pointee);
-             if (instance?(pointee, <llvm-function-type>))
-               for (arg-type in pointee.llvm-function-type-parameter-types,
-                    arg in args)
-                 llvm-constrain-type(llvm-value-type(arg), arg-type);
-               end for;
-               type-forward(pointee.llvm-function-type-return-type)
-             end if
-           end if;
+       let return-type = do-constrain-call-type(fnptrval, args);
        if (return-type)
          apply(make, <llvm-call-instruction>,
                type: return-type,
@@ -503,7 +575,7 @@ define instruction-set
        end if;
 
   op alloca (type :: <llvm-type>, num-elements,
-             #key alignment = 0, metadata :: <list> = #())
+             #key alignment :: <integer> = 0, metadata :: <list> = #())
     => let pointer-type
          = make(<llvm-pointer-type>, pointee: type);
        make(<llvm-alloca-instruction>,
@@ -584,7 +656,7 @@ define instruction-set
             operands: map(curry(llvm-builder-value, builder), operands),
             metadata: builder-metadata(builder, #()));
 
-  op switch (value, default, #rest jump-table)
+  op switch (value, default, jump-table :: <sequence>)
     => make(<llvm-switch-instruction>,
             operands: map(curry(llvm-builder-value, builder),
                           concatenate(vector(value, default), jump-table)),
@@ -592,11 +664,23 @@ define instruction-set
 
   op invoke (to, unwind, fnptrval, args :: <sequence>,
              #rest options, #key metadata :: <list> = #(), #all-keys)
-    => apply(make, <llvm-invoke-instruction>,
-             operands: map(curry(llvm-builder-value, builder),
-                           concatenate(vector(to, unwind, fnptrval), args)),
-             metadata: builder-metadata(builder, metadata),
-             options);
+    => let args = map(curry(llvm-builder-value, builder), args);
+       let return-type = do-constrain-call-type(fnptrval, args);
+       if (return-type)
+         apply(make, <llvm-invoke-instruction>,
+               operands: concatenate(map(curry(llvm-builder-value, builder),
+                                         vector(to, unwind, fnptrval)),
+                                     args),
+               type: return-type,
+               metadata: builder-metadata(builder, metadata),
+               options)
+       else
+         apply(make, <llvm-invoke-instruction>,
+               operands: map(curry(llvm-builder-value, builder),
+                             concatenate(vector(to, unwind, fnptrval), args)),
+               metadata: builder-metadata(builder, metadata),
+               options)
+       end if;
 
   op resume (value, #key metadata :: <list> = #())
     => make(<llvm-resume-instruction>,
@@ -607,6 +691,21 @@ define instruction-set
     => make(<llvm-unreachable-instruction>,
             metadata: builder-metadata(builder, metadata));
 end instruction-set;
+
+define function do-constrain-call-type
+    (fnptrval :: <llvm-value>, args :: <sequence>)
+ => (type :: false-or(<llvm-type>));
+  let fnptrtype = type-forward(fnptrval.llvm-value-type);
+  if (instance?(fnptrtype, <llvm-pointer-type>))
+    let pointee = type-forward(fnptrtype.llvm-pointer-type-pointee);
+    if (instance?(pointee, <llvm-function-type>))
+      for (arg-type in pointee.llvm-function-type-parameter-types, arg in args)
+        llvm-constrain-type(llvm-value-type(arg), arg-type);
+      end for;
+      type-forward(pointee.llvm-function-type-return-type)
+    end if
+  end if
+end function;
 
 define inline function ins--tail-call
     (builder :: <llvm-builder>, fnptrval :: <llvm-value>, args :: <sequence>,
@@ -627,4 +726,150 @@ define inline function ins--call-intrinsic
   apply(ins--call, builder, function, args,
         attribute-list: function.llvm-function-attribute-list,
         options)
+end function;
+
+// Spread operands
+define inline function ins--phi*
+    (builder :: <llvm-builder>, #rest operands)
+ => (instruction :: <llvm-instruction>);
+  ins--phi(builder, operands)
+end function;
+
+define inline function ins--switch*
+    (builder :: <llvm-builder>, value, default, #rest jump-table)
+ => (instruction :: <llvm-instruction>);
+  ins--switch(builder, value, default, jump-table)
+end function;
+
+// Convenience macros
+
+define macro ins--if
+  { ins--if(?builder:expression, ?test:expression) ?:body ?elses end }
+    => { do-ins--if(?builder, ?test, method() ?body end, ?elses) }
+  elses:
+  { } => { #f }
+  { ins--else ?:body } => { method() ?body end }
+end macro;
+
+define function do-ins--if
+    (builder :: <llvm-builder>, test,
+     iftrue-thunk :: <function>, iffalse-thunk :: false-or(<function>))
+ => (value :: <llvm-value>)
+  let test-bb = builder.llvm-builder-basic-block;
+  let iftrue-bb = make(<llvm-basic-block>);
+  let iffalse-bb = if (iffalse-thunk) make(<llvm-basic-block>) end;
+  let common-bb = make(<llvm-basic-block>);
+
+  // Branch on test results
+  if (iffalse-bb)
+    ins--br(builder, test, iftrue-bb, iffalse-bb);
+  else
+    ins--br(builder, test, iftrue-bb, common-bb);
+  end if;
+
+  // Condition true block
+  ins--block(builder, iftrue-bb);
+  let iftrue-value = iftrue-thunk();
+  let iftrue-exit-bb = builder.llvm-builder-basic-block;
+  if (iftrue-exit-bb)
+    ins--br(builder, common-bb);
+  end if;
+
+  // Condition false block
+  let (iffalse-value, iffalse-exit-bb)
+    = if (iffalse-bb)
+        ins--block(builder, iffalse-bb);
+        let value = iffalse-thunk();
+        let exit-bb = builder.llvm-builder-basic-block;
+        if (exit-bb)
+          ins--br(builder, common-bb);
+        end if;
+        values(value, exit-bb)
+      else
+        values(make(<llvm-undef-constant>), test-bb)
+      end if;
+
+  // Merge point
+  if (iftrue-exit-bb | iffalse-exit-bb)
+    ins--block(builder, common-bb);
+    if (iftrue-exit-bb & iffalse-exit-bb)
+      llvm-constrain-type(llvm-value-type(iftrue-value),
+                          llvm-value-type(iffalse-value));
+      if (llvm-void-type?(llvm-value-type(iftrue-value)))
+        make(<llvm-undef-constant>)
+      else
+        ins--phi*(builder, iftrue-value, iftrue-exit-bb,
+                  iffalse-value, iffalse-exit-bb)
+      end if;
+    elseif (iftrue-exit-bb)
+      iftrue-value
+    else
+      iffalse-value
+    end if
+  else
+    make(<llvm-undef-constant>)
+  end if
+end function;
+
+define macro ins--iterate
+  { ins--iterate ?:name (?builder:expression, ?bindings:*) ?:body end }
+    => { ins--iterate-aux ?name (?builder,
+                                 pre: [ let builder = ?builder ],
+                                 ?bindings)
+           ?body
+       end }
+bindings:
+  { } => { }
+  { ?:variable = ?:expression, ... }
+    => { var: ?variable,
+         pre: [ let ?variable ## "-phi-operands"
+                  = make(<stretchy-object-vector>) ],
+         add: [ do-add-iterate-phi-operand
+                  (builder, ?variable ## "-phi-operands", ?variable)],
+         phi: [ let ?variable
+                  = make(<llvm-phi-node>,
+                         operands: ?variable ## "-phi-operands",
+                         metadata: builder-metadata(builder, #()));
+                builder-insert(builder, ?variable) ],
+         init: ?expression, ... }
+end macro;
+
+define macro ins--iterate-aux
+  { ins--iterate-aux ?:name (?builder:expression,
+                             #key ??var:variable,
+                                  ??pre:*,
+                                  ??add:*,
+                                  ??phi:*,
+                                  ??init:expression)
+      ?:body
+    end }
+    => { let builder = ?builder;
+         let loop-head-bb :: <llvm-basic-block> = make(<llvm-basic-block>);
+         ??pre ; ...;
+         local method ?name (??var, ...)
+                 ??add ; ... ;
+                 ins--br(builder, loop-head-bb);
+               end;
+         ?name(??init, ...);
+         ins--block(builder, loop-head-bb);
+         ??phi ; ...;
+         ?body }
+
+  // Strip off grouping delimiters
+  pre:
+    { [ ?tokens:* ] } => { ?tokens }
+  add:
+    { [ ?tokens:* ] } => { ?tokens }
+  phi:
+    { [ ?tokens:* ] } => { ?tokens }
+end macro;
+
+define function do-add-iterate-phi-operand
+    (builder :: <llvm-builder>, operands :: <stretchy-object-vector>, operand)
+ => ()
+  let operand = llvm-builder-value(builder, operand);
+  add!(operands, operand);
+  add!(operands, builder.llvm-builder-basic-block);
+  llvm-constrain-type(llvm-value-type(operands[0]),
+                      llvm-value-type(operand));
 end function;

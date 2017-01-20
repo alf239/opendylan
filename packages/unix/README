@@ -4,7 +4,7 @@ Welcome to Open Dylan!
 Open Dylan is an open source implementation of the Dylan programming
 language, plus a large number of assorted libraries.
 
-This release is Open Dylan 2012.1. We expect this release to have bugs.
+This release is Open Dylan 2014.1. We expect this release to have bugs.
 We're interested in getting your feedback, in order to improve this product.
 Write to hackers@opendylan.org or report a bug via GitHub
 (https://github.com/dylan-lang/opendylan/issues). We can also help via IRC,
@@ -20,84 +20,44 @@ More specifically, due to the usage of thread-local storage, the
 minimum requirements are:
 
 FreeBSD:
- * FreeBSD 8
+ * FreeBSD 9
 
 Linux:
  * Linux kernel 2.6
  * glibc 2.3
 
-MacOSX:
- * Snow Leopard
+Mac OS X:
+ * Lion
  * XCode 4.2.1
+
 
 Installation
 ============
 
 This tarball is set up to be extracted in /opt, resulting in the
-creation of a directory /opt/opendylan-2012.1.  You just have to add
-/opt/opendylan-2012.1/bin to your PATH:
+creation of a directory /opt/opendylan-2014.1.  You just have to add
+/opt/opendylan-2014.1/bin to your PATH:
 
-  $ export PATH=/opt/opendylan-2012.1/bin:$PATH    # for bash
+  $ export PATH=/opt/opendylan-2014.1/bin:$PATH    # for bash
 
 or
 
-  $ setenv PATH /opt/opendylan-2012.1/bin:$PATH    # for tcsh
+  $ setenv PATH /opt/opendylan-2014.1/bin:$PATH    # for tcsh
 
 
 Usage
 =====
 
-You're now set to use the compiler:
+If you are new to the compiler, the Getting Started with the
+Command Line Tools is recommended:
 
-  $ dylan-compiler -build hello-world
-
-This will build the hello-world application, provided with this
-distribution, together with all dependent libraries, from source.
-Build products will end up in _build in the current working diretory.
-The _build directory will contain the following subdirectories:
-
-  build            # intermediate build products
-  lib              # libraries
-  bin              # executables
-  databases        # compiler databases
-
-You can try out running your new Dylan application:
-
-  $ _build/bin/hello-world
-  Hello, there!
-
-If you wish to change the place where files are kept, you can set an
-environment variable to have it leave the files somewhere else:
-
-  $ export OPEN_DYLAN_USER_ROOT=~/opendylan-build
-
-For generating the initial boilerplate for a new Dylan project, a perl
-script named make-dylan-app is provided.  It takes one argument, the
-name of the new library, and generates a set of Dylan files that you
-can then modify.
-
-  $ make-dylan-app my-lib
-  $ cd my-lib
-  $ dylan-compiler -build my-lib.lid
-  $ my-lib
-  Hello, world!
+  http://opendylan.org/documentation/getting-started-cli/
 
 
 Documentation
 =============
 
-Documentation is still scattered around a number of places.  One of the
-most important documents is certainly the Dylan Reference Manual,
-specifying the language standard:
-
-  http://opendylan.org/books/drm/
-
-Documentation for language extensions and libraries can be found at
-the Open Dylan website too:
+Documentation for the language, extensions and libraries can be found at
+the Open Dylan website:
 
   http://opendylan.org/documentation/
-
-Still more documentation can be found on GitHub (especially in the
-documentation repository):
-
-  https://github.com/dylan-lang/

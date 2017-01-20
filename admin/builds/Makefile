@@ -3,7 +3,7 @@
 # Author: Andy Armstrong
 #
 # Note: If you want to bootstrap the compiler, you should use the script
-# build-release.bat from this directory (opendyaln/admin/builds). It uses
+# build-release.bat from this directory (opendylan/admin/builds). It uses
 # this makefile, but first sets up the environment variables correctly
 # and then builds multiple generations as required.
 #
@@ -191,7 +191,6 @@ FLYING_SQUARES_SOURCE = $(APP_DIRECTORY)\flying-squares
 FLYING_SQUARES_INSTALL_DIRECTORY = $(DUIM_EXAMPLES_INSTALL_DIRECTORY)\flying-squares
 GENERIC_ARITHMETIC_SOURCE = $(LIB_DIRECTORY)\generic-arithmetic
 GRAMMAR_COMPILER_SOURCE = $(LIB_DIRECTORY)\grammar-compiler
-GUI_TESTWORKS_SOURCE = $(QA_DIRECTORY)\gui-testworks
 HARP_SOURCE = $(SOURCES_DIRECTORY)\harp
 HELLO_WORLD_SOURCE = $(APP_DIRECTORY)\hello-world
 HELLO_WORLD_INSTALL_DIRECTORY = $(CONSOLE_EXAMPLES_INSTALL_DIRECTORY)\hello-world
@@ -256,8 +255,9 @@ TEST_APPS_SOURCE = $(QA_DIRECTORY)\test-apps
 TESTWORKS_REPORT_SOURCE = $(QA_DIRECTORY)\testworks-report
 TEST_SUITES_SOURCE = $(QA_DIRECTORY)\test-suites
 TESTWORKS_SOURCE = $(QA_DIRECTORY)\testworks
+TESTWORKS_GUI_SOURCE = $(TESTWORKS_SOURCE)\gui
 TESTWORKS_TESTS_SOURCE = $(TESTWORKS_SOURCE)\tests
-TESTWORKS_SPECS_SOURCE = $(QA_DIRECTORY)\testworks-specs
+TESTWORKS_SPECS_SOURCE = $(TESTWORKS_SOURCE)\specs
 TETRIS_SOURCE = $(DUIM_EXAMPLES_SOURCE)\tetris
 TETRIS_INSTALL_DIRECTORY = $(DUIM_EXAMPLES_INSTALL_DIRECTORY)\tetris
 TIC_TAC_TOE_SOURCE = $(DUIM_EXAMPLES_SOURCE)\tic-tac-toe
@@ -297,6 +297,7 @@ SIMPLE_DAYTIME_CLIENT_SOURCE = $(NETWORK_EXAMPLES_SOURCE)\simple-daytime-client
 SIMPLE_DAYTIME_CLIENT_INSTALL_DIRECTORY = $(NETWORK_EXAMPLES_INSTALL_DIRECTORY)\simple-daytime-client
 SIMPLE_DAYTIME_SERVER_SOURCE = $(NETWORK_EXAMPLES_SOURCE)\simple-daytime-server
 SIMPLE_DAYTIME_SERVER_INSTALL_DIRECTORY = $(NETWORK_EXAMPLES_INSTALL_DIRECTORY)\simple-daytime-server
+MAKE_DYLAN_APP_SOURCE = $(TOOLS_DIRECTORY)\make-dylan-app
 
 #
 # CORBA projects
@@ -361,7 +362,6 @@ DOC_REVERSI_PROJECT = $(DOC_REVERSI_SOURCE)\reversi.hdp
 #
 
 PENTIUM_RUN_TIME = $(LIB_DIRECTORY)\pentium-run-time.lib
-C_RUN_TIME = $(LIB_DIRECTORY)\c-run-time.lib
 WIN32_SUPPORT = $(LIB_DIRECTORY)\Win32Support.lib
 HTMLHELP = $(INSTALL_LIB_DIRECTORY)\htmlhelp.lib
 
@@ -369,7 +369,6 @@ DYLAN_COMPILER = $(INSTALL_BIN_DIRECTORY)\dylan-compiler.exe
 DYLAN_ENVIRONMENT = $(INSTALL_BIN_DIRECTORY)\dylan-environment.exe
 BATCH_DEBUG = $(INSTALL_BIN_DIRECTORY)\batch-debug.exe
 DYLAN_COMPILER_WITH_TOOLS = $(INSTALL_BIN_DIRECTORY)\dylan-compiler-with-tools.exe
-DYLAN_ENVIRONMENT_WITH_TOOLS = $(INSTALL_BIN_DIRECTORY)\dylan-environment-with-tools.exe
 CREATE_ID = $(INSTALL_BIN_DIRECTORY)\create-id.exe
 DEVEL_DBG_UI = $(INSTALL_BIN_DIRECTORY)\devel-dbg-ui.exe
 DLL_WRAP = $(INSTALL_BIN_DIRECTORY)\dll-wrap.exe
@@ -378,6 +377,7 @@ PARSER_COMPILER = $(INSTALL_BIN_DIRECTORY)\parser-compiler.exe
 TESTWORKS_REPORT = $(INSTALL_BIN_DIRECTORY)\testworks-report.exe
 WIN32_ENVIRONMENT = $(INSTALL_BIN_DIRECTORY)\win32-environment.exe
 WITH_SPLASH_SCREEN = $(INSTALL_BIN_DIRECTORY)\with-splash-screen.exe
+MAKE_DYLAN_APP = $(INSTALL_BIN_DIRECTORY)\make-dylan-app.exe
 
 BIG_INTEGERS_DLL = $(RUNTIME_PREFIX)bigint
 CHANNELS_DLL = $(RUNTIME_PREFIX)chnnls
@@ -396,7 +396,7 @@ DUIM_OLE_CONTROL_DLL = $(RUNTIME_PREFIX)dolec
 DUIM_OLE_SERVER_DLL = $(RUNTIME_PREFIX)doles
 DYLAN_DLL = $(RUNTIME_PREFIX)dylan
 DYLAN_ORB_DLL = $(RUNTIME_PREFIX)orb
-GUI_TESTWORKS_DLL = $(RUNTIME_PREFIX)guitst
+TESTWORKS_GUI_DLL = $(RUNTIME_PREFIX)guitst
 IO_DLL = $(RUNTIME_PREFIX)io
 MIDI_DLL = $(RUNTIME_PREFIX)midi
 NAMING_CLIENT_DLL = $(RUNTIME_PREFIX)cnsc
@@ -407,6 +407,7 @@ OLE_CONTROL_FRAMEWORK_DLL = $(RUNTIME_PREFIX)olecfr
 OLE_DIALOGS_DLL = $(RUNTIME_PREFIX)oledlg
 OLE_SERVER_DLL = $(RUNTIME_PREFIX)olesvr
 SQL_ODBC_DLL = $(RUNTIME_PREFIX)db
+STRINGS_DLL = $(RUNTIME_PREFIX)strings
 SYSTEM_DLL = $(RUNTIME_PREFIX)system
 TESTWORKS_DLL = $(RUNTIME_PREFIX)tstwks
 TESTWORKS_SPECS_DLL = $(RUNTIME_PREFIX)tstspc
@@ -429,7 +430,7 @@ WIN32_VERSION_DLL = $(RUNTIME_PREFIX)w32ver
 
 BIG_INTEGERS = $(INSTALL_BIN_DIRECTORY)\$(BIG_INTEGERS_DLL).dll
 C_FFI = $(INSTALL_BIN_DIRECTORY)\$(C_FFI_DLL).dll
-CHANNELS = $(INSTALL_BIN_DIRECTORY)\(CHANNELS_DLL).dll
+CHANNELS = $(INSTALL_BIN_DIRECTORY)\$(CHANNELS_DLL).dll
 COLLECTIONS = $(INSTALL_BIN_DIRECTORY)\$(COLLECTIONS_DLL).dll
 COMMANDS = $(INSTALL_BIN_DIRECTORY)\$(COMMANDS_DLL).dll
 COMMON_DYLAN = $(INSTALL_BIN_DIRECTORY)\$(COMMON_DYLAN_DLL).dll
@@ -481,7 +482,7 @@ MIDI = $(INSTALL_BIN_DIRECTORY)\$(MIDI_DLL).dll
 
 TESTWORKS = $(INSTALL_BIN_DIRECTORY)/$(TESTWORKS_DLL).dll
 TESTWORKS_SPECS = $(INSTALL_BIN_DIRECTORY)\$(TESTWORKS_SPECS_DLL).dll
-GUI_TESTWORKS = $(INSTALL_BIN_DIRECTORY)\$(GUI_TESTWORKS_DLL).dll
+TESTWORKS_GUI = $(INSTALL_BIN_DIRECTORY)\$(TESTWORKS_GUI_DLL).dll
 
 CORBA_DYLAN = $(BUILD_DIRECTORY)\corba-dylan\$(BUILD_MAKEFILE)
 CORBA_PROTOCOL = $(BUILD_DIRECTORY)\corba-protocol\$(BUILD_MAKEFILE)
@@ -694,7 +695,7 @@ duim-deuce: $(DUIM_DEUCE)
 
 testworks: $(TESTWORKS)
 testworks-specs: $(TESTWORKS_SPECS)
-gui-testworks: $(GUI_TESTWORKS)
+testworks-gui: $(TESTWORKS_GUI)
 
 com: $(COM)
 ole-automation: $(OLE_AUTOMATION)
@@ -754,6 +755,7 @@ dll-wrap: $(DLL_WRAP)
 map-statistics: $(MAP_STATISTICS)
 parser-compiler: $(PARSER_COMPILER)
 testworks-report: $(TESTWORKS_REPORT)
+make-dylan-app: $(MAKE_DYLAN_APP)
 
 project-manager-libraries: tools-interface user-projects
 core-compiler-libraries: file-source-records release-info dood binary-manager coff-manager binary-builder coff-builder build-system parser-run-time dfmc-management dfmc-browser-support project-manager-libraries dfmc-debug-back-end
@@ -767,7 +769,7 @@ debugger: debugger-manager binary-manager coff-manager coff-debug devel-dbg-ui b
 duim-ole: duim-ole-container duim-ole-server duim-ole-control
 environment: deuce duim-deuce environment-commands environment-application-commands environment-internal-commands environment-server environment-tools environment-property-pages environment-deuce environment-project-wizard environment-profiler debugger-manager target-application binary-manager coff-manager interactive-downloader environment-debugger win32-environment with-splash-screen
 ole-libraries: com ole-server ole-automation ole-control-framework ole-container ole-dialogs
-testworks-libraries: testworks testworks-specs gui-testworks
+testworks-libraries: testworks testworks-specs testworks-gui
 user-libraries: dylan common-dylan c-ffi system collections io commands
 win32-libraries: win32-common win32-kernel win32-gdi win32-user win32-dde win32-dialog win32-controls win32-gl win32-glu win32-html-help win32-multimedia win32-registry win32-resources win32-rich-edit win32-version win32-shell
 remote-debugger: remote-nub debugger-server
@@ -836,7 +838,7 @@ channels-tests: $(CHANNELS_TESTS)
 dfmc-environment-test-suite: $(DFMC_ENVIRONMENT_TEST_SUITE)
 dfmc-environment-test-suite-app: $(DFMC_ENVIRONMENT_TEST_SUITE_APP)
 
-testworks-libraries: testworks testworks-specs gui-testworks
+testworks-libraries: testworks testworks-specs testworks-gui
 duim-test-suites: duim-test-suite-app duim-gui-test-suite win32-duim-gui-test-suite win32-duim-regression-test-suite
 test-suites: libraries-test-suite-app duim-test-suites
 pentium-test-suites: pentium-test-suite-app
@@ -1066,14 +1068,14 @@ release-info: $(RELEASE_INFO)
 compiler: pentium-dw-libraries release-info motley t-lists c-lexer console-scepter-libraries
 dylan-compiler-with-tools-exe: $(DYLAN_COMPILER_WITH_TOOLS)
 dylan-compiler-with-tools: console-compiler-libraries release-info environment-internal-commands motley t-lists c-lexer console-scepter-libraries dylan-compiler-with-tools-exe
-dylan-environment-with-tools: $(DYLAN_ENVIRONMENT_WITH_TOOLS)
+dylan-environment: $(DYLAN_ENVIRONMENT)
 win32-environment: $(WIN32_ENVIRONMENT)
 with-splash-screen: $(WITH_SPLASH_SCREEN)
-rel-environment: dylan-environment-with-tools win32-environment with-splash-screen
+rel-environment: dylan-environment win32-environment with-splash-screen
 libraries: user-libraries win32-libraries duim ole-libraries duim-ole database-libraries network dylan-orb naming-client midi
 example-projects: console-example-projects duim-example-projects win32-example-projects ole-example-projects duim-ole-example-projects network-example-projects corba-example-projects
 install-examples: install-examples-css install-console-examples install-duim-examples install-win32-examples install-basic-doc-examples install-templates install-database-examples install-ole-examples install-duim-ole-examples install-network-examples install-corba-examples install-enhanced-doc-examples install-midi-examples
-tools: install-wdbgdylan dll-wrap dylan-playground gui-dylan-playground create-id console-scepter naming-service remote-debugger testworks-libraries debugger map-statistics parser-compiler
+tools: install-wdbgdylan dll-wrap dylan-playground gui-dylan-playground create-id console-scepter naming-service remote-debugger testworks-libraries debugger map-statistics parser-compiler make-dylan-app
 release: release-info dylan-compiler-with-tools compiler environment rel-environment libraries tools install-runtime-dlls install-examples
 
 reinstall-examples:
@@ -1192,13 +1194,6 @@ boehm-pentium-run-time:
     & popd
 
 $(PENTIUM_RUN_TIME): mm-pentium-run-time
-
-$(C_RUN_TIME):
-  $(ENSURE_SOURCES) c-run-time $(C_RUN_TIME_SOURCE)
-  echo Building C run time
-  pushd $(OPEN_DYLAN_USER_BUILD)\c-run-time \
-    & $(MAKE) install /f Makefile.win32 > $(BUILD_LOGS)\make-c-run-time.log \
-    & popd
 
 $(DEBUGGER_NUB):
   $(ENSURE_SOURCES) runtime-manager $(RUNTIME_MANAGER_SOURCE)
@@ -1507,11 +1502,11 @@ $(TESTWORKS_SPECS):
   $(ENSURE_SOURCES) testworks-specs $(TESTWORKS_SPECS_SOURCE)
   $(BUILD_RUNTIME_LIBRARY) testworks-specs $(TESTWORKS_SPECS_DLL)
 
-$(GUI_TESTWORKS):
+$(TESTWORKS_GUI):
   $(ENSURE_RUNTIME_LIBRARY) $(DUIM_DLL) duim
   $(ENSURE_RUNTIME_LIBRARY) $(TESTWORKS_DLL) testworks
-  $(ENSURE_SOURCES) gui-testworks $(GUI_TESTWORKS_SOURCE)
-  $(BUILD_RUNTIME_LIBRARY) gui-testworks $(GUI_TESTWORKS_DLL)
+  $(ENSURE_SOURCES) testworks-gui $(TESTWORKS_GUI_SOURCE)
+  $(BUILD_RUNTIME_LIBRARY) testworks-gui $(TESTWORKS_GUI_DLL)
 
 #
 # Compiler
@@ -1978,6 +1973,9 @@ $(DYLAN_COMPILER):
 $(DYLAN_ENVIRONMENT):
   $(ENSURE_LIBRARY) environment-application-commands
   $(ENSURE_LIBRARY) environment-internal-commands
+  $(ENSURE_LIBRARY) motley
+  $(ENSURE_LIBRARY) tool-scepter
+  $(ENSURE_LIBRARY) remote-access-path
   $(ENSURE_LIBRARY) release-info
   $(BUILD_APPLICATION) dylan-environment
 
@@ -1988,15 +1986,6 @@ $(DYLAN_COMPILER_WITH_TOOLS):
   $(ENSURE_LIBRARY) tool-scepter
   $(ENSURE_LIBRARY) release-info
   $(BUILD_APPLICATION) dylan-compiler-with-tools
-
-$(DYLAN_ENVIRONMENT_WITH_TOOLS):
-  $(ENSURE_LIBRARY) environment-application-commands
-  $(ENSURE_LIBRARY) environment-internal-commands
-  $(ENSURE_LIBRARY) motley
-  $(ENSURE_LIBRARY) tool-scepter
-  $(ENSURE_LIBRARY) remote-access-path
-  $(ENSURE_LIBRARY) release-info
-  $(BUILD_APPLICATION) dylan-environment-with-tools
 
 $(WIN32_ENVIRONMENT):
   $(ENSURE_RUNTIME_LIBRARY) $(WIN32_SHELL_DLL) win32-shell
@@ -2030,6 +2019,14 @@ $(TESTWORKS_REPORT):
   $(ENSURE_RUNTIME_LIBRARY) $(TESTWORKS_DLL) testworks
   $(ENSURE_SOURCES) testworks-report $(TESTWORKS_REPORT_SOURCE)
   $(BUILD_APPLICATION) testworks-report
+
+$(MAKE_DYLAN_APP):
+  $(ENSURE_RUNTIME_LIBRARY) $(COMMON_DYLAN_DLL) common-dylan
+  $(ENSURE_RUNTIME_LIBRARY) $(IO_DLL) io
+  $(ENSURE_RUNTIME_LIBRARY) $(SYSTEM_DLL) system
+  $(ENSURE_RUNTIME_LIBRARY) $(STRINGS_DLL) strings
+  $(ENSURE_SOURCES) make-dylan-app $(MAKE_DYLAN_APP_SOURCE)
+  $(BUILD_APPLICATION) make-dylan-app
 
 # Test Suites
 

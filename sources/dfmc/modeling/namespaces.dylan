@@ -62,7 +62,9 @@ define &module dylan-primitives
   // machine
   create
     primitive-word-size,
-    primitive-header-size;
+    primitive-header-size,
+    primitive-read-cycle-counter,
+    primitive-read-return-address;
 
   // Object Representation.
   create
@@ -72,12 +74,11 @@ define &module dylan-primitives
     primitive-slot-value-setter,
     primitive-repeated-slot-value,
     primitive-repeated-slot-value-setter;
-    
+
   // Allocation.
   create
     primitive-allocate,
     primitive-allocate-wrapper,
-    primitive-byte-allocate,
     primitive-object-allocate-filled,
     primitive-byte-allocate-filled,
     primitive-byte-allocate-filled-terminated,
@@ -164,7 +165,7 @@ define &module dylan-primitives
   // Integer.
 
   // Small integer.
-    
+
   // Big Integer.
 
   // Machine Integer.
@@ -272,10 +273,6 @@ define &module dylan-primitives
 //    primitive-extended-float-as-double,
 //    primitive-extended-float-as-single;
 
-  create
-    primitive-single-float-class,
-    primitive-double-float-class;
-
   // Address.
 
   // Pointer.
@@ -301,7 +298,6 @@ define &module dylan-primitives
     primitive-wrap-abstract-integer,
     primitive-wrap-unsigned-abstract-integer,
     primitive-unwrap-abstract-integer,
-    primitive-machine-word-boole,
     primitive-machine-word-logand,
     primitive-machine-word-logior,
     primitive-machine-word-logxor,
@@ -433,16 +429,14 @@ define &module dylan-primitives
   // Calling Convention.
   create
     primitive-function-parameter,
-    primitive-lambda-parameter,
-    primitive-next-methods-parameter;
+    primitive-next-methods-parameter,
+    primitive-callable-as-engine-node?;
 
   // Simple Streams and Streams
 
   // Operating System
   create
-    primitive-exit-application,
-    primitive-start-timer,
-    primitive-stop-timer;
+    primitive-exit-application;
 
   // threads
   create
@@ -514,7 +508,7 @@ define &module dylan-primitives
     primitive-resolve-symbol,
     primitive-string-as-symbol,
     primitive-preboot-symbols;
-      
+
   // Threads.
   create
     \%conditional-update-variable;
@@ -536,22 +530,26 @@ define &module dylan-primitives
     primitive-c-double-at,
     primitive-c-double-at-setter,
 
-    primitive-c-unsigned-long-at-setter,    
-    primitive-c-signed-long-at-setter,    
-    primitive-c-unsigned-short-at-setter,    
-    primitive-c-signed-short-at-setter,    
-    primitive-c-unsigned-char-at-setter,    
+    primitive-c-unsigned-long-at-setter,
+    primitive-c-signed-long-at-setter,
+    primitive-c-unsigned-short-at-setter,
+    primitive-c-signed-short-at-setter,
+    primitive-c-unsigned-char-at-setter,
     primitive-c-signed-char-at-setter,
     primitive-c-signed-int-at-setter,
     primitive-c-unsigned-int-at-setter,
-    primitive-c-unsigned-long-at,    
-    primitive-c-signed-long-at,    
-    primitive-c-unsigned-short-at,    
-    primitive-c-signed-short-at,    
-    primitive-c-unsigned-char-at,    
+    primitive-c-size-t-at-setter,
+    primitive-c-ssize-t-at-setter,
+    primitive-c-unsigned-long-at,
+    primitive-c-signed-long-at,
+    primitive-c-unsigned-short-at,
+    primitive-c-signed-short-at,
+    primitive-c-unsigned-char-at,
     primitive-c-signed-char-at,
     primitive-c-signed-int-at,
     primitive-c-unsigned-int-at,
+    primitive-c-size-t-at,
+    primitive-c-ssize-t-at,
 
     primitive-c-float-at,
     primitive-c-float-at-setter,
@@ -585,7 +583,9 @@ define &module dylan-primitives
     <raw-c-double>,
     // <raw-c-long-double>,
     <raw-c-void>,
-    <raw-c-pointer>;
+    <raw-c-pointer>,
+    <raw-c-size-t>,
+    <raw-c-ssize-t>;
 
 end &module;
 
@@ -649,9 +649,6 @@ define &module dylan-extensions
   create // not really an extension but support for fip set-by
     %curry-current-element-setter;
 
-  create 
-    *permissibly-ambiguous-generics*;
-
   create
     variable->class,
     class->variable;
@@ -682,7 +679,7 @@ define &module dylan-extensions
     $minimum-signed-machine-word,
     $maximum-unsigned-machine-word,
     $minimum-unsigned-machine-word,
-    bit-field-deposit, bit-field-extract, 
+    bit-field-deposit, bit-field-extract,
     logbit-deposit,
     as-unsigned,
     integer-as-raw, raw-as-integer,
@@ -691,27 +688,26 @@ define &module dylan-extensions
 
   // Floats
   create
-    // classify-float,
     decode-single-float, encode-single-float,
     decode-double-float, encode-double-float,
-    float-divide-by-0, float-overflow, float-underflow;
+    float-divide-by-0, float-invalid, float-overflow, float-underflow;
 
   create
     immutable-vector,
     immutable-type-vector;
 
   create
-    system-allocate-simple-instance, 
+    system-allocate-simple-instance,
     system-allocate-repeated-instance,
     system-allocate-repeated-object-instance,
     system-allocate-repeated-byte-instance,
-    system-allocate-repeated-byte-instance-terminated, 
+    system-allocate-repeated-byte-instance-terminated,
     system-allocate-weak-repeated-instance,
     system-allocate-strong-repeated-instance,
-    system-allocate-simple-instance-i, 
+    system-allocate-simple-instance-i,
     system-allocate-repeated-object-instance-i,
     system-allocate-repeated-byte-instance-i,
-    system-allocate-repeated-byte-instance-terminated-i, 
+    system-allocate-repeated-byte-instance-terminated-i,
     system-allocate-weak-repeated-instance-i,
     system-allocate-strong-repeated-instance-i,
     system-allocate-wrapper;
@@ -723,6 +719,7 @@ define &module dylan-extensions
       <stack-overflow-error>,
       <arithmetic-error>,
         <division-by-zero-error>,
+        <arithmetic-domain-error>,
         <arithmetic-overflow-error>,
         <arithmetic-underflow-error>;
 
@@ -803,18 +800,6 @@ define &module dylan-extensions
     empty;
 
   create
-    \limited-list-definer,
-    limited-list,
-    <limited-list>,
-      <non-empty-limited-list>,
-      <empty-limited-list>,
-    limited-list-first, limited-list-first-setter,
-    limited-list-rest, limited-list-rest-setter,
-    empty,
-    prepend,
-    rest;
-
-  create
     \with-fip-of,
     identity-copy-state,
     sequence-next-state,
@@ -837,7 +822,7 @@ define &module dylan-extensions
 
   create
     <slot-descriptor>,
-      slot-getter, 
+      slot-getter,
       slot-setter,
       slot-type,
       init-keyword, init-keyword-setter,
@@ -861,10 +846,16 @@ define &module dylan-extensions
     <union>, union-type1, union-type2,
     <limited-integer>, limited-integer-min, limited-integer-max;
 
+  create type-union-members,
+         <type-union-classification>, classify-type-union;
+
+  create
+    <limited-function>, limited-function-signature;
+
   /// TEMPORARILY FOR METHOD DISPATCH
 
   create
-    \pointer-id?, 
+    \pointer-id?,
     vector-element, vector-element-setter,
     concatenate-2;
 
@@ -886,10 +877,10 @@ define &module dylan-extensions
     initialize-packed-slots,
     compute-initial-packed-slot,
     packed-slots-definer;
-    
+
   // Namespaces
   create
-    <namespace>, 
+    <namespace>,
       namespace-name,
     <library-version>,
       library-major-version,
@@ -935,7 +926,7 @@ define &module dylan-extensions
     // get-absent-engine-node,
     \tag-bits, \indirect-object-tag-bits?, \indirect-object?, \value-object?,
     \%mm-wrapper-implementation-class, \%mm-wrapper-implementation-class-setter,
-    \instance-header, \instance-header-setter, 
+    \instance-header, \instance-header-setter,
     \indirect-object-mm-wrapper, \indirect-object-class, \direct-object-class-with-tag-bits,
     \indirect-object-implementation-class,
     \object-implementation-class,
@@ -944,8 +935,10 @@ define &module dylan-extensions
     object-mm-wrapper,
     %method-apply-with-optionals, reconstruct-args-from-mepargs,
     keyword-specifiers,
-    <signature>, signature-required, signature-number-required, signature-number-values, 
-    signature-key?, signature-all-keys?, signature-rest?, signature-rest-value?,
+    <signature>, signature-required, signature-number-required,
+    signature-values, signature-number-values,
+    signature-key?, signature-all-keys?, signature-keys,
+    signature-rest?, signature-rest-value?, signature-rest-value,
     signature-optionals?, signature-sealed-domain?,
     signature-complete?, signature-complete?-setter,
     <object-signature>,
@@ -954,10 +947,10 @@ define &module dylan-extensions
     <simple-method>,
     // I'd like to put this here, but don't have the time to figure out if anything
     // will break since it's already exported from internal.
-    // <simple-closure-method>, 
+    // <simple-closure-method>,
     <closure-method-mixin>,
       environment-element, environment-element-setter,
-    <lambda>, <keyword-method>, <keyword-closure-method>, 
+    <lambda>, <keyword-method>, <keyword-closure-method>,
     <accessor-method>, <getter-accessor-method>, <setter-accessor-method>,
     <single-accessor-method>, <repeated-accessor-method>,
 //    <incremental-method-mixin>, %incr-method-library, %incr-method-library-setter,
@@ -970,13 +963,13 @@ define &module dylan-extensions
     merge-types, has-instances?, concrete-subtype?,
     disjoint-types?, disjoint-types-1?, incomplete-classes, type-complete?,
     debug-name-setter, function-signature, function-signature-setter, xep, xep-setter,
-    mep, mep-setter, iep, iep-setter, %gf-cache, %gf-cache-setter, 
+    mep, mep-setter, iep, iep-setter, %gf-cache, %gf-cache-setter,
     generic-function-sealed?,
     generic-function-methods-setter,
     <domain>, <method-domain>, <standalone-domain>,
       domain-type, domain-number-required, domain-library, domain-match?, domain-types, domain-disjoint?,
     <sealed-generic-function>,
-    <incremental-generic-function>, 
+    <incremental-generic-function>,
       incremental-gf-module, incremental-gf-module-setter,
       incremental-gf-domain-info, incremental-gf-domain-info-setter,
       incremental-gf-sealed?, incremental-gf-sealed?-setter,
@@ -989,7 +982,7 @@ define &module dylan-extensions
     // byte-slot-element, byte-slot-element-setter,
     <slot-descriptor>, <any-instance-slot-descriptor>, <any-class-slot-descriptor>,
     <repeated-slot-descriptor>, <instance-slot-descriptor>, <inherited-slot-descriptor>,
-    <init-arg-descriptor>, <slot-keyword-initialization-descriptor>, 
+    <init-arg-descriptor>, <slot-keyword-initialization-descriptor>,
     slot-storage-size,
     inherited-slot-getter, init-arg-type, init-keyword, init-keyword-required?, init-data-slot,
     method-slot-descriptor, slot-allocation, slot-offset, slot-offset-i, slot-owner, size-slot-descriptor,
@@ -1007,7 +1000,7 @@ define &module dylan-extensions
       class-mm-wrapper, class-mm-wrapper-setter,
       repeated-slot-descriptor, repeated-slot-descriptor-setter,
       instance-slot-descriptors, instance-slot-descriptors-setter,
-      iclass-dispatch-key, iclass-dispatch-key-setter, 
+      iclass-dispatch-key, iclass-dispatch-key-setter,
       direct-superclasses-setter,
       all-superclasses-setter,
       direct-subclasses-setter,
@@ -1028,7 +1021,7 @@ define &module dylan-extensions
       class-slot-storage, class-slot-storage-setter,
       class-known-joint, class-known-joint-setter,
       class-rcpl-vector, class-rcpl-vector-setter,
-      class-rcpl-position, class-rcpl-position-setter, 
+      class-rcpl-position, class-rcpl-position-setter,
       class-rcpl-other-positions, class-rcpl-other-positions-setter,
       repeated-slot-descriptor,
       // class-mangled-name,
@@ -1038,7 +1031,7 @@ define &module dylan-extensions
 
     %register-subclass-dependent-generic,
     %register-subclasses-dependent-generic,
-      iclass-subclass-dependent-generics, iclass-subclass-dependent-generics-setter, 
+      iclass-subclass-dependent-generics, iclass-subclass-dependent-generics-setter,
     %add-class,
 
     iclass-dependent-generics, iclass-dependent-generics-setter,
@@ -1048,14 +1041,14 @@ define &module dylan-extensions
     class-subtype-bit, class-subtype-bit-setter,
     class-module, class-module-setter;
 
-  create 
+  create
     \for-each-superclass;
 
   // You might think that these should be part of dylan-incremental...  But they're needed
   // for those "dumb" functions that only come in an scu version, such as has-instances?.
   // In practice they're rarely used on anything but the $empty-subjunctive-class-universe,
-  // so much of the code is optimzed with that in mind.
-  create 
+  // so much of the code is optimized with that in mind.
+  create
     <subjunctive-class-universe>,
     $empty-subjunctive-class-universe,
     make-empty-subjunctive-class-universe,
@@ -1081,13 +1074,13 @@ define &module dylan-extensions
     <object-deque>, <stretchy-object-vector>;
 
   create
-    table-vector, 
-    <table-vector>, 
-      grow-size-function, default-grow-size, 
+    table-vector,
+    <table-vector>,
+      grow-size-function, default-grow-size,
       hash-function, test-function,
-    rehash-table, 
-    <string-table>, <hash-state>, 
-    collection-hash, sequence-hash, 
+    rehash-table,
+    <string-table>, <hash-state>,
+    collection-hash, sequence-hash,
     values-hash, string-hash, case-insensitive-string-hash,
     case-insensitive-equal, remove-all-keys!;
 
@@ -1159,14 +1152,15 @@ define &module dylan-direct-c-ffi
   use dylan-primitives, export: all;
   use dylan-extensions,
     import: {<machine-word>,
-	     integer-as-raw, raw-as-integer,
-	     abstract-integer-as-raw, raw-as-abstract-integer},
+             integer-as-raw, raw-as-integer,
+             abstract-integer-as-raw, raw-as-abstract-integer},
     export: all;
   create
     \%call-c-function,
     \%call-c-function-indirect,
     \%c-callable-function,
-    \%c-variable-pointer;
+    \%c-variable-pointer,
+    \%objc-msgsend;
 end &module;
 
 define &module dylan-c-ffi-hygiene-glitches
@@ -1177,6 +1171,7 @@ define &module dylan-c-ffi-hygiene-glitches
   create
     \with-stack-block,
     \c-function-body,
+    \objc-msgsend-body,
     \make-c-callable,
     \export-type-for,
     \import-type-for,
@@ -1235,11 +1230,15 @@ define &module dylan-c-ffi-hygiene-glitches
       <instantiation-of-c-raw-int**>,
     <instantiation-of-c-raw-unsigned-long*>,
       <instantiation-of-c-raw-unsigned-long**>,
+    <instantiation-of-c-raw-size-t*>,
+      <instantiation-of-c-raw-size-t**>,
+    <instantiation-of-c-raw-ssize-t*>,
+      <instantiation-of-c-raw-ssize-t**>,
     <instantiation-of-c-raw-signed-long*>,
       <instantiation-of-c-raw-signed-long**>,
     <instantiation-of-c-float*>,
     <instantiation-of-c-double*>
-    
+
 //    \make-c-pointer-internal,
   ;
 end &module;
@@ -1250,7 +1249,7 @@ define &module dylan-c-ffi
     import: {<machine-word>},
     export: all;
 
-/* 
+/*
 [gts, 11/97, wait until harp backend ready]
   create
     \with-stack-structure;   // now handled by conversion (gts,9/97)
@@ -1263,6 +1262,7 @@ define &module dylan-c-ffi
     c-mapped-subtype-definer,
     c-subtype-definer,
     c-function-definer,
+    objc-selector-definer,
     c-callable-wrapper-definer,
     c-address-definer,
     c-variable-definer;
@@ -1289,6 +1289,8 @@ define &module dylan-c-ffi
     <C-raw-char>,
     <C-raw-signed-char>,
     <C-raw-unsigned-char>,
+    <C-raw-size-t>,
+    <C-raw-ssize-t>,
     <C-raw-int*>,
     <C-raw-signed-int*>,
     <C-raw-unsigned-int*>,
@@ -1299,6 +1301,8 @@ define &module dylan-c-ffi
     <C-raw-char*>,
     <C-raw-signed-char*>,
     <C-raw-unsigned-char*>,
+    <C-raw-size-t*>,
+    <C-raw-ssize-t*>,
     <C-raw-int**>,
     <C-raw-signed-int**>,
     <C-raw-unsigned-int**>,
@@ -1308,6 +1312,8 @@ define &module dylan-c-ffi
     <C-raw-unsigned-short**>,
     <C-raw-signed-char**>,
     <C-raw-unsigned-char**>,
+    <C-raw-size-t**>,
+    <C-raw-ssize-t**>,
 
     <C-number>,
     <C-struct>,
@@ -1474,7 +1480,7 @@ define &module dylan
     limited;
 
   create
-       
+
     /// Collections.
 
     // Iteration protocol.
@@ -1484,7 +1490,7 @@ define &module dylan
 
     key-test,
     key-sequence,
-       
+
     element,
     element-setter,
 
@@ -1550,21 +1556,21 @@ define &module dylan
 
    aref,
    aref-setter,
-       
+
    rank,
    row-major-index,
    dimensions,
    dimension,
 
    <deque>,
-       
+
    push,
    pop,
    push-last,
    pop-last,
    add!,
    remove!,
-       
+
    <list>,
    <empty-list>,
    <pair>,
@@ -1671,7 +1677,7 @@ define &module dylan
    \*,
    \-,
    \/,
-       
+
    negative,
 
    floor,
@@ -1683,10 +1689,10 @@ define &module dylan
    ceiling/,
    round/,
    truncate/,
-       
+
    modulo,
    remainder,
-       
+
    \^,
 
    abs,
@@ -1739,20 +1745,20 @@ end &module;
 define &module dylan-excluding-arithmetic
   use dylan,
     exclude: {<integer>,
-	      $minimum-integer, $maximum-integer,
-	      range, <range>,
-	      \+, \-, \*, \/,
-	      negative,
-	      floor,  ceiling,  round,  truncate,
-	      floor/, ceiling/, round/, truncate/,
-	      modulo, remainder,
-	      \^,
-	      abs,
-	      logior, logxor, logand, lognot,
-	      logbit?,
-	      ash, lsh,
-	      lcm, gcd,
-	      \for},
+              $minimum-integer, $maximum-integer,
+              range, <range>,
+              \+, \-, \*, \/,
+              negative,
+              floor,  ceiling,  round,  truncate,
+              floor/, ceiling/, round/, truncate/,
+              modulo, remainder,
+              \^,
+              abs,
+              logior, logxor, logand, lognot,
+              logbit?,
+              ash, lsh,
+              lcm, gcd,
+              \for},
     export: all;
   //---*** Anything from dylan-extensions?
 end &module;
@@ -1761,20 +1767,20 @@ end &module;
 define &module dylan-arithmetic
   use dylan,
     import: {<integer>,
-	     $minimum-integer, $maximum-integer,
-	     range, <range>,
-	     \+, \-, \*, \/,
-	     negative,
-	     floor,  ceiling,  round,  truncate,
-	     floor/, ceiling/, round/, truncate/,
-	     modulo, remainder,
-	     \^,
-	     abs,
-	     logior, logxor, logand, lognot,
-	     logbit?,
-	     ash, lsh,
-	     lcm, gcd,
-	     \for},
+             $minimum-integer, $maximum-integer,
+             range, <range>,
+             \+, \-, \*, \/,
+             negative,
+             floor,  ceiling,  round,  truncate,
+             floor/, ceiling/, round/, truncate/,
+             modulo, remainder,
+             \^,
+             abs,
+             logior, logxor, logand, lognot,
+             logbit?,
+             ash, lsh,
+             lcm, gcd,
+             \for},
     export: all;
   //---*** Anything from dylan-extensions?
 end &module;
@@ -1820,10 +1826,12 @@ define &module threads
 
     // <Thread>
     <thread>, <synchronous-thread>,
-    thread-name, 
+    thread-id,
+    thread-name,
     join-thread,
     thread-yield,
     current-thread,
+    current-thread-id,
     $low-priority,
     $background-priority,
     $normal-priority,
@@ -1835,7 +1843,7 @@ define &module threads
     wait-for,
     release,
     synchronization-name,
-    
+
     // <Lock>
     <lock>,
     \with-lock,
@@ -1843,7 +1851,7 @@ define &module threads
     // <Semaphore>
     <semaphore>,
     $semaphore-maximum-count-limit,
-    
+
     // <Exclusive-lock>
     <exclusive-lock>,
     <recursive-lock>,
@@ -1856,7 +1864,7 @@ define &module threads
     <notification>,
     associated-lock,
     release-all,
-    
+
     // Timers
     sleep,
 
@@ -1905,7 +1913,6 @@ define &module threads-primitives
     *dylan-library-initialized?*;
 
   export
-    <optional-name>,
     <portable-container>, handle1, handle1-setter,
     <portable-double-container>, handle2, handle2-setter,
     $success,
@@ -1953,17 +1960,12 @@ end &module;
 
 
 define &module dispatch-engine
-  create			// @@@@ Temporary... 
-      todays-dispatch-report,
-//    *cached-gfs*,
+  create                        // @@@@ Temporary...
     dbg;
   // HACK: TEMPORARY
   create
     profile-all-terminal-engine-nodes?, profile-all-terminal-engine-nodes?-setter,
-    call-site-caches-enabled?, call-site-caches-enabled?-setter, 
-    sharing-partial-dispatch-cache-headers?, sharing-partial-dispatch-cache-headers?-setter,
-    partial-dispatch-megamorphic-punt?, partial-dispatch-megamorphic-punt?-setter,
-    partial-dispatch?, partial-dispatch?-setter;
+    call-site-caches-enabled?, call-site-caches-enabled?-setter;
 
   create
     engine-node$k-absent,
@@ -2051,10 +2053,6 @@ define &module dispatch-engine
     stchen$v-checkedmask,
     stchen$s-checkedmask,
     stchen$m-checkedmask,
-    $partial-dispatch-arguments-limit,
-    pdisp$v-typemask,
-    pdisp$s-typemask,
-    pdisp$m-typemask,
     discriminator$v-argnum,
     discriminator$s-argnum,
     discriminator$m-argnum,
@@ -2078,8 +2076,8 @@ define &module dispatch-engine
     $dispatch-key-lock, *next-unique-dispatch-key*, *implementation-classes-by-key*,
     iclass-unique-key, class-unique-key,
     iclass-number-to-key, iclass-key-to-number,
-    initialize-class-dispatch-keys, 
-    initialize-class-dispatch-keys-vectored, 
+    initialize-class-dispatch-keys,
+    initialize-class-dispatch-keys-vectored,
     ensure-key-to-iclass-storage,
     object-class-unique-key, implementation-class-from-key;
   create
@@ -2092,7 +2090,7 @@ define &module dispatch-engine
     engine-node-function-code,
     %invoke-engine-node,
     %invoke-generic-function, %invoke-generic-function-mepized,
-    <dispatch-starter>,	// type-union(<generic-function>, <cache-header-engine-node>)
+    <dispatch-starter>,        // type-union(<generic-function>, <cache-header-engine-node>)
     parent-gf, %restart-dispatch;
   create
     \with-object-lock, \with-multiple-object-lock,
@@ -2105,7 +2103,7 @@ define &module dispatch-engine
     bootstrap-allocate-discriminator,
     make-single-class-singleton-discriminator,
     *dispatch-miss-count*, *dispatch-computation-count*,
-    handle-missed-dispatch, handle-missed-dispatch-1;
+    handle-missed-dispatch;
   create
     <terminal-engine-node>,
     <discriminator>,
@@ -2134,18 +2132,17 @@ define &module dispatch-engine
       make-single-method-engine-node,
       make-linear-singleton-discriminator,
     <cache-header-engine-node>,
-      cache-header-engine-node-next, cache-header-engine-node-next-setter, 
+      cache-header-engine-node-next, cache-header-engine-node-next-setter,
       cache-header-engine-node-parent, cache-header-engine-node-parent-setter,
-    <common-root-cache-header-engine-node>,			    
+    <common-root-cache-header-engine-node>,
     <simple-typechecked-cache-header-engine-node>,
       stchen-checkedmask,
-    <partial-dispatch-cache-header-engine-node>,
     <simple-call-site-cache-header-engine-node>,
     <profiling-call-site-cache-header-engine-node>,
       profiling-call-site-cache-header-engine-node-count-1, profiling-call-site-cache-header-engine-node-count-1-setter,
       profiling-call-site-cache-header-engine-node-count-2, profiling-call-site-cache-header-engine-node-count-2-setter,
-      %profile-count-low,  %profile-count-low-setter,     
-      %profile-count-high, %profile-count-high-setter,     
+      %profile-count-low,  %profile-count-low-setter,
+      %profile-count-high, %profile-count-high-setter,
       profiling-call-site-cache-header-engine-node-id, profiling-call-site-cache-header-engine-node-id-setter,
       profiling-call-site-cache-header-engine-node-library, profiling-call-site-cache-header-engine-node-library-setter,
     <class-keyed-discriminator>,
@@ -2156,10 +2153,9 @@ define &module dispatch-engine
       ckd$s-log2size,
       // <table-base>,
       // grounded-class-keyed-discriminator-table-base,
-      ckd-ref, ckd-ref-setter, ckd-size,			    
+      ckd-ref, ckd-ref-setter, ckd-size,
       %ckd-ref, %ckd-ref-setter, %ckd-size, %ckd-mask, $ckd-empty,
       grounded-class-keyed-discriminator-default,
-      %second-hash-values,
     <linear-class-keyed-discriminator>,
       lckd-index, lckd-index-setter,
       lckd-hits, lckd-hits-setter,
@@ -2169,6 +2165,7 @@ define &module dispatch-engine
     <by-class-discriminator>,
     <by-singleton-class-discriminator>,
     <linear-by-class-discriminator>,
+      %gf-dispatch-linear-by-class,
     <hashed-by-class-discriminator>,
     <linear-by-singleton-class-discriminator>,
     <hashed-by-singleton-class-discriminator>,
@@ -2220,17 +2217,17 @@ define &module dispatch-engine
     <repeated-byte-slot-setter-engine-node>,
     <boxed-class-slot-engine-node>,
     <boxed-class-slot-getter-engine-node>,
+      %gf-dispatch-boxed-class-slot-getter,
     <boxed-class-slot-setter-engine-node>,
-    callback-slot-engine-node-offset,			    
+      %gf-dispatch-boxed-class-slot-setter,
+    callback-slot-engine-node-offset,
     slot-engine-node-size-offset, slot-engine-node-size-offset-setter;
   create
     <gf-cache-info>,
       gf-cache-info-users, gf-cache-info-users-setter,
     <simple-typechecked-gf-cache-info>,
       simple-typechecked-gf-cache-info-entries, simple-typechecked-gf-cache-info-entries-setter,
-      simple-typechecked-gf-cache-info-argmask, simple-typechecked-gf-cache-info-argmask-setter,
-    <partial-dispatch-gf-cache-info>,
-      partial-dispatch-gf-cache-info-caches, partial-dispatch-gf-cache-info-caches-setter;
+      simple-typechecked-gf-cache-info-argmask, simple-typechecked-gf-cache-info-argmask-setter;
   create
     slot-location,
     make-slot-accessing-next-method-chain;
@@ -2263,9 +2260,9 @@ define &module machine-word-lowlevel
          coerce-machine-word-to-abstract-integer,
          coerce-abstract-integer-to-machine-word,
          coerce-machine-word-to-unsigned-abstract-integer,
-	 strip-integer-tag,
-	 insert-integer-tag,
-	 force-integer-tag;
+         strip-integer-tag,
+         insert-integer-tag,
+         force-integer-tag;
   // comparison
   create machine-word-equal?,
          machine-word-less-than?;
@@ -2278,6 +2275,8 @@ define &module machine-word-lowlevel
          machine-word-count-low-zeros,
          machine-word-count-high-zeros;
   // arithmetic
+  create machine-word-add,
+         machine-word-subtract;
   create machine-word-add-with-overflow,
          machine-word-subtract-with-overflow,
          machine-word-multiply-with-overflow,
@@ -2348,7 +2347,7 @@ define &module internal
   use threads-primitives;
   use machine-word-lowlevel;
   use dispatch-engine,
-    export: 
+    export:
       { <absent-engine-node>,
         <simple-typechecked-cache-header-engine-node>,
         $inapplicable-engine-node,
@@ -2378,7 +2377,8 @@ define &module internal
     %true, %false, %empty-list, %empty-vector, %empty-string;
 
   export
-    <handler>, *current-handlers*, make-handler;
+    <handler>, *current-handlers*, make-handler,
+    condition-format-arguments-vector;
 
   export
     %shared-dylan-symbols, %shared-streams-symbols;
@@ -2391,8 +2391,8 @@ define &module internal
     binary-min, binary-max;
 
   export
-    <function-class>, 
-      <value-class>, value-class-comparitor, value-class-comparitor-setter, 
+    <function-class>,
+      <value-class>,
       default-class-constructor,
       <getter-method>, <setter-method>,
       <copy-down-method>,
@@ -2406,7 +2406,7 @@ define &module internal
       <class-slot-descriptor>, <each-subclass-slot-descriptor>;
 
   export
-    <signature+values>, 
+    <signature+values>,
       <signature+rest-value>,
       <signature+values+rest-value>,
     <keyword-signature+values>,
@@ -2556,8 +2556,6 @@ define &module internal
 
     union-instance?,
 
-    limited-integer-instance?-function,
-
     subclass-instance?;
 
   export
@@ -2576,7 +2574,7 @@ define &module internal
 
   export
     argument-count-error, odd-keyword-arguments-error,
-    unknown-keyword-argument-error, stack-overflow-error, 
+    unknown-keyword-argument-error, stack-overflow-error,
     argument-count-overflow-error,
     type-check-error,
     %slotacc-single-q-instance-getter,

@@ -15,10 +15,10 @@ define open abstract class <external-stream> (<basic-stream>)
   keyword if-does-not-exist:;
 end class <external-stream>;
 
-define open generic accessor 
+define open generic accessor
     (stream :: <external-stream>) => (the-accessor :: false-or(<external-stream-accessor>));
 
-define open generic accessor-setter 
+define open generic accessor-setter
     (the-accessor :: false-or(<external-stream-accessor>), stream :: <external-stream>)
  => (the-accessor :: false-or(<external-stream-accessor>));
 
@@ -31,7 +31,7 @@ define function close-external-streams () => ()
 end function;
 
 define open method initialize
-    (the-stream :: <external-stream>, 
+    (the-stream :: <external-stream>,
      #rest keys,
      #key locator = #f,
      already-registered? = #f) => ()
@@ -40,7 +40,7 @@ define open method initialize
   apply(next-method, the-stream, already-registered?: #t, keys);
   // Use the stream as its own key.
   unless (already-registered?)
-    $open-external-streams[the-stream] := the-stream; 
+    $open-external-streams[the-stream] := the-stream;
   end unless;
 end method;
 
@@ -53,11 +53,11 @@ define method close
   if (stream-open?(stream))
     unless (abort?)
       if (synchronize?)
-	force-output(stream, synchronize?: synchronize?);
+        force-output(stream, synchronize?: synchronize?);
       elseif (wait?)
-	force-output(stream, synchronize?: #f);	
+        force-output(stream, synchronize?: #f);
       else
-	do-force-output(stream)
+        do-force-output(stream)
       end if;
     end unless;
     if (stream.accessor)
@@ -66,19 +66,19 @@ define method close
     unless (already-unregistered?)
       remove-key!($open-external-streams, stream);
     end unless;
-     // Let other methods know that this method has unregistered the
-     // stream for automatic closing on application exit.
+    // Let other methods know that this method has unregistered the
+    // stream for automatic closing on application exit.
     apply(next-method, stream, already-unregistered?: #t, keys);
   end if; //  what to do if it isn't open? warn? error? nothing?
 end method close;
 
 // Force-output always blocks.  Do-force-output is the non-blocking form
 define method force-output
-    (stream :: <external-stream>, 
+    (stream :: <external-stream>,
      #key synchronize? :: <boolean> = #f) => ()
   do-force-output(stream);
   wait-for-io-completion(stream);
-  if(synchronize?)
+  if (synchronize?)
     accessor-synchronize(stream.accessor, stream);
   end if;
 end method force-output;
@@ -127,7 +127,7 @@ define open generic platform-accessor-class
 // common denominator wins.
 
 define open generic accessor-fd
-    (the-accessor :: <external-stream-accessor>) 
+    (the-accessor :: <external-stream-accessor>)
  => (the-fd :: false-or(<machine-word>));
 
 // Legal values for direction are #"input", #"output", #"input-output"

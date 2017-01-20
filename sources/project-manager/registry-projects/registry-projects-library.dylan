@@ -36,7 +36,7 @@ define module registry-projects-internal
   use format-out;
   use operating-system, rename: {load-library => os/load-library};
   use file-system;
-  use build-system, exclude: {default-build-script, default-build-script-setter};
+  use build-system;
 
   use file-source-records;
   use dfmc-project-compilation;
@@ -51,5 +51,5 @@ define module registry-projects-internal
 end;
 
 define module registry-projects
-  use registry-projects-internal, export: all; 
+  use registry-projects-internal, export: all;
 end;

@@ -2,6 +2,9 @@
 DUIM-Frames Library
 *******************
 
+.. current-library:: duim
+.. current-module:: duim-frames
+
 Overview
 ========
 
@@ -9,12 +12,12 @@ The DUIM-Frames library contains interfaces that define a wide variety
 of frames for use in your GUI applications, as well as the necessary
 functions, generic functions, and macros for creating and manipulating
 them. The library contains a single module, *duim-frames*, from which
-all the interfaces described in this chapter are exposed. `See
-DUIM-Frames Module`_ contains complete reference
+all the interfaces described in this chapter are exposed.
+`DUIM-Frames Module`_ contains complete reference
 entries for each exposed interface.
 
 Frames are the basic components used to display DUIM objects on-screen.
-An instance of type *<frame>* is an object representing some state in a
+An instance of type :class:`<frame>` is an object representing some state in a
 user application, plus the sheets in its interface. Frames control the
 overall appearance of the entire window, allowing you to distinguish,
 for example, between a normal window and a dialog box, or allowing you
@@ -22,10 +25,10 @@ to specify modal or modeless dialog boxes, and might include such things
 as a menu bar, a tool bar, and a status bar.
 
 Frames exist on windows and contain sheets, which can be instances of
-*<layout>* or *<gadget>*, or any of their subclasses, and an event
+:class:`<layout>` or :class:`<gadget>`, or any of their subclasses, and an event
 loop. The event loop associated with a frame is represented by an
-instance of a subclass of *<event>*. An overview of these subclasses is
-provided in `Subclasses of <frame-event>`_.
+instance of a subclass of :class:`<event>`. An overview of these subclasses is
+provided in `Subclasses of \<frame-event\>`_.
 
 The class hierarchy for DUIM-Frames
 ===================================
@@ -37,128 +40,93 @@ hierarchy present.
 The <frame> class and its subclasses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The base class for all DUIM frames is the *<frame>* class, which is
-itself a subclass of *<object>*. In addition, there are a number of
-classes related to commands that are subclasses of *<object>*, together
-with a number of classes related to events that occur in frames. `See
-Overall class hierarchy for the DUIM-Frames library`_
-shows the overall class hierarchy for the base classes exported by the
-DUIM-Frames library.
+The base class for all DUIM frames is the :class:`<frame>` class, which is
+itself a subclass of :drm:`<object>`. In addition, there are a number of
+classes related to commands that are subclasses of :drm:`<object>`, together
+with a number of classes related to events that occur in frames.
 
-Overall class hierarchy for the DUIM-Frames library
-                                                   
+- :drm:`<object>`
 
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-<object>
+  - :class:`<gadget>`
+  - :class:`<page>`
 
-<gadget>
+    - See `Subclasses of \<page\>`_
 
-<page>
+  - :class:`<frame>`
 
-See `Subclasses of <page>`_
+    - See `Subclasses of \<frame\>`_
 
-<frame>
+  - :class:`<event>`
 
-See `Subclasses of <frame>`_
+    - :class:`<frame-event>`
 
-<event>
+      - See `Subclasses of \<frame-event\>`_
 
-<frame-event>
+  - :class:`<simple-command>`
+  - :class:`<simple-undoable-command>`
+  - :class:`<command-table>`
+  - :class:`<command-table-menu-item>`
 
-See `Subclasses of <frame-event>`_
+The :class:`<frame>` class represents the base class for all types of frame. An
+introduction to the subclasses available is given in `Subclasses of \<frame\>`_.
 
-<simple-command>
-
-<simple-undoable-command>
-
-<command-table>
-
-<command-table-menu-item>
-
-The *<frame>* class represents the base class for all types of frame. An
-introduction to the subclasses available is given in `Subclasses of
-<frame>`_.
-
-The *<event>* class represents the base class for all events that can
-occur. Although this class and the *<frame-event>* subclass are exposed
-by the DUIM-Sheets library, the subclasses of *<frame-event>* itself are
-exposed by the DUIM-Frames library. See `Subclasses of
-<frame-event>`_ for an introduction to these
-subclasses. See `DUIM-Sheets Library <silica.htm#90521>`_, for a
+The :class:`<event>` class represents the base class for all events that can
+occur. Although this class and the :class:`<frame-event>` subclass are exposed
+by the DUIM-Sheets library, the subclasses of :class:`<frame-event>` itself are
+exposed by the DUIM-Frames library. See `Subclasses of \<frame-event\>`_ for an
+introduction to these subclasses. See  the :doc:`DUIM-Sheets Library <sheets>`, for a
 complete description of the DUIM-Sheets library.
 
 The remaining four classes exposed by the DUIM-Frames library relate to
 commands and their use in application menus.
 
-*<simple-command>*
-                  
-
--  This class is used to create the most basic type of command. A
+:class:`<simple-command>`
+   This class is used to create the most basic type of command. A
    command is an operation that can be invoked as a callback from a menu
    item, a button, or other suitable interface control.
 
-*<simple-undoable-command>*
-                           
-
--  This class is used to define commands whose effects can be reversed.
+:class:`<simple-undoable-command>`
+   This class is used to define commands whose effects can be reversed.
    Typically, the user chooses the command *Edit > Undo* to reverse the
    effects of a command of this class.
 
-*<command-table>*
-                 
-
--  The *<command-table>* class is used to define the complete menu
+:class:`<command-table>`
+   The :class:`<command-table>` class is used to define the complete menu
    structure of an application frame, from the menu bar and menus to the
    menu items on each menu.
 
-*<command-table-menu-item>*
-                           
-
--  This class represents a menu item on a menu defined in a command
+:class:`<command-table-menu-item>`
+   This class represents a menu item on a menu defined in a command
    table.
 
 Subclasses of <frame>
 ^^^^^^^^^^^^^^^^^^^^^
 
-A number of subclasses of *<frame>* are provided to allow you to create
-a variety of common types of frame. These subclasses are shown in `See
-Subclasses of the <frame> class`_.
+A number of subclasses of :class:`<frame>` are provided to allow you to create
+a variety of common types of frame.
 
-Subclasses of the *<frame>* class
-                                 
+- :class:`<frame>`
 
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-<frame>
+  - :class:`<simple-frame>`
+  - :class:`<dialog-frame>`
+  - :class:`<property-frame>`
+  - :class:`<wizard-frame>`
 
-<simple-frame>
+:class:`<simple-frame>`
+   This class is the most common sort of frame and is used to create
+   a standard window in an application.
 
-<dialog-frame>
+:class:`<dialog-frame>`
+   This class is used to create dialog boxes for use in an application.
 
-<property-frame>
-
-<wizard-frame>
-
--  *<simple-frame>* This class is the most common sort of frame and is
-   used to create a standard window in an application.
--  *<dialog-frame>* This class is used to create dialog boxes for use in
-   an application.
-
-*<property-frame>*
-                  
-
--  This class is used to create property sheets for use in an
+:class:`<property-frame>`
+   This class is used to create property sheets for use in an
    application. Property sheets are a special type of dialog box which
    make use of tab controls to display several pages of information
    within the same dialog.
 
-*<wizard-frame>*
-                
-
--  This class is used to create wizards for use in an application.
+:class:`<wizard-frame>`
+   This class is used to create wizards for use in an application.
    Wizards are a special type of multi-page dialog in which the user is
    guided through a series of sequential steps, filling out any
    information requested and using *Next* and *Back* buttons to navigate
@@ -167,61 +135,51 @@ Subclasses of the *<frame>* class
 Subclasses of <frame-event>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The *<frame-event>* class provides a number of subclasses that describe
-various events that can occur in frames. These subclasses are shown in
-`Subclasses of the <frame-event> class`_.
+The :class:`<frame-event>` class provides a number of subclasses that describe
+various events that can occur in frames.
 
-Subclasses of the *<frame-event>* class
-                                       
+- :class:`<frame-event>`
 
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-<frame-event>
-
-<frame-created-event>
-
-<frame-destroyed-event>
-
-<frame-mapped-event>
-
-<frame-unmapped-event>
-
-<frame-exit-event>
-
-<frame-exited-event>
-
-<application-exited-event>
+  - :class:`<frame-created-event>`
+  - :class:`<frame-destroyed-event>`
+  - :class:`<frame-mapped-event>`
+  - :class:`<frame-unmapped-event>`
+  - :class:`<frame-exit-event>`
+  - :class:`<frame-exited-event>`
+  - :class:`<application-exited-event>`
 
 The name of each of these subclasses accurately reflects the type of
 event that they are used to represent. The classes
-*<frame-created-event>* and *<frame-destroyed-event>* represent a frame
-being created or destroyed. The classes *<frame-mapped-event>* and
-*<frame-unmapped-event>* represent the events that occur when a frame is
-displayed on the computer screen or removed from it. The class
-*<frame-exit-event>* represents the act of exiting a frame, and the
-class *<frame-exited-event>* represents the event where a frame has been
+:class:`<frame-created-event>` and :class:`<frame-destroyed-event>`
+represent a frame being created or destroyed. The classes
+:class:`<frame-mapped-event>` and :class:`<frame-unmapped-event>`
+represent the events that occur when a frame is displayed on the
+computer screen or removed from it. The class :class:`<frame-exit-event>`
+represents the act of exiting a frame, and the class
+:class:`<frame-exited-event>` represents the event where a frame has been
 successfully exited.
 
-In addition, the class *<frame-exited-event>* has a subclass
-*<application-exited-event>*. This is reserved for the special case
+In addition, the class :class:`<frame-exited-event>` has a subclass
+:class:`<application-exited-event>`. This is reserved for the special case
 where the frame that has been exited is actually the parent frame for
 the whole application, in which case the whole application is exited,
 together with any other frames that may have been spawned as a result of
 using the application.
 
-*Note:* The classes *<frame-mapped-event>* and *<frame-unmapped-event>*
-are distinct from the classes *<frame-created-event>* and
-*<frame-destroyed-event>*. A frame is not necessarily mapped as soon as
-it is created, and any frame can be unmapped from the screen without
-actually destroying it (for example, a frame may be iconized).
+.. note:: The classes :class:`<frame-mapped-event>` and
+   :class:`<frame-unmapped-event>` are distinct from the
+   classes :class:`<frame-created-event>` and
+   :class:`<frame-destroyed-event>`. A frame is not necessarily
+   mapped as soon as it is created, and any frame can be unmapped
+   from the screen without actually destroying it (for example,
+   a frame may be iconized).
 
 Subclasses of <page>
 ^^^^^^^^^^^^^^^^^^^^
 
-Although the *<page>* class is itself a subclass of *<gadget>*, and is
+Although the :class:`<page>` class is itself a subclass of :class:`<gadget>`, and is
 exposed by the DUIM-Gadgets library, two of its subclasses are exposed
-by the DUIM-Frames library: *<wizard-page>* and *<property-page>*. See
+by the DUIM-Frames library: :class:`<wizard-page>` and :class:`<property-page>`. See
 `Subclasses of <page> <gadgets.htm#31084>`_ for an introduction to
 these classes.
 
@@ -240,11 +198,12 @@ command tables. In Harlequin Dylan 1.0, two approaches could be taken
 when specifying a command in a table. For example, a menu item could be
 specified by either of the following:
 
-menu-item "My Command" = make(<command>, function: my-command),
+.. code-block:: dylan
 
-menu-item "My Command" = my-command,
+   menu-item "My Command" = make(<command>, function: my-command),
+   menu-item "My Command" = my-command,
 
-Beninning with Harlequin Dylan 1.1, only the last of these may be used.
+Beginning with Harlequin Dylan 1.1, only the last of these may be used.
 This may require you to change some of your code.
 
 DUIM-Frames Module
@@ -253,8999 +212,5094 @@ DUIM-Frames Module
 This section contains a complete reference of all the interfaces that
 are exported from the *duim-frames* module.
 
-=
-~
+.. method:: =
+   :specializer: <command>
 
-G.f. method
-'''''''''''
+   Returns true if the specified commands are the same.
 
-Summary
-       
+   :signature: = *command1* *command2* => *equal?*
 
-Returns true if the specified commands are the same.
+   :param command1: An instance of type :class:`<command>`.
+   :param command2: An instance of type :class:`<command>`.
+   :value equal?: An instance of type :drm:`<boolean>`.
 
-Signature
-         
+   :description:
 
-= *command1* *command2* => *equal?*
+     Returns true if *command1* and *command2* are the same.
 
-Arguments
-         
+.. generic-function:: add-command
 
--  *command1* An instance of type `<command>`_.
--  *command2* An instance of type `<command>`_.
+   Adds a command to the specified command table.
 
-Values
-      
+   :signature: add-command *command-table* *command* #key *name* *menu image* *accelerator* *mnemonic* *error?* => ()
 
--  *equal?* An instance of type *<boolean>*.
+   :param command-table: An instance of type :class:`<command-table>`.
+   :param command: An instance of type ``type-union(<command>, <function>)``.
+   :param #key name: An instance of type ``false-or(<string>)``.
+   :param #key menu: An instance of type ``false-or(<menu>)``.
+   :param #key image: An instance of type ``false-or(<image>)``.
+   :param #key accelerator: An instance of type ``false-or(<gesture>)``.
+   :param #key mnemonic: An instance of type ``false-or(<gesture>)``.
+   :param #key error?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
 
-Description
-           
+   :description:
 
-Returns true if *command1* and *command2* are the same.
+     You can supply a keyboard accelerator or a mnemonic using the
+     *accelerator* and *mnemonic* arguments respectively.
 
-add-command
------------
+     Adds *command* to *command-table*.
 
-Generic function
-''''''''''''''''
+     The argument *name* is the command-line name for the command.
 
-Summary
-       
+     - When *name* is ``#f``, the command is not available via command-line
+       interactions.
+     - When *name* is a string, that string is the command-line name for the
+       command.
 
-Adds a command to the specified command table.
+     For the purposes of command-line name lookup, the character case of
+     *name* is ignored.
 
-Signature
-         
+     The argument *menu* is a menu for *command*.
 
-add-command *command-table* *command* #key *name* *menu image*
-*accelerator* *mnemonic* *error?* => ()
+     - When *menu* is ``#f``, *command* is not available via menus.
+     - When *menu* is a string, the string is used as the menu name.
+     - When *menu* is ``#t`` and *name* is a string, then *name* is used as
+       the menu name.
+     - When *menu* is ``#t`` and *name* is not a string, a menu name is
+       automatically generated.
+     - When *menu* is a list of the form ``(string, menu-options)``,
+       *string* is the menu name and *menu-options* consists of a list of
+       keyword-value pairs. Each keyword-value pair is itself a list. The
+       valid keywords are ``after:``, ``documentation:``, and ``text-style:``,
+       which are interpreted as for :gf:`add-command-table-menu-item`.
 
-Arguments
-         
+     You can supply an image that will appear on the menu next to the command
+     name using the *image* argument. When supplying an image, bear in mind
+     the size of the menu: you should only supply a small icon-sized image
+     for a menu command. There may also be other interface guidelines that
+     you wish to follow when using images in menu items.
 
--  *command-table* An instance of type `See
-   <command-table>`_.
--  *command* An instance of type *type-union(`See
-   <command>`_, <function>)*.
--  *name* An instance of type *false-or(<string>)*.
--  *menu* An instance of type *false-or(* `See
-   <menu> <gadgets.htm#81833>`_*)*.
--  *image* An instance of type *false-or(* `See
-   <image> <dcs.htm#51234>`_*)*.
--  *accelerator* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*.
--  *mnemonic* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*.
--  *error?* An instance of type *<boolean>*. Default value: *#t*.
+     The value for *accelerator* is either keyboard gesture or ``#f``. When it
+     is a gesture, this gesture represents the keystroke accelerator for the
+     command; otherwise the command is not available via keystroke
+     accelerators. Similarly, if mnemonic is supplied, this gesture is used
+     as a mnemonic for the command.
 
-Values
-      
+     If *command* is already present in the command table and *error?* is
+     ``#t``, an error is signalled. When *command* is already present in the
+     command table and *error?* is ``#f``, then the old command-line name,
+     menu, and keystroke accelerator are removed from the command table
+     before creating the new one.
 
-None
+   :seealso:
 
-Description
-           
+     - :gf:`remove-command`
 
-You can supply a keyboard accelerator or a mnemonic using the
-*accelerator* and *mnemonic* arguments respectively.
+.. generic-function:: add-command-table-menu-item
 
-Adds *command* to *command-table*.
+   Adds a menu item to the specified command table.
 
-The argument *name* is the command-line name for the command.
+   :signature: add-command-table-menu-item *command-table* *string* *type* *value* #key
+     *documentation* *after* *accelerator* *mnemonic* *text-style* *error?*
+     *items* *label-key* *value-key* *test* *callback* => *menu-item*
 
--  When *name* is *#f*, the command is not available via command-line
-   interactions.
--  When *name* is a string, that string is the command-line name for the
-   command.
+   :param command-table: An instance of type :class:`<command-table>`.
+   :param string: An instance of type ``false-or(<string>)``.
+   :param type: An instance of type ``one-of(#"command", #"function", #"menu", #"divider")``.
+   :param value: An instance of type :drm:`<object>`.
+   :param #key documentation: An instance of type :drm:`<string>`.
+   :param #key after: An instance of type ``one-of(#"start", #"end", #"sort")``, or
+     an instance of :drm:`<string>`. Default value: ``#"end"``.
+   :param #key accelerator: An instance of type ``false-or(<gesture>)``.
+   :param #key mnemonic: An instance of type ``false-or(<gesture>)``.
+   :param #key text-style: An instance of type :class:`<text-style>`.
+   :param #key error?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+   :param #key items: An instance of type ``limited(<sequence>, of: )``.
+   :param #key label-key: An instance of type :drm:`<function>`.
+   :param #key value-key: An instance of type :drm:`<function>`.
+   :param #key test: An instance of type :drm:`<function>`.
+   :param #key callback: An instance of type :drm:`<function>`.
+   :value menu-item: An instance of type :class:`<command-table-menu-item>`.
 
-For the purposes of command-line name lookup, the character case of
-*name* is ignored.
+   :description:
 
-The argument *menu* is a menu for *command*.
+     Adds a command menu item to the menu in *command-table*. The *string*
+     argument is the name of the command menu item; its character case is
+     ignored. The *type* of the item is either ``#"command"``, ``#"function"``,
+     ``#"menu"``, or ``#"divider"``.
 
--  When *menu* is *#f*, *command* is not available via menus.
--  When *menu* is a string, the string is used as the menu name.
--  When *menu* is *#t* and *name* is a string, then *name* is used as
-   the menu name.
--  When *menu* is *#t* and *name* is not a string, a menu name is
-   automatically generated.
--  When *menu* is a list of the form *(* *string* *,* *menu-options* *)*
-   , *string* is the menu name and *menu-options* consists of a list of
-   keyword-value pairs. Each keyword-value pair is itself a list. The
-   valid keywords are *after:*, *documentation:*, and *text-style:*,
-   which are interpreted as for `See
-   add-command-table-menu-item`_.
+     When *type* is ``#"command"``, *value* must be one of the following:
 
-You can supply an image that will appear on the menu next to the command
-name using the *image* argument. When supplying an image, bear in mind
-the size of the menu: you should only supply a small icon-sized image
-for a menu command. There may also be other interface guidelines that
-you wish to follow when using images in menu items.
+     - A command (a list consisting of a command name followed by a list of
+       the arguments for the command).
+     - A command name. In this case, *value* behaves as though a command
+       with no arguments was supplied.
 
-The value for *accelerator* is either keyboard gesture or *#f*. When it
-is a gesture, this gesture represents the keystroke accelerator for the
-command; otherwise the command is not available via keystroke
-accelerators. Similarly, if mnemonic is supplied, this gesture is used
-as a mnemonic for the command.
+     When all the required arguments for the command are supplied, clicking
+     on an item in the menu invokes the command immediately. Otherwise, the
+     user is prompted for the remaining required arguments.
 
-If *command* is already present in the command table and *error?* is
-*#t*, an error is signalled. When *command* is already present in the
-command table and *error?* is *#f* }, then the old command-line name,
-menu, and keystroke accelerator are removed from the command table
-before creating the new one.
+     When *type* is ``#"function"``, *value* must be a function having
+     indefinite extent that, when called, returns a command. The function is
+     called with two arguments:
 
-See also
+     - The gesture used to select the item (either a keyboard or button
+       press event).
+     - A "numeric argument".
+
+     When *type* is ``#"menu"``, this indicates that a sub-menu is required,
+     and *value* must be another command table or the name of another command
+     table.
+
+     When *type* is ``#"divider"``, some sort of a dividing line is displayed
+     in the menu at that point. If *string* is supplied, it will be drawn as
+     the divider instead of a line. If the look and feel provided by the
+     underlying window system has no corresponding concept, ``#"divider"``
+     items may be ignored. When *type* is ``#"divider"``, *value* is ignored.
+
+     The argument *documentation* specifies a documentation string, This can
+     be used to provide the user with some online documentation for the menu
+     item. Documentation strings are often displayed in a status bar at the
+     bottom of an application; highlighting the menu item using the mouse
+     pointer displays the documentation string in the status bar.
+
+     The *text-style* argument, if supplied, represents text style. This
+     specifies the font family, style, and weight with which to display the
+     menu item in the menu. For most menu items, you should just use the
+     default text style (that is, the one that the user chooses for all
+     applications). However, in certain cases, some variation is allowed.
+
+     The *text-style* argument is of most use in context sensitive pop-up
+     menus, which often have a default menu item. This is usually the command
+     that is invoked by pressing the RETURN key on the current selection: for
+     example, in a list of files, the default command usually opens the
+     selected file in the application associated with it. In Windows 95, the
+     default command is displayed using a bold font, to differentiate it from
+     other commands in the menu, and you should use the text-style argument
+     to specify this.
+
+     When altering the text style of a menu item, you should always try to
+     stick to any relevant interface guidelines.
+
+     The *items* argument is used to specify the gadgets that are to be
+     supplied to the command table as menu items. You can supply either push
+     boxes, check boxes, or radio boxes.
+
+     The *after* argument denotes where in the menu the new item is to be
+     added. It must be one of the following:
+
+     - ``#"start"`` Adds the new item to the beginning of the menu.
+     - ``#"end"`` Adds the new item to the end of the menu.
+
+     A string naming an existing entry
+
+     - Adds the new item after that entry.
+     - ``#"sort"`` Insert the item in such as way as to maintain the menu in
+       alphabetical order.
+
+     If *mnemonic* is supplied, the item is added to the keyboard mnemonic
+     table for the command table. The value of *mnemonic* must be a keyboard
+     gesture name.
+
+     When *mnemonic* is supplied and *type* is ``#"command"`` or ``#"function"``,
+     typing a key on the keyboard that matches the mnemonic invokes the
+     command specified by *value*.
+
+     When *type* is ``#"menu"``, the command is read from the submenu
+     indicated by *value* in a window system specific manner. This usually
+     means that the submenu itself is displayed, allowing the user to see the
+     available options at that point.
+
+     When *accelerator* is supplied, typing a key sequence on the keyboard
+     that matches the accelerator invokes the command specified by *value*,
+     no matter what *type* is.
+
+     If the item named by *string* is already present in the command table
+     and *error?* is ``#t``, then an error is signalled. When the item is
+     already present in the command table and *error?* is ``#f``, the old item
+     is removed from the menu before adding the new item. Note that the
+     character case of *string* is ignored when searching the command table.
+
+   :seealso:
+
+     - :class:`<command-table-menu-item>`
+     - :gf:`remove-command-table-menu-item`
+
+.. class:: <application-exited-event>
+   :sealed:
+   :instantiable:
+
+   The class of events signalled when an application exits.
+
+   :superclasses: :class:`<frame-exited-event>`
+
+   :description:
+
+     The class of events signalled when an application exits. An instance of
+     this class is distributed when your application is exited, for instance
+     by choosing *File > Exit* from its main menu bar.
+
+   :seealso:
+
+     - :gf:`exit-frame`
+     - :class:`<frame-exited-event>`
+
+.. generic-function:: apply-in-frame
+
+   Applies the specified function to the given arguments in the main thread
+   of the frame.
+
+   :signature: apply-in-frame *frame function arg* #rest *args* => ()
+
+   :param frame: An instance of type :class:`<frame>`.
+   :param function: An instance of type :drm:`<function>`.
+   :param arg: An instance of type :drm:`<object>`.
+   :param #rest args: Instances of type :drm:`<object>`.
+
+
+   :description:
+
+     Applies *function* to the given arguments in the main thread of *frame*.
+     You must supply at least one argument (*arg*), though you can
+     optionally supply as many additional arguments as you like.
+
+   :seealso:
+
+     - :gf:`call-in-frame`
+
+.. generic-function:: call-in-frame
+
+   Calls the specified function with the given arguments in the main thread
+   of the frame.
+
+   :signature: call-in-frame *frame function* #rest *args* => ()
+
+   :param frame: An instance of type :class:`<frame>`.
+   :param function: An instance of type :drm:`<function>`.
+   :param #rest args: Instances of type :drm:`<object>`.
+
+   :description:
+
+     Calls *function* with the given arguments in the main thread of *frame*.
+
+   :seealso:
+
+     - :gf:`apply-in-frame`
+
+.. generic-function:: cancel-dialog
+
+   Cancels the specified dialog.
+
+   :signature: cancel-dialog *dialog* #key *destroy?* => ()
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :param destroy?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+
+   :description:
+
+     Cancels *dialog* and removes it from the screen. Any changes that the
+     user has made to information displayed in the dialog is discarded.
+
+     If *destroy?* is ``#t`` then the dialog is unmapped from the screen.
+
+     This is the default callback used for the cancel button in a dialog.
+
+   :example:
+
+     The following example defines a button, ``*no-button*``, that calls
+     :gf:`cancel-dialog` as its activate-callback. This button is then used in a
+     dialog that simply replaces the standard cancel button for the newly
+     defined dialog. Note that the example assumes the existence of a similar
+     ``*yes-button*`` to replace the exit button.
+
+     .. code-block:: dylan
+
+        define variable *no-button*
+          = make(<push-button>, label: "No",
+                 activate-callback: cancel-dialog,
+                 max-width: $fill);
+        define variable *dialog*
+          = make(<dialog-frame>,
+                 exit-button?: #f,
+                 cancel-button?: #f,
+                 layout: vertically ()
+                   make(<label>,
+                        label: "Simple dialog");
+                   horizontally ()
+                     *yes-button*;
+                     *no-button*;
+                   end
+                 end);
+
+        start-frame(*dialog*);
+
+   :seealso:
+
+     - :gf:`dialog-cancel-callback`
+     - :class:`<dialog-frame>`
+     - :gf:`start-dialog`
+     - :gf:`exit-dialog`
+
+.. generic-function:: clear-progress-note
+
+   Clears the specified progress note.
+
+   :signature: clear-progress-note *framem* *progress-note* => ()
+
+   :param framem: An instance of type :class:`<frame-manager>`.
+   :param progress-note: An instance of type :class:`<progress-note>`.
+
+   :description:
+
+     Clears the specified progress note.
+
+.. class:: <command>
+   :open:
+   :abstract:
+   :instantiable:
+
+   The class of commands.
+
+   :superclasses: :drm:`<object>`
+
+   :keyword function: An instance of type :drm:`<function>`.
+   :keyword arguments: An instance of type :drm:`<sequence>`. Default value: ``#[]``.
+
+   :description:
+
+     The class of commands. These are commands that can be grouped together
+     in a command table to form the set of commands available to an
+     application (available, for example, from the menu bar of the
+     application). The resulting command object can then be executed by
+     calling :gf:`execute-command`.
+
+     The ``function:`` init-keyword is the command function that is called by
+     the command object. A command function is rather like a callback to a
+     ``<command>`` object: a command can be executed via :gf:`execute-command`,
+     which then invokes the command function. Command functions take at least
+     one argument: a :class:`<frame>` object.
+
+     The ``arguments:`` init-keyword are the arguments passed to the command
+     function.
+
+   :operations:
+
+     - `=`
+     - :gf:`add-command`
+     - :gf:`command-arguments`
+     - :gf:`command-enabled?`
+     - :gf:`command-enabled?-setter`
+     - :gf:`command-function`
+     - :gf:`command-undoable?`
+     - :gf:`dialog-cancel-callback-setter`
+     - :gf:`dialog-exit-callback-setter`
+     - :gf:`execute-command`
+     - :gf:`gadget-command`
+     - :gf:`gadget-command-setter`
+     - :gf:`gadget-key-press-callback-setter`
+     - :gf:`redo-command`
+     - :gf:`remove-command`
+     - :gf:`undo-command`
+
+   :seealso:
+
+     - :gf:`command?`
+     - :gf:`command-arguments`
+     - :gf:`command-function`
+     - :gf:`execute-command`
+     - :class:`<simple-command>`
+
+.. generic-function:: command?
+
+   Returns true if the specified object is a command.
+
+   :signature: command? *object* => *command?*
+
+   :param object: An instance of type :drm:`<object>`.
+   :value command?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if *object* is an instance of :class:`<command>`.
+
+   :seealso:
+
+     - :class:`<command>`
+
+.. generic-function:: command-arguments
+
+   Returns the arguments to the specified command.
+
+   :signature: command-arguments *command* => *arguments*
+
+   :param command: An instance of type :class:`<command>`.
+   :value arguments: An instance of type :drm:`<sequence>`.
+
+   :description:
+
+     Returns the arguments to *command*.
+
+   :seealso:
+
+     - :class:`<command>`
+
+.. generic-function:: command-enabled?
+
+   Returns true if the specified command is enabled.
+
+   :signature: command-enabled? *command* *frame* #key => *enabled?*
+
+   :param command: An instance of type ``type-union(<command>, <command-table>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value enabled?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if *command* in *frame* is enabled.
+
+   :seealso:
+
+     - :class:`<command>`
+     - :gf:`command-enabled?-setter`
+
+.. generic-function:: command-enabled?-setter
+
+   Enables or disables the specified command.
+
+   :signature: command-enabled?-setter *enabled?* *command* *frame* => *enabled?*
+
+   :param enabled?: An instance of type :drm:`<boolean>`.
+   :param command: An instance of type ``type-union(<command>, <command-table>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value enabled?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Enables or disables *command* in *frame*. If *enabled?* is true, then
+     *command* is enabled, otherwise it is disabled. Enabling and disabling a
+     command enables and disables all the gadgets that are associated with
+     the command, such as menu items and tool bar buttons.
+
+     This function is useful when manipulating the disabled commands in
+     *frame*. For example, it is common to disable the *Save* menu command
+     immediately after saving a file, enabling it again only when the file
+     has been modified.
+
+   :seealso:
+
+     - :gf:`command-enabled?`
+
+.. generic-function:: command-function
+
+   Returns the function associated with the specified command.
+
+   :signature: command-function *command* => *function*
+
+   :param command: An instance of type :class:`<command>`.
+   :value function: An instance of type :drm:`<function>`.
+
+   :description:
+
+     Returns the function associated with *command*. A command function is
+     the function that is called by a :class:`<command>` object. Command functions
+     are similar to callbacks, in that they are user functions that are
+     invoked in order to perform some action. Command functions take at least
+     one argument: a :class:`<frame>` object.
+
+   :seealso:
+
+     - :class:`<command>`
+     - :gf:`execute-command`
+
+.. class:: <command-table>
+   :open:
+   :abstract:
+   :instantiable:
+
+   The class of command tables.
+
+   :superclasses: :drm:`<object>`
+
+   :keyword name: An instance of type :drm:`<object>`. Required.
+   :keyword inherit-from: An instance of type ``limited(<sequence>, of: <command-table>)``. Required.
+   :keyword resource-id: An instance of type ``false-or(<object>)``. Default
+     value: ``#f``.
+
+   :description:
+
+     The class of command tables. The command table for an application gives
+     a complete specification of the commands available to that application,
+     through its menus, tool bars, mnemonics, and accelerators.
+
+     The ``name:`` init-keyword is a symbol that names the current command
+     table.
+
+     The ``inherit-from:`` init-keyword is a sequence of command tables whose
+     behavior the current command table should inherit. All command tables
+     inherit the behavior of the command table specified by
+     :var:`*global-command-table*`, and can also inherit the
+     behavior specified by :var:`*user-command-table*`.
+
+     You do not normally need to specify a unique ``resource-id:`` yourself. As
+     with most other DUIM classes, the ``name:`` init-keyword serves as a
+     sufficient unique identifier.
+
+   :operations:
+
+     - :gf:`add-command`
+     - :gf:`add-command-table-menu-item`
+     - :gf:`command-table-accelerators`
+     - :gf:`command-table-commands`
+     - :gf:`command-table-menu`
+     - :gf:`command-table-name`
+     - :gf:`frame-command-table-setter`
+     - :meth:`make(<frame>)`
+     - :gf:`make-menu-from-command-table`
+     - :gf:`make-menus-from-command-table`
+     - :gf:`remove-command`
+     - :gf:`remove-command-table`
+     - :gf:`remove-command-table-menu-item`
+
+   :example:
+
+     .. code-block:: dylan
+
+        define command-table *clipboard-command-table*
+            =(*global-command-table*)
+          menu-item "Cut" = cut-selection,
+            documentation: $cut-doc;
+          menu-item "Copy" = copy-selection,
+            documentation: $copy-doc;
+          menu-item "Paste" = paste-from-clipboard,
+            documentation: $paste-doc;
+          menu-item "Delete" = delete-selection,
+            documentation: $delete-doc;
+        end command-table *clipboard-command-table*;
+
+   :seealso:
+
+     - :var:`*global-command-table*`
+     - :var:`*user-command-table*`
+
+.. generic-function:: command-table?
+
+   Returns true if the specified object is a command table.
+
+   :signature: command-table? *object* => *command-table?*
+
+   :param object: An instance of type :drm:`<object>`.
+   :value command-table?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if *object* is a command table.
+
+   :seealso:
+
+     - :class:`<command-table>`
+
+.. generic-function:: command-table-accelerators
+
+   Returns the keyboard accelerators for the specified command table.
+
+   :signature: command-table-accelerators *command-table* => *accelerators*
+
+   :param command-table: An instance of type :class:`<command-table>`.
+   :value accelerators: An instance of type ``limited(<sequence>, of: <gesture>)``.
+
+   :description:
+
+     Returns the keyboard accelerators for *command-table*.
+
+   :seealso:
+
+     - :gf:`command-table-commands`
+
+.. generic-function:: command-table-commands
+
+   Returns the commands for the specified command table.
+
+   :signature: command-table-commands *command-table* => *commands*
+
+   :param command-table: An instance of type :class:`<command-table>`.
+   :value commands: An instance of type ``limited(<sequence>, of: <command>)``.
+
+   :description:
+
+     Returns the commands defined for *command-table*.
+
+   :seealso:
+
+     - :gf:`command-table-accelerators`
+     - :gf:`command-table-menu`
+
+.. generic-function:: command-table-menu
+
+   Returns the menu items in the specified command table.
+
+   :signature: command-table-menu *command-table* => *menu-items*
+
+   :param command-table: An instance of type :class:`<command-table>`.
+   :value menu-items: An instance of type :drm:`<stretchy-vector>`.
+
+   :description:
+
+     Returns the menu items in *command-table*.
+
+   :seealso:
+
+     - :gf:`command-table-commands`
+     - :gf:`command-table-name`
+
+.. class:: <command-table-menu-item>
+   :sealed:
+   :instantiable:
+
+   The class of menu items in command tables.
+
+   :superclasses: :drm:`<object>`
+
+   :keyword name: An instance of type ``false-or(<string>)``. Default value:
+     ``#f``.
+   :keyword image: An instance of type ``false-or(type-union(<string>, <image>))``.
+     Default value: ``#f``
+   :keyword type: An instance of type ``one-of(#"command", #"function", #"menu", #"divider")``.
+   :keyword value: An instance of type :drm:`<object>`. Default value: ``#f``.
+   :keyword options: An instance of type :drm:`<sequence>`. Default value: ``#()``.
+   :keyword accelerator: An instance of type ``false-or(<gesture>)``. Default value: ``#f``.
+   :keyword mnemonic: An instance of type ``false-or(<gesture>)``. Default value: ``#f``.
+
+   :description:
+
+     The class of menu items in command tables. This class models menu items,
+     tool bar items, accelerators, and mnemonics for a command table entry.
+
+     The ``type:`` init-keyword denotes what type of menu item has been
+     created. This is either ``#"command"``, ``#"function"``, ``#"menu"``, or
+     ``#"divider"``.
+
+     When ``type:`` is ``#"command"``, ``value:`` must be one of the following:
+
+     - A command (a list consisting of a command name followed by a list of
+       the arguments for the command).
+     - A command name. In this case, ``value:`` behaves as though a command
+       with no arguments was supplied.
+
+     When all the required arguments for the command are supplied, clicking
+     on an item in the menu invokes the command immediately. Otherwise, the
+     user is prompted for the remaining required arguments.
+
+     When ``type:`` is ``#"function"``, ``value:`` must be a function having
+     indefinite extent that, when called, returns a command. The function is
+     called with two arguments:
+
+     - The gesture used to select the item (either a keyboard or button
+       press event).
+     - A "numeric argument".
+
+     When ``type:`` is ``#"menu"``, this indicates that a sub-menu is required,
+     and ``value:`` must be another command table or the name of another command
+     table.
+
+     When ``type:`` is ``#"divider"``, some sort of a dividing line is displayed
+     in the menu at that point. If a string is supplied using the ``options:``
+     init-keyword, it will be drawn as the divider instead of a line. If the
+     look and feel provided by the underlying window system has no
+     corresponding concept, ``#"divider"`` items may be ignored. When ``type:``
+     is ``#"divider"``, ``value:`` is ignored.
+
+     The ``accelerator:`` and ``mnemonic:`` init-keywords let you specify a
+     keyboard accelerator and mnemonic for the menu item.
+
+   :operations:
+
+     - :gf:`add-command-table-menu-item`
+     - :gf:`menu-item-accelerator`
+     - :gf:`menu-item-mnemonic`
+     - :gf:`menu-item-name`
+     - :gf:`menu-item-options`
+     - :gf:`menu-item-type`
+     - :gf:`menu-item-value`
+
+   :seealso:
+
+     - :gf:`add-command-table-menu-item`
+
+.. generic-function:: command-table-name
+
+   Returns the name of the specified command table.
+
+   :signature: command-table-name *command-table* => *name*
+
+   :param command-table: An instance of type :class:`<command-table>`.
+   :value name: An instance of type :drm:`<object>`.
+
+   :description:
+
+     Returns the name of *command-table*, as defined by the ``name:``
+     init-keyword for :class:`<command-table>`.
+
+   :seealso:
+
+     - :class:`<command-table>`
+     - :gf:`command-table-menu`
+
+.. generic-function:: command-undoable?
+
+   Returns true if the specified command is undoable.
+
+   :signature: command-undoable? *command* => *undoable?*
+
+   :param command: An instance of type :class:`<command>`.
+   :param undoable?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if *command* is undoable, that is, there is a specified
+     command that the user can choose (for instance, by choosing *Edit >
+     Undo*) that will reverse the effects of command.
+
+   :seealso:
+
+     - :gf:`undo-command`
+
+.. generic-function:: complete-from-generator
+
+   Completes a string based on a generated list of completions.
+
+   :signature: complete-from-generator *string generator delimiters*
+    #key *action predicate*
+    => *string success object nmatches completions*
+
+   :param string: An instance of type :drm:`<string>`.
+   :param generator: An instance of type :drm:`<function>`.
+   :param delimiters: An instance of type ``limited(<sequence>, of: <character>)``.
+   :param action: An instance of type ``one-of(#"complete",
+     #"complete-limited", #"complete-maximal", #"completions",
+     #"apropos-completions")``. Default value ``#"complete"``.
+   :param predicate: An instance of type ``false-or(<function>)``. Default
+     value ``#f``.
+   :value string: An instance of type ``false-or(<string>)``.
+   :value success: An instance of type :drm:`<boolean>`.
+   :value object: An instance of type :drm:`<object>`.
+   :value nmatches: An instance of type :drm:`<integer>`.
+   :value completions: An instance of type :drm:`<sequence>`.
+
+   :description:
+
+     Completes *string* chunk-wise against a list of possibilities derived
+     from *generator*, using the specified *delimiters* to break both
+     *string* and the generated possibilities into chunks. This function is
+     identical to :gf:`complete-from-sequence`, except
+     that the list of possibilities is derived from the *generator* function,
+     rather than passed explicitly. The *generator* is a function of two
+     arguments: the string to be completed and a continuation co-routine to
+     call that performs the completion. It should call the continuation with
+     two arguments: the completion string and an object.
+
+     The argument *predicate* (if supplied) is applied to filter out unwanted
+     objects.
+
+     The function returns five values: the completed string (if there is
+     one), whether or not the completion successfully matched, the object
+     associated with the completion, the number of things that matched, and
+     (if *action* is ``#"completions"``) a sequence of possible completions.
+
+     The *action* argument can take any of the following values:
+
+     - ``#"complete"`` Completes the input as much as possible, except that if
+       the user's input exactly matches one of the possibilities, the
+       shorter possibility is returned as the result, even if it is a left
+       substring of another possibility.
+     - ``#"complete-limited"`` Completes the input up to the next partial
+       delimiter.
+     - ``#"complete-maximal"`` Completes the input as much as possible.
+     - ``#"completions"`` or ``#"apropos-completions"`` Returns a sequence
+       of the possible completions.
+
+   :example:
+
+     .. code-block:: dylan
+
+        complete-from-generator
+          ("th", method (string, completer)
+                   for (b in #["one", "two", "three", "four"])
+                     completer(b, b)
+                   end
+                 end method, #[' ', '-'])
+
+   :seealso:
+
+     - :gf:`complete-from-sequence`
+
+.. generic-function:: complete-from-sequence
+
+   Completes a string based on a list of possible completions.
+
+   :signature: complete-from-sequence *string possibilities delimiters*
+     #key *action predicate label-key value-key*
+     => *string success object nmatches completions*
+
+   :param string: An instance of type :drm:`<string>`.
+   :param possibilities: An instance of type ``limited(<sequence>, of: <string>)``.
+   :param delimiters: An instance of type ``limited(<sequence>, of: <character>)``.
+   :param #key action: An instance of type ``one-of(#"complete",
+     #"complete-limited", #"complete-maximal", #"completions",
+     #"apropos-completions")``. Default value ``#"complete"``.
+   :param #key predicate: An instance of type ``false-or(<function>)``. Default
+     value ``#f``.
+   :param #key label-key: An instance of type :drm:`<function>`. Default value :drm:`first`.
+   :param #key value-key: An instance of type :drm:`<function>`. Default value :drm:`second`.
+   :value string: An instance of type ``false-or(<string>)``.
+   :value success: An instance of type :drm:`<boolean>`.
+   :value object: An instance of type :drm:`<object>`.
+   :value nmatches: An instance of type :drm:`<integer>`.
+   :valuecompletions: An instance of type :drm:`<sequence>`.
+
+   :description:
+
+     Completes *string* chunk-wise against the list of *possibilities*,
+     using the specified *delimiters* to break both *string* and the strings
+     in *possibilities* into chunks.
+
+     *The label-key* and *value-key* arguments are used to extract the
+     completion string and object from the entries in *possibilities*, and
+     *predicate* (if supplied) is applied to filter out unwanted objects.
+
+     The function returns five values: the completed string (if there is
+     one), whether or not the completion successfully matched, the object
+     associated with the completion, the number of things that matched, and
+     (if *action* is ``#"completions"``) a sequence of possible completions.
+
+     The *action* argument can take any of the following values:
+
+     - ``#"complete"`` Completes the input as much as possible, except that if
+       the user's input exactly matches one of the possibilities, the
+       shorter possibility is returned as the result, even if it is a left
+       substring of another possibility.
+     - ``#"complete-limited"`` Completes the input up to the next partial
+       delimiter.
+     - ``#"complete-maximal"`` Completes the input as much as possible.
+     - ``#"completions"`` or ``#"apropos-completions"`` Returns a sequence of
+       the possible completions.
+
+   :example:
+
+     .. code-block:: dylan
+
+        complete-from-sequence("s w ma",
+          #["one fish two fish",
+            "red fish blue fish",
+            "single white male",
+            "on beyond zebra"],
+          #[' ', '-'],
+          label-key: identity,
+          value-key: identity)
+
+   :seealso:
+
+     - :gf:`complete-from-generator`
+
+.. generic-function:: compute-next-page
+
+   Returns the next page in the specified wizard frame.
+
+   :signature: compute-next-page *dialog* => *next-page*
+
+   :param dialog: An instance of type :class:`<wizard-frame>`.
+   :next-page: An instance of type ``false-or(<sheet>)``.
+
+   :description:
+
+     Returns the next page in *dialog*, which must be a wizard.
+
+   :seealso:
+
+     - :gf:`compute-previous-page`
+     - :class:`<wizard-frame>`
+
+.. generic-function:: compute-previous-page
+
+   Returns the previous page in the specified wizard frame.
+
+   :signature: compute-previous-page *dialog* => *prev-page*
+
+   :param dialog: An instance of type :class:`<wizard-frame>`.
+   :value prev-page: An instance of type ``false-or(<sheet>)``.
+
+   :description:
+
+     Returns the previous page in *dialog*, which must be a wizard.
+
+   :seealso:
+
+     - :gf:`compute-next-page`
+     - :class:`<wizard-frame>`
+
+.. generic-function:: contain
+
+   Creates and returns a frame containing the specified object.
+
+   :signature: contain *object* #rest *initargs* #key *own-thread?* #all-keys => *sheet* *frame*
+
+   :param object: An instance of type ``type-union(<sheet>, <class>, <frame>)``.
+   :param initargs: Instances of type :drm:`<object>`.
+   :param #key own-thread?: An instance of type :drm:`<boolean>`.
+   :value sheet: An instance of type :class:`<sheet>`.
+   :value frame: An instance of type :class:`<frame>`.
+
+   :description:
+
+     Creates and returns a frame containing *object*. This function is
+     intended to be used as a convenience function when testing sections of
+     code in development; you are not recommended to use it in your final
+     source code. The function wraps a set of DUIM objects in a frame and
+     displays them on screen, without you needing to worry about the
+     creation, management, or display of frames on the computer screen. The
+     ``contain`` function is most useful when testing code interactively using
+     the Dylan Interactor.
+
+     If *own-thread?* is ``#t``, then the window that is created by ``contain``
+     runs in its own thread. If not supplied, *own-thread?* is ``#f``.
+
+     Consider the following expression that calls ``contain``:
+
+     .. code-block:: dylan
+
+        contain(make(<button>));
+
+     This is equivalent to the fuller expression:
+
+     .. code-block:: dylan
+
+        begin
+          let frame = make(<simple-frame>,
+                           title: "container",
+                           layout: make(<button>));
+          start-frame(frame);
+        end;
+
+     As can be seen, when testing short pieces of code interactively in the
+     environment, the former section of code is easier to use than the
+     latter.
+
+   :example:
+
+     Assigning the result of a contain expression allows you to manipulate
+     the DUIM objects being contained interactively, as shown in the example
+     below.
+
+     You should assume the following code is typed into the Dylan Interactor,
+     and that each expression is evaluated by pressing the RETURN key at the
+     points indicated.
+
+     .. code-block:: dylan
+
+        *g* := contain
+          (make
+            (<list-box>,
+             items: #(#"One", #"Two", #"Three"),
+             label-key:
+               method (symbol) as-lowercase
+                                 (as(<string>, symbol))
+               end)); // RETURN
+        gadget-items(*g*); // RETURN
+
+     As you would expect, evaluating the call to
+     :gf:`gadget-items` returns the following result:
+
+     .. code-block:: dylan
+
+        #(#"one", #"two", #"three")
+
+     In a similar way, you can destructively modify the slot values of any
+     contained DUIM objects
+
+.. function:: current-frame
+
+   Returns the current frame
+
+   :signature: current-frame => *frame*
+   :value frame: An instance of type :class:`<frame>`
+
+   :description:
+
+     Returns the current frame.
+
+.. macro:: define command-table
+   :defining:
+
+   Defines a new class of command table with the specified name and
+   properties.
+
+   :macrocall:
+
+     .. code-block:: dylan
+
+        define command-table *name* ({*supers* }, *) {*options* } end
+
+   :param name: A Dylan name *bnf*.
+   :param supers: A Dylan name *bnf*.
+   :param options: A Dylan body *bnf*.
+
+   :description:
+
+     Defines a new class of command table with the specified name and
+     properties. This macro is equivalent to :drm:`define class <define_class>`,
+     but with additional options.
+
+     The *supers* argument specifies a comma-separated list of command tables
+     from which the command table you are creating should inherit. If you are
+     not explicitly inheriting the behavior of other command tables, then
+     *supers* should have the value :var:`*global-command-table*`.
+
+     Each one of the *options* supplied describes a command for the command
+     table. This can be either a menu item, a separator, or another command
+     table to be included in the command table. You can supply any number of
+     options. Each option take one of the following forms:
+
+     .. code-block:: dylan
+
+        menu-item *menu-item-descriptor* ;
+
+        include *command-table-name* ;
+
+        separator;
+
+     To add a menu item or menu to a command table, include an option of the
+     following form:
+
+     .. code-block:: dylan
+
+        menu-item *label* = *command-function* #key *accelerator documentation*
+
+     *label*
+       An instance of :drm:`<string>`. This is the label that appears in
+       the menu.
+
+     *command-function*
+       An instance of ``type-union(<command>, <command-table>, <function>)``.
+       The command function is the callback that is invoked to perform the
+       intended operation for the menu item. Note that this can itself be
+       a command table.
+
+     *accelerator*
+       An instance of ``false-or(<gesture>)``. Default value: ``#f``. This
+       defines a keyboard accelerator that can be used to invoke *command-function*
+       in preference to the menu item itself.
+
+     *documentation*
+       An instance of ``false-or(<string>)``. Default value:
+       ``#f``. This specifies a documentation string for the menu item that
+       can be used to provide online help to the user. For menu items,
+       documentation strings are usually displayed in the status bar of your
+       application, when the mouse pointer is placed over the menu item
+       itself.
+
+     To add a separator to a menu, just include the following option at the
+     point you want the separator to appear:
+
+     .. code-block:: dylan
+
+        separator;
+
+     To include another command table in the current table, include the
+     following option at the point you want the command table to appear:
+
+     .. code-block:: dylan
+
+        include *command-table-name* ;
+
+     The commands defined in *command-table-name* are added to the current
+     command table at the appropriate point.
+
+   :example:
+
+     The following example shows how you might create a command table for the
+     standard Windows *File* menu, and how this could be integrated into the
+     menu bar for an application. The example assumes that the appropriate
+     command functions have already been defined for each command in the
+     command table.
+
+     .. code-block:: dylan
+
+        define command-table
+            *file-menu-command-table* (*global-command-table*)
+          menu-item "New..." = frame-new-file,
+            accelerator:
+              make-keyboard-gesture(#"n", #"control"),
+            documentation: "Creates a new document."
+          menu-item "Open..." = frame-open-file,
+            accelerator:
+              make-keyboard-gesture(#"o", #"control"),
+            documentation: "Opens an existing document.";
+          menu-item "Close" = frame-close-file,
+            documentation: "Closes an open document.";
+          separator;
+          include *save-files-command-table*;
+          separator;
+          menu-item "Exit"
+            = make(<command>,
+                   function: exit-frame);
+        end command-table *file-menu-command-table*;
+
+        define command-table
+            *application-command-table* (*global-command-table*)
+          menu-item "File" = *file-menu-command-table*;
+          menu-item "Edit" = *edit-menu-command-table*;
+          menu-item "View" = *view-menu-command-table*;
+          menu-item "Windows" = *windows-menu-command-table*;
+          menu-item "Help" = *help-menu-command-table*;
+        end command-table *application-command-table*;
         
+   :seealso:
 
-`remove-command`_
-
-add-command-table-menu-item
----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Adds a menu item to the specified command table.
-
-Signature
-         
-
-add-command-table-menu-item *command-table* *string* *type* *value* #key
-*documentation* *after* *accelerator* *mnemonic* *text-style* *error?*
-*items* *label-key* *value-key* *test* *callback* => *menu-item*
-
-Arguments
-         
-
--  *command-table* An instance of type `See
-   <command-table>`_.
--  *string* An instance of type *false-or(<string>)*.
--  *type* An instance of type *one-of(#"command", #"function", #"menu",
-   #"divider")*.
--  *value* An instance of type *<object>*.
--  *documentation* An instance of type *<string>*.
--  *after* An instance of type *one-of(#"start", #"end", #"sort")*, or
-   an instance of *<string>*. Default value: *#"end"*.
--  *accelerator* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*.
--  *mnemonic* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*.
--  *text-style* An instance of type `<text-style> <dcs.htm#85385>`_.
--  *error?* An instance of type *<boolean>*. Default value: *#t*.
--  *items* An instance of type *limited(<sequence>, of: )*.
--  *label-key* An instance of type *<function>*.
--  *value-key* An instance of type *<function>*.
--  *test* An instance of type *<function>*.
--  *callback* An instance of type *<function>*.
-
-Values
-      
-
--  *menu-item* An instance of type `See
-   <command-table-menu-item>`_.
-
-Description
-           
-
-Adds a command menu item to the menu in *command-table*. The *string*
-argument is the name of the command menu item; its character case is
-ignored. The *type* of the item is either *#"command"*, *#"function"*,
-*#"menu"*, or *#"divider"*.
-
-When *type* is *#"command"*, *value* must be one of the following:
-
--  A command (a list consisting of a command name followed by a list of
-   the arguments for the command).
--  A command name. In this case, *value* behaves as though a command
-   with no arguments was supplied.
-
-When all the required arguments for the command are supplied, clicking
-on an item in the menu invokes the command immediately. Otherwise, the
-user is prompted for the remaining required arguments.
-
-When *type* is *#"function"*, *value* must be a function having
-indefinite extent that, when called, returns a command. The function is
-called with two arguments:
-
--  The gesture used to select the item (either a keyboard or button
-   press event).
--  A “numeric argument”.
-
-When *type* is *#"menu"*, this indicates that a sub-menu is required,
-and *value* must be another command table or the name of another command
-table.
+     - :var:`*global-command-table*`
 
-When *type* is *#"divider"*, some sort of a dividing line is displayed
-in the menu at that point. If *string* is supplied, it will be drawn as
-the divider instead of a line. If the look and feel provided by the
-underlying window system has no corresponding concept, *#"divider"*
-items may be ignored. When *type* is *#"divider"*, *value* is ignored.
+.. macro:: define frame
+   :defining:
+
+   Defines a new class of frame with the specified properties.
 
-The argument *documentation* specifies a documentation string, This can
-be used to provide the user with some online documentation for the menu
-item. Documentation strings are often displayed in a status bar at the
-bottom of an application; highlighting the menu item using the mouse
-pointer displays the documentation string in the status bar.
+   :macrocall:
+
+     .. code-block:: dylan
 
-The *text-style* argument, if supplied, represents text style. This
-specifies the font family, style, and weight with which to display the
-menu item in the menu. For most menu items, you should just use the
-default text style (that is, the one that the user chooses for all
-applications). However, in certain cases, some variation is allowed.
+        define frame *name* ({*supers* }, *) {*slots-panes-options* } end
 
-The *text-style* argument is of most use in context sensitive pop-up
-menus, which often have a default menu item. This is usually the command
-that is invoked by pressing the RETURN key on the current selection: for
-example, in a list of files, the default command usually opens the
-selected file in the application associated with it. In Windows 95, the
-default command is displayed using a bold font, to differentiate it from
-other commands in the menu, and you should use the text-style argument
-to specify this.
+   :param name: A Dylan name *bnf*.
+   :param supers: A Dylan name *bnf*.
+   :param slots-panes-options: A Dylan body *bnf*.
 
-When altering the text style of a menu item, you should always try to
-stick to any relevant interface guidelines.
+   :description:
 
-The *items* argument is used to specify the gadgets that are to be
-supplied to the command table as menu items. You can supply either push
-boxes, check boxes, or radio boxes.
+     Defines a new class of frame called *name* with the specified
+     properties. This macro is equivalent to :drm:`define class <define_class>`,
+     but with additional options.
 
-The *after* argument denotes where in the menu the new item is to be
-added. It must be one of the following:
+     The *supers* argument lets you specify any classes from which the frame
+     you are creating should inherit. You must include at least one concrete
+     frame class, such as :class:`<simple-frame>` or :class:`<dialog-frame>`.
 
--  *#"start"* Adds the new item to the beginning of the menu.
--  *#"end"* Adds the new item to the end of the menu.
+     The *slots-panes-options* supplied describe the state variables of the
+     frame class; that is, the total composition of the frame. This includes,
+     but is not necessarily limited to, any panes, layouts, tool bar, menus,
+     and status bar contained in the frame. You can specify arbitrary slots
+     in the definition of the frame. You may specify any of the following:
 
-A string naming an existing entry
-                                 
+     - A number of slots for defining per-instance values of the frame
+       state.
+     - A number of named panes. Each pane defines a sheet of some sort.
+     - A single layout.
+     - A tool bar.
+     - A status bar.
+     - A menu bar.
+     - A command table.
+     - A number of sequential pages for inclusion in a multi-page frame such
+       as a wizard or property dialog.
+
+     .. note:: If the frame has a menu bar, either define the menu bar and its
+        panes, or a command table, but not both. See the discussion below for
+        more details.
+
+     The syntax for each of these options is described below.
+
+     The *slot* option allows you to define any slot values that the new
+     frame class should allow. This option has the same syntax as slot
+     specifiers in :drm:`define class <define_class>`, allowing you to
+     define init-keywords, required init-keywords, init-functions and
+     so on for the frame class.
+
+     For each of the remaining options, the syntax is as follows::
+
+       *option* *name* (*owner*) *body* ;
+
+     The argument *option* is the name of the option used, taken from the
+     list described below, *name* is the name you assign to the option for
+     use within your code, *owner* is the owner of the option, usually the
+     frame itself, and *body* contains the definition of value returned by
+     the option.
+
+     *pane* specifies a single pane in the frame. The default is ``#f``,
+     meaning that there is no single pane. This is the simplest way to define
+     a pane hierarchy.
+
+     *layout* specifies the layout of the frame. The default is to lay out
+     all of the named panes in horizontal strips. The value of this option
+     must evaluate to an instance of a layout.
+
+     *command-table* defines a command table for the frame. The default is to
+     create a command table with the same name as the frame. The value of
+     this option must evaluate to an instance of :class:`<command-table>`.
+
+     *menu-bar* is used to specify the commands that will in the menu bar of
+     the frame. The default is ``#t``. If used, it typically specifies the
+     top-level commands of the frame. The value of this option can evaluate
+     to any of the following:
+
+     - ``#f`` The frame has no menu bar.
+     - ``#t``, The menu bar for the frame is defined by the value of the
+       *command-table* option.
+     - A command table - The menu bar for the frame is defined by this command table.
+     - A body of code This is interpreted the same way as the *menu-item*
+       options to :macro:`define command-table`.
+
+     *disabled-commands* is used to specify a list of command names that are
+     initially disabled in the application frame. The default is ``#[]``. The
+     set of enabled and disabled commands can be modified via
+     :gf:`command-enabled?-setter`.
+
+     *tool-bar* is used to specify a tool bar for the frame. The default is
+     ``#f``. The value of this option must evaluate to an instance of
+     :class:`<tool-bar>`.
+
+     *top-level* specifies a function that executes the top level loop of the
+     frame. It has as its argument a list whose first element is the name of
+     a function to be called to execute the top-level loop. The function must
+     take at least one argument, which is the frame itself. The rest of the
+     list consists of additional arguments to be passed to the function.
+
+     *icon* specifies an :class:`<image>` to be used in the window
+     decoration for the frame. This icon may be used in the
+     title bar of the frame, or when the frame is iconized, for example.
+
+     *geometry* specifies the geometry for the frame.
+
+     *pages* is used to define the pages of a wizard or property frame. This
+     evaluates to a list of pages, each of which can be defined as panes
+     within the frame definition itself. For example:
 
--  Adds the new item after that entry.
--  *#"sort"* Insert the item in such as way as to maintain the menu in
-   alphabetical order.
+     .. code-block:: dylan
 
-If *mnemonic* is supplied, the item is added to the keyboard mnemonic
-table for the command table. The value of *mnemonic* must be a keyboard
-gesture name.
+        define frame <wizard-type> (<wizard-frame>)
+          ...
+          pages (frame)
+            vector(frame.page-1, frame.page-2, frame.page-3);
+        end frame <wizard-type>
 
-When *mnemonic* is supplied and *type* is *#"command"* or *#"function"*
-, typing a key on the keyboard that matches the mnemonic invokes the
-command specified by *value*.
+     The *name*, *supers*, and slot arguments are not evaluated. The values
+     of each of the options are evaluated.
 
-When *type* is *#"menu"*, the command is read from the submenu
-indicated by *value* in a window system specific manner. This usually
-means that the submenu itself is displayed, allowing the user to see the
-available options at that point.
+   :example:
+
+     .. code-block:: dylan
+
+        define frame <multiple-values-dialog> (<dialog-frame>)
+          pane label-pane (frame)
+            make(<option-box>, items: #("&Red", "&Green",
+                                        "&Blue"));
+          pane check-one (frame)
+            make(<check-button>, label: "Check box test text");
+          pane check-two (frame)
+            make(<check-button>, label: "Check box test text");
+          pane radio-box (frame)
+            make(<radio-box>,
+                 items: #("Option &1", "Option &2",
+                          "Option &3", "Option &4"),
+                 orientation: #"vertical");
+          pane first-group-box (frame)
+            grouping ("Group box", max-width: $fill)
+              vertically (spacing: 4)
+                make(<label>, label: "Label:");
+                horizontally (spacing: 4,
+                              y-alignment: #"center")
+                  frame.label-pane;
+                  make(<button>, label: "Button");
+                end;
+                frame.check-one;
+                frame.check-two;
+              end
+            end;
+          pane second-group-box (frame)
+            grouping ("Group box", max-width: $fill)
+              frame.radio-box
+            end;
+        layout (frame)
+          vertically (spacing: 4)
+            frame.first-group-box;
+            frame.second-group-box;
+          end;
+        end frame <multiple-values-dialog>;
 
-When *accelerator* is supplied, typing a key sequence on the keyboard
-that matches the accelerator invokes the command specified by *value*,
-no matter what *type* is.
+   :seealso:
 
-If the item named by *string* is already present in the command table
-and *error?* is *#t*, then an error is signalled. When the item is
-already present in the command table and *error?* is *#f*, the old item
-is removed from the menu before adding the new item. Note that the
-character case of *string* is ignored when searching the command table.
+     - :class:`<simple-frame>`
+     - :class:`<wizard-frame>`
 
-See also
-        
+.. generic-function:: deiconify-frame
 
-`<command-table-menu-item>`_
+   Displays a frame that has previously been iconified on screen.
 
-`remove-command-table-menu-item`_
+   :signature: deiconify-frame *frame* => ()
 
-<application-exited-event>
---------------------------
+   :param frame: An instance of type :class:`<frame>`.
 
-Sealed instantiable class
-'''''''''''''''''''''''''
+   :description:
 
-Summary
-       
+     Displays a frame that has previously been iconified on screen.
 
-The class of events signalled when an application exits.
+   :example:
 
-Superclasses
-            
+     The following example creates and displays a simple frame, then
+     iconifies it and deiconifies it.
 
-`<frame-exited-event>`_
+     .. code-block:: dylan
 
-Init-keywords
-             
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>));
+        start-frame(*frame*);
+        iconify-frame(*frame*);
+        deiconify-frame(*frame*);
 
-None.
+   :seealso:
 
-Description
-           
+     - :gf:`destroy-frame`
+     - :gf:`exit-frame`
+     - :gf:`frame-icon`
+     - :gf:`iconify-frame`
 
-The class of events signalled when an application exits. An instance of
-this class is distributed when your application is exited, for instance
-by choosing *File > Exit* from its main menu bar.
+.. generic-function:: destroy-frame
 
-Operations
-          
+   Unmaps the specified frame and destroys it.
 
--  None.
+   :signature: destroy-frame *frame* => ()
 
-See also
-        
+   :param frame: An instance of type :class:`<frame>`.
 
-`exit-frame`_
+   :description:
 
-`<frame-exited-event>`_
+     Unmaps *frame* from the screen and destroys it. Generally, you should
+     not need to call this function explicitly, since
+     :gf:`exit-frame` performs all necessary operations in the
+     correct order, including calling :gf:`destroy-frame` if the *destroy?*
+     argument to :gf:`exit-frame` is true.
 
-apply-in-frame
---------------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :gf:`deiconify-frame`
+     - :gf:`exit-frame`
+     - :class:`<frame-destroyed-event>`
+     - :gf:`iconify-frame`
+     - :gf:`lower-frame`
+     - :gf:`raise-frame`
 
-Summary
-       
+.. generic-function:: dialog-apply-button
 
-Applies the specified function to the given arguments in the main thread
-of the frame.
+   Returns the Apply button in the specified dialog.
 
-Signature
-         
+   :signature: dialog-apply-button *dialog* => *apply-button*
 
-apply-in-frame *frame function arg* #rest *args* => ()
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value apply-button: An instance of type ``false-or(<button>)``.
 
-Arguments
-         
+   :description:
 
--  *frame* An instance of type `<frame>`_.
--  *function* An instance of type *<function>*.
--  *arg* An instance of type *<object>*.
--  *args* Instances of type *<object>*.
+     Returns the Apply button in *dialog*. As well as having OK and Cancel
+     buttons, many dialogs also have an Apply button that lets the user apply
+     the changes that have been made in the dialog, without removing the
+     dialog from the screen itself.
 
-Values
-      
+   :seealso:
 
-None.
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-apply-button-setter`
+     - :gf:`dialog-apply-callback`
+     - :gf:`dialog-help-button`
 
-Description
-           
+.. generic-function:: dialog-apply-button-setter
 
-Applies *function* to the given arguments in the main thread of *frame*
-. You must supply at least one argument (*arg*), though you can
-optionally supply as many additional arguments as you like.
+   Specifies the Apply button in the specified dialog.
 
-See also
-        
+   :signature: dialog-apply-button-setter *apply-button dialog* => *apply-button*
 
-`call-in-frame`_
+   :param apply-button: An instance of type ``false-or(<button>)``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value apply-button: An instance of type ``false-or(<button>)``.
 
-call-in-frame
--------------
+   :description:
 
-Generic function
-''''''''''''''''
+     Specifies the Apply button in *dialog*. As well as having OK and Cancel
+     buttons, many dialogs also have an Apply button that lets the user apply
+     the changes that have been made in the dialog, without removing the
+     dialog from the screen itself.
 
-Summary
-       
+   :seealso:
 
-Calls the specified function with the given arguments in the main thread
-of the frame.
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-apply-button`
+     - :gf:`dialog-apply-callback`
+     - :gf:`dialog-help-button`
 
-Signature
-         
+.. generic-function:: dialog-apply-callback
 
-call-in-frame *frame function* #rest *args* => ()
+   Returns the callback invoked when the Apply button is clicked in the
+   specified dialog.
 
-Arguments
-         
+   :signature: dialog-apply-callback *dialog* => *callback*
 
--  *frame* An instance of type `<frame>`_.
--  *function* An instance of type *<function>*.
--  *args* Instances of type *<object>*.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(<command>, <function>)``.
 
-Values
-      
+   :description:
 
-None.
+     Returns the callback invoked when the Apply button is clicked in
+     *dialog*. As well as having OK and Cancel buttons, many dialogs also
+     have an Apply button that lets the user apply the changes that have been
+     made in the dialog, without removing the dialog from the screen itself.
 
-Description
-           
+     .. note:: If you supply ``#f`` as the callback, then the button does not
+        appear.
 
-Calls *function* with the given arguments in the main thread of *frame*
-.
+   :seealso:
 
-See also
-        
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-apply-button`
+     - :gf:`dialog-apply-button-setter`
+     - :gf:`dialog-help-button`
 
-`apply-in-frame`_
+.. generic-function:: dialog-back-button
 
-cancel-dialog
--------------
+   Returns the Back button in the specified multi-page dialog.
 
-Generic function
-''''''''''''''''
+   :signature: dialog-back-button *dialog* => *back-button*
 
-Summary
-       
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value back-button: An instance of type ``false-or(<button>)``.
 
-Cancels the specified dialog.
+   :description:
 
-Signature
-         
+     Returns the Back button in *dialog*. This is most useful in multi-page
+     dialogs such as property frames and wizard frames, which typically have
+     Back and Next buttons that let the user navigate forward and backward
+     through the sequence of pages that comprise the dialog.
 
-cancel-dialog *dialog* #key *destroy?* => ()
+   :seealso:
 
-Arguments
-         
+     - :gf:`dialog-back-button-setter`
+     - :gf:`dialog-back-callback`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-help-button`
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
--  *destroy?* An instance of type *<boolean>*. Default value: *#t*.
+.. generic-function:: dialog-back-button-setter
 
-Values
-      
+   Specifies the Back button in the specified multi-page dialog.
 
-None
+   :signature: dialog-back-button-setter *back-button dialog* => *back-button*
 
-Description
-           
+   :param back-button: An instance of type :class:`<button>`.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value back-button: An instance of type :class:`<button>`.
 
-Cancels *dialog* and removes it from the screen. Any changes that the
-user has made to information displayed in the dialog is discarded.
+   :description:
 
-If *destroy?* is *#t* then the dialog is unmapped from the screen.
+     Specifies the Back button in *dialog*. This is most useful in wizard
+     frames, which typically have Back and Next buttons that let the user
+     navigate forward and backward through the sequence of pages that
+     comprise the dialog.
 
-This is the default callback used for the cancel button in a dialog.
+   :seealso:
 
-Example
-       
+     - :gf:`dialog-back-button`
+     - :gf:`dialog-back-callback`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-help-button`
 
-The following example defines a button, *\*no-button\**, that calls
-*cancel-dialog* as its activate-callback. This button is then used in a
-dialog that simply replaces the standard cancel button for the newly
-defined dialog. Note that the example assumes the existence of a similar
-*\*yes-button\** to replace the exit button.
+.. generic-function:: dialog-back-callback
 
-define variable \*no-button\*
-                             
+   Returns the callback invoked when the Back button is clicked in the
+   specified multi-page dialog.
 
-= make(<push-button>, label: "No",
+   :signature: dialog-apply-callback *dialog* => *callback*
 
-activate-callback: cancel-dialog,
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(<command>, <function>)``.
 
-max-width: $fill);
-                  
+   :description:
 
-make(<dialog-frame>,
-                    
+     Returns the callback invoked when the Back button is clicked in *dialog*.
+     This is most useful in wizard frames, which typically have Back and
+     Next buttons that let the user navigate forward and backward through the
+     sequence of pages that comprise the dialog.
 
-exit-button?: #f,
+     .. note:: If you do not explicitly supply this callback, the previous page
+        in the sequence for the multi-page dialog is displayed when the Back
+        button is clicked. Specifying your own callback gives you flexibility in
+        describing how the user can navigate through the sequence of pages in
+        the dialog.
 
-cancel-button?: #f,
+   :seealso:
 
-layout: vertically ()
+     - :gf:`dialog-back-button`
+     - :gf:`dialog-back-button-setter`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-help-button`
 
-make(<label>,
+.. generic-function:: dialog-cancel-button
 
-label: "Simple dialog");
+   Returns the Cancel button in the specified dialog.
 
-horizontally ()
+   :signature: dialog-cancel-button *dialog* => *cancel-button*
 
-\*yes-button\*;
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value cancel-button: An instance of type ``false-or(<button>)``.
 
-\*no-button\*;
+   :description:
 
-end
+     Returns the Cancel button in *dialog*.
 
-end);
+   :seealso:
+
+     - :gf:`dialog-cancel-button-setter`
+     - :gf:`dialog-cancel-callback`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-help-button`
+
+.. generic-function:: dialog-cancel-button-setter
+
+   Specifies the Cancel button in the specified dialog.
+
+   :signature: dialog-cancel-button-setter *cancel-button* *dialog* => *cancel-button*
+
+   :param cancel-button: An instance of type :class:`<button>`.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value cancel-button: An instance of type :class:`<button>`.
+
+   :description:
+
+     Specifies the Cancel button in *dialog*.
+
+   :example:
+
+     In the following example, a simple dialog frame is created, and then its
+     cancel button is redefined before the dialog is displayed on screen.
+
+     .. code-block:: dylan
+
+        define variable *dialog*
+          = make(<dialog-frame>,
+                 exit-button?: #t,
+                 cancel-button?: #t,
+                 help-callback:
+                   method (gadget)
+                     notify-user (format-to-string
+                       ("Here is some help",
+                        gadget))
+                   end);
+        dialog-cancel-button-setter
+          (make(<push-button>, label: "No",
+                activate-callback: cancel-dialog,
+                max-width: $fill), *dialog*);
+        start-frame(*dialog*);
+
+   :seealso:
+
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-cancel-callback`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-help-button-setter`
+
+.. generic-function:: dialog-cancel-callback
+
+   Returns the function invoked when the cancel button is clicked in the
+   specified dialog.
+
+   :signature: dialog-cancel-callback *dialog* => *callback*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+
+   :description:
+
+     Returns the function invoked when the cancel button is clicked in
+     *dialog*. This defaults to :gf:`cancel-dialog`.
+
+   :seealso:
+
+     - :gf:`cancel-dialog`
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-cancel-button-setter`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-help-callback`
+
+.. generic-function:: dialog-cancel-callback-setter
+
+   Sets the function invoked when the cancel button is clicked in the
+   specified dialog.
+
+   :signature: dialog-cancel-callback-setter *callback* *dialog* => *callback*
+
+    :param callback: An instance of type ``false-or(<command>, <function>)``.
+      Default value: :gf:`cancel-dialog`.
+    :param dialog: An instance of type :class:`<dialog-frame>`.
+    :value callback: An instance of type ``false-or(<command>, <function>)``.
+
+   :description:
+
+     Sets the function invoked when the cancel button is clicked in *dialog*.
+
+   :seealso:
+
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-cancel-button-setter`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-help-callback`
+
+.. generic-function:: dialog-current-page
+
+   Returns the current page in the specified multi-page dialog.
+
+   :signature: dialog-current-page *dialog* => *page*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value page: An instance of type ``false-or(<page>)``.
+
+   :description:
+
+     Returns the current page in *dialog*.
+
+   :seealso:
+
+     - :gf:`dialog-current-page-setter`
+
+.. generic-function:: dialog-current-page-setter
+
+   Sets the current page in the specified multi-page dialog.
+
+   :signature: dialog-current-page-setter *page* *dialog* => *page*
+
+   :param page: An instance of type :class:`<page>`.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value page: An instance of type :class:`<page>`.
+
+   :description:
+
+     Sets the current page in *dialog*.
+
+   :seealso:
+
+     - :gf:`dialog-current-page`
+
+.. generic-function:: dialog-exit-button
+
+   Returns the Exit button in the specified dialog.
+
+   :signature: dialog-exit-button *dialog* => *exit-button*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value exit-button: An instance of type ``false-or(<button>)``.
+
+   :description:
+
+     Returns the Exit button in *dialog*. The Exit button is commonly found
+     in multi-page dialogs, where the user is given the option to exit the
+     sequence at any point (as well as navigate through the sequence using
+     Next and Back buttons).
+
+   :seealso:
+
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-exit-enabled?`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-help-button`
+
+.. generic-function:: dialog-exit-button-setter
+
+   Specifies the Exit button in the specified dialog.
+
+   :signature: dialog-exit-button-setter *exit-button* *dialog* => *exit-button*
+
+   :param exit-button: An instance of type :class:`<button>`.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value exit-button: An instance of type :class:`<button>`.
+
+   :description:
+
+     Sets the Exit button in *dialog*. The Exit button is commonly found in
+     multi-page dialogs, where the user is given the option to exit the
+     sequence at any point (as well as navigate through the sequence using
+     Next and Back buttons).
+
+   :example:
+
+     In the following example, a simple dialog frame is created, and then its
+     exit button is redefined before the dialog is displayed on screen.
+
+     .. code-block:: dylan
+
+        define variable *dialog*
+          = make(<dialog-frame>,
+                 exit-button?: #t,
+                 cancel-button?: #t,
+                 help-callback:
+                   method (gadget)
+                     notify-user (format-to-string
+                      ("Here is some help",
+                       gadget))
+                   end);
+        dialog-exit-button-setter
+          (make(<push-button>, label: "Yes",
+                activate-callback: exit-dialog,
+                max-width: $fill), *dialog*);
+        start-frame(*dialog*);
+
+   :seealso:
+
+     - :gf:`dialog-cancel-button-setter`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-exit-enabled?`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-help-button-setter`
+
+.. generic-function:: dialog-exit-callback
+
+   Returns the callback invoked when the Exit button is clicked in the
+   specified dialog.
+
+   :signature: dialog-exit-callback *dialog* => *callback*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+     Default value: :gf:`exit-dialog`.
+
+   :description:
+
+     Returns the callback invoked when the Exit button is clicked in *dialog*.
+     The Exit button is commonly found in multi-page dialogs, where the
+     user is given the option to exit the sequence at any point (as well as
+     navigate through the sequence using Next and Back buttons).
+
+   :seealso:
+
+     - :gf:`dialog-cancel-callback`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-exit-callback-setter`
+     - :gf:`dialog-help-callback`
+
+.. generic-function:: dialog-exit-callback-setter
+
+   Sets the callback invoked when the Exit button is clicked in the
+   specified dialog.
+
+   :signature: dialog-exit-callback *callback* *dialog* => *callback*
+
+   :param callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+
+   :description:
+
+     Sets the callback invoked when the Exit button is clicked in *dialog*.
+     The Exit button is commonly found in multi-page dialogs, where the user
+     is given the option to exit the sequence at any point (as well as
+     navigate through the sequence using Next and Back buttons).
+
+     If you do not supply this callback, then the default behavior is to quit
+     the dialog when the Exit button is clicked. This is normally the action
+     that you will want. Specifying your own callback gives you flexibility
+     in describing other actions to be performed when the dialog is exited.
+     In addition, supplying ``#f`` means that no Exit button is displayed at
+     all.
+
+   :seealso:
+
+     - :gf:`dialog-cancel-callback-setter`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-help-callback`
+
+.. generic-function:: dialog-exit-enabled?
+
+   Returns true if the Exit button has been enabled for the specified
+   dialog.
+
+   :signature: dialog-exit-enabled? *dialog* => *enabled?*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value enabled?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if the Exit button has been enabled for *dialog*. The Exit
+     button is commonly found in multi-page dialogs, where the user is given
+     the option to exit the sequence at any point (as well as navigate
+     through the sequence using Next and Back buttons).
+
+   :seealso:
+
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-exit-enabled?-setter`
+     - :gf:`dialog-exit-callback`
+
+.. generic-function:: dialog-exit-enabled?-setter
+
+   Enables or disables the Exit button for the specified dialog.
+
+   :signature: dialog-exit-enabled?-setter *enabled?* *dialog* => *enabled?*
+
+   :param enabled?: An instance of type :drm:`<boolean>`.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value enabled?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Enables or disables the Exit button for *dialog*. The Exit button is
+     commonly found in multi-page dialogs, where the user is given the option
+     to exit the sequence at any point (as well as navigate through the
+     sequence using Next and Back buttons).
+
+   :example:
+
+     In this example, a dialog is created, and then its exit button is
+     disabled. When displayed on the screen, the exit button is grayed out
+     and you cannot click on it.
+
+     .. code-block:: dylan
+
+        define variable *dialog* =
+          make(<dialog-frame>,
+               exit-button?: #t,
+               cancel-button?: #t,
+               help-callback:
+                 method (gadget)
+                   notify-user
+                     (format-to-string
+                       ("Here is some help",
+                      gadget))
+                 end);
+        dialog-exit-enabled?-setter(#f, *dialog*);
+        start-frame(*dialog*);
+
+   :seealso:
+
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-exit-enabled?`
+     - :gf:`dialog-exit-callback`
+
+.. class:: <dialog-frame>
+   :open:
+   :abstract:
+   :instantiable:
+
+   The class of dialog frames.
+
+   :superclasses: :class:`<simple-frame>`
+
+   :keyword mode: An instance of type ``one-of("modal", #"modeless", #"system-modal")``.
+     Default value: ``#"modal"``.
+   :keyword exit-callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+     Default value: :gf:`exit-dialog`.
+   :keyword exit-button: An instance of type ``false-or(<button>)``.
+     Default value: ``#f``.
+   :keyword exit-enabled?: An instance of type :drm:`<boolean>`.
+     Default value: ``#t``.
+   :keyword cancel-callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+     Default value: :gf:`cancel-dialog`.
+   :keyword cancel-button: An instance of type ``false-or(<button>)``.
+     Default value: ``#f``.
+   :keyword help-callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+     Default value: ``#f``.
+   :keyword help-button: An instance of type ``false-or(<button>)``.
+     Default value: ``#f``.
+   :keyword exit-buttons-position: An instance of type ``one-of(#"top", #"bottom", #"left", #"right")``. 
+     Default value: ``#"bottom"``.
+   :keyword pages: An instance of type ``false-or(<sequence>)``.
+     Default value: ``#f``.
+   :keyword page-changed-callback: An instance of type ``false-or(<function>)``.
+     Default value: ``#f``.
+
+   :description:
+
+     The class of dialog frames. These frames let you create dialog boxes for
+     use in your applications. All buttons in a dialog frame are
+     automatically made the same size, and are placed at the bottom of the
+     dialog by default. When at the bottom of the dialog, buttons are
+     right-aligned.
+
+     .. figure:: images/frames-4.png
+        :align: center
+
+        A typical dialog
+
+     By default, all dialogs are modal, that is, when displayed, they take
+     over the entire application thread, preventing the user from using any
+     other part of the application until the dialog has been removed from the
+     screen. To create a modeless dialog (that is, one that can remain
+     displayed on the screen while the user interacts with the application in
+     other ways) you should set the ``mode:`` keyword to ``#"modeless"``. Note,
+     however, that you should not normally need to do this: if you need to
+     create a modeless dialog, then you should consider using a normal DUIM
+     frame, rather than a dialog frame.
+
+     The init-keywords ``exit-button:``, and ``cancel-button:`` specify the exit
+     and cancel buttons in the dialog. The user clicks on the exit button to
+     dismiss the dialog and save any changes that have been made as a result
+     of editing the information in the dialog. The user clicks on the cancel
+     button in order to dismiss the dialog and discard any changes that have
+     been made.
+
+     In addition, the ``exit-callback:`` and ``cancel-callback:`` init-keywords
+     specify the callback that is invoked when the Exit or Cancel buttons in
+     the dialog are clicked on. These both default to the appropriate
+     function for each button, but you have the flexibility to specify an
+     alternative if you wish. If you do not require a Cancel button in your
+     dialog, specify ``cancel-callback: #f``. Similarly, specify
+     ``exit-callback: #f`` if you do not require an Exit button.
+
+     All dialogs should have an exit button, and most dialogs should have a
+     cancel button too. You should only omit the cancel button in cases when
+     the information being displayed in the dialog cannot be changed by the
+     user. For example, a dialog containing an error message can have only an
+     exit button, but any dialog that contains information the user can edit
+     should have both exit and cancel buttons.
+
+     Two init-keywords are available for each button so that a given button
+     may be specified for a particular dialog, but need only be displayed in
+     certain circumstances. This lets you define subtly different behavior in
+     different situations.
+
+     The ``exit-enabled?:`` init-keyword is used to specify whether the exit
+     button on the dialog is enabled or not. If ``#f``, then the exit button
+     is displayed on the dialog, but it is grayed out.
+
+     The ``help-button:`` init-keyword specifies the help button in the dialog.
+     Note that, in contrast to the exit and cancel buttons, specifying the
+     button gadget to use in a dialog determines its presence in the dialog:
+     it is not possible to define a help button and then only display it in
+     certain circumstances. You are strongly encouraged to provide a help
+     button in all but the most trivial dialogs.
+
+     The ``help-callback:`` init-keyword defines a callback function that is
+     invoked when the help button is clicked. This should normally display a
+     context-sensitive help topic from the help file supplied with the
+     application, although you might also choose to display an alert box with
+     the relevant information.
+
+     The ``exit-buttons-position:`` init-keyword defines the position in the
+     dialog that the exit and cancel buttons occupy (and any other standard
+     buttons, if they have been specified). By default, buttons are placed
+     where the interface guidelines for the platform recommend, and this
+     position is encouraged in most interface design guidelines. Usually,
+     this means that buttons are placed at the bottom of the dialog. Less
+     commonly, buttons may also be placed on the right side of the dialog.
+     Buttons are not normally placed at the top or on the left of the dialog,
+     though this is possible if desired.
+
+     The ``pages:`` init-keyword is used for multi-page dialogs such as
+     property frames and wizard frames. If used, it should be a sequence of
+     elements, each of which evaluates to an instance of a page.
+
+     The ``page-changed-callback:`` is a callback function that is invoked when
+     a different page in a multi-page dialog is displayed.
+
+   :operations:
+
+     - :gf:`cancel-dialog`
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-cancel-button-setter`
+     - :gf:`dialog-cancel-callback`
+     - :gf:`dialog-cancel-callback-setter`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-exit-callback-setter`
+     - :gf:`dialog-exit-enabled?`
+     - :gf:`dialog-exit-enabled?-setter`
+     - :gf:`dialog-help-button`
+     - :gf:`dialog-help-button-setter`
+     - :gf:`dialog-help-callback`
+     - :gf:`exit-dialog`
+     - :gf:`start-dialog`
+
+   :example:
+
+     The following example creates and displays a simple dialog that contains
+     only an exit button, cancel button, and help button, and assigns a
+     callback to the help button.
+
+     .. code-block:: dylan
+
+        define variable *dialog*
+          = make(<dialog-frame>,
+                 exit-button?: #t,
+                 cancel-button?: #t,
+                 help-callback:
+                   method (gadget)
+                     notify-user (format-to-string
+                       ("Here is some help",
+                        gadget))
+                   end);
+
+        start-frame(*dialog*);
+
+   :seealso:
+
+     - :gf:`cancel-dialog`
+     - :gf:`exit-dialog`
+     - :class:`<property-frame>`
+     - :class:`<simple-frame>`
+     - :class:`<wizard-frame>`
+
+.. generic-function:: dialog-help-button
+
+   Returns the Help button in the specified dialog.
+
+   :signature: dialog-help-button *dialog* => *help-button*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value help-button: An instance of type ``false-or(<button>)``.
+
+   :description:
+
+     Returns the Help button in *dialog*. Many dialogs contain a Help button
+     that, when clicked, displays a relevant topic from the online help
+     system for the application.
+
+   :seealso:
+
+     - :gf:`dialog-cancel-button`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-help-button-setter`
+     - :gf:`dialog-help-callback`
+
+.. generic-function:: dialog-help-button-setter
+
+   Specifies the Help button in the specified dialog.
+
+   :signature: dialog-help-button-setter *help-button* *dialog* => *help-button*
+
+   :param help-button: An instance of type ``false-or(<button>)``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value help-button: An instance of type ``false-or(<button>)``
+
+   :description:
+
+     Specifies the Help button in *dialog*. Many dialogs contain a Help
+     button that, when clicked, displays a relevant topic from the online
+     help system for the application.
+
+   :example:
+
+     In the following example, a simple dialog frame is created, and then its
+     help button is redefined before the dialog is displayed on screen.
+
+     .. code-block:: dylan
+
+        define variable *dialog*
+          = make(<dialog-frame>,
+                 exit-button?: #t,
+                 cancel-button?: #t,
+                 help-callback:
+                   method (gadget)
+                     notify-user (format-to-string
+                       ("Here is some help",
+                        gadget))
+                   end);
+
+        dialog-help-button-setter
+          (make(<push-button>, label: "Help Me!",
+                activate-callback:
+                  method (gadget)
+                    notify-user
+                      (format-to-string
+                         ("Here is some help",
+                       gadget))
+                  end);
+                max-width: $fill), *dialog*);
+
+        start-frame(*dialog*);
+
+   :seealso:
+
+     - :gf:`dialog-cancel-button-setter`
+     - :gf:`dialog-exit-button-setter`
+     - :gf:`dialog-help-button`
+     - :gf:`dialog-help-callback`
+
+.. generic-function:: dialog-help-callback
+
+   Returns the callback invoked when the Help button is clicked in the
+   specified dialog.
+
+   :signature: dialog-help-callback *dialog* => *help-callback*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value help-callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+
+   :description:
+
+     Returns the callback invoked when the Help button is clicked in *dialog*.
+     Many dialogs contain a Help button that, when clicked, displays a
+     relevant topic from the online help system for the application.
+
+     .. note:: You must specify this callback in order to create a Help button
+        in any dialog. If the callback is ``#f``, then there will be no Help
+        button present in the dialog.
+
+   :seealso:
+
+     - :gf:`dialog-cancel-callback`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-help-button`
+     - :gf:`dialog-help-button-setter`
+
+.. generic-function:: dialog-next-button
+
+   Returns the Next button in the specified multi-page dialog.
+
+   :signature: dialog-next-button *dialog* => *next-button*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value next-button: An instance of type ``false-or(<button>)``.
+
+   :description:
+
+     Returns the Next button in *dialog*. This is most useful in multi-page
+     dialogs such as property frames and wizard frames, which typically have
+     Back and Next buttons that let the user navigate forward and backward
+     through the sequence of pages that comprise the dialog.
+
+   :seealso:
+
+     - :gf:`dialog-back-button`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-next-button-setter`
+     - :gf:`dialog-next-callback`
+
+.. generic-function:: dialog-next-button-setter
+
+   Specifies the Next button in the specified multi-page dialog.
+
+   :signature: dialog-next-button-setter *next-button dialog* => *next-button*
+
+   :param next-button: An instance of type ``false-or(<button>)``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value next-button: An instance of type ``false-or(<button>)``.
+
+   :description:
+
+     Specifies the Next button in *dialog*. This is most useful in
+     multi-page dialogs such as property frames and wizard frames, which
+     typically have Back and Next buttons that let the user navigate forward
+     and backward through the sequence of pages that comprise the dialog.
+
+   :seealso:
+
+     - :gf:`dialog-back-button-setter`
+     - :gf:`dialog-exit-button`
+     - :gf:`dialog-next-button`
+     - :gf:`dialog-next-callback`
+
+.. generic-function:: dialog-next-callback
+
+   Returns the callback invoked when the Next button is clicked in the
+   specified multi-page dialog.
+
+   :signature: dialog-next-callback *dialog* => *callback*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+
+   :description:
+
+     Returns the callback invoked when the Next button is clicked in *dialog*.
+     This is most useful in multi-page dialogs such as property frames and
+     wizard frames, which typically have Back and Next buttons that let the
+     user navigate forward and backward through the sequence of pages that
+     comprise the dialog.
+
+     .. note:: If you do not explicitly supply this callback, the next page in
+        the sequence for the multi-page dialog is displayed when the Next button
+        is clicked. Specifying your own callback gives you flexibility in
+        describing how the user can navigate through the sequence of pages in
+        the dialog.
+
+     The default value for this callback is :gf:`move-to-next-page`.
+
+   :seealso:
+
+     - :gf:`dialog-back-button`
+     - :gf:`dialog-exit-callback`
+     - :gf:`dialog-next-button`
+     - :gf:`dialog-next-button-setter`
+     - :gf:`move-to-next-page`
+
+.. generic-function:: dialog-next-enabled?
+
+   Returns true if the Next button has been enabled for the specified
+   multi-page dialog.
+
+   :signature: dialog-next-enabled? *dialog* => *enabled?*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value enabled?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if the Next button has been enabled for *dialog*. This
+     button is most useful in multi-page dialogs such as property frames and
+     wizard frames, which typically have Back and Next buttons that let the
+     user navigate forward and backward through the sequence of pages that
+     comprise the dialog.
+
+   :seealso:
+
+     - :class:`<dialog-frame>`
+     - :gf:`dialog-next-button`
+     - :gf:`dialog-next-button-setter`
+     - :gf:`dialog-next-enabled?-setter`
+     - :gf:`dialog-next-callback`
+
+.. generic-function:: dialog-next-enabled?-setter
+
+   Enables or disables the Next button for the specified multi-page dialog.
+
+   :signature: dialog-next-enabled?-setter *enabled?* *dialog* => *enabled?*
+
+   :param enabled?: An instance of type :drm:`<boolean>`.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value enabled?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Enables or disables the Next button for *dialog*. This button is most
+     useful in multi-page dialogs such as property frames and wizard frames,
+     which typically have Back and Next buttons that let the user navigate
+     forward and backward through the sequence of pages that comprise the
+     dialog.
+
+     It is useful to be able to enable and disable the Next button at any
+     point in order to ensure that the user supplies all necessary
+     information before proceeding to the next page of the dialog. You can do
+     this by testing to see if the information on the page has been specified
+     with :gf:`dialog-page-complete?`, and then enabling
+     or disabling the Next button as appropriate.
+
+   :seealso:
+
+     - :gf:`dialog-next-button`
+     - :gf:`dialog-next-button-setter`
+     - :gf:`dialog-next-callback`
+     - :gf:`dialog-next-enabled?`
+
+.. generic-function:: dialog-next-page
+
+   Returns the next page in sequence for the specified multi-page dialog.
+
+   :signature: dialog-next-page *dialog* => *next-page*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value next-page: An instance of type ``false-or(<page>)``.
+
+   :description:
+
+     Returns the next page in sequence for *dialog*. This is for use in
+     multi-page dialogs such as property frames and wizard frames, which
+     typically have Back and Next buttons that let the user navigate forward
+     and backward through the sequence of pages that comprise the dialog.
+
+     The default method for the Next button in *dialog* uses the value of
+     this function. When the Next button is clicked, the current page is set
+     to the next logical page in the sequence, but you are free to
+     dynamically change it as the state of the dialog changes.
+
+   :seealso:
+
+     - :gf:`dialog-next-button`
+     - :gf:`dialog-next-button-setter`
+     - :gf:`dialog-next-callback`
+     - :gf:`dialog-next-page-setter`
+     - :gf:`dialog-previous-page`
+
+.. generic-function:: dialog-next-page-setter
+
+   Specifies the next page in sequence for the specified multi-page dialog.
+
+   :signature: dialog-next-page-setter *next-page* *dialog* => *next-page*
+
+   :param next-page: An instance of type ``false-or(<page>)``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value next-page: An instance of type ``false-or(<page>)``.
+
+   :description:
+
+     Specifies the next page in sequence for *dialog*. This is for use in
+     multi-page dialogs such as property frames and wizard frames, which
+     typically have Back and Next buttons that let the user navigate forward
+     and backward through the sequence of pages that comprise the dialog.
+
+     The default method for the Next button in *dialog* uses the value of
+     this function. When the Next button is clicked, the current page is set
+     to the next logical page in the sequence, but you are free to
+     dynamically change it as the state of the dialog changes.
+
+   :seealso:
+
+     - :gf:`dialog-next-button`
+     - :gf:`dialog-next-button-setter`
+     - :gf:`dialog-next-callback`
+     - :gf:`dialog-next-page`
+     - :gf:`dialog-previous-page-setter`
+
+.. generic-function:: dialog-page-changed-callback
+
+   Returns the page-changed callback of the specified multi-page dialog.
+
+   :signature: dialog-page-changed-callback *dialog* => *callback*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+
+   :description:
+
+     Returns the page-changed-callback of *dialog*. This is the callback
+     function used to test whether the information in the current page of
+     *dialog* has changed. This callback is useful when using multi-page
+     dialogs, as a test that can be performed before the next page of the
+     dialog is displayed.
+
+   :seealso:
+
+     - :class:`<dialog-frame>`
+     - :gf:`dialog-page-changed-callback-setter`
+     - :class:`<property-frame>`
+     - :class:`<wizard-frame>`
+
+.. generic-function:: dialog-page-changed-callback-setter
+
+   Sets the page-changed callback of the specified multi-page dialog.
+
+   :signature: dialog-page-changed-callback-setter *callback* *dialog* => *callback*
+
+   :param callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value callback: An instance of type ``false-or(type-union(<command>, <function>))``.
+
+   :description:
+
+     Sets the page-changed-callback of *dialog*. This is the callback
+     function used to test whether the information in the current page of
+     *dialog* has changed. This callback is useful when using multi-page
+     dialogs, as a test that can be performed before the next page of the
+     dialog is displayed.
+
+   :seealso:
+
+     - :class:`<dialog-frame>`
+     - :gf:`dialog-page-changed-callback`
+     - :class:`<property-frame>`
+     - :class:`<wizard-frame>`
+
+.. generic-function:: dialog-page-complete?
+
+   Returns true if all the information required on the current page of the
+   specified multi-page dialog has been specified.
+
+   :signature: dialog-page-complete? *dialog* => *complete?*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value complete?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if all the information required on the current page in
+     *dialog* has been specified by the user. This generic function has two
+     uses:
+
+     - It can be used within wizards to test whether all the necessary
+       information has been supplied, before moving on to the next page of
+       the wizard.
+     - It can be used within property pages to test whether all the
+       necessary information has been supplied, before allowing the user to
+       apply any changes.
+
+   :seealso:
+
+     - :gf:`dialog-page-complete?-setter`
+
+.. generic-function:: dialog-page-complete?-setter
+
+   Sets the slot that indicates all the information required on the current
+   page of the specified multi-page dialog has been specified.
+
+   :signature: dialog-page-complete? *complete?* *dialog* => *complete?*
+
+   :param complete?: An instance of type :drm:`<boolean>`.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value complete?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Sets the slot that indicates all the information required on the current
+     page in *dialog* has been specified by the user. This generic function
+     has two uses:
+
+     - It can be used within wizards to indicate that the necessary
+       information has been supplied, so that the next page of the wizard
+       can be displayed safely.
+     - It can be used within property pages to indicate that the necessary
+       information has been supplied, so that the user can apply any
+       changes.
+
+   :seealso:
+
+     - :gf:`dialog-page-complete?`
+
+.. generic-function:: dialog-pages
+
+   Returns the pages of the specified multi-page dialog.
+
+   :signature: dialog-pages *dialog* => *pages*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value pages: An instance of type ``limited(<sequence>, of: <page>)``.
+
+   :description:
+
+     Returns the pages of *dialog*. Each of the items in sequence is an
+     instance of :class:`<page>`.
+
+   :seealso:
+
+     - :class:`<dialog-frame>`
+     - :gf:`dialog-pages-setter`
+     - :class:`<property-frame>`
+     - :class:`<wizard-frame>`
+
+.. generic-function:: dialog-pages-setter
+
+   Sets the pages of the specified multi-page dialog.
+
+   :signature: dialog-pages-setter *pages* *dialog* => *pages*
+   :param pages: An instance of type ``limited(<sequence>, of: <page>)``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value pages: An instance of type ``limited(<sequence>, of: <page>)``.
+
+   :description:
+
+     Sets the pages of *dialog*. Each of the items in sequence must be an
+     instance of :class:`<page>`.
+
+   :seealso:
+
+     - :class:`<dialog-frame>`
+     - :gf:`dialog-pages`
+     - :class:`<property-frame>`
+     - :class:`<wizard-frame>`
+
+.. generic-function:: dialog-previous-page
+
+   Returns the previous page in sequence for the specified multi-page
+   dialog.
+
+   :signature: dialog-previous-page *dialog* => *previous-page*
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value previous-page: An instance of type ``false-or(<page>)``.
+
+   :description:
+
+     Returns the previous page in sequence for *dialog*. This is for use in
+     multi-page dialogs such as property frames and wizard frames, which
+     typically have Back and Next buttons that let the user navigate forward
+     and backward through the sequence of pages that comprise the dialog.
+
+     The default method for the Back button in *dialog* uses the value of
+     this function. When the Back button is clicked, the current page is set
+     to the previous logical page in the sequence, but you are free to
+     dynamically change it as the state of the dialog changes.
+
+   :seealso:
+
+     - :gf:`dialog-back-button`
+     - :gf:`dialog-back-button-setter`
+     - :gf:`dialog-back-callback`
+     - :gf:`dialog-next-page`
+     - :gf:`dialog-previous-page-setter`
+
+.. generic-function:: dialog-previous-page-setter
+
+   Specifies the previous page in sequence for the specified multi-page
+   dialog.
+
+   :signature: dialog-previous-page-setter *previous-page* *dialog* => *previous-page*
+
+   :param previous-page: An instance of type ``false-or(<page>)``.
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value previous-page: An instance of type ``false-or(<page>)``.
+
+   :description:
+
+     Specifies the previous page in sequence for *dialog*. This is for use
+     in multi-page dialogs such as property frames and wizard frames, which
+     typically have Back and Next buttons that let the user navigate forward
+     and backward through the sequence of pages that comprise the dialog.
+
+     The default method for the Back button in *dialog* uses the value of
+     this function. When the Back button is clicked, the current page is set
+     to the previous logical page in the sequence, but you are free to
+     dynamically change it as the state of the dialog changes.
+
+   :seealso:
+
+     - :gf:`dialog-back-button`
+     - :gf:`dialog-back-button-setter`
+     - :gf:`dialog-back-callback`
+     - :gf:`dialog-next-page-setter`
+     - :gf:`dialog-previous-page`
+
+.. generic-function:: display-progress-note
+
+   Displays the specified progress note.
+
+   :signature: display-progress-note *framem* *progress-note* => ()
+
+   :param framem: An instance of type :class:`<frame-manager>`.
+   :param progress-note: An instance of type :class:`<progress-note>`.
+
+
+   :description:
+
+     Displays the specified *progress-note* in the frame managed by *framem*.
+
+.. generic-function:: event-destroy-frame?
+
+   Returns information about the frame was destroyed in the specified
+   event.
+
+   :signature: event-destroy-frame? *event* => *destroyed?*
+
+   :param event: An instance of type :class:`<frame-exit-event>`.
+   :value destroyed?: An instance of type :drm:`<boolean>`.
+
+   :description:
+
+     Returns information about the frame was destroyed in *event*.
+
+   :seealso:
+
+     - :class:`<frame-exit-event>`
+
+.. generic-function:: event-status-code
+
+   Returns the status code of the specified event.
+
+   :signature: event-status-code *event* => *code*
+
+   :param event: An instance of type :class:`<frame-exited-event>`.
+   :value code: An instance of type ``false-or(<integer>)``.
+
+   :description:
+
+     Returns the status code of *event*.
+
+   :seealso:
+
+     - :class:`<frame-exited-event>`
+
+.. generic-function:: execute-command
+
+   Executes a command for the specified frame.
+
+   :signature: execute-command *command* *frame* => #rest *values*
+
+   :param command: An instance of type :class:`<command>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :value #rest values: Instances of type :drm:`<object>`.
+
+   :description:
+
+     Executes *command* for *frame*. The values returned are those values
+     returned as a result of evaluating the command function of *command*.
+
+.. generic-function:: exit-dialog
+
+   Exits the specified dialog.
+
+   :signature: exit-dialog *dialog* #key *destroy?* => ()
+
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :destroy?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+
+   :description:
+
+     Exits *dialog*, recording any changes to the information displayed in
+     the dialog that have been made by the user.
+
+     This is the default callback used for the exit button in a dialog. This
+     is the button that is typically labeled *OK*.
+
+     If *destroy?* is ``#t``, then dialog is destroyed.
+
+   :example:
+
+     The following example defines a button, ``*yes-button*``, that calls
+     :gf:`exit-dialog` as its *activate-callback*. This button is then used in a
+     dialog that simply replaces the standard exit button for the newly
+     defined dialog. Note that the example assumes the existence of a similar
+     ``*no-button*`` to replace the cancel button.
+
+     .. code-block:: dylan
+
+        define variable *yes-button*
+          = make(<push-button>, label: "Yes",
+                 activate-callback: exit-dialog,
+                 max-width: $fill);
+
+        define variable *dialog*
+          = make(<dialog-frame>,
+                 exit-button?: #f,
+                 cancel-button?: #f,
+                 layout: vertically
+                           (x-alignment: #"center",
+                            y-spacing: 5)
+                           make(<label>,
+                                label: "Here is a label");
+                           horizontally (x-spacing: 2)
+                             *yes-button*;
+                             *no-button*;
+                           end
+                         end);
+
+        start-frame(*dialog*);
+
+   :seealso:
+
+     - :gf:`cancel-dialog`
+     - :class:`<dialog-frame>`
+     - :gf:`start-dialog`
+
+.. generic-function:: exit-frame
+
+   Unmaps the specified frame destroying it required.
+
+   :signature: exit-frame *frame* #key *destroy?* => ()
+
+   :param frame: An instance of type :class:`<frame>`.
+   :param destroy?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+
+   :description:
+
+     Unmaps *frame*, removing the associated sheet and its children from the
+     screen. If *destroy?* is true, then the frame is destroyed completely,
+     via a call to :gf:`destroy-frame`.
+
+     If *destroy?* is ``#t``, then dialog is destroyed.
+
+   :example:
+
+     The following example creates a simple frame, then displays it and exits
+     it. You should run this code in the interactor, pressing the RETURN key
+     at the points indicated.
+
+     .. code-block:: dylan
+
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>)); // RETURN
+        start-frame(*frame*); // RETURN
+        exit-frame(*frame*); // RETURN
+
+   :seealso:
+
+     - :gf:`destroy-frame`
+     - :gf:`frame-can-exit?`
+     - :class:`<frame-exited-event>`
+     - :class:`<frame-exit-event>`
+     - :gf:`frame-mapped?-setter`
+     - :gf:`start-frame`
+
+.. function:: find-frame
+
+   Returns a frame of the specified type, creating one if necessary.
+
+   :signature: find-frame *frame-class* #rest *initargs* #key *create?* *activate?* *own-thread?* *port* *frame-manager* *test* #all-keys => *frame*
+
+   :param frame-class: An instance of type :drm:`<object>`.
+   :param #rest initargs: An instance of type :drm:`<object>`.
+   :param #key create?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+   :param #key activate?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+   :param #key own-thread?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+   :param #key port: An instance of type :class:`<port>`.
+   :param #key frame-manager: An instance of type :class:`<frame-manager>`.
+   :param #key test: An instance of type :drm:`<function>`. Default value: :drm:`identity`.
+   :value frame: An instance of type :class:`<frame>`.
+
+   :description:
+
+     This function creates a frame of the specified type if one does not
+     already exist, and then runs it, possibly in its own thread. If one
+     already exists, then it is selected.
+
+     The *frame-class* argument specifies the class of frame that is being
+     searched for. By default, if a match is not found, then an instance of
+     this class will be created.
+
+     The *init-args* supplied are the slot values that should be passed to
+     the instance of frame-class. Either an existing frame must be found that
+     has the specified slot values, or a new one will be created.
+
+     If *create?* is ``#f``, then a new frame will not be created if it does
+     not already exist.
+
+     If *own-thread?* is true, the frame will run in its own thread if one is
+     created.
+
+     The *port* and *frame-manager* arguments specify a port and frame
+     manager which control the frame being searched for, or under the control
+     of which a new frame should be created.
      
+     If desired, you can supply a *test* which must evaluate to true for a
+     frame to match successfully.
+
+   :seealso:
+
+     - :class:`<frame>`
+
+.. class:: <frame>
+   :open:
+   :abstract:
+
+   The base class of all frames.
+
+   :superclasses: :drm:`<object>`
+
+   :keyword owner: An instance of type ``false-or(<frame>)``. Default value: ``#f``.
+   :keyword mode: An instance of type ``one-of(#"modeless", #"modal", #"system-modal")``.
+     Default value: ``#"modeless"``.
+   :keyword default-button: An instance of type ``false-or(<button>)``.
+     Default value: ``#f``.
+   :keyword x: An instance of type :drm:`<integer>`.
+   :keyword y: An instance of type :drm:`<integer>`.
+   :keyword width: An instance of type :drm:`<integer>`.
+   :keyword height: An instance of type :drm:`<integer>`.
+   :keyword disabled-commands: An instance of type :drm:`<sequence>`.
+   :keyword top-level-sheet: An instance of type ``false-or(<sheet>)``.
+     Default value: ``#f``.
+   :keyword layout: An instance of type :class:`<layout>`.
+   :keyword icon: An instance of type ``false-or(<image>)``.
+   :keyword title: An instance of type ``false-or(<string>)``.
+     Default value: ``#f``.
+   :keyword calling-frame: An instance of type :class:`<frame>`.
+   :keyword state: An instance of type ``one-of(#"detached", #"unmapped",
+     #"mapped", #"iconified")``.
+     Default value: ``#"detached"``.
+   :keyword thread: An instance of type ``false-or(<thread>)``.
+     Default value: ``#f``.
+   :keyword event-queue: An instance of type ``false-or(<event-queue>)``.
+     Default value: ``#f``.
+   :keyword input-focus: An instance of type ``false-or(<sheet>)``.
+     Default value: ``#f``.
+   :keyword foreground: An instance of type ``false-or(<ink>)``.
+   :keyword background: An instance of type ``false-or(<int>)``.
+   :keyword text-style: An instance of type ``false-or(<text-style>)``.
+   :keyword palette: An instance of type ``false-or(<palette>)``.
+     Default value: ``#f``.
+   :keyword document: An instance of type ``false-or(<object>)``.
+     Default value: ``#f``.
+   :keyword resource-id: An instance of type ``false-or(<integer>)``.
+   :keyword resizable?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+   :keyword fixed-width?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
+   :keyword fixed-height?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
+
+   :description:
+
+     The class of all frames.
+
+     The ``owner:`` init-keyword is the parent of the frame.
+
+     The ``mode:`` init-keyword lets you specify the mode for the frame. By
+     default, frames are modeless, that is, they do not take over control of
+     the whole application when they are mapped, and the user can interact
+     with other frames in the application normally. Modal frames, on the
+     other hand, behave like a :class:`<dialog-frame>`,
+     restricting the user's interaction with other frames in the application
+     until the modal frame has been dismissed.
+
+     The ``default-button:`` init-keyword is used to specify which button is
+     the default action for the frame. The default button is usually the one
+     whose callback is invoked by pressing the RETURN key.
+
+     The ``x:``, ``y:``, ``width:`` and ``height:`` init-keywords lets you specify
+     the initial size and position of the frame. The position is specified
+     using ``x:`` and ``y:``, which represent the number of pixels from the top
+     left corner of the screen, and the ``width:`` and ``height:`` init-keywords
+     specify the initial size of the frame.
+
+     The ``title:`` init-keyword is used to specify a title for the frame.
+
+     The ``state:`` init-keyword is used to specify the initial state of the
+     frame. This describes whether the frame is mapped, whether it is
+     iconified, and so on. By default, new frames are detached.
+
+     By default, new frames run in their own thread. If desired, a frame can
+     be run in an existing thread by setting the ``thread:`` init-keyword to
+     the thread object concerned. For more information about threads, see the
+     manual *Library Reference: Core Features*.
+
+     As with threads, new frame run in their own event-queue by default. To
+     run the frame in an existing event-queue, use the ``event-queue:``
+     init-keyword.
+
+     You can specify which sheet in the frame initially has the input-focus
+     using the ``input-focus:`` init-keyword. The input-focus dictates where
+     information can be typed by default.
+
+     The ``foreground:`` ``background:``, and ``text-style:`` init-keywords
+     describes the colors and fonts used in the frame.
+
+     Specify a palette for the frame using the ``palette:`` init-keyword.
+
+     Specify a resource-id for the frame using the ``resource-id:``
+     init-keyword. This is a platform-specific ID or determining which
+     resource to use to fill in a frame.
+
+     The ``resizable?:``, ``fixed-width?:``, and ``fixed-height?:`` init-keywords
+     let you specify whether or not the user can resize the frame. If
+     ``resizable?:`` is ``#t``, then the frame can be resized in either
+     direction; if it is #f, then it cannot be resized at all. In addition,
+     if ``resizable?:`` is ``#t``, and one of ``fixed-width?:`` or
+     ``fixed-height?:`` is also ``#t``, then the frame is resizable, but is
+     fixed in the appropriate direction. For example, if ``resizable?:`` is ``#t``
+     and ``fixed-height?:`` is also ``#t``, then only the width of the frame can
+     be resized.
+
+   :operations:
+
+     The following operations are exported from the *DUIM-Frames* module.
+
+     - :gf:`apply-in-frame`
+     - :gf:`call-in-frame`
+     - :gf:`command-enabled?`
+     - :gf:`command-enabled?-setter`
+     - :gf:`deiconify-frame`
+     - :gf:`destroy-frame`
+     - :gf:`execute-command`
+     - :gf:`exit-frame`
+     - :gf:`frame?`
+     - :gf:`frame-accelerators`
+     - :gf:`frame-accelerators-setter`
+     - :gf:`frame-can-exit?`
+     - :gf:`frame-default-button`
+     - :gf:`frame-default-button-setter`
+     - :gf:`frame-event-queue`
+     - :gf:`frame-icon`
+     - :gf:`frame-icon-setter`
+     - :gf:`frame-input-focus`
+     - :gf:`frame-input-focus-setter`
+     - :gf:`frame-mapped?`
+     - :gf:`frame-mapped?-setter`
+     - :gf:`frame-mode`
+     - :gf:`frame-owner`
+     - :gf:`frame-palette`
+     - :gf:`frame-palette-setter`
+     - :gf:`frame-position`
+     - :gf:`frame-size`
+     - :gf:`frame-state`
+     - :gf:`frame-thread`
+     - :gf:`frame-title`
+     - :gf:`frame-title-setter`
+     - :gf:`iconify-frame`
+     - :gf:`lower-frame`
+     - :gf:`layout-frame`
+     - :gf:`raise-frame`
+     - :gf:`redo-command`
+     - :gf:`set-frame-position`
+     - :gf:`set-frame-size`
+     - :gf:`undo-command`
 
-start-frame(\*dialog\*);
+     The following operations are exported from the *DUIM-Sheets* module.
 
-See also
-        
+     - :gf:`beep`
+     - :gf:`display`
+     - :gf:`force-display`
+     - :gf:`frame-manager`
+     - :gf:`handle-event`
 
-`dialog-cancel-callback`_
+     The following operations are exported from the *DUIM-DCs* module.
 
-`<dialog-frame>`_
+     - :gf:`default-background`
+     - :gf:`default-foreground`
+     - :gf:`default-text-style`
+     - :gf:`find-color`
+     - :gf:`port`
+     - :gf:`queue-event`
+     - :gf:`synchronize-display`
+     - :gf:`top-level-sheet`
 
-`start-dialog`_
+.. generic-function:: frame?
 
-`exit-dialog`_
+   Returns true if the specified object is a frame.
 
-clear-progress-note
--------------------
+   :signature: frame? *object* => *frame?*
 
-Generic function
-''''''''''''''''
+   :param object: An instance of type :drm:`<object>`.
+   :value frame?: An instance of type :drm:`<boolean>`.
 
-Summary
-       
+   :description:
 
-Clears the specified progress note.
+     Returns true if *object* is a frame. Use this generic function to test
+     that an object is a frame before carrying out frame-related operations
+     on it.
 
-Signature
-         
+   :seealso:
 
-clear-progress-note *framem* *progress-note* => ()
+     - :gf:`current-frame`
+     - :class:`<frame>`
 
-Arguments
-         
+.. generic-function:: frame-accelerators
 
--  *framem* An instance of type `See
-   <frame-manager> <silica.htm#32466>`_.
--  *progress-note* An instance of type *<progress-note>*.
+   Returns the keyboard accelerators defined for the specified frame.
 
-Values
-      
+   :signature: frame-accelerators *frame* => *accelerators*
 
-None
+   :param frame: An instance of type :class:`<frame>`.
+   :value accelerators: An instance of type ``false-or(limited(<sequence>, of: <gesture>))``.
 
-Description
-           
+   :description:
 
-Clears the specified progress note.
+     Returns the keyboard accelerators defined for *frame*.
 
-<command>
----------
+   :seealso:
 
-Open abstract instantiable class
-''''''''''''''''''''''''''''''''
+     - :gf:`frame-accelerators-setter`
 
-Summary
-       
+.. generic-function:: frame-accelerators-setter
 
-The class of commands.
+   Defines the keyboard accelerators for the specified frame.
 
-Superclasses
-            
+   :signature: frame-accelerators *accelerators* *frame* => *accelerators*
 
-*<object>*
+   :param accelerators: An instance of type ``false-or(limited(<sequence>, of: <gesture>))``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value accelerators: An instance of type ``false-or(limited(<sequence>, of: <gesture>))``.
 
-Init-keywords
-             
+   :description:
 
--  *function:* An instance of type *<function>*.
--  *arguments:* An instance of type *<sequence>*. Default value: *#[]*
-   .
+     Defines the keyboard accelerators for *frame*.
 
-Description
-           
+   :seealso:
 
-The class of commands. These are commands that can be grouped together
-in a command table to form the set of commands available to an
-application (available, for example, from the menu bar of the
-application). The resulting command object can then be executed by
-calling
- `execute-command`_.
+     :gf:`frame-accelerators`
 
-The *function:* init-keyword is the command function that is called by
-the command object. A command function is rather like a callback to a
-*<command>* object: a command can be executed via *execute-command*,
-which then invokes the command function. Command functions take at least
-one argument: a `<frame>`_ object.
+.. generic-function:: frame-can-exit?
+   :open:
 
-The *arguments:* init-keyword are the arguments passed to the command
-function.
+   Returns true if the specified frame can be exited dynamically.
 
-Operations
-          
+   :signature: frame-can-exit? *frame* => *can-exit?*
 
-`=`_ `add-command`_ `See
-command-arguments`_ `See
-command-enabled?`_
- `command-enabled?-setter`_ `See
-command-function`_ `See
-command-undoable?`_ `See
-dialog-cancel-callback-setter`_ `See
-dialog-exit-callback-setter`_ `See
-execute-command`_ `See
-gadget-command <gadgets.htm#39838>`_ `See
-gadget-command-setter <gadgets.htm#66876>`_ `See
-gadget-key-press-callback-setter <gadgets.htm#10874>`_ `See
-redo-command`_ `See
-remove-command`_ `See
-undo-command`_
+   :param frame: An instance of type :class:`<frame>`.
+   :value can-exit?: An instance of type :drm:`<boolean>`.
 
-See also
-        
+   :description:
 
-`command?`_
+     Returns true if *frame* can be exited dynamically. You can add methods
+     to this generic function in order to allow the user to make a dynamic
+     decision about whether a frame should exit.
 
-`command-arguments`_
+   :example:
 
-`command-function`_
+     .. code-block:: dylan
 
-`execute-command`_
+        define method frame-can-exit?
+            (frame :: <abstract-test-frame>)
+         => (can-exit? :: <boolean>)
+          notify-user("Really exit?",
+                      frame: frame,
+                      style: #"question")
+        end method frame-can-exit?;
 
-`<simple-command>`_
+   :seealso:
 
-command?
---------
+     - :gf:`exit-frame`
 
-Generic function
-''''''''''''''''
+.. generic-function:: frame-command-table
 
-Summary
-       
+   Returns the command table associated with the specified frame.
 
-Returns true if the specified object is a command.
+   :signature: frame-command-table *frame* => *command-table*
 
-Signature
-         
+   :param frame: An instance of type :class:`<frame>`.
+   :value command-table: An instance of type :class:`<command-table>`.
 
-command? *object* => *command?*
+   :description:
 
-Arguments
-         
+     Returns the command table associated with *frame*.
 
--  *object* An instance of type *<object>*.
+   :seealso:
 
-Values
-      
+     - :gf:`frame-command-table-setter`
 
--  *command?* An instance of type *<boolean>*.
+.. generic-function:: frame-command-table-setter
 
-Description
-           
+   Specifies the command table associated with the specified frame.
 
-Returns true if *object* is an instance of `See
-<command>`_.
+   :signature: frame-command-table-setter *command-table* *frame* => *command-table*
 
-See also
-        
+   :param command-table: An instance of type :class:`<command-table>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :value command-table: An instance of type :class:`<command-table>`.
 
-`<command>`_
+   :description:
 
-command-arguments
------------------
+     Specifies the command table associated with *frame*.
 
-Generic function
-''''''''''''''''
+   :seealso:
 
-Summary
-       
+     - :gf:`frame-command-table`
 
-Returns the arguments to the specified command.
+.. class:: <frame-created-event>
+   :sealed:
+   :instantiable:
 
-Signature
-         
+   The class of events that indicate a frame has been created.
 
-command-arguments *command* => *arguments*
+   :superclasses: :class:`<frame-event>`
 
-Arguments
-         
+   :description:
 
--  *command* An instance of type `<command>`_.
+     The class of events that indicate a frame has been created. An instance
+     of this class is distributed to the frame when it is created. Only one
+     of these events is passed during the lifetime of any frame.
 
-Values
-      
+   :seealso:
 
--  *arguments* An instance of type *<sequence>*.
+     - :class:`<frame-destroyed-event>`
+     - :class:`<frame-exited-event>`
 
-Description
-           
+.. class:: <frame-destroyed-event>
+   :sealed:
+   :instantiable:
 
-Returns the arguments to *command*.
+   The class of events that indicate a frame has been destroyed.
 
-See also
-        
+   :superclasses: :class:`<frame-event>`
 
-`<command>`_
+   :description:
 
-command-enabled?
-----------------
+     The class of events that indicate a frame has been destroyed. An
+     instance of this class is distributed to the frame when it is destroyed.
+     Only one of these events is passed during the lifetime of any frame.
 
-Generic function
-''''''''''''''''
+   :seealso:
 
-Summary
-       
+     - :gf:`destroy-frame`
+     - :class:`<frame-created-event>`
+     - :class:`<frame-exited-event>`
 
-Returns true if the specified command is enabled.
+.. generic-function:: frame-default-button
 
-Signature
-         
+   Returns the default button associated with the specified frame.
 
-command-enabled? *command* *frame* #key => *enabled?*
+   :signature: frame-default-button *frame* => *default-button*
 
-Arguments
-         
+   :param frame: An instance of type :class:`<frame>`.
+   :value default-button: An instance of type ``false-or(<button>)``.
 
--  *command* An instance of type *type-union(`See
-   <command>`_, `See
-   <command-table>`_)*.
--  *frame* An instance of type `<frame>`_.
+   :description:
 
-Values
-      
+     Returns the default button associated with *frame*.
 
--  *enabled?* An instance of type *<boolean>*.
+   :seealso:
 
-Description
-           
+     - :gf:`frame-default-button-setter`
 
-Returns true if *command* in *frame* is enabled.
+.. generic-function:: frame-default-button-setter
 
-See also
-        
+   Sets the default button associated with the specified frame.
 
-`<command>`_
+   :signature: frame-default-button-setter *default-button* *frame* => *default-button*
 
-`command-enabled?-setter`_
+   :param default-button: An instance of type ``false-or(<button>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value default-button: An instance of type ``false-or(<button>)``.
 
-command-enabled?-setter
------------------------
+   :description:
 
-Generic function
-''''''''''''''''
+     Sets the default button associated with *frame*.
 
-Summary
-       
+   :seealso:
 
-Enables or disables the specified command.
+     - :gf:`frame-default-button`
 
-Signature
-         
+.. generic-function:: frame-event-queue
 
-command-enabled?-setter *enabled?* *command* *frame* => *enabled?*
+   Returns the event queue that the specified frame is running in.
 
-Arguments
-         
+   :signature: frame-event-queue *frame* => *event-queue*
 
--  *enabled?* An instance of type *<boolean>*.
--  *command* An instance of type *type-union(`See
-   <command>`_, `See
-   <command-table>`_)*.
--  *frame* An instance of type `<frame>`_.
+   :param frame: An instance of type :class:`<frame>`.
+   :value event-queue: An instance of type :class:`<event-queue>`.
 
-Values
-      
+   :description:
 
--  *enabled?* An instance of type *<boolean>*.
+     Returns the event queue that *frame* is running in.
 
-Description
-           
+   :seealso:
 
-Enables or disables *command* in *frame*. If *enabled?* is true, then
-*command* is enabled, otherwise it is disabled. Enabling and disabling a
-command enables and disables all the gadgets that are associated with
-the command, such as menu items and tool bar buttons.
+     - :class:`<frame>`
 
-This function is useful when manipulating the disabled commands in
-*frame*. For example, it is common to disable the *Save* menu command
-immediately after saving a file, enabling it again only when the file
-has been modified.
+.. class:: <frame-exited-event>
+   :sealed:
+   :instantiable:
 
-See also
-        
+   The class of events that indicate a frame has been exited.
 
-`command-enabled?`_
+   :superclasses: :class:`<frame-event>`
 
-command-function
-----------------
+   :keyword status-code: An instance of type ``false-or(<integer>)``.
 
-Generic function
-''''''''''''''''
+   This class also inherits the ``frame:`` init-keyword from its superclass.
 
-Summary
-       
+   :description:
 
-Returns the function associated with the specified command.
+   :example:
 
-Signature
-         
+     The class of events that indicate a frame has been exited. An instance
+     of this class is distributed to the frame when it is exited. Only one of
+     these events is passed during the lifetime of any frame.
 
-command-function *command* => *function*
+     The ``status-code:`` init-keyword is used to pass a status code, if
+     desired. This code can be used to pass the reason that the frame was
+     exited.
 
-Arguments
-         
+   :seealso:
 
--  *command* An instance of type `<command>`_.
+     - :class:`<application-exited-event>`
+     - :gf:`exit-frame`
+     - :class:`<frame-created-event>`
+     - :class:`<frame-destroyed-event>`
 
-Values
-      
+.. class:: <frame-exit-event>
+   :sealed:
+   :instantiable:
 
--  *function* An instance of type *<function>*.
+   The class of events distributed when a frame is about to exit.
 
-Description
-           
+   :superclasses: :class:`<frame-event>`
 
-Returns the function associated with *command*. A command function is
-the function that is called by a *<command>* object. Command functions
-are similar to callbacks, in that they are user functions that are
-invoked in order to perform some action. Command functions take at least
-one argument: a `<frame>`_ object.
+   :keyword destroy-frame?: An instance of type :drm:`<boolean>`.
+     Default value: ``#f``.
 
-See also
-        
+   :description:
 
-`<command>`_
+     The class of events distributed when a frame is about to exit. Contrast
+     this with :class:`<frame-exited-event>`, which is
+     passed after the frame is exited.
 
-`execute-command`_
+     The default method uses :gf:`frame-can-exit?` to
+     decide whether or not to exit.
 
-<command-table>
----------------
+     If ``destroy-frame?:`` is ``#t``, then the frame is destroyed.
 
-Open abstract instantiable class
-''''''''''''''''''''''''''''''''
+   :seealso:
 
-Summary
-       
+     - :gf:`event-destroy-frame?`
+     - :gf:`frame-can-exit?`
+     - :class:`<frame-exited-event>`
 
-The class of command tables.
+.. class:: <frame-focus-event>
+   :sealed:
+   :instantiable:
 
-Superclasses
-            
+   The class of events distributed when a frame receives focus.
 
-*<object>*
+   :superclasses: :class:`<frame-event>`
 
-Init-keywords
-             
+   :description:
 
--  *name:* An instance of type *<object>*. Required.
--  *inherit-from:* An instance of type *limited(<sequence>, of:
-   <command-table>)*. Required.
--  *resource-id:* An instance of type *false-or(<object>)*. Default
-   value: *#f*.
+     The class of events distributed when a frame receives the mouse focus.
 
-Description
-           
+   :seealso:
 
-The class of command tables. The command table for an application gives
-a complete specification of the commands available to that application,
-through its menus, tool bars, mnemonics, and accelerators.
+     - :gf:`event-destroy-frame?`
+     - :gf:`frame-can-exit?`
+     - :class:`<frame-exited-event>`
 
-The *name:* init-keyword is a symbol that names the current command
-table.
+.. generic-function:: frame-fixed-height?
 
-The *inherit-from:* init-keyword is a sequence of command tables whose
-behavior the current command table should inherit. All command tables
-inherit the behavior of the command table specified by `See
-\*global-command-table\*`_, and can also inherit the
-behavior specified by `\*user-command-table\*`_.
+   Returns true if the height of the specified frame is not resizable.
 
-You do not normally need to specify a unique *resource-id:* yourself. As
-with most other DUIM classes, the *name:* init-keyword serves as a
-sufficient unique identifier.
+   :signature: frame-fixed-width? *frame* => *fixed-height?*
 
-Operations
-          
+   :param frame: An instance of type :class:`<frame>`.
+   :value fixed-height?: An instance of type :drm:`<boolean>`.
 
-`add-command`_ `See
-add-command-table-menu-item`_ `See
-command-table-accelerators`_ `See
-command-table-commands`_ `See
-command-table-menu`_ `See
-command-table-name`_ `See
-frame-command-table-setter`_ `See
-make`_ `See
-make-menu-from-command-table-menu`_ `See
-make-menus-from-command-table`_ `See
-remove-command`_
- `remove-command-table`_ `See
-remove-command-table-menu-item`_
+   :description:
 
-Example
-       
+     Returns true if the height of *frame* is not resizable.
 
-define command-table \*clipboard-command-table\*
-                                                
+   :seealso:
 
-=(\*global-command-table\*)
+     - :gf:`frame-fixed-width?`
+     - :gf:`frame-resizable?`
 
-menu-item "Cut" = cut-selection,
+.. generic-function:: frame-fixed-width?
 
-documentation: $cut-doc;
+   Returns true if the width of the specified frame is not resizable.
 
-menu-item "Copy" = copy-selection,
+   :signature: frame-fixed-width? *frame* => *fixed-width?*
 
-documentation: $copy-doc;
+   :param frame: An instance of type :class:`<frame>`.
+   :value fixed-width?: An instance of type :drm:`<boolean>`.
 
-menu-item "Paste" = paste-from-clipboard,
+   :description:
 
-documentation: $paste-doc;
+     Returns true if the width of *frame* is not resizable.
 
-menu-item "Delete" = delete-selection,
+   :seealso:
 
-documentation: $delete-doc;
+     - :gf:`frame-fixed-height?`
+     - :gf:`frame-resizable?`
 
-end command-table \*clipboard-command-table\*;
-                                              
+.. generic-function:: frame-icon
 
-See also
-        
+   Returns the icon associated with the specified frame.
 
-`\*global-command-table\*`_
+   :signature: frame-icon *frame* => *icon*
 
-`\*user-command-table\*`_
+   :param frame: An instance of type :class:`<frame>`.
+   :value icon: An instance of type ``false-or(<image>)``.
 
-command-table?
---------------
+   :description:
 
-Generic function
-''''''''''''''''
+     Returns the icon associated with *frame*. This is the icon used to
+     represent the frame when it has been iconized. In Windows 95 and Windows
+     NT 4.0, this icon is also visible in the left hand corner of the title
+     bar of the frame when it is not iconized.
 
-Summary
-       
+   :seealso:
 
-Returns true if the specified object is a command table.
+     - :gf:`deiconify-frame`
+     - :gf:`frame-icon-setter`
+     - :gf:`iconify-frame`
 
-Signature
-         
+.. generic-function:: frame-icon-setter
 
-command-table? *object* => *command-table?*
+   Specifies the icon associated with the specified frame.
 
-Arguments
-         
+   :signature: frame-icon-setter *icon* *frame* => *icon*
 
--  *object* An instance of type *<object>*.
+   :param icon: An instance of type ``false-or(<image>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value icon: An instance of type ``false-or(<image>)``.
 
-Values
-      
+   :description:
 
--  *command-table?* An instance of type *<boolean>*.
+     Specifies the icon associated with *frame*. This icon is used when the
+     frame is iconified, and in Windows 95 and Windows NT 4.0 is also visible
+     on the left hand side of the title bar of the frame.
 
-Description
-           
+   :seealso:
 
-Returns true if *object* is a command table.
+     - :gf:`frame-icon`
 
-See also
-        
+.. generic-function:: frame-input-focus
 
-`<command-table>`_
+   Returns the sheet in the specified frame that has the input focus.
 
-command-table-accelerators
---------------------------
+   :signature: frame-input-focus *frame* => *focus*
 
-Generic function
-''''''''''''''''
+   :param frame: An instance of type :class:`<frame>`.
+   :value focus: An instance of type ``false-or(<sheet>)``.
 
-Summary
-       
+   :description:
 
-Returns the keyboard accelerators for the specified command table.
+     Returns the sheet in *frame* that has the input focus.
 
-Signature
-         
+   :seealso:
 
-command-table-accelerators *command-table* => *accelerators*
+     - :gf:`frame-input-focus-setter`
 
-Arguments
-         
+.. generic-function:: frame-input-focus-setter
 
--  *command-table* An instance of type `See
-   <command-table>`_.
+   Sets which sheet in the specified frame has the input focus.
 
-Values
-      
+   :signature: frame-input-focus-setter *focus frame* => *focus*
 
--  *accelerators* An instance of type *limited(<sequence>, of: `See
-   <gesture> <silica.htm#76256>`_)*.
+   :param focus: An instance of type ``false-or(<sheet>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value focus: An instance of type ``false-or(<sheet>)``.
 
-Description
-           
+   :description:
 
-Returns the keyboard accelerators for *command-table*.
+     Sets which sheet in *frame* has the input focus.
 
-See also
-        
+   :seealso:
 
-`command-table-commands`_
+     - :gf:`frame-input-focus`
 
-command-table-commands
-----------------------
+.. generic-function:: frame-layout
 
-Generic function
-''''''''''''''''
+   Returns the layout used in the specified frame.
 
-Summary
-       
+   :signature: frame-layout *frame* => *layout*
 
-Returns the commands for the specified command table.
+   :param frame: An instance of type :class:`<frame>`.
+   :value layout: An instance of type ``false-or(<sheet>)``.
 
-Signature
-         
+   :description:
 
-command-table-commands *command-table* => *commands*
+     Returns the layout used in *frame*.
 
-Arguments
-         
+   :seealso:
 
--  *command-table* An instance of type `See
-   <command-table>`_.
+     - :gf:`frame-layout-setter`
 
-Values
-      
+.. generic-function:: frame-layout-setter
 
--  *commands* An instance of type *limited(<sequence>, of:* `See
-   <command>`_*)*.
+   Specifies the layout used in the specified frame.
 
-Description
-           
+   :signature: frame-layout-setter *layout* *frame* => *layout*
 
-Returns the commands defined for *command-table*.
+   :param layout: An instance of type ``false-or(<sheet>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value layout: An instance of type ``false-or(<sheet>)``.
 
-See also
-        
+   :description:
 
-`command-table-accelerators`_
+     Specifies the layout used in *frame*.
 
-`command-table-menu`_
+   :seealso:
 
-command-table-menu
-------------------
+     - :gf:`frame-layout`
 
-Generic function
-''''''''''''''''
+.. generic-function:: frame-mapped?
 
-Summary
-       
+   Returns true if the specified frame is mapped.
 
-Returns the menu items in the specified command table.
+   :signature: frame-mapped? *frame* => *mapped?*
 
-Signature
-         
+   :param frame: An instance of type :class:`<frame>`.
+   :value mapped?: An instance of type :drm:`<boolean>`.
 
-command-table-menu *command-table* => *menu-items*
+   :description:
 
-Arguments
-         
+     Returns true if *frame* is mapped, that is, is currently displayed
+     on-screen. Note that a frame is considered to be mapped if it is
+     anywhere on the screen, even if it is not completely visible because
+     other windows are covering it either partially or completely, or if it
+     is iconized.
 
--  *command-table* An instance of type `See
-   <command-table>`_.
+   :example:
 
-Values
-      
+     The following example creates a simple frame, then displays it and exits
+     it. In between starting and exiting the frame, *frame-mapped?* is
+     called. You should run this code in the interactor, pressing the RETURN
+     key at the points indicated.
 
--  *menu-items* An instance of type *<stretchy-vector>*.
+     .. code-block:: dylan
 
-Description
-           
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>)); // RETURN
+        start-frame(*frame*); // RETURN
+        frame-mapped?(*frame*); // RETURN
+        => #t
 
-Returns the menu items in *command-table*.
+        exit-frame(*frame*); // RETURN
+        frame-mapped?(*frame*); // RETURN
+        => #f
 
-See also
-        
+   :seealso:
 
-`command-table-commands`_
+     - :gf:`frame-mapped?-setter`
 
-`command-table-name`_
+.. class:: <frame-mapped-event>
+   :sealed:
+   :instantiable:
 
-<command-table-menu-item>
--------------------------
+   The class of events that indicate a frame has been mapped.
 
-Sealed instantiable class
-'''''''''''''''''''''''''
+   :superclasses: :class:`<frame-event>`
 
-Summary
-       
+   :description:
 
-The class of menu items in command tables.
+     The class of events that indicate a frame has been mapped, that is,
+     displayed on screen. An instance of this class is distributed whenever a
+     frame is mapped.
 
-Superclasses
-            
+   :example:
 
-*<object>*
+     The following example defines a method that can inform you when an
+     instance of a class of frame you have defined is mapped.
 
-Init-keywords
-             
+     .. code-block:: dylan
 
--  *name:* An instance of type *false-or(<string>)*. Default value:
-   *#f*.
--  *image:* An instance of type *false-or(type-union(<string>, `See
-   <image> <dcs.htm#51234>`_))*. Default value: *#f*
--  *type:* An instance of type *one-of(#"command", #"function", #"menu",
-   #"divider")*.
--  *value:* An instance of type *<object>*. Default value: *#f*.
--  *options:* An instance of type *<sequence>*. Default value: *#()*.
--  *accelerator:* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*. Default value: *#f*.
--  *mnemonic:* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*. Default value: *#f*.
+        define method handle-event
+            (frame :: <my-frame>,
+             event :: <frame-mapped-event>)
+         => ()
+          notify-user
+            (format-to-string("Frame %= mapped", frame))
+        end method handle-event;
 
-Description
-           
+   :seealso:
 
-The class of menu items in command tables. This class models menu items,
-tool bar items, accelerators, and mnemonics for a command table entry.
+     - :class:`<frame-unmapped-event>`
 
-The *type:* init-keyword denotes what type of menu item has been
-created. This is either *#"command"*, *#"function"*, *#"menu"*, or
-*#"divider"*.
+.. generic-function:: frame-mapped?-setter
 
-When *type:* is *#"command"*, *value:* must be one of the following:
+   Maps or unmaps the specified frame.
 
--  A command (a list consisting of a command name followed by a list of
-   the arguments for the command).
--  A command name. In this case, *value* behaves as though a command
-   with no arguments was supplied.
+   :signature: frame-mapped?-setter *mapped?* *frame* => *mapped?*
 
-When all the required arguments for the command are supplied, clicking
-on an item in the menu invokes the command immediately. Otherwise, the
-user is prompted for the remaining required arguments.
+   :param mapped?: An instance of type :drm:`<boolean>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :value mapped?: An instance of type :drm:`<boolean>`.
 
-When *type:* is *#"function"*, *value:* must be a function having
-indefinite extent that, when called, returns a command. The function is
-called with two arguments:
+   :description:
 
--  The gesture used to select the item (either a keyboard or button
-   press event).
--  A “numeric argument”.
+     Maps or unmaps *frame*, that is, displays frame on the screen or
+     removes it from the screen, depending on whether *mapped?* is true or
+     false. Note that a frame is considered to be mapped if it is anywhere on
+     the screen, even if it is not completely visible because other windows
+     are covering it either partially or completely, or if it is iconized.
 
-When *type:* is *#"menu"*, this indicates that a sub-menu is required,
-and *value* must be another command table or the name of another command
-table.
+   :example:
 
-When *type:* is *#"divider"*, some sort of a dividing line is displayed
-in the menu at that point. If a string is supplied using the *options:*
-init-keyword, it will be drawn as the divider instead of a line. If the
-look and feel provided by the underlying window system has no
-corresponding concept, *#"divider"* items may be ignored. When *type:*
-is *#"divider"*, *value:* is ignored.
+     The following example creates a simple frame, then displays it and
+     unmaps it using *frame-mapped?-setter* rather than
+     :gf:`start-frame` and :gf:`exit-frame`. You should run this code in the
+     interactor, pressing the RETURN key at the points indicated.
 
-The *accelerator:* and *mnemonic:* init-keywords let you specify a
-keyboard accelerator and mnemonic for the menu item.
+     .. code-block:: dylan
 
-Operations
-          
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>));    // RETURN
+        frame-mapped?-setter(#t, *frame*); // RETURN
+        frame-mapped?-setter(#f, *frame*); // RETURN
 
-`add-command-table-menu-item`_ `See
-menu-item-accelerator`_ `See
-menu-item-mnemonic`_ `See
-menu-item-name`_ `See
-menu-item-options`_ `See
-menu-item-type`_ `See
-menu-item-value`_
+   :seealso:
 
-See also
-        
+     - :gf:`exit-frame`
+     - :gf:`frame-mapped?`
+     - :gf:`start-frame`
 
-`add-command-table-menu-item`_
+.. generic-function:: frame-menu-bar
 
-command-table-name
-------------------
+   Returns the menu bar used in the specified frame.
 
-Generic function
-''''''''''''''''
+   :signature: frame-menu-bar *frame* => *menu-bar*
 
-Summary
-       
+   :param frame: An instance of type :class:`<frame>`.
+   :value menu-bar: An instance of type ``false-or(<menu-bar>)``.
 
-Returns the name of the specified command table.
+   :description:
 
-Signature
-         
+     Returns the menu bar used in *frame*.
 
-command-table-name *command-table* => *name*
+   :seealso:
 
-Arguments
-         
+     - :gf:`frame-menu-bar-setter`
 
--  *command-table* An instance of type `See
-   <command-table>`_.
+.. generic-function:: frame-menu-bar-setter
 
-Values
-      
+   Sets the menu bar used in the specified frame.
 
--  *name* An instance of type *<object>*.
+   :signature: frame-menu-bar-setter *menu-bar* *frame* => *menu-bar*
 
-Description
-           
+   :value menu-bar: An instance of type ``false-or(<menu-bar>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value menu-bar: An instance of type ``false-or(<menu-bar>)``.
 
-Returns the name of *command-table*, as defined by the *name:*
-init-keyword for `<command-table>`_.
+   :description:
 
-See also
-        
+     Sets the menu bar used in *frame*.
 
-`<command-table>`_
+   :seealso:
 
-`command-table-menu`_
+     - :gf:`frame-menu-bar`
 
-command-undoable?
------------------
+.. generic-function:: frame-mode
 
-Generic function
-''''''''''''''''
+   Returns the mode of the specified frame.
 
-Summary
-       
+   :signature: frame-mode *frame* => *mode*
 
-Returns true if the specified command is undoable.
+   :param frame: An instance of type :class:`<frame>`.
+   :value mode: An instance of type ``one-of(#"modeless", #"modal", #"system-modal")``.
 
-Signature
-         
+   :description:
 
-command-undoable? *command* => *undoable?*
+     Returns the mode of *frame*. This is the same value as was specified
+     for the ``mode:`` init-keyword when the frame was created.
 
-Arguments
-         
+     If *frame* is modal, such as a dialog, then it must be dismissed before
+     the user can interact with the user interface of an application (for
+     instance, before a menu can be displayed).
 
--  *command* An instance of type `<command>`_.
+     If *frame* is modeless, then the user can interact with its parent frame
+     while the frame is still visible. Typically, the user will move the
+     frame to a convenient position on the screen and continue work, keeping
+     the frame on screen for as long as is desired. For example it is often
+     useful to make the Find dialog box in an application modeless, so that
+     the user can keep it on screen while performing other tasks.
 
-Values
-      
+     If *frame* is system-modal, then it prevents the user from interacting
+     with *any* other running applications, such as the Shutdown dialog in
+     Windows 95. System modal frames are rarely used, and should be used with
+     caution.
 
--  *undoable?* An instance of type *<boolean>*.
+     .. note:: You can only set the mode of a frame when it is first created.
+        The mode cannot subsequently be changed.
 
-Description
-           
+   :seealso:
 
-Returns true if *command* is undoable, that is, there is a specified
-command that the user can choose (for instance, by choosing *Edit >
-Undo*) that will reverse the effects of command.
+     - :class:`<frame>`
 
-See also
-        
+.. generic-function:: frame-owner
 
-`undo-command`_
+   Returns the controlling frame for the specified frame.
 
-complete-from-generator
------------------------
+   :signature: frame-owner *frame* => *owner*
 
-Generic function
-''''''''''''''''
+   :param frame: An instance of type :class:`<frame>`.
+   :value owner: An instance of type ``false-or(<frame>)``.
 
-Summary
-       
+   :description:
 
-Completes a string based on a generated list of completions.
+     Returns the controlling frame for *frame*. The controlling frame for
+     any hierarchy of existing frames is the one that owns the thread in
+     which the frames are running. Thus, the controlling frame for *frame* is
+     not necessarily its direct owner: it may be the owner of *frame* 's
+     owner, and so on, depending on the depth of the hierarchy.
 
-Signature
-         
+.. generic-function:: frame-palette
 
-complete-from-generator *string generator delimiters*
- #key *action predicate
-* => *string success object nmatches completions*
+   Returns the palette used in the specified frame.
 
-Arguments
-         
+   :signature: frame-palette *frame* => *palette*
 
--  *string* An instance of type *<string>*.
--  *generator* An instance of type *<function>*.
--  *delimiters* An instance of type *limited(<sequence>, of:
-   <character>)*.
--  *action* An instance of type *one-of(#"complete",
-   #"complete-limited", #"complete-maximal", #"completions",
-   #"apropos-completions")*. Default value *#"complete"*.
--  *predicate* An instance of type *false-or(<function>)*. Default
-   value *#f*.
+   :param frame: An instance of type :class:`<frame>`.
+   :value palette: An instance of type :class:`<palette>`.
 
-Values
-      
+   :description:
 
--  *string* An instance of type *false-or(<string>)*.
--  *success* An instance of type *<boolean>*.
--  *object* An instance of type *<object>*.
--  *nmatches* An instance of type *<integer>*.
--  *completions* An instance of type *<sequence>*.
+     Returns the palette used in *frame*.
 
-Description
-           
+   :seealso:
 
-Completes *string* chunk-wise against a list of possibilities derived
-from *generator*, using the specified *delimiters* to break both
-*string* and the generated possibilities into chunks. This function is
-identical to `complete-from-sequence`_, except
-that the list of possibilities is derived from the *generator* function,
-rather than passed explicitly. The *generator* is a function of two
-arguments: the string to be completed and a continuation co-routine to
-call that performs the completion. It should call the continuation with
-two arguments: the completion string and an object.
+     - :gf:`frame-palette-setter`
 
-The argument *predicate* (if supplied) is applied to filter out unwanted
-objects.
+.. generic-function:: frame-palette-setter
 
-The function returns five values: the completed string (if there is
-one), whether or not the completion successfully matched, the object
-associated with the completion, the number of things that matched, and
-(if *action* is *#"completions"*) a sequence of possible completions.
+   Sets the palette used in the specified frame.
 
-The *action* argument can take any of the following values:
+   :signature: frame-palette-setter *palette* *frame* => *palette*
 
--  *#"complete"* Completes the input as much as possible, except that if
-   the user’s input exactly matches one of the possibilities, the
-   shorter possibility is returned as the result, even if it is a left
-   substring of another possibility.
--  *#"complete-limited"* Completes the input up to the next partial
-   delimiter.
--  *#"complete-maximal"* Completes the input as much as possible.
+   :param palette: An instance of type :class:`<palette>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :value palette: An instance of type :class:`<palette>`.
 
-*#"completions"* or *#"apropos-completions"*
-                                            
+   :description:
 
--  Returns a sequence of the possible completions.
+     Sets the palette used in *frame*.
 
-Example
-       
+   :seealso:
 
-complete-from-generator
-                       
+     - :gf:`frame-palette`
 
-("th", method (string, completer)
+.. generic-function:: frame-position
 
-for (b in #["one", "two", "three", "four"])
+   Returns the position on the screen of the specified frame.
 
-completer(b, b)
+   :signature: frame-position *frame* => *x* *y*
 
-end
+   :param frame: An instance of type :class:`<frame>`.
+   :value x: An instance of type :drm:`<integer>`.
+   :value y: An instance of type :drm:`<integer>`.
 
-end method, #[' ', '-'])
-                        
+   :description:
 
-See also
-        
+     Returns the position on the screen of *frame*. Coordinates are
+     expressed relative to the top left corner of the screen, measured in
+     pixels.
 
-`complete-from-sequence`_
+   :example:
 
-complete-from-sequence
-----------------------
+     The following example creates a simple frame, then displays it and tests
+     its position. You should run this code in the interactor, pressing the
+     RETURN key at the points indicated.
 
-Generic function
-''''''''''''''''
+     .. code-block:: dylan
 
-Summary
-       
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>)); // RETURN
+        start-frame(*frame*); // RETURN
+        frame-position(*frame*); // RETURN
 
-Completes a string based on a list of possible completions.
+   :seealso:
 
-Signature
-         
+     - :gf:`frame-size`
+     - :gf:`frame-state`
+     - :gf:`set-frame-position`
 
-complete-from-sequence *string possibilities delimiters*
- #key *action predicate label-key value-key*
- => *string success object nmatches completions*
+.. generic-function:: frame-resizable?
 
-Arguments
-         
+   Returns true if the specified frame is resizable.
 
--  *string* An instance of type *<string>*.
--  *possibilities* An instance of type *limited(<sequence>, of:
-   <string>)*.
--  *delimiters* An instance of type *limited(<sequence>, of:
-   <character>)*.
--  *action* An instance of type *one-of(#"complete",
-   #"complete-limited", #"complete-maximal", #"completions",
-   #"apropos-completions")*. Default value *#"complete"*.
--  *predicate* An instance of type *false-or(<function>)*. Default
-   value *#f*.
--  *label-key* An instance of type *<function>*. Default value *first*
-   .
--  *value-key* An instance of type *<function>*. Default value *second*
-   .
+   :signature: frame-resizable? *frame* => *resizable?*
 
-Values
-      
+   :param frame: An instance of type :class:`<frame>`.
+   :value resizable?: An instance of type :drm:`<boolean>`.
 
--  *string* An instance of type *false-or(<string>)*.
--  *success* An instance of type *<boolean>*.
--  *object* An instance of type *<object>*.
--  *nmatches* An instance of type *<integer>*.
--  *completions* An instance of type *<sequence>*.
+   :description:
 
-Description
-           
+     Returns true if *frame* is resizable, that is can have one or both of
+     its width and height modified by the user.
 
-Completes *string* chunk-wise against the list of *possibilities*,
-using the specified *delimiters* to break both *string* and the strings
-in *possibilities* into chunks.
+   :seealso:
 
-*The label-key* and *value-key* arguments are used to extract the
-completion string and object from the entries in *possibilities*, and
-*predicate* (if supplied) is applied to filter out unwanted objects.
+     - :gf:`frame-fixed-height?`
+     - :gf:`frame-fixed-width?`
 
-The function returns five values: the completed string (if there is
-one), whether or not the completion successfully matched, the object
-associated with the completion, the number of things that matched, and
-(if *action* is *#"completions"*) a sequence of possible completions.
+.. generic-function:: frame-size
 
-The *action* argument can take any of the following values:
+   Returns the size of the specified frame.
 
--  *#"complete"* Completes the input as much as possible, except that if
-   the user’s input exactly matches one of the possibilities, the
-   shorter possibility is returned as the result, even if it is a left
-   substring of another possibility.
--  *#"complete-limited"* Completes the input up to the next partial
-   delimiter.
--  *#"complete-maximal"* Completes the input as much as possible.
+   :signature: frame-size *frame* => *width* *height*
 
-*#"completions"* or *#"apropos-completions"*
-                                            
+   :param frame: An instance of type :class:`<frame>`.
+   :value width: An instance of type :drm:`<integer>`.
+   :value height: An instance of type :drm:`<integer>`.
 
--  Returns a sequence of the possible completions.
+   :description:
 
-Example
-       
+     Returns the size of *frame*, measured in pixels.
 
-complete-from-sequence("s w ma",
-                                
+   :example:
 
-#["one fish two fish",
+     The following example creates a simple frame, then displays it and tests
+     its size. You should run this code in the interactor, pressing the
+     RETURN key at the points indicated.
 
-"red fish blue fish",
+     .. code-block:: dylan
 
-"single white male",
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>)); // RETURN
+        start-frame(*frame*); // RETURN
+        frame-size(*frame*); // RETURN
 
-"on beyond zebra"],
+   :seealso:
 
-#[' ', '-'],
+     - :gf:`frame-position`
+     - :gf:`frame-state`
+     - :gf:`set-frame-size`
 
-label-key: identity,
+.. generic-function:: frame-state
 
-value-key: identity)
-                    
+   Returns the visible state of the specified frame.
 
-See also
-        
+   :signature: frame-state *frame* => *state*
 
-`complete-from-generator`_
+   :param frame: An instance of type :class:`<frame>`.
+   :value state: An instance of type ``one-of(#"detached", #"unmapped",
+     #"mapped", #"iconified", #"destroyed")``.
 
-compute-next-page
------------------
+   :description:
 
-Generic function
-''''''''''''''''
+     Returns the visible state of the specified frame. The return value from
+     this function indicates whether frame is currently iconified, whether it
+     is mapped or unmapped, whether it has been destroyed, or whether it has
+     become detached from the thread of which it was a part.
 
-Summary
-       
+   :example:
 
-Returns the next page in the specified wizard frame.
+     The following example creates a simple frame, then displays it and tests
+     its position. You should run this code in the interactor, pressing the
+     RETURN key at the points indicated.
 
-Signature
-         
+     .. code-block:: dylan
 
-compute-next-page *dialog* => *next-page*
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>)); // RETURN
+        start-frame(*frame*); // RETURN
+        frame-state(*frame*); // RETURN
+        => #"mapped"
 
-Arguments
-         
+   :seealso:
 
--  *dialog* An instance of type `See
-   <wizard-frame>`_.
+     - :gf:`frame-position`
+     - :gf:`frame-size`
 
-Values
-      
+.. generic-function:: frame-status-bar
 
--  *next-page* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
+   Returns the status bar used in the specified frame.
 
-Description
-           
+   :signature: frame-status-bar *frame* => *status-bar*
 
-Returns the next page in *dialog*, which must be a wizard.
+   :param frame: An instance of type :class:`<frame>`.
+   :value status-bar: An instance of type ``false-or(<status-bar>)``.
 
-See also
-        
+   :description:
 
-`compute-previous-page`_
+     Returns the status bar used in *frame*.
 
-`<wizard-frame>`_
+   :seealso:
 
-compute-previous-page
----------------------
+     - :gf:`frame-status-bar-setter`
 
-Generic function
-''''''''''''''''
+.. generic-function:: frame-status-bar-setter
 
-Summary
-       
+   Sets the status bar used in the specified frame.
 
-Returns the previous page in the specified wizard frame.
+   :signature: frame-status-bar-setter *status-bar* *frame* => *status-bar*
 
-Signature
-         
+   :param status-bar: An instance of type :class:`<status-bar>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :value status-bar: An instance of type ``false-or(<status-bar>)``.
 
-compute-previous-page *dialog* => *prev-page*
+   :description:
 
-Arguments
-         
+     Sets the status bar used in *frame*.
 
--  *dialog* An instance of type `See
-   <wizard-frame>`_.
+   :seealso:
 
-Values
-      
+     - :gf:`frame-status-bar`
 
--  *prev-page* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
+.. generic-function:: frame-status-message
+   :open:
 
-Description
-           
+   Returns the status message for the specified frame.
 
-Returns the previous page in *dialog*, which must be a wizard.
+   :signature: frame-status-message *frame* => *status-message*
 
-See also
-        
+   :param frame: An instance of type :class:`<frame>`.
+   :value status-message: An instance of type ``false-or(<string>)``.
 
-`compute-next-page`_
+   :description:
 
-`<wizard-frame>`_
+     Returns the status message for *frame*. This is the label in the status
+     bar for the frame. If the frame has no status bar, or if the label is
+     not set, this this function returns false.
 
-contain
--------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :gf:`frame-status-bar`
+     - :gf:`frame-status-message-setter`
+     - :class:`<status-bar>`
 
-Summary
-       
+.. generic-function:: frame-status-message-setter
 
-Creates and returns a frame containing the specified object.
+   Sets the status message for the specified frame.
 
-Signature
-         
+   :signature: frame-status-message *status-message* *frame* => *status-message*
 
-contain *object* #rest *initargs* #key *own-thread?* #all-keys =>
-*sheet* *frame*
+   :param status-message: An instance of type ``false-or(<string>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value status-message: An instance of type ``false-or(<string>)``.
 
-Arguments
-         
+   :description:
 
--  *object* An instance of type *type-union(`See
-   <sheet> <silica.htm#13118>`_, <class>, `See
-   <frame>`_)*.
--  *initargs* Instances of type *<object>*.
+     Sets the status message for *frame*. This is the label in the status
+     bar for the frame. If the frame has no status bar, then attempting to
+     set the label fails silently.
 
-Values
-      
+   :seealso:
 
--  *sheet* An instance of type `<sheet> <silica.htm#13118>`_.
--  *frame* An instance of type `<frame>`_.
+     - :gf:`frame-status-bar-setter`
+     - :gf:`frame-status-message`
+     - :class:`<status-bar>`
 
-Description
-           
+.. generic-function:: frame-thread
 
-Creates and returns a frame containing *object*. This function is
-intended to be used as a convenience function when testing sections of
-code in development; you are note recommended to use it in your final
-source code. The function wraps a set of DUIM objects in a frame and
-displays them on screen, without you needing to worry about the
-creation, management, or display of frames on the computer screen. The
-*contain* function is most useful when testing code interactively using
-the Dylan Interactor.
+   Returns the thread with which the specified frame is associated.
 
-If *own-thread?* is *#t*, then the window that is created by *contain*
-runs in its own thread. If not supplied, *own-thread?* is *#f*.
+   :signature: frame-thread *frame* => *thread*
 
-Consider the following expression that calls *contain* :
+   :param frame: An instance of type :class:`<frame>`.
+   :value thread: An instance of type :class:`<thread>`.
 
-contain(make(<button>));
+   :description:
 
-This is equivalent to the fuller expression:
+     Returns the thread with which *frame* is associated.
 
-begin
-     
+     For more information about threads, refer to the manual *Library
+     Reference: Core Features*.
 
-let frame = make(<simple-frame>,
+.. generic-function:: frame-title
 
-title: "container",
+   Returns the title of the specified frame.
 
-layout: make(<button>));
+   :signature: frame-title *frame* => *title*
 
-start-frame(frame);
+   :param frame: An instance of type :class:`<frame>`.
+   :value title: An instance of type ``false-or(<string>)``.
 
-end;
-    
+   :description:
 
-As can be seen, when testing short pieces of code interactively in the
-environment, the former section of code is easier to use than the
-latter.
+     Returns the title of *frame*. If this is ``#f``, then the title bar is
+     removed from the frame, if this is possible. If this is not possible,
+     then a default message is displayed. Whether the title bar can be
+     removed from the frame or not is platform dependent.
 
-Example
-       
+   :seealso:
 
-Assigning the result of a contain expression allows you to manipulate
-the DUIM objects being contained interactively, as shown in the example
-below.
+     - :gf:`frame-title-setter`
 
-You should assume the following code is typed into the Dylan Interactor,
-and that each expression is evaluated by pressing the RETURN key at the
-points indicated.
+.. generic-function:: frame-title-setter
 
-\*g\* := contain
-                
+   Sets the title of the specified frame.
 
-(make
+   :signature: frame-title-setter *title* *frame* => *title*
 
-(<list-box>,
+   :param title: An instance of type ``false-or(<string>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value title: An instance of type ``false-or(<string>)``.
 
-items: #(#"One", #"Two", #"Three"),
+   :description:
 
-label-key:
+     Sets the title of *frame*. The title of a frame is displayed in the
+     title bar of the frame. If *title* is ``#f``, then the platform attempts
+     to remove the title bar from the frame, if possible.
 
-method (symbol) as-lowercase
+   :seealso:
 
-(as(<string>, symbol))
+     - :gf:`frame-title`
 
-end));*RETURN*
-              
+.. generic-function:: frame-tool-bar
 
-gadget-items(\*g\*);*RETURN*
+   Returns the tool bar used in the specified frame.
 
-As you would expect, evaluating the call to `See
-gadget-items <gadgets.htm#45083>`_ returns the following result:
+   :signature: frame-tool-bar *frame* => *tool-bar*
 
-#(#"one", #"two", #"three")
+   :param frame: An instance of type :class:`<frame>`.
+   :value tool-bar: An instance of type ``false-or(<tool-bar>)``.
 
-In a similar way, you can destructively modify the slot values of any
-contained DUIM objects
+   :description:
 
-current-frame
--------------
+     Returns the tool bar used in *frame*.
 
-Function
-''''''''
+   :seealso:
 
-Summary
-       
+     - :gf:`frame-tool-bar-setter`
 
-Returns the current frame
+.. generic-function:: frame-tool-bar-setter
 
-Signature
-         
+   Sets the tool bar used in the specified frame.
 
-current-frame => *frame*
+   :signature: frame-tool-bar-setter *tool-bar* *frame* => *tool-bar*
 
-Arguments
-         
+   :param tool-bar: An instance of type ``false-or(<tool-bar>)``.
+   :param frame: An instance of type :class:`<frame>`.
+   :value tool-bar: An instance of type ``false-or(<tool-bar>)``.
 
-None
+   :description:
 
-Values
-      
+     Sets the tool bar used in *frame*.
 
--  *frame* An instance of type `<frame>`_
+   :seealso:
 
-Description
-           
+     - :gf:`frame-tool-bar`
 
-Returns the current frame.
+.. generic-function:: frame-top-level
 
-define command-table
---------------------
+   Returns the top level loop function for the specified frame.
 
-Definition macro
-''''''''''''''''
+   :signature: frame-top-level *frame* => *top-level*
 
-Summary
-       
+   :param frame: An instance of type :class:`<frame>`.
+   :value top-level: An instance of type :drm:`<function>`.
 
-Defines a new class of command table with the specified name and
-properties.
+   :description:
 
-Macro call
-          
+     Returns the top level loop function for *frame*. The top level loop
+     function for a frame is the "command loop" for the frame.
 
-define command-table *name* ({*supers* },\*) {*options* } end
+     The default method for :gf:`frame-top-level` calls :gf:`read-event`
+     and then :gf:`handle-event`.
 
-Arguments
-         
+   :seealso:
 
--  *name* A Dylan name*bnf*.
--  *supers* A Dylan name*bnf*.
--  *options* A Dylan body*bnf*.
+     - :gf:`handle-event`
 
-Values
-      
+.. class:: <frame-unmapped-event>
+   :sealed:
+   :instantiable:
 
--  None.
+   The class of events that indicate a frame has been unmapped.
 
-Description
-           
+   :superclasses: :class:`<frame-event>`
 
-Defines a new class of command table with the specified name and
-properties. This macro is equivalent to *define class*, but with
-additional options.
+   :description:
 
-The *supers* argument specifies a comma-separated list of command tables
-from which the command table you are creating should inherit. If you are
-not explicitly inheriting the behavior of other command tables, then
-*supers* should have the value `See
-\*global-command-table\*`_.
+     The class of events that indicate a frame has been unmapped, that is,
+     removed from the screen. An instance of this class is distributed
+     whenever a frame is unmapped. A frame may be unmapped by either
+     iconifying it, or by exiting or destroying the frame completely, so that
+     it no longer exists.
 
-Each one of the *options* supplied describes a command for the command
-table. This can be either a menu item, a separator, or another command
-table to be included in the command table. You can supply any number of
-options. Each option take one of the following forms:
+   :example:
 
-menu-item *menu-item-descriptor* ;
-                                  
+     The following example defines a method that can inform you when an
+     instance of a class of frame you have defined is unmapped.
 
-include *command-table-name* ;
+     .. code-block:: dylan
 
-separator;
-          
+        define method handle-event
+            (frame :: <my-frame>,
+             event :: <frame-unmapped-event>)
+         => ()
+          notify-user
+            (format-to-string("Frame %= unmapped", frame))
+        end method handle-event;
 
-To add a menu item or menu to a command table, include an option of the
-following form:
+   :seealso:
 
-menu-item *label* = *command-function*
-                                      
+     - :class:`<frame-mapped-event>`
 
-#key *accelerator documentation*
-                                
+.. variable:: *global-command-table*
 
--  *label* An instance of *<string>*. This is the label that appears in
-   the menu.
+   The command table inherited by all new command tables.
 
-*command-function*
-                  
+   :type: :class:`<command-table>`
 
--  An instance of *type-union(`<command>`_, `See
-   <command-table>`_, <function>)*. The command
-   function is the callback that is invoked to perform the intended
-   operation for the menu item. Note that this can itself be a command
-   table.
--  *accelerator* An instance of *false-or(`See
-   <gesture> <silica.htm#76256>`_)*. Default value: *#f*. This defines
-   a keyboard accelerator that can be used to invoke *command-function*
-   in preference to the menu item itself.
--  *documentation* An instance of *false-or(<string>)*. Default value:
-   *#f*. This specifies a documentation string for the menu item that
-   can be used to provide online help to the user. For menu items,
-   documentation strings are usually displayed in the status bar of your
-   application, when the mouse pointer is placed over the menu item
-   itself.
+   :description:
 
-To add a separator to a menu, just include the following option at the
-point you want the separator to appear:
+     This is the command table from which all other command tables inherit by
+     default. You should not explicitly add anything to or remove anything
+     from this command table. DUIM can use this command to store internals or
+     system-wide commands. You should not casually install any commands or
+     translators into this command table.
 
-separator;
+   :seealso:
 
-To include another command table in the current table, include the
-following option at the point you want the command table to appear:
+     - :class:`<command-table>`
+     - :var:`*user-command-table*`
 
-include *command-table-name* ;
+.. generic-function:: iconify-frame
 
-The commands defined in *command-table-name* are added to the current
-command table at the appropriate point.
+   Iconifies the specified frame.
 
-Example
-       
+   :signature: iconify-frame *frame* => ()
 
-The following example shows how you might create a command table for the
-standard Windows *File* menu, and how this could be integrated into the
-menu bar for an application. The example assumes that the appropriate
-command functions have already been defined for each command in the
-command table.
+   :param frame: An instance of type :class:`<frame>`.
 
-define command-table
-                    
+   :description:
 
-\*file-menu-command-table\* (\*global-command-table\*)
+     Iconifies *frame*. The appearance of the iconified frame depends on the
+     behavior of the operating system in which the application is running.
+     For instance, in Windows 95 or Windows NT 4.0, the icon is displayed in
+     the task bar at the bottom of the screen.
 
-menu-item "New..." = frame-new-file,
+   :example:
 
-accelerator:
+     The following example creates and displays a simple frame, then
+     iconifies it. You should run this code in the interactor, pressing the
+     RETURN key at the points indicated.
 
-make-keyboard-gesture(#"n", #"control"),
+     .. code-block:: dylan
 
-documentation: "Creates a new document."
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>)); // RETURN
+        start-frame(*frame*); // RETURN
+        iconify-frame(*frame*); // RETURN
 
-menu-item "Open..." = frame-open-file,
+   :seealso:
 
-accelerator:
+     - :gf:`deiconify-frame`
+     - :gf:`destroy-frame`
+     - :gf:`exit-frame`
+     - :gf:`frame-icon`
+     - :gf:`lower-frame`
+     - :gf:`raise-frame`
 
-make-keyboard-gesture(#"o", #"control"),
+.. generic-function:: layout-frame
 
-documentation: "Opens an existing document.";
+   Resizes the specified frame and lays out the current pane hierarchy
+   inside it.
 
-menu-item "Close" = frame-close-file,
+   :signature: layout-frame *frame* #key *width height* => ()
 
-documentation: "Closes an open document.";
+   :param frame: An instance of type :class:`<frame>`.
+   :param width: An instance of type ``false-or(<integer>)``.
+   :param height: An instance of type ``false-or(<integer>)``.
 
-separator;
+   :description:
 
-include \*save-files-command-table\*;
+     Resizes the frame and lays out the current pane hierarchy according to
+     the layout protocol. This function is automatically invoked on a frame
+     when it is adopted, after its pane hierarchy has been generated.
 
-separator;
+     If *width* and *height* are provided, then this function resizes the
+     frame to the specified size. It is an error to provide just *width*.
 
-menu-item "Exit"
+     If no optional arguments are provided, this function resizes the frame
+     to the preferred size of the top-level pane as determined by the space
+     composition pass of the layout protocol.
 
-= make(<command>,
+     In either case, after the frame is resized, the space allocation pass of
+     the layout protocol is invoked on the top-level pane.
 
-function: exit-frame);
+.. generic-function:: lower-frame
 
-end command-table \*file-menu-command-table\*;
-                                              
+   Lowers the specified frame to the bottom of the stack of visible
+   windows.
 
-define command-table
-                    
+   :signature: lower-frame *frame* => ()
 
-\*application-command-table\* (\*global-command-table\*)
+   :param frame: An instance of type :class:`<frame>`.
 
-menu-item "File" = \*file-menu-command-table\*;
+   :description:
 
-menu-item "Edit" = \*edit-menu-command-table\*;
+     Lowers *frame* to the bottom of the stack of visible windows. After
+     calling this function, *frame* will appear beneath any occluding windows
+     that may be on the screen.
 
-menu-item "View" = \*view-menu-command-table\*;
+   :example:
 
-menu-item "Windows" = \*windows-menu-command-table\*;
+     The following example creates and displays a simple frame, then lowers
+     it.
 
-menu-item "Help" = \*help-menu-command-table\*;
+     .. code-block:: dylan
 
-end command-table \*application-command-table\*;
-                                                
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>));
+        start-frame(*frame*);
+        lower-frame(*frame*);
 
-See also
-        
+   :seealso:
 
-`\*global-command-table\*`_
+     - :gf:`deiconify-frame`
+     - :gf:`destroy-frame`
+     - :gf:`exit-frame`
+     - :gf:`iconify-frame`
+     - :gf:`raise-frame`
 
-define frame
-------------
+.. method:: make
+   :specializer: <frame>
 
-Definition macro
-''''''''''''''''
+   Creates an instance of a :class:`<frame>`.
 
-Summary
-       
+   :signature: make (class == <frame>)
+     #key *top-level command-queue layout icon
+     pointer-documentation command-table menu-bar tool-bar
+     status-bar title calling-frame top-level-sheet state
+     geometry resizable? properties thread event-queue
+     foreground background text-style palette save-under?
+     drop-shadow? dialog-for*
+     => *simple-frame*
 
-Defines a new class of frame with the specified properties.
+   :param class: The class :class:`<frame>`.
+   :param #key top-level: An instance of type ``false-or(<sheet>)``. Default value: ``#f``.
+   :param #key command-queue: An instance of type ``false-or(<event-queue>)``.
+     Default value: ``#f``.
+   :param #key layout: An instance of type ``false-or(<sheet>)``. Default value: ``#f``.
+   :param #key icon: An instance of type ``false-or(<image>)``. Default value: ``#f``.
+   :param #key pointer-documentation: An instance of type ``false-or(<string>)``. Default value: ``#f``.
+   :param #key command-table: An instance of type ``false-or(<command-table>)``. Default value: ``#f``.
+   :param #key menu-bar: An instance of type ``false-or(<menu-bar>)``. Default value: ``#f``.
+   :param #key tool-bar: An instance of type ``false-or(<tool-bar>)``. Default value: ``#f``.
+   :param #key status-bar: An instance of type ``false-or(<status-bar>)``. Default value: ``#f``.
+   :param #key title: An instance of type ``false-or(<string>)``. Default value: ``#f``.
+   :param #key calling-frame: An instance of type ``false-or(<frame>)``. Default value: ``#f``.
+   :param #key state: An instance of type ``one-of(#"detached", #"unmapped",
+     #"mapped", #"iconified")``. Default value: ``#"detached"``.
+   :param #key geometry: An instance of type :drm:`<vector>`. Default value: ``vector(#f, #f, #f, #f)``.
+   :param #key resizable?: An instance of type :drm:`<boolean>`. Default value: ``#t``.
+   :param #key properties: An instance of type :drm:`<stretchy-object-vector>`. Default value: ``make(<stretchy-vector>)``.
+   :param #key thread: An instance of type ``false-or(<thread>)``. Default value: ``#f``.
+   :param #key event-queue: An instance of type ``false-or(<event-queue>)``. Default value: ``#f``.
+   :param #key foreground: An instance of type ``false-or(<ink>)``. Default value: ``#f``.
+   :param #key background: An instance of type ``false-or(<ink>)``. Default value: ``#f``.
+   :param #key text-style: An instance of type ``false-or(<text-style>)``. Default value: ``#f``.
+   :param #key palette: An instance of type ``false-or(<palette>)``. Default value: ``#f``.
+   :param #key save-under?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
+   :param #key drop-shadow?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
+   :param #key dialog-for: An instance of type :class:`<dialog-frame>`.
+   :value simple-frame: An instance of type :class:`<frame>`.
 
-Macro call
-          
+   :description:
 
-define frame *name* ({*supers* },\*) {*slots-panes-options* } end
+     Creates and returns an instance of :class:`<frame>` or
+     one of its subclasses.
 
-Arguments
-         
+     The *top-level* argument specifies the top-level command-loop in which
+     the frame runs.
 
--  *name* A Dylan name*bnf*.
--  *supers* A Dylan name*bnf*.
--  *slots-panes-options* A Dylan body*bnf*.
+     The *command-queue* argument specifies a command-queue for the frame.
 
-Values
-      
+     The *layout* argument specifies a layout for the frame.
 
--  None.
+     The *icon* argument specifies an icon that will be used when the frame
+     is iconized. In all current versions of Windows, this icon is also
+     visible in the left hand corner of the title bar of the frame when it is
+     not iconized.
 
-Description
-           
+     The *pointer-documentation* argument specifies pointer-documentation for
+     the frame.
 
-Defines a new class of frame called *name* with the specified
-properties. This macro is equivalent to *define class*, but with
-additional options.
+     The *command-table* argument specifies a command table for the frame.
 
-The *supers* argument lets you specify any classes from which the frame
-you are creating should inherit. You must include at least one concrete
-frame class, such as `<simple-frame>`_ or `See
-<dialog-frame>`_.
+     The *menu-bar* argument specifies a menu bar for the frame.
 
-The *slots-panes-options* supplied describe the state variables of the
-frame class; that is, the total composition of the frame. This includes,
-but is not necessarily limited to, any panes, layouts, tool bar, menus,
-and status bar contained in the frame. You can specify arbitrary slots
-in the definition of the frame. You may specify any of the following:
+     The *tool-bar* argument specifies a tool bar for the frame.
 
--  A number of slots for defining per-instance values of the frame
-   state.
--  A number of named panes. Each pane defines a sheet of some sort.
--  A single layout.
--  A tool bar.
--  A status bar.
--  A menu bar.
--  A command table.
--  A number of sequential pages for inclusion in a multi-page frame such
-   as a wizard or property dialog.
+     The *status-bar* argument specifies a status bar for the frame.
 
-*Note:* If the frame has a menu bar, either define the menu bar and its
-panes, or a command table, but not both. See the discussion below for
-more details.
+     The *title* argument specifies a title for the frame.
 
-The syntax for each of these options is described below.
+     The *calling-frame* argument specifies a calling frame for the frame.
 
-The *slot* option allows you to define any slot values that the new
-frame class should allow. This option has the same syntax as slot
-specifiers in *define class*, allowing you to define init-keywords,
-required init-keywords, init-functions and so on for the frame class.
+     The *state* argument specifies a frame-state. The frame can be mapped or
+     unmapped (that is, visible on the screen, or not), iconified, or
+     detached.
 
-For each of the remaining options, the syntax is as follows:
+     The *geometry* argument specifies a for the frame. The four components
+     of this keyword represent the x and y position of the frame, and the
+     width and height of the frame, respectively.
 
-*option* *name* (*owner*) *body* ;
+     The *resizable?* argument specifies whether or not the frame is
+     resizable.
 
-The argument *option* is the name of the option used, taken from the
-list described below, *name* is the name you assign to the option for
-use within your code, *owner* is the owner of the option, usually the
-frame itself, and *body* contains the definition of value returned by
-the option.
+     The *properties* argument specifies properties for the frame.
 
-*pane* specifies a single pane in the frame. The default is *#f*,
-meaning that there is no single pane. This is the simplest way to define
-a pane hierarchy.
+     The *thread* argument specifies the thread in which the frame will run.
+     See the *Library Reference: Core Features* manual for full details about
+     how threads are handled.
 
-*layout* specifies the layout of the frame. The default is to lay out
-all of the named panes in horizontal strips. The value of this option
-must evaluate to an instance of a layout.
+     The *event-queue* specifies an event-queue for the frame.
 
-*command-table* defines a command table for the frame. The default is to
-create a command table with the same name as the frame. The value of
-this option must evaluate to an instance of `See
-<command-table>`_.
+     The arguments *foreground* and *background* specify a foreground color
+     for the frame. In addition, *text-style* specifies a text style for the
+     frame, and *palette* specifies a color palette for the frame.
 
-*menu-bar* is used to specify the commands that will in the menu bar of
-the frame. The default is *#t*. If used, it typically specifies the
-top-level commands of the frame. The value of this option can evaluate
-to any of the following:
+   :seealso:
 
--  *#f* The frame has no menu bar.
--  *#t*, The menu bar for the frame is defined by the value of the
-   *command-table* option.
+     - :class:`<frame>`
 
-A command table
-               
+.. generic-function:: make-menu-from-command-table-menu
 
--  The menu bar for the frame is defined by this command table.
--  A body of code This is interpreted the same way as the *menu-item*
-   options to `define command-table`_.
+   Returns a menu from the menu definition in the specified command table.
 
-*disabled-commands* is used to specify a list of command names that are
-initially disabled in the application frame. The default is *#[]*. The
-set of enabled and disabled commands can be modified via `See
-command-enabled?-setter`_.
+   :signature: make-menu-from-command-table-menu
+     *command-table-menu-items* *frame* *framem*
+     #key *command-table* *label* *mnemonic* *item-callback*
+     => *menu*
 
-*tool-bar* is used to specify a tool bar for the frame. The default is
-*#f*. The value of this option must evaluate to an instance of `See
-<tool-bar> <gadgets.htm#58915>`_.
+   :param command-table-menu-items: An instance of type :drm:`<sequence>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :param framem: An instance of type :class:`<frame-manager>`.
+   :param #key command-table: An instance of type :class:`<command-table>`.
+   :param #key label: An instance of type :class:`<label>`.
+   :param #key mnemonic: An instance of type ``false-or(<gesture>)``.
+   :param #key item-callback: An instance of type :drm:`<function>`.
+   :value menu: An instance of type :class:`<menu>`.
 
-*top-level* specifies a function that executes the top level loop of the
-frame. It has as its argument a list whose first element is the name of
-a function to be called to execute the top-level loop. The function must
-take at least one argument, which is the frame itself. The rest of the
-list consists of additional arguments to be passed to the function.
+   :description:
 
-*icon* specifies an `<image> <dcs.htm#51234>`_*<image>* to be used
-in the window decoration for the frame. This icon may be used in the
-title bar of the frame, or when the frame is iconized, for example.
+     Returns a menu from the menu definition in the specified command table.
+     This function is used by
+     :gf:`make-menus-from-command-table` to individually
+     create each menu defined in the command table. The function
+     :gf:`make-menus-from-command-table` then puts each of the
+     menus created together in the appropriate way.
 
-*geometry* specifies the geometry for the frame.
+     The *command-table-menu-items* argument defines the items that are to be
+     placed in the menu. It is a sequence of instances of
+     :class:`<command-table-menu-item>`.
 
-*pages* is used to define the pages of a wizard or property frame. This
-evaluates to a list of pages, each of which can be defined as panes
-within the frame definition itself. For example:
+     The *frame* and *framem* arguments define the frame and the frame
+     manager in which the menu created is to be placed.
 
-define frame <wizard-type> (<wizard-frame>)
-                                           
+     The *command-table* argument specifies the command table in which the
+     definition of the menu created can be found.
 
-...
+     The *label* argument defines a label for the menu created.
 
-pages (frame)
+     The *mnemonic* argument defines a keyboard mnemonic for the menu
+     created.
 
-vector(frame.page-1, frame.page-2, frame.page-3);
+   :seealso:
 
-end frame <wizard-type>
-                       
+     - :gf:`make-menus-from-command-table`
 
-The *name*, *supers*, and slot arguments are not evaluated. The values
-of each of the options are evaluated.
+.. generic-function:: make-menus-from-command-table
 
-Example
-       
+   Returns a set of menus from the menu definitions in the specified
+   command table.
 
-define frame <multiple-values-dialog> (<dialog-frame>)
-                                                      
+   :signature: make-menus-from-command-table *command-table* *frame* *framem* #key *label* => *menus*
 
-pane label-pane (frame)
+   :param command-table: An instance of type :class:`<command-table>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :param framem: An instance of type :class:`<frame-manager>`.
+   :param #key label: An instance of type :class:`<label>`.
+   :value menus: An instance of type ``limited(<sequence>, of: <menu>)``.
 
-make(<option-box>, items: #("&Red", "&Green",
+   :description:
 
-"&Blue"));
+     Returns a set of menus from the menu definitions in *command-table*.
 
-pane check-one (frame)
+     The *frame* and *framem* arguments specify the frame and frame manager
+     in which the menus are to be placed.
 
-make(<check-button>, label: "Check box test text");
+     The *label* argument lets you specify a label for the set of menus.
 
-pane check-two (frame)
+   :seealso:
 
-make(<check-button>, label: "Check box test text");
+     :gf:`make-menu-from-command-table`
 
-pane radio-box (frame)
+.. generic-function:: menu-item-accelerator
 
-make(<radio-box>,
+   Returns the accelerator for the specified command table menu item.
 
-items: #("Option &1", "Option &2",
+   :signature: menu-item-accelerator *menu-item* => *accelerator*
 
-"Option &3", "Option &4"),
+   :param menu-item: An instance of type :class:`<command-table-menu-item>`.
+   :value accelerator: An instance of type :class:`<gesture>`.
 
-orientation: #"vertical");
+   :description:
 
-pane first-group-box (frame)
+     Returns the keyboard accelerator for *menu-item*. Note that *menu-item*
+     must be defined in a command table.
 
-grouping ("Group box", max-width: $fill)
+   :seealso:
 
-vertically (spacing: 4)
+     - :gf:`menu-item-mnemonic`
 
-make(<label>, label: "Label:");
+.. generic-function:: menu-item-mnemonic
 
-horizontally (spacing: 4,
+   Returns the mnemonic for the specified menu item.
 
-y-alignment: #"center")
+   :signature: menu-item-mnemonic *menu-item* => *mnemonic*
 
-frame.label-pane;
+   :param menu-item: An instance of type :class:`<command-table-menu-item>`.
+   :value mnemonic: An instance of type ``false-or(<gesture>)``.
 
-make(<button>, label: "Button");
+   :description:
 
-end;
+     Returns the keyboard mnemonic for *menu-item*.
 
-frame.check-one;
+   :seealso:
 
-frame.check-two;
+     - :gf:`menu-item-accelerator`
 
-end
+.. generic-function:: menu-item-name
 
-end;
+   Returns the name of the specified menu item.
 
-pane second-group-box (frame)
+   :signature: menu-item-name *menu-item* => *name*
 
-grouping ("Group box", max-width: $fill)
+   :param menu-item: An instance of type :class:`<command-table-menu-item>`.
+   :value name: An instance of type :drm:`<string>`.
 
-frame.radio-box
+   :description:
 
-end;
+     Returns the name of *menu-item*.
 
-layout (frame)
+   :seealso:
 
-vertically (spacing: 4)
+     - :gf:`menu-item-options`
+     - :gf:`menu-item-type`
+     - :gf:`menu-item-value`
 
-frame.first-group-box;
+.. generic-function:: menu-item-options
 
-frame.second-group-box;
+   Returns the options for the specified menu item.
 
-end;
+   :signature: menu-item-options *menu-item* => *options*
 
-end frame <multiple-values-dialog>;
-                                   
+   :param menu-item: An instance of type :class:`<command-table-menu-item>`.
+   :value options: An instance of type :drm:`<object>`.
 
-See also
-        
+   :description:
 
-`<simple-frame>`_
+     Returns the options for *menu-item*.
 
-`<wizard-frame>`_
+   :seealso:
 
-deiconify-frame
----------------
+     - :gf:`menu-item-name`
+     - :gf:`menu-item-type`
+     - :gf:`menu-item-value`
 
-Generic function
-''''''''''''''''
+.. generic-function:: menu-item-type
 
-Summary
-       
+   Returns the type of the specified menu item.
 
-Displays a frame that has previously been iconified on screen.
+   :signature: menu-item-type *menu-item* => *type*
 
-Signature
-         
+   :param menu-item: An instance of type :class:`<command-table-menu-item>`.
+   :value type: An instance of type :drm:`<object>`.
 
-deiconify-frame *frame* => ()
+   :description:
 
-Arguments
-         
+     Returns the type of *menu-item*.
 
--  *frame* An instance of type `<frame>`_.
+   :seealso:
 
-Values
-      
+     - :gf:`menu-item-name`
+     - :gf:`menu-item-options`
+     - :gf:`menu-item-value`
 
-None
+.. generic-function:: menu-item-value
 
-Description
-           
+   Returns the value of the specified menu item.
 
-Displays a frame that has previously been iconified on screen.
+   :signature: menu-item-value *menu-item* => *value*
 
-Example
-       
+   :param menu-item: An instance of type :class:`<command-table-menu-item>`.
+   :value value: An instance of type :drm:`<object>`.
 
-The following example creates and displays a simple frame, then
-iconifies it and deiconifies it.
+   :description:
 
-define variable \*frame\* =
-                           
+     Returns the value of *menu-item*.
 
-make(<simple-frame>, title: "A frame",
+   :seealso:
 
-layout: make(<button>));
-                        
+     - :gf:`menu-item-name`
+     - :gf:`menu-item-options`
+     - :gf:`menu-item-type`
 
-start-frame(\*frame\*);
+.. generic-function:: move-to-next-page
 
-iconify-frame(\*frame\*);
+   Moves to the next page of the specified multi-page dialog.
 
-deiconify-frame(\*frame\*);
-                           
+   :signature: move-to-next-page *wizard* => ()
 
-See also
-        
+   :param wizard: An instance of type :class:`<wizard-frame>`.
 
-`destroy-frame`_
+   :description:
 
-`exit-frame`_
+     Moves to the next page in sequence of *wizard*. This is the default
+     callback for the Next button in a wizard frame.
 
-`frame-icon`_
+   :seealso:
 
-`iconify-frame`_
+     - :gf:`dialog-next-callback`
+     - :class:`<wizard-frame>`
 
-destroy-frame
--------------
+.. generic-function:: move-to-previous-page
 
-Generic function
-''''''''''''''''
+   Moves to the previous page of the specified multi-page dialog.
 
-Summary
-       
+   :signature: move-to-previous-page *wizard* => ()
 
-Unmaps the specified frame and destroys it.
+   :param wizard: An instance of type :class:`<wizard-frame>`.
 
-Signature
-         
+   :description:
 
-destroy-frame *frame* => ()
+     Moves to the previous page in sequence of *wizard*. This is the default
+     callback for the Back button in a wizard frame.
 
-Arguments
-         
+   :seealso:
 
--  *frame* An instance of type `<frame>`_.
+     - :gf:`dialog-back-callback`
+     - :class:`<wizard-frame>`
 
-Values
-      
+.. generic-function:: note-progress
 
-None
+   Note the progress of an event in the specified progress note.
 
-Description
-           
+   :signature: note-progress *numerator* *denominator* #key *note* *label* *pointer-cursor* => ()
 
-Unmaps *frame* from the screen and destroys it. Generally, you should
-not need to call this function explicitly, since `See
-exit-frame`_ performs all necessary operations in the
-correct order, including calling *destroy-frame* if the *destroy?*
-argument to `exit-frame`_ is true.
+   :param numerator: An instance of type :drm:`<integer>`.
+   :param denominator: An instance of type :drm:`<integer>`.
+   :param #key note: An instance of type :class:`<progress-note>`.
+     Default value: :var:`*progress-note*`.
+   :param #key label: An instance of type :class:`<label>`.
+   :param #key pointer-cursor: An instance of type :class:`<pointer>`.
 
-See also
-        
+   :description:
 
-`deiconify-frame`_
+     Note the progress of an event in *note*.
 
-`exit-frame`_
+     If a *numerator* and *denominator* are supplied, then the progress is
+     displayed in terms of those figures. For example, if *numerator* is 1,
+     and *denominator* is 10, then the progress is displayed in tenths.
 
-`<frame-destroyed-event>`_
+     If supplied, *pointer-cursor* is used as a cursor when the mouse pointer
+     is placed over the owner frame.
 
-`iconify-frame`_
+   :seealso:
 
-`lower-frame`_
+     - :macro:`noting-progress`
+     - :var:`*progress-note*`
 
-`raise-frame`_
+.. macro:: noting-progress
+   :statement:
 
-dialog-apply-button
--------------------
+   Performs a body of code, noting its progress.
 
-Generic function
-''''''''''''''''
+   :macrocall:
 
-Summary
-       
+     .. code-block:: dylan
 
-Returns the Apply button in the specified dialog.
+        noting-progress ({*sheet* }, {*label* }) {*body* } end
 
-Signature
-         
+   :param sheet: A Dylan expression *bnf*.
+   :param label: A Dylan expression *bnf*.
+   :param body: A Dylan body *bnf*.
 
-dialog-apply-button *dialog* => *apply-button*
+   :description:
 
-Arguments
-         
+     Performs a body of code, noting its progress, for the specified sheet.
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+     The sheet argument is an expression that evaluates to an instance of
+     :class:`<sheet>`. The label argument is an expression
+     that evaluates to an instance of :drm:`<string>`.
 
-Values
-      
+   :seealso:
 
--  *apply-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
+     - :gf:`note-progress`
 
-Description
-           
+.. variable:: *progress-note*
+   :thread:
 
-Returns the Apply button in *dialog*. As well as having OK and Cancel
-buttons, many dialogs also have an Apply button that lets the user apply
-the changes that have been made in the dialog, without removing the
-dialog from the screen itself.
+   Specifies a default progress note that can be used.
 
-See also
-        
+   :type: :drm:`<object>`
 
-`dialog-cancel-button`_
+   :value: ``#f``
 
-`dialog-apply-button-setter`_
+   :description:
 
-`dialog-apply-callback`_
+     This variable is used to supply a default progress note to use if no
+     progress note is explicitly specified.
 
-`dialog-help-button`_
+   :seealso:
 
-dialog-apply-button-setter
---------------------------
+     - :gf:`note-progress`
 
-Generic function
-''''''''''''''''
+.. class:: <property-frame>
+   :open:
+   :instantiable:
 
-Summary
-       
+   The class of property frames.
 
-Specifies the Apply button in the specified dialog.
+   :superclasses: :class:`<dialog-frame>`
 
-Signature
-         
+   :keyword pages: An instance of type ``false-or(limited(<sequence>, of: <page>))``.
+     Default value: ``#f``.
+   :keyword apply-callback: An instance of type ``false-or(<function>)``. Default value: ``#f``.
+   :keyword apply-button: An instance of type ``false-or(<button>)``.
+     Default value: ``#f``.
 
-dialog-apply-button-setter *apply-button dialog* => *apply-button*
+   Note: The following two useful init-keywords are inherited from
+   :class:`<dialog-frame>`:
 
-Arguments
-         
+   :keyword pages: An instance of type ``false-or(<sequence>)``.
+     Default value: ``#f``.
+   :keyword page-changed-callback: An instance of type ``false-or(<function>)``.
+     Default value: ``#f``.
 
--  *apply-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+   :description:
 
-Values
-      
+     The class of property frames. These are dialogs that can contain
+     property sheets of some description. This is the class of dialogs with
+     several pages, each presented as a label in a tab control.
 
--  *apply-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
+     .. figure:: images/frames-5.png
+        :align: center
 
-Description
-           
+        A property frame
 
-Specifies the Apply button in *dialog*. As well as having OK and Cancel
-buttons, many dialogs also have an Apply button that lets the user apply
-the changes that have been made in the dialog, without removing the
-dialog from the screen itself.
+     The ``pages:`` init-keyword defines the pages available for the property
+     frame.
 
-See also
-        
+     The apply callback and button define an additional Apply button
+     available in property frames. The Apply button applies any changes made
+     in the current page of the dialog, but does not dismiss the dialog from
+     the screen. By default, there is no Apply button defined.
 
-`dialog-cancel-button`_
+     The page-changed callback lets you specified a callback that should be
+     invoked if the current page in the property frame is changed by clicking
+     on a different page tab.
 
-`dialog-apply-button`_
+   :operations:
 
-`dialog-apply-callback`_
+     - :gf:`dialog-apply-button`
+     - :gf:`dialog-apply-button-setter`
+     - :gf:`dialog-apply-callback`
+     - :gf:`dialog-current-page`
+     - :gf:`dialog-current-page-setter`
+     - :gf:`dialog-page-changed-callback`
+     - :gf:`dialog-page-changed-callback-setter`
+     - :gf:`dialog-page-complete?`
+     - :gf:`dialog-page-complete?-setter`
+     - :gf:`dialog-pages`
+     - :gf:`dialog-pages-setter`
 
-`dialog-help-button`_
+   :seealso:
 
-dialog-apply-callback
----------------------
+     - :gf:`dialog-apply-button`
+     - :gf:`dialog-apply-callback`
+     - :class:`<dialog-frame>`
+     - :class:`<property-page>`
+     - :class:`<wizard-frame>`
 
-Generic function
-''''''''''''''''
+.. class:: <property-page>
+   :open:
+   :instantiable:
 
-Summary
-       
+   The class of property pages.
 
-Returns the callback invoked when the Apply button is clicked in the
-specified dialog.
+   :superclasses: :class:`<page>`
 
-Signature
-         
+   :description:
 
-dialog-apply-callback *dialog* => *callback*
+     The class of property pages. These are pages that can be displayed in an
+     instance of :class:`<property-frame>`.
 
-Arguments
-         
+     .. figure:: images/frames-6.png
+        :align: center
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+        A property page
 
-Values
-      
+     Internally, this class maps into the Windows property page control.
 
--  *callback* An instance of type *false-or(type-nonfunctional>, `See
-   <command>`_))*.
+   :seealso:
 
-Description
-           
+     - :class:`<page>`
+     - :class:`<property-frame>`
+     - :class:`<property-page>`
+     - :class:`<tab-control-page>`
+     - :class:`<wizard-page>`
 
-Returns the callback invoked when the Apply button is clicked in
-*dialog*. As well as having OK and Cancel buttons, many dialogs also
-have an Apply button that lets the user apply the changes that have been
-made in the dialog, without removing the dialog from the screen itself.
+.. generic-function:: raise-frame
 
-*Note:* If you supply *#f* as the callback, then the button does not
-appear.
+   Raises the specified frame to the top of the stack of visible windows.
 
-See also
-        
+   :signature: raise-frame *frame* => ()
 
-`dialog-cancel-button`_
+   :param frame: An instance of type :class:`<frame>`.
 
-`dialog-apply-button`_
+   :description:
 
-`dialog-apply-button-setter`_
+     Raises *frame* to the top of the stack of visible windows. After calling
+     this function, *frame* will appear above any occluding windows that may
+     be on the screen.
 
-`dialog-help-button`_
+   :example:
 
-dialog-back-button
-------------------
+     The following example creates and displays a simple frame, then lowers
+     and raises it. You should run this code in the interactor, pressing the
+     RETURN key at the points indicated.
 
-Generic function
-''''''''''''''''
+     .. code-block:: dylan
 
-Summary
-       
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>)); // RETURN
+        start-frame(*frame*); // RETURN
+        lower-frame(*frame*); // RETURN
+        raise-frame(*frame*); // RETURN
 
-Returns the Back button in the specified multi-page dialog.
+   :seealso:
 
-Signature
-         
+     - :gf:`deiconify-frame`
+     - :gf:`destroy-frame`
+     - :gf:`exit-frame`
+     - :gf:`iconify-frame`
+     - :gf:`lower-frame`
 
-dialog-back-button *dialog* => *back-button*
+.. generic-function:: redo-command
 
-Arguments
-         
+   Performs the last performed command again.
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+   :signature: redo-command *command* *frame* => #rest *values*
 
-Values
-      
+   :param command: An instance of type :class:`<command>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :param values: Instances of type :drm:`<object>`.
 
--  *back-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
+   :description:
 
-Description
-           
+     Performs *command* again. The command is the command that was last
+     executed using :gf:`execute-command`.
 
-Returns the Back button in *dialog*. This is most useful in multi-page
-dialogs such as property frames and wizard frames, which typically have
-Back and Next buttons that let the user navigate forward and backward
-through the sequence of pages that comprise the dialog.
+     Note that the command described by *command* must be undoable.
 
-See also
-        
+     You can both specialize this function and call it directly in your code.
 
-`dialog-back-button-setter`_
+   :seealso:
 
-`dialog-back-callback`_
+     - :gf:`execute-command`
 
-`dialog-exit-button`_
+.. generic-function:: remove-command
 
-`dialog-help-button`_
+   Removes a command from the specified command table.
 
-dialog-back-button-setter
--------------------------
+   :signature: remove-command *command-table* *command* => ()
 
-Generic function
-''''''''''''''''
+   :param command-table: An instance of type :class:`<command-table>`.
+   :param command: An instance of type :class:`<command>`.
 
-Summary
-       
 
-Specifies the Back button in the specified multi-page dialog.
+   :description:
 
-Signature
-         
+     Removes *command* from *command-table*.
 
-dialog-back-button-setter *back-button dialog* => *back-button*
+   :seealso:
 
-Arguments
-         
+     - :gf:`add-command`
 
--  *back-button* An instance of type `See
-   <button> <gadgets.htm#20680>`_.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+.. function:: remove-command-table
 
-Values
-      
+   Removes the specified command table.
 
--  *back-button* An instance of type `See
-   <button> <gadgets.htm#20680>`_.
+   :signature: remove-command-table *command-table* => ()
 
-Description
-           
+   :param command-table: An instance of type :class:`<command-table>`.
 
-Specifies the Back button in *dialog*. This is most useful in wizard
-frames, which typically have Back and Next buttons that let the user
-navigate forward and backward through the sequence of pages that
-comprise the dialog.
+   :description:
 
-See also
-        
+     Removes *command-table*.
 
-`dialog-back-button`_
+.. generic-function:: remove-command-table-menu-item
 
-`dialog-back-callback`_
+   Removes a menu item from the specified command table.
 
-`dialog-exit-button-setter`_
+   :signature: remove-command-table-menu-item *command-table* *string* => ()
 
-`dialog-help-button`_
+   :param command-table: An instance of type :class:`<command-table>`.
+   :param string: An instance of type :drm:`<string>`.
 
-dialog-back-callback
---------------------
 
-Generic function
-''''''''''''''''
+   :description:
 
-Summary
-       
+     Removes the menu item identified by *string* from *command-table*.
 
-Returns the callback invoked when the Back button is clicked in the
-specified multi-page dialog.
+   :seealso:
 
-Signature
-         
+     - :gf:`add-command-table-menu-item`
 
-dialog-apply-callback *dialog* => *callback*
+.. generic-function:: set-frame-position
 
-Arguments
-         
+   Sets the position of the specified frame.
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+   :signature: set-frame-position *frame* *x* *y* => ()
 
-Values
-      
+   :param frame: An instance of type :class:`<frame>`.
+   :param x: An instance of type :drm:`<integer>`.
+   :param y: An instance of type :drm:`<integer>`.
 
--  *callback* An instance of type *false-or(type-nonfunctional>, `See
-   <command>`_))*.
+   :description:
 
-Description
-           
+     Sets the position of *frame*. The coordinates *x* and *y* are measured
+     from the top left of the screen, measured in pixels.
 
-Returns the callback invoked when the Back button is clicked in *dialog*
-. This is most useful in wizard frames, which typically have Back and
-Next buttons that let the user navigate forward and backward through the
-sequence of pages that comprise the dialog.
+   :seealso:
 
-*Note:* If you do not explicitly supply this callback, the previous page
-in the sequence for the multi-page dialog is displayed when the Back
-button is clicked. Specifying your own callback gives you flexibility in
-describing how the user can navigate through the sequence of pages in
-the dialog.
+     - :gf:`frame-position`
+     - :gf:`set-frame-size`
 
-See also
-        
+.. generic-function:: set-frame-size
 
-`dialog-back-button`_
+   Sets the size of the specified frame.
 
-`dialog-back-button-setter`_
+   :signature: set-frame-size *frame* *width* *height* => ()
 
-`dialog-exit-callback`_
+   :param frame: An instance of type :class:`<frame>`.
+   :param width: An instance of type :drm:`<integer>`.
+   :param height: An instance of type :drm:`<integer>`.
 
-`dialog-help-button`_
+   :description:
 
-dialog-cancel-button
---------------------
+     Sets the size of *frame*.
 
-Generic function
-''''''''''''''''
+   :example:
 
-Summary
-       
+     The following example creates and displays a simple frame, then resizes
+     it. You should run this code in the interactor, pressing the RETURN key
+     at the points indicated.
 
-Returns the Cancel button in the specified dialog.
+     .. code-block::dylan
 
-Signature
-         
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>, label: "Button")); // RETURN
+        set-frame-size(*frame*, 100, 500); // RETURN
 
-dialog-cancel-button *dialog* => *cancel-button*
+   :seealso:
 
-Arguments
-         
+     - :gf:`frame-size`
+     - :gf:`set-frame-position`
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+.. class:: <simple-command>
+   :open:
+   :abstract:
+   :instantiable:
 
-Values
-      
+   The class of simple commands.
 
--  *cancel-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
+   :superclasses: :drm:`<object>`
 
-Description
-           
+   :keyword function: An instance of type :drm:`<function>`. Required.
+   :keyword arguments: An instance of type :drm:`<sequence>`. Default value ``#[]``.
 
-Returns the Cancel button in *dialog*.
+   :description:
 
-See also
-        
+     The class of simple commands. A simple command has an associated
+     function and some arguments. Simple commands are not undoable.
 
-`dialog-cancel-button-setter`_
+     The first argument to the function is always the frame.
 
-`dialog-cancel-callback`_
+   :seealso:
 
-`dialog-exit-button`_
+     - :class:`<command>`
 
-`dialog-help-button`_
+.. class:: <simple-frame>
+   :open:
+   :abstract:
+   :instantiable:
 
-dialog-cancel-button-setter
----------------------------
+   The class of simple frames.
 
-Generic function
-''''''''''''''''
+   :superclasses: :class:`<frame>`
 
-Summary
-       
+   :keyword command-queue: An instance of type ``false-or(<event-queue)``.
+     Default value: ``make(<event-queue>)``.
+   :keyword layout: An instance of type ``false-or(<sheet>).
+     Default value: ``#f``.
+   :keyword command-table: An instance of type ``false-or(<command-table>)``.
+     Default value: ``#f``.
+   :keyword menu-bar: An instance of type ``false-or(<menu-bar>)``.
+     Default value: ``#f``.
+   :keyword tool-bar: An instance of type ``false-or(<tool-bar>)``.
+     Default value: ``#f``.
+   :keyword status-bar: An instance of type ``false-or(<status-bar>)``.
+     Default value: ``#f``.
 
-Specifies the Cancel button in the specified dialog.
+   :description:
 
-Signature
-         
+     The class of simple frames.
 
-dialog-cancel-button-setter *cancel-button* *dialog*
- => *cancel-button*
+     The ``command-queue:`` init-keyword specifies a command-queue for the
+     frame.
 
-Arguments
-         
+     The ``layout:`` init-keyword specifies a layout for the frame.
 
--  *cancel-button* An instance of type `See
-   <button> <gadgets.htm#20680>`_.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+     The ``command-table:`` init-keyword specifies a command table for the
+     frame.
 
-Values
-      
+     The ``menu-bar:`` init-keyword specifies a menu bar for the frame.
 
--  *cancel-button* An instance of type `See
-   <button> <gadgets.htm#20680>`_.
+     The ``tool-bar:`` init-keyword specifies a tool bar for the frame.
 
-Description
-           
+     The ``status-bar:`` init-keyword specifies a status bar for the frame.
 
-Specifies the Cancel button in *dialog*.
+   :operations:
 
-Example
-       
+     - :gf:`frame-command-table`
+     - :gf:`frame-command-table-setter`
+     - :gf:`frame-layout`
+     - :gf:`frame-layout-setter`
+     - :gf:`frame-menu-bar`
+     - :gf:`frame-menu-bar-setter`
+     - :gf:`frame-status-bar`
+     - :gf:`frame-status-bar-setter`
+     - :gf:`frame-status-message`
+     - :gf:`frame-status-message-setter`
+     - :gf:`frame-tool-bar`
+     - :gf:`frame-tool-bar-setter`
+     - :gf:`frame-top-level`
+     - :gf:`start-frame`
 
-In the following example, a simple dialog frame is created, and then its
-cancel button is redefined before the dialog is displayed on screen.
+.. class:: <simple-undoable-command>
+   :open:
+   :abstract:
+   :instantiable:
 
-define variable \*dialog\*
-                          
+   The class of simple commands that can contain an undo action.
 
-= make(<dialog-frame>,
+   :superclasses: :drm:`<object>`
 
-exit-button?: #t,
+   :keyword undo-command: An instance of type :class:`<command>`.
 
-cancel-button?: #t,
+   :description:
 
-help-callback:
+     The class of simple commands that can contain an undo action. A simple
+     undoable command is like a simple command, except that it points to a
+     command that can undo it, represented by the ``undo-command:``
+     init-keyword.
 
-method (gadget)
+   :seealso:
 
-notify-user (format-to-string
+     - :class:`<simple-command>`
 
-("Here is some help",
+.. generic-function:: start-dialog
 
-gadget))
+   Displays a DUIM frame as a dialog box.
 
-end);
-     
+   :signature: start-dialog *dialog* => #rest *values*
 
-dialog-cancel-button-setter
-                           
+   :param dialog: An instance of type :class:`<dialog-frame>`.
+   :value #rest values: Instances of type :drm:`<object>`.
 
-(make(<push-button>, label: "No",
+   :description:
 
-activate-callback: cancel-dialog,
+     Displays a DUIM frame as a dialog box.
 
-max-width: $fill), \*dialog\*);
-                               
+     The function :gf:`start-dialog` dynamically binds an :drm:`<abort>` restart
+     around the event loop for the dialog that is started. The restart allows
+     the event loop to be re-entered, and enables any callbacks run from the
+     dialog to signal an :drm:`<abort>` (via the :drm:`abort` function, for instance),
+     in order to terminate execution of the current callback and return to
+     event processing. This facility is useful for implementing operations
+     that cancel gestures and for debugging DUIM applications from Dylan
+     debuggers.
 
-start-frame(\*dialog\*);
+   :seealso:
 
-See also
-        
+     - :gf:`cancel-dialog`
+     - :class:`<dialog-frame>`
+     - :gf:`exit-dialog`
+     - :gf:`start-frame`
 
-`dialog-cancel-button`_
+.. generic-function:: start-frame
 
-`dialog-cancel-callback`_
+   Starts the specified frame.
 
-`dialog-exit-button-setter`_
+   :signature: start-frame *frame* #key *owner* *mode* => *status-code*
 
-`dialog-help-button-setter`_
+   :param frame: An instance of type :class:`<frame>`.
+   :param owner: An instance of type ``false-or(<frame>)``. Default value: ``#f``.
+   :param mode: An instance of type ``one-of("modal", #"modeless", #"system-modal")``.
+     Default value: ``#f``.
+   :value status-code: An instance of type :drm:`<integer>`.
 
-dialog-cancel-callback
-----------------------
+   :description:
 
-Generic function
-''''''''''''''''
+     Starts *frame*, optionally setting the *owner* of the frame and the
+     *mode* in which it will run.
 
-Summary
-       
+     The function :gf:`start-frame` dynamically binds an :drm:`<abort>` restart around
+     the event loop for the frame that is started. The restart allows the
+     event loop to be re-entered, and enables any callbacks run from the
+     frame to signal an :drm:`<abort>` (via the :drm:`abort` function, for instance),
+     in order to terminate execution of the current callback and return to
+     event processing. This facility is useful for implementing operations
+     that cancel gestures and for debugging DUIM applications from Dylan
+     debuggers.  
 
-Returns the function invoked when the cancel button is clicked in the
-specified dialog.
+   :example:
 
-Signature
-         
+     The following example creates a simple frame, then displays it. You
+     should run this code in the interactor, pressing the **RETURN** key at the
+     points indicated.
 
-dialog-cancel-callback *dialog* => *callback*
+     .. code-block:: dylan
 
-Arguments
-         
+        define variable *frame* =
+          make(<simple-frame>, title: "A frame",
+               layout: make(<button>));  // RETURN
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+        start-frame(*frame*);  // RETURN
 
-Values
-      
+   :seealso:
 
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
+     - :gf:`exit-frame`
+     - :gf:`frame-mapped?-setter`
+     - :gf:`start-dialog`
 
-Library
-       
+.. generic-function:: undo-command
 
-duim-frames
+   Calls the undo command for the specified command.
 
-Module
-      
+   :signature: undo-command *command* *frame* => #rest *values*
 
-duim-frames
+   :param command: An instance of type :class:`<command>`.
+   :param frame: An instance of type :class:`<frame>`.
+   :value #rest values: Instances of type :drm:`<object>`.
 
-Description
-           
+   :description:
 
-Returns the function invoked when the cancel button is clicked in
-*dialog*. This defaults to `cancel-dialog`_.
+     Calls the undo command for *command*, undoing the effects of calling
+     *command*. Note that *command* must be undoable.
 
-See also
-        
+     You can call this command directly in your own code, as well as
+     specialize it.
 
-`cancel-dialog`_
+   :seealso:
 
-`dialog-cancel-button`_
+     - :gf:`command-undoable?`
 
-`dialog-cancel-button-setter`_
+.. variable:: *user-command-table*
 
-`dialog-exit-callback`_
+   A user-defined command table that can be inherited by other command
+   tables.
 
-`dialog-help-callback`_
+   :type: :class:`<command-table>`
 
-dialog-cancel-callback-setter
------------------------------
+   :description:
 
-Generic function
-''''''''''''''''
+     This is a command table that can be used by the programmer for any
+     purpose. DUIM does not use it for anything, and its contents are
+     completely undefined.
 
-Summary
-       
+     If desired, all new command tables can inherit the command table
+     specified by this variable.
 
-Sets the function invoked when the cancel button is clicked in the
-specified dialog.
+   :seealso:
 
-Signature
-         
+     - :class:`<command-table>`
+     - :var:`*global-command-table*`
 
-dialog-cancel-callback-setter *callback* *dialog* => *callback*
+.. class:: <wizard-frame>
 
-Arguments
-         
+   :open:
+   :instantiable:
 
--  *callback* An instance of type *false-or(`See
-   <command>`_, <function>)*. Default value: `See
-   cancel-dialog`_.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+   The class of wizard frames.
 
-Values
-      
+   :superclasses: :class:`<dialog-frame>`
 
--  *callback* An instance of type *false-or(`See
-   <command>`_, <function>)*.
+   :keyword page: An instance of type :class:`<page>`.
+   :keyword pages: An instance of type ``false-or(limited(<sequence>, of:<page>)``.
+     Default value: ``#f``.
+   :keyword apply-callback: An instance of type ``false-or(<function>)``. Default value: ``#f``.
+   :keyword apply-button: An instance of type ``false-or(<button>)``. Default value: ``#f``.
 
-Library
-       
+   Note that the following two useful init-keywords are inherited from
+   :class:`<dialog-frame>`:
 
-duim-frames
+   :keyword pages: An instance of type ``false-or(<sequence>)``. Default value: ``#f``.
+   :keyword page-changed-callback: An instance of type ``false-or(<function>)``.
+     Default value: ``#f``.
 
-Module
-      
+   :description:
 
-duim-frames
+     The class of wizard frames. These are frames that are used to create
+     wizards (series of connected dialogs) that are used to guide the user
+     through a structured task, such as installing an application.
 
-Description
-           
+     .. figure:: images/frames-7.png
+        :align: center
 
-Sets the function invoked when the cancel button is clicked in *dialog*
-.
+        A wizard frame
 
-See also
-        
+     A wizard frame is a multi-page dialog, in which the user specifies
+     requested information before proceeding to the next page in the
+     sequence. At the end of the sequence, the user exits the dialog to send
+     the relevant information back to the controlling application.
 
-`dialog-cancel-button`_
+     When a wizard frame is created, each page in the frame automatically has
+     a Next and Back button to let the user navigate forward and backward
+     through the sequence of pages.
 
-`dialog-cancel-button-setter`_
+     In addition, if ``apply-button:`` is specified, an Apply button is
+     displayed in the frame. By default, clicking on this button lets the
+     user apply the changes made so far without dismissing the frame from the
+     screen. If specified, the ``apply-callback:`` function is invoked when the
+     Apply button is clicked.
 
-`dialog-exit-callback`_
+     The layout of a wizard frame is controlled using a :class:`<stack-layout>`.
 
-`dialog-help-callback`_
+   :operations:
 
-dialog-current-page
--------------------
+     - :gf:`compute-next-page`
+     - :gf:`compute-previous-page`
+     - :gf:`dialog-back-button`
+     - :gf:`dialog-back-button-setter`
+     - :gf:`dialog-back-callback`
+     - :gf:`dialog-current-page`
+     - :gf:`dialog-current-page-setter`
+     - :gf:`dialog-next-button`
+     - :gf:`dialog-next-button-setter`
+     - :gf:`dialog-next-callback`
+     - :gf:`dialog-next-enabled?`
+     - :gf:`dialog-next-enabled?-setter`
+     - :gf:`dialog-next-page`
+     - :gf:`dialog-next-page-setter`
+     - :gf:`dialog-page-changed-callback`
+     - :gf:`dialog-page-changed-callback-setter`
+     - :gf:`dialog-page-complete?`
+     - :gf:`dialog-page-complete?-setter`
+     - :gf:`dialog-pages`
+     - :gf:`dialog-pages-setter`
+     - :gf:`dialog-previous-page`
+     - :gf:`dialog-previous-page-setter`
+     - :gf:`move-to-next-page`
+     - :gf:`move-to-previous-page`
 
-Generic function
-''''''''''''''''
+   :example:
 
-Summary
-       
+     .. code-block:: dylan
 
-Returns the current page in the specified multi-page dialog.
+        define frame <my-wizard> (<wizard-frame>)
+          pane name-pane (frame)
+            make(<text-field>);
+          pane organization-pane (frame)
+            make(<text-field>);
+          pane job-description-pane (frame)
+            make(<text-field>);
+          pane years-employed-pane (frame)
+            make(<text-field>, value-type: <integer>);
+          pane first-page-layout (frame)
+            make(<table-layout>,
+                 columns: 2,
+                 x-alignment: #(#"right", #"left"),
+                 children: vector(make(<label>,
+                                       label: "Name:"),
+                                  frame.name-pane,
+                                  make(<label>,
+                                       label: "Organization:"),
+                                  frame.organization-pane));
+          pane second-page-layout (frame)
+            make(<table-layout>,
+                 columns: 2,
+                 x-alignment: #(#"right", #"left"),
+                 children: vector
+                             (make(<label>,
+                                   label: "Job Description:"),
+                              frame.job-description-pane,
+                              make(<label>,
+                                   label: "Years Employed:"),
+                              frame.years-employed-pane));
+          pane first-page (frame)
+            make(<wizard-page>,
+                 child: frame.first-page-layout);
+          pane second-page (frame)
+            make(<wizard-page>,
+                 child: frame.second-page-layout);
+          pages (frame)
+            vector(frame.first-page, frame.second-page);
+          keyword title: = "My Wizard";
+        end frame <my-wizard>;
 
-Signature
-         
+   :seealso:
 
-dialog-current-page *dialog* => *page*
+     - :class:`<dialog-frame>`
+     - :class:`<property-frame>`
+     - :class:`<wizard-page>`
 
-Arguments
-         
+.. class:: <wizard-page>
+   :open:
+   :instantiable:
 
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
+   The class of wizard pages.
 
-Values
-      
+   :superclasses: :class:`<page>`
 
--  *page* An instance of type *false-or(`See
-   <page> <gadgets.htm#93333>`_)*.
+   :description:
 
-Library
-       
+     The class of wizard pages. These are pages that can be displayed in an
+     instance of :class:`<wizard-frame>`, and are used for a
+     single dialog in the structured task that the wizard guides the user
+     through.
 
-duim-frames
+     .. figure:: images/frames-8.png
+        :align: center
 
-Module
-      
+        A wizard page
 
-duim-frames
+   :seealso:
 
-Description
-           
-
-Returns the current page in *dialog*.
-
-See also
-        
-
-`dialog-current-page-setter`_
-
-dialog-current-page-setter
---------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the current page in the specified multi-page dialog.
-
-Signature
-         
-
-dialog-current-page-setter *page* *dialog* => *page*
-
-Arguments
-         
-
--  *page* An instance of type *`<page> <gadgets.htm#93333>`_*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *page* An instance of type *`<page> <gadgets.htm#93333>`_*.
-
-Library
-       
-
-duim-frames
-
-Module
-      
-
-duim-frames
-
-Description
-           
-
-Sets the current page in *dialog*.
-
-See also
-        
-
-`dialog-current-page`_
-
-dialog-exit-button
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the Exit button in the specified dialog.
-
-Signature
-         
-
-dialog-exit-button *dialog* => *exit-button*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *exit-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
-
-Description
-           
-
-Returns the Exit button in *dialog*. The Exit button is commonly found
-in multi-page dialogs, where the user is given the option to exit the
-sequence at any point (as well as navigate through the sequence using
-Next and Back buttons).
-
-See also
-        
-
-`dialog-cancel-button`_
-
-`dialog-exit-button-setter`_
-
-`dialog-exit-enabled?`_
-
-`dialog-exit-callback`_
-
-`dialog-help-button`_
-
-dialog-exit-button-setter
--------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the Exit button in the specified dialog.
-
-Signature
-         
-
-dialog-exit-button-setter *exit-button* *dialog* => *exit-button*
-
-Arguments
-         
-
--  *exit-button* An instance of type `See
-   <button> <gadgets.htm#20680>`_.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *exit-button* An instance of type `See
-   <button> <gadgets.htm#20680>`_.
-
-Description
-           
-
-Sets the Exit button in *dialog*. The Exit button is commonly found in
-multi-page dialogs, where the user is given the option to exit the
-sequence at any point (as well as navigate through the sequence using
-Next and Back buttons).
-
-Example
-       
-
-In the following example, a simple dialog frame is created, and then its
-exit button is redefined before the dialog is displayed on screen.
-
-define variable \*dialog\*
-                          
-
-= make(<dialog-frame>,
-
-exit-button?: #t,
-
-cancel-button?: #t,
-
-help-callback:
-
-method (gadget)
-
-notify-user (format-to-string
-
-("Here is some help",
-
-gadget))
-
-end);
-     
-
-dialog-exit-button-setter
-                         
-
-(make(<push-button>, label: "Yes",
-
-activate-callback: exit-dialog,
-
-max-width: $fill), \*dialog\*);
-                               
-
-start-frame(\*dialog\*);
-
-See also
-        
-
-`dialog-cancel-button-setter`_
-
-`dialog-exit-button`_
-
-`dialog-exit-enabled?`_
-
-`dialog-exit-callback`_
-
-`dialog-help-button-setter`_
-
-dialog-exit-callback
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the callback invoked when the Exit button is clicked in the
-specified dialog.
-
-Signature
-         
-
-dialog-exit-callback *dialog* => *callback*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*. Default value: `See
-   exit-dialog`_.
-
-Library
-       
-
-duim-frames
-
-Module
-      
-
-duim-frames
-
-Description
-           
-
-Returns the callback invoked when the Exit button is clicked in *dialog*
-. The Exit button is commonly found in multi-page dialogs, where the
-user is given the option to exit the sequence at any point (as well as
-navigate through the sequence using Next and Back buttons).
-
-See also
-        
-
-`dialog-cancel-callback`_
-
-`dialog-exit-button`_
-
-`dialog-exit-button-setter`_
-
-`dialog-exit-callback-setter`_
-
-`dialog-help-callback`_
-
-dialog-exit-callback-setter
----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the callback invoked when the Exit button is clicked in the
-specified dialog.
-
-Signature
-         
-
-dialog-exit-callback *callback* *dialog* => *callback*
-
-Arguments
-         
-
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
-
-Library
-       
-
-duim-frames
-
-Module
-      
-
-duim-frames
-
-Description
-           
-
-Sets the callback invoked when the Exit button is clicked in *dialog*.
-The Exit button is commonly found in multi-page dialogs, where the user
-is given the option to exit the sequence at any point (as well as
-navigate through the sequence using Next and Back buttons).
-
-If you do not supply this callback, then the default behavior is to quit
-the dialog when the Exit button is clicked. This is normally the action
-that you will want. Specifying your own callback gives you flexibility
-in describing other actions to be performed when the dialog is exited.
-In addition, supplying *#f* means that no Exit button is displayed at
-all.
-
-See also
-        
-
-`dialog-cancel-callback-setter`_
-
-`dialog-exit-button`_
-
-`dialog-exit-button-setter`_
-
-`dialog-exit-callback`_
-
-`dialog-help-callback`_
-
-dialog-exit-enabled?
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if the Exit button has been enabled for the specified
-dialog.
-
-Signature
-         
-
-dialog-exit-enabled? *dialog* => *enabled?*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *enabled?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if the Exit button has been enabled for *dialog*. The Exit
-button is commonly found in multi-page dialogs, where the user is given
-the option to exit the sequence at any point (as well as navigate
-through the sequence using Next and Back buttons).
-
-See also
-        
-
-`dialog-exit-button`_
-
-`dialog-exit-button-setter`_
-
-`dialog-exit-enabled?-setter`_
-
-`dialog-exit-callback`_
-
-dialog-exit-enabled?-setter
----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Enables or disables the Exit button for the specified dialog.
-
-Signature
-         
-
-dialog-exit-enabled?-setter *enabled?* *dialog* => *enabled?*
-
-Arguments
-         
-
--  *enabled?* An instance of type *<boolean>*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *enabled?* An instance of type *<boolean>*.
-
-Description
-           
-
-Enables or disables the Exit button for *dialog*. The Exit button is
-commonly found in multi-page dialogs, where the user is given the option
-to exit the sequence at any point (as well as navigate through the
-sequence using Next and Back buttons).
-
-Example
-       
-
-In this example, a dialog is created, and then its exit button is
-disabled. When displayed on the screen, the exit button is grayed out
-and you cannot click on it.
-
-define variable \*dialog\* =
-                            
-
-make(<dialog-frame>,
-
-exit-button?: #t,
-
-cancel-button?: #t,
-
-help-callback:
-
-method (gadget)
-
-notify-user
-
-(format-to-string
-
-("Here is some help",
-
-gadget))
-
-end);
-     
-
-dialog-exit-enabled?-setter(#f, \*dialog\*);
-
-start-frame(\*dialog\*);
-
-See also
-        
-
-`dialog-exit-button`_
-
-`dialog-exit-button-setter`_
-
-`dialog-exit-enabled?`_
-
-`dialog-exit-callback`_
-
-<dialog-frame>
---------------
-
-Open abstract instantiable class
-''''''''''''''''''''''''''''''''
-
-Summary
-       
-
-The class of dialog frames.
-
-Superclasses
-            
-
-`<simple-frame>`_
-
-Init-keywords
-             
-
--  *mode:* An instance of type *one-of("modal", #"modeless",
-   #"system-modal")*. Default value: *#"modal"*.
--  *exit-callback:* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*. Default value: `See
-   exit-dialog`_.
--  *exit-button:* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*. Default value: *#f*.
--  *exit-enabled?:* An instance of type *<boolean>*. Default value:
-   *#t*.
-
-*cancel-callback*
-                 
-
--  An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*. Default value: `See
-   cancel-dialog`_.
--  *cancel-button:* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*. Default value: *#f*.
--  *help-callback:* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*. Default value: *#f*.
--  *help-button:* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*. Default value: *#f*.
-
-*exit-buttons-position:*
-                        
-
--  An instance of type *one-of(#"top", #"bottom", #"left", #"right")*.
-   Default value: *#"bottom"*.
--  *pages:* An instance of type *false-or(<sequence>)*. Default value:
-   *#f*.
-
-*page-changed-callback:*
-                        
-
--  An instance of type *false-or(<function>)*. Default value: *#f*.
-
-Description
-           
-
-The class of dialog frames. These frames let you create dialog boxes for
-use in your applications. All buttons in a dialog frame are
-automatically made the same size, and are placed at the bottom of the
-dialog by default. When at the bottom of the dialog, buttons are
-right-aligned.
-
-A typical dialog
-                
-
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-
-.. figure:: images/frames-4.png
-   :align: center
-   :alt: 
-By default, all dialogs are modal, that is, when displayed, they take
-over the entire application thread, preventing the user from using any
-other part of the application until the dialog has been removed from the
-screen. To create a modeless dialog (that is, one that can remain
-displayed on the screen while the user interacts with the application in
-other ways) you should set the *mode:* keyword to *#"modeless"*. Note,
-however, that you should not normally need to do this: if you need to
-create a modeless dialog, then you should consider using a normal DUIM
-frame, rather than a dialog frame.
-
-The init-keywords *exit-button:*, and *cancel-button:* specify the exit
-and cancel buttons in the dialog. The user clicks on the exit button to
-dismiss the dialog and save any changes that have been made as a result
-of editing the information in the dialog. The user clicks on the cancel
-button in order to dismiss the dialog and discard any changes that have
-been made.
-
-In addition, the *exit-callback:* and *cancel-callback:* init-keywords
-specify the callback that is invoked when the Exit or Cancel buttons in
-the dialog are clicked on. These both default to the appropriate
-function for each button, but you have the flexibility to specify an
-alternative if you wish. If you do not require a Cancel button in your
-dialog, specify *cancel-callback: #f*. Similarly, specify
-*exit-callback: #f* if you do not require an Exit button.
-
-All dialogs should have an exit button, and most dialogs should have a
-cancel button too. You should only omit the cancel button in cases when
-the information being displayed in the dialog cannot be changed by the
-user. For example, a dialog containing an error message can have only an
-exit button, but any dialog that contains information the user can edit
-should have both exit and cancel buttons.
-
-Two init-keywords are available for each button so that a given button
-may be specified for a particular dialog, but need only be displayed in
-certain circumstances. This lets you define subtly different behavior in
-different situations.
-
-The *exit-enabled?:* init-keyword is used to specify whether the exit
-button on the dialog is enabled or not. If *#f*, then the exit button
-is displayed on the dialog, but it is grayed out.
-
-The *help-button:* init-keyword specifies the help button in the dialog.
-Note that, in contrast to the exit and cancel buttons, specifying the
-button gadget to use in a dialog determines its presence in the dialog:
-it is not possible to define a help button and then only display it in
-certain circumstances. You are strongly encouraged to provide a help
-button in all but the most trivial dialogs.
-
-The *help-callback:* init-keyword defines a callback function that is
-invoked when the help button is clicked. This should normally display a
-context-sensitive help topic from the help file supplied with the
-application, although you might also choose to display an alert box with
-the relevant information.
-
-The *exit-buttons-position:* init-keyword defines the position in the
-dialog that the exit and cancel buttons occupy (and any other standard
-buttons, if they have been specified). By default, buttons are placed
-where the interface guidelines for the platform recommend, and this
-position is encouraged in most interface design guidelines. Usually,
-this means that buttons are placed at the bottom of the dialog. Less
-commonly, buttons may also be placed on the right side of the dialog.
-Buttons are not normally placed at the top or on the left of the dialog,
-though this is possible if desired.
-
-The *pages:* init-keyword is used for multi-page dialogs such as
-property frames and wizard frames. If used, it should be a sequence of
-elements, each of which evaluates to an instance of a page.
-
-The *page-changed-callback:* is a callback function that is invoked when
-a different page in a multi-page dialog is displayed.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Frames* module.
-
-`cancel-dialog`_ `See
-dialog-cancel-button`_
- `dialog-cancel-button-setter`_ `See
-dialog-cancel-callback`_ `See
-dialog-cancel-callback-setter`_ `See
-dialog-exit-button`_
- `dialog-exit-button-setter`_ `See
-dialog-exit-callback`_ `See
-dialog-exit-callback-setter`_ `See
-dialog-exit-enabled?`_ `See
-dialog-exit-enabled?-setter`_ `See
-dialog-exit-callback`_ `See
-dialog-exit-callback-setter`_ `See
-dialog-help-button`_ `See
-dialog-help-button-setter`_ `See
-dialog-help-callback`_ `See
-exit-dialog`_ `start-dialog`_
-
-Example
-       
-
-The following example creates and displays a simple dialog that contains
-only an exit button, cancel button, and help button, and assigns a
-callback to the help button.
-
-define variable \*dialog\*
-                          
-
-= make(<dialog-frame>,
-
-exit-button?: #t,
-
-cancel-button?: #t,
-
-help-callback:
-
-method (gadget)
-
-notify-user (format-to-string
-
-("Here is some help",
-
-gadget))
-
-end);
-     
-
-start-frame(\*dialog\*);
-
-See also
-        
-
-`cancel-dialog`_
-
-`exit-dialog`_
-
-`<property-frame>`_
-
-`<simple-frame>`_
-
-`<wizard-frame>`_
-
-dialog-help-button
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the Help button in the specified dialog.
-
-Signature
-         
-
-dialog-help-button *dialog* => *help-button*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *help-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
-
-Description
-           
-
-Returns the Help button in *dialog*. Many dialogs contain a Help button
-that, when clicked, displays a relevant topic from the online help
-system for the application.
-
-See also
-        
-
-`dialog-cancel-button`_
-
-`dialog-exit-button`_
-
-`dialog-help-button-setter`_
-
-`dialog-help-callback`_
-
-dialog-help-button-setter
--------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the Help button in the specified dialog.
-
-Signature
-         
-
-dialog-help-button-setter *help-button* *dialog* => *help-button*
-
-Arguments
-         
-
--  *help-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *help-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*
-
-Description
-           
-
-Specifies the Help button in *dialog*. Many dialogs contain a Help
-button that, when clicked, displays a relevant topic from the online
-help system for the application.
-
-Example
-       
-
-In the following example, a simple dialog frame is created, and then its
-help button is redefined before the dialog is displayed on screen.
-
-define variable \*dialog\*
-                          
-
-= make(<dialog-frame>,
-
-exit-button?: #t,
-
-cancel-button?: #t,
-
-help-callback:
-
-method (gadget)
-
-notify-user (format-to-string
-
-("Here is some help",
-
-gadget))
-
-end);
-     
-
-dialog-help-button-setter
-                         
-
-(make(<push-button>, label: "Help Me!",
-
-activate-callback:
-
-method (gadget)
-
-notify-user
-
-(format-to-string
-
-("Here is some help",
-
-gadget))
-
-end);
-
-max-width: $fill), \*dialog\*);
-                               
-
-start-frame(\*dialog\*);
-
-See also
-        
-
-`dialog-cancel-button-setter`_
-
-`dialog-exit-button-setter`_
-
-`dialog-help-button`_
-
-`dialog-help-callback`_
-
-dialog-help-callback
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the callback invoked when the Help button is clicked in the
-specified dialog.
-
-Signature
-         
-
-dialog-help-callback *dialog* => *help-callback*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *help-callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
-
-Library
-       
-
-duim-frames
-
-Module
-      
-
-duim-frames
-
-Description
-           
-
-Returns the callback invoked when the Help button is clicked in *dialog*
-. Many dialogs contain a Help button that, when clicked, displays a
-relevant topic from the online help system for the application.
-
-*Note:* You must specify this callback in order to create a Help button
-in any dialog. If the callback is *#f*, then there will be no Help
-button present in the dialog.
-
-See also
-        
-
-`dialog-cancel-callback`_
-
-`dialog-exit-callback`_
-
-`dialog-help-button`_
-
-`dialog-help-button-setter`_
-
-dialog-next-button
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the Next button in the specified multi-page dialog.
-
-Signature
-         
-
-dialog-next-button *dialog* => *next-button*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *next-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
-
-Description
-           
-
-Returns the Next button in *dialog*. This is most useful in multi-page
-dialogs such as property frames and wizard frames, which typically have
-Back and Next buttons that let the user navigate forward and backward
-through the sequence of pages that comprise the dialog.
-
-See also
-        
-
-`dialog-back-button`_
-
-`dialog-exit-button`_
-
-`dialog-next-button-setter`_
-
-`dialog-next-callback`_
-
-dialog-next-button-setter
--------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the Next button in the specified multi-page dialog.
-
-Signature
-         
-
-dialog-next-button-setter *next-button dialog* => *next-button*
-
-Arguments
-         
-
--  *next-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *next-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
-
-Description
-           
-
-Specifies the Next button in *dialog*. This is most useful in
-multi-page dialogs such as property frames and wizard frames, which
-typically have Back and Next buttons that let the user navigate forward
-and backward through the sequence of pages that comprise the dialog.
-
-See also
-        
-
-`dialog-back-button-setter`_
-
-`dialog-exit-button`_
-
-`dialog-next-button`_
-
-`dialog-next-callback`_
-
-dialog-next-callback
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the callback invoked when the Next button is clicked in the
-specified multi-page dialog.
-
-Signature
-         
-
-dialog-apply-callback *dialog* => *callback*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
-
-Description
-           
-
-Returns the callback invoked when the Next button is clicked in *dialog*
-. This is most useful in multi-page dialogs such as property frames and
-wizard frames, which typically have Back and Next buttons that let the
-user navigate forward and backward through the sequence of pages that
-comprise the dialog.
-
-*Note:* If you do not explicitly supply this callback, the next page in
-the sequence for the multi-page dialog is displayed when the Next button
-is clicked. Specifying your own callback gives you flexibility in
-describing how the user can navigate through the sequence of pages in
-the dialog.
-
-The default value for this callback is `See
-move-to-next-page`_.
-
-See also
-        
-
-`dialog-back-button`_
-
-`dialog-exit-callback`_
-
-`dialog-next-button`_
-
-`dialog-next-button-setter`_
-
-`move-to-next-page`_
-
-dialog-next-enabled?
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if the Next button has been enabled for the specified
-multi-page dialog.
-
-Signature
-         
-
-dialog-next-enabled? *dialog* => *enabled?*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *enabled?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if the Next button has been enabled for *dialog*. This
-button is most useful in multi-page dialogs such as property frames and
-wizard frames, which typically have Back and Next buttons that let the
-user navigate forward and backward through the sequence of pages that
-comprise the dialog.
-
-See also
-        
-
-`<dialog-frame>`_
-
-`dialog-next-button`_
-
-`dialog-next-button-setter`_
-
-`dialog-next-enabled?-setter`_
-
-`dialog-next-callback`_
-
-dialog-next-enabled?-setter
----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Enables or disables the Next button for the specified multi-page dialog.
-
-Signature
-         
-
-dialog-next-enabled?-setter *enabled?* *dialog* => *enabled?*
-
-Arguments
-         
-
--  *enabled?* An instance of type *<boolean>*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *enabled?* An instance of type *<boolean>*.
-
-Description
-           
-
-Enables or disables the Next button for *dialog*. This button is most
-useful in multi-page dialogs such as property frames and wizard frames,
-which typically have Back and Next buttons that let the user navigate
-forward and backward through the sequence of pages that comprise the
-dialog.
-
-It is useful to be able to enable and disable the Next button at any
-point in order to ensure that the user supplies all necessary
-information before proceeding to the next page of the dialog. You can do
-this by testing to see if the information on the page has been specified
-with `dialog-page-complete?`_, and then enabling
-or disabling the Next button as appropriate.
-
-Example
-       
-
-See also
-        
-
-`dialog-next-button`_
-
-`dialog-next-button-setter`_
-
-`dialog-next-callback`_
-
-`dialog-next-enabled?`_
-
-dialog-next-page
-----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the next page in sequence for the specified multi-page dialog.
-
-Signature
-         
-
-dialog-next-page *dialog* => *next-page*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *next-page* An instance of type *false-or(`See
-   <page> <gadgets.htm#93333>`_)*.
-
-Description
-           
-
-Returns the next page in sequence for *dialog*. This is for use in
-multi-page dialogs such as property frames and wizard frames, which
-typically have Back and Next buttons that let the user navigate forward
-and backward through the sequence of pages that comprise the dialog.
-
-The default method for the Next button in *dialog* uses the value of
-this function. When the Next button is clicked, the current page is set
-to the next logical page in the sequence, but you are free to
-dynamically change it as the state of the dialog changes.
-
-See also
-        
-
-`dialog-next-button`_
-
-`dialog-next-button-setter`_
-
-`dialog-next-callback`_
-
-`dialog-next-page-setter`_
-
-`dialog-previous-page`_
-
-dialog-next-page-setter
------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the next page in sequence for the specified multi-page dialog.
-
-Signature
-         
-
-dialog-next-page-setter *next-page* *dialog* => *next-page*
-
-Arguments
-         
-
--  *next-page* An instance of type *false-or(`See
-   <page> <gadgets.htm#93333>`_)*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *next-page* An instance of type *false-or(`See
-   <page> <gadgets.htm#93333>`_)*.
-
-Description
-           
-
-Specifies the next page in sequence for *dialog*. This is for use in
-multi-page dialogs such as property frames and wizard frames, which
-typically have Back and Next buttons that let the user navigate forward
-and backward through the sequence of pages that comprise the dialog.
-
-The default method for the Next button in *dialog* uses the value of
-this function. When the Next button is clicked, the current page is set
-to the next logical page in the sequence, but you are free to
-dynamically change it as the state of the dialog changes.
-
-See also
-        
-
-`dialog-next-button`_
-
-`dialog-next-button-setter`_
-
-`dialog-next-callback`_
-
-`dialog-next-page`_
-
-`dialog-previous-page-setter`_
-
-dialog-page-changed-callback
-----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the page-changed callback of the specified multi-page dialog.
-
-Signature
-         
-
-dialog-page-changed-callback *dialog* => *callback*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
-
-Description
-           
-
-Returns the page-changed-callback of *dialog*. This is the callback
-function used to test whether the information in the current page of
-*dialog* has changed. This callback is useful when using multi-page
-dialogs, as a test that can be performed before the next page of the
-dialog is displayed.
-
-See also
-        
-
-`<dialog-frame>`_
-
-`dialog-page-changed-callback-setter`_
-
-`<property-frame>`_
-
-`<wizard-frame>`_
-
-dialog-page-changed-callback-setter
------------------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the page-changed callback of the specified multi-page dialog.
-
-Signature
-         
-
-dialog-page-changed-callback-setter *callback* *dialog
-* => *callback*
-
-Arguments
-         
-
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *callback* An instance of type *false-or(type-union(`See
-   <command>`_, <function>))*.
-
-Description
-           
-
-Sets the page-changed-callback of *dialog*. This is the callback
-function used to test whether the information in the current page of
-*dialog* has changed. This callback is useful when using multi-page
-dialogs, as a test that can be performed before the next page of the
-dialog is displayed.
-
-See also
-        
-
-`<dialog-frame>`_
-
-`dialog-page-changed-callback`_
-
-`<property-frame>`_
-
-`<wizard-frame>`_
-
-dialog-page-complete?
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if all the information required on the current page of the
-specified multi-page dialog has been specified.
-
-Signature
-         
-
-dialog-page-complete? *dialog* => *complete?*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *complete?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if all the information required on the current page in
-*dialog* has been specified by the user. This generic function has two
-uses:
-
--  It can be used within wizards to test whether all the necessary
-   information has been supplied, before moving on to the next page of
-   the wizard.
--  It can be used within property pages to test whether all the
-   necessary information has been supplied, before allowing the user to
-   apply any changes.
-
-See also
-        
-
-`dialog-page-complete?-setter`_
-
-dialog-page-complete?-setter
-----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the slot that indicates all the information required on the current
-page of the specified multi-page dialog has been specified.
-
-Signature
-         
-
-dialog-page-complete? *complete?* *dialog* => *complete?*
-
-Arguments
-         
-
--  *complete?* An instance of type *<boolean>*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *complete?* An instance of type *<boolean>*.
-
-Description
-           
-
-Sets the slot that indicates all the information required on the current
-page in *dialog* has been specified by the user. This generic function
-has two uses:
-
--  It can be used within wizards to indicate that the necessary
-   information has been supplied, so that the next page of the wizard
-   can be displayed safely.
--  It can be used within property pages to indicate that the necessary
-   information has been supplied, so that the user can apply any
-   changes.
-
-See also
-        
-
-`dialog-page-complete?`_
-
-dialog-pages
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the pages of the specified multi-page dialog.
-
-Signature
-         
-
-dialog-pages *dialog* => *pages*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *pages* An instance of type *limited(<sequence>, of: `See
-   <page> <gadgets.htm#93333>`_)*.
-
-Description
-           
-
-Returns the pages of *dialog*. Each of the items in sequence is an
-instance of `<page> <gadgets.htm#93333>`_.
-
-See also
-        
-
-`<dialog-frame>`_
-
-`dialog-pages-setter`_
-
-`<property-frame>`_
-
-`<wizard-frame>`_
-
-dialog-pages-setter
--------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the pages of the specified multi-page dialog.
-
-Signature
-         
-
-dialog-pages-setter *pages* *dialog* => *pages*
-
-Arguments
-         
-
--  *pages* An instance of type *limited(<sequence>, of: `See
-   <page> <gadgets.htm#93333>`_)*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *pages* An instance of type *limited(<sequence>, of: `See
-   <page> <gadgets.htm#93333>`_)*.
-
-Description
-           
-
-Sets the pages of *dialog*. Each of the items in sequence must be an
-instance of `<page> <gadgets.htm#93333>`_.
-
-See also
-        
-
-`<dialog-frame>`_
-
-`dialog-pages`_
-
-`<property-frame>`_
-
-`<wizard-frame>`_
-
-dialog-previous-page
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the previous page in sequence for the specified multi-page
-dialog.
-
-Signature
-         
-
-dialog-previous-page *dialog* => *previous-page*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *previous-page* An instance of type *false-or(`See
-   <page> <gadgets.htm#93333>`_)*.
-
-Description
-           
-
-Returns the previous page in sequence for *dialog*. This is for use in
-multi-page dialogs such as property frames and wizard frames, which
-typically have Back and Next buttons that let the user navigate forward
-and backward through the sequence of pages that comprise the dialog.
-
-The default method for the Back button in *dialog* uses the value of
-this function. When the Back button is clicked, the current page is set
-to the previous logical page in the sequence, but you are free to
-dynamically change it as the state of the dialog changes.
-
-See also
-        
-
-`dialog-back-button`_
-
-`dialog-back-button-setter`_
-
-`dialog-back-callback`_
-
-`dialog-next-page`_
-
-`dialog-previous-page-setter`_
-
-dialog-previous-page-setter
----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the previous page in sequence for the specified multi-page
-dialog.
-
-Signature
-         
-
-dialog-previous-page-setter *previous-page* *dialog*
- => *previous-page*
-
-Arguments
-         
-
--  *previous-page* An instance of type *false-or(`See
-   <page> <gadgets.htm#93333>`_)*.
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *previous-page* An instance of type *false-or(`See
-   <page> <gadgets.htm#93333>`_)*.
-
-Description
-           
-
-Specifies the previous page in sequence for *dialog*. This is for use
-in multi-page dialogs such as property frames and wizard frames, which
-typically have Back and Next buttons that let the user navigate forward
-and backward through the sequence of pages that comprise the dialog.
-
-The default method for the Back button in *dialog* uses the value of
-this function. When the Back button is clicked, the current page is set
-to the previous logical page in the sequence, but you are free to
-dynamically change it as the state of the dialog changes.
-
-See also
-        
-
-`dialog-back-button`_
-
-`dialog-back-button-setter`_
-
-`dialog-back-callback`_
-
-`dialog-next-page-setter`_
-
-`dialog-previous-page`_
-
-display-progress-note
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Displays the specified progress note.
-
-Signature
-         
-
-display-progress-note *framem* *progress-note* => ()
-
-Arguments
-         
-
--  *framem* An instance of type `See
-   <frame-manager> <silica.htm#32466>`_.
--  *progress-note* An instance of type *<progress-note>*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Displays the specified *progress-note* in the frame managed by *framem*
-.
-
-doc-command-table-menu-commmands
---------------------------------
-
-event-destroy-frame?
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns information about the frame was destroyed in the specified
-event.
-
-Signature
-         
-
-event-destroy-frame? *event* => *destroyed?*
-
-Arguments
-         
-
--  *event* An instance of type *`See
-   <frame-exit-event>`_*.
-
-Values
-      
-
--  *destroyed?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns information about the frame was destroyed in *event*.
-
-See also
-        
-
-*`<frame-exit-event>`_*
-
-event-status-code
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the status code of the specified event.
-
-Signature
-         
-
-event-status-code *event* => *code*
-
-Arguments
-         
-
--  *event* An instance of type *`See
-   <frame-exited-event>`_*.
-
-Values
-      
-
--  *code* An instance of type *false-or(<integer>)*.
-
-Description
-           
-
-Returns the status code of *event*.
-
-See also
-        
-
-*`<frame-exited-event>`_*
-
-execute-command
----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Executes a command for the specified frame.
-
-Signature
-         
-
-execute-command *command* *frame* => #rest *values*
-
-Arguments
-         
-
--  *command* An instance of type `<command>`_.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *values* Instances of type *<object>*.
-
-Description
-           
-
-Executes *command* for *frame*. The values returned are those values
-returned as a result of evaluating the command function of *command*.
-
-exit-dialog
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Exits the specified dialog.
-
-Signature
-         
-
-exit-dialog *dialog* #key *destroy?* => ()
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
--  *destroy?* An instance of type *<boolean>*. Default value: *#t*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Exits *dialog*, recording any changes to the information displayed in
-the dialog that have been made by the user.
-
-This is the default callback used for the exit button in a dialog. This
-is the button that is typically labeled *OK*.
-
-If *destroy?* is *#t*, then dialog is destroyed.
-
-Example
-       
-
-The following example defines a button, *\*yes-button\**, that calls
-*exit-dialog* as its activate-callback. This button is then used in a
-dialog that simply replaces the standard exit button for the newly
-defined dialog. Note that the example assumes the existence of a similar
-*\*no-button\** to replace the cancel button.
-
-define variable \*yes-button\*
-                              
-
-= make(<push-button>, label: "Yes",
-
-activate-callback: exit-dialog,
-
-max-width: $fill);
-                  
-
-define variable \*dialog\*
-                          
-
-= make(<dialog-frame>,
-
-exit-button?: #f,
-
-cancel-button?: #f,
-
-layout: vertically
-
-(x-alignment: #"center",
-
-y-spacing: 5)
-
-make(<label>,
-
-label: "Here is a label");
-
-horizontally (x-spacing: 2)
-
-\*yes-button\*;
-
-\*no-button\*;
-
-end
-
-end);
-     
-
-start-frame(\*dialog\*);
-
-See also
-        
-
-`cancel-dialog`_
-
-`<dialog-frame>`_
-
-`start-dialog`_
-
-exit-frame
-----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Unmaps the specified frame destroying it required.
-
-Signature
-         
-
-exit-frame *frame* #key *destroy?* => ()
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
--  *destroy?* An instance of type *<boolean>*. Default value: *#t*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Unmaps *frame*, removing the associated sheet and its children from the
-screen. If *destroy?* is true, then the frame is destroyed completely,
-via a call to `destroy-frame`_.
-
-If *destroy?* is *#t*, then dialog is destroyed.
-
-Example
-       
-
-The following example creates a simple frame, then displays it and exits
-it. You should run this code in the interactor, pressing the RETURN key
-at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-
-exit-frame(\*frame\*);*RETURN*
-
-See also
-        
-
-`destroy-frame`_
-
-`frame-can-exit?`_
-
-`<frame-exited-event>`_
-
-`<frame-exit-event>`_
-
-`frame-mapped?-setter`_
-
-`start-frame`_
-
-find-frame
-----------
-
-Function
-''''''''
-
-Summary
-       
-
-Returns a frame of the specified type, creating one if necessary.
-
-Signature
-         
-
-find-frame *frame-class* #rest *initargs* #key *create?* *activate?*
-*own-thread?* *port* *frame-manager* *test* #all-keys => *frame*
-
-Arguments
-         
-
--  *frame-class* An instance of type *<object>*.
--  *initargs* An instance of type *<object>*.
--  *create?* An instance of type *<boolean>*. Default value: *#t*.
--  *activate?* An instance of type *<boolean>*. Default value: *#t*.
--  *own-thread?* An instance of type *<boolean>*. Default value: *#t*.
--  *port* An instance of type `<port> <silica.htm#11606>`_.
--  *frame-manager* An instance of type `See
-   <frame-manager> <silica.htm#32466>`_.
--  *test* An instance of type *<function>*. Default value: *identity*.
-
-Values
-      
-
--  *frame* An instance of type `<frame>`_.
-
-Description
-           
-
-This function creates a frame of the specified type if one does not
-already exist, and then runs it, possibly in its own thread. If one
-already exists, then it is selected.
-
-The *frame-class* argument specifies the class of frame that is being
-searched for. By default, if a match is not found, then an instance of
-this class will be created.
-
-The *init-args* supplied are the slot values that should be passed to
-the instance of frame-class. Either an existing frame must be found that
-has the specified slot values, or a new one will be created.
-
-If *create?* is *#f*, then a new frame will not be created if it does
-not already exist.
-
-If *own-thread?* is true, the frame will run in its own thread if one is
-created.
-
-The *port* and *frame-manager* arguments specify a port and frame
-manager which control the frame being searched for, or under the control
-of which a new frame should be created.
-
-If desired, you can supply a *test* which must evaluate to true for a
-frame to match successfully.
-
-See also
-        
-
-`<frame>`_
-
-<frame>
--------
-
-Open abstract class
-'''''''''''''''''''
-
-Summary
-       
-
-The base class of all frames.
-
-Superclasses
-            
-
-*<object>*
-
-Init-keywords
-             
-
--  *owner:* An instance of type *false-or(<frame>)*. Default value:
-   *#f*.
--  *mode:* An instance of type *one-of(#"modeless", #"modal",
-   #"system-modal")*.Default value: *#"modeless"*.
-
-*default-button:*
-                 
-
--  An instance of type *false-or(`<button> <gadgets.htm#20680>`_)*.
-   Default value: *#f*.
--  *x:* An instance of type *<integer>*.
--  *y:* An instance of type *<integer>*.
--  *width:* An instance of type *<integer>*.
--  *height:* An instance of type *<integer>*.
-
-*disabled-commands:*
-                    
-
--  An instance of type *<sequence>*.
-
-*top-level-sheet:*
-                  
-
--  An instance of type *false-or(`<sheet> <silica.htm#13118>`_)*.
-   Default value: *#f*.
--  *layout:* An instance of type `<layout> <layouts.htm#13344>`_.
--  *icon:* An instance of type *false-or(`See
-   <image> <dcs.htm#51234>`_)*.
--  *title:* An instance of type *false-or(<string>)*. Default value:
-   *#f*.
--  *calling-frame:* An instance of type *<frame>*.
--  *state:* An instance of type *one-of(#"detached", #"unmapped",
-   #"mapped", #"iconified")*. Default value: *#"detached"*.
--  *thread:* An instance of type *false-or(<thread>)*. Default value:
-   *#f*.
--  *event-queue:* An instance of type *false-or(<event-queue>)*.
-   Default value: *#f*.
--  *input-focus:* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*. Default value: *#f*.
--  *foreground:* An instance of type *false-or(* `See
-   <ink> <dcs.htm#15007>`_*)*.
--  *background:* An instance of type *false-or(* `See
-   <ink> <dcs.htm#15007>`_*)*.
--  *text-style:* An instance of type *false-or(* `See
-   <text-style> <dcs.htm#85385>`_*)*.
--  *palette:* An instance of type *false-or(* `See
-   <palette> <dcs.htm#11494>`_*)*. Default value: *#f*.
--  *document:* An instance of type An instance of type
-   *false-or(<object>)*. Default value: *#f*.
--  *resource-id:* An instance of type *false-or(<integer>)*.
--  *resizable?:* An instance of type *<boolean>*. Default value: *#t*.
--  *fixed-width?:* An instance of type *<boolean>*. Default value: *#f*
-   .
--  *fixed-height?:* An instance of type *<boolean>*. Default value:
-   *#f*.
-
-Description
-           
-
-The class of all frames.
-
-The *owner:* init-keyword is the parent of the frame.
-
-The *mode:* init-keyword lets you specify the mode for the frame. By
-default, frames are modeless, that is, they do not take over control of
-the whole application when they are mapped, and the user can interact
-with other frames in the application normally. Modal frames, on the
-other hand, behave like a `<dialog-frame>`_,
-restricting the user’s interaction with other frames in the application
-until the modal frame has been dismissed.
-
-The *default-button:* init-keyword is used to specify which button is
-the default action for the frame. The default button is usually the one
-whose callback is invoked by pressing the RETURN key.
-
-The *x:*, *y:*, *width:* and *height:* init-keywords lets you specify
-the initial size and position of the frame. The position is specified
-using *x:* and *y:*, which represent the number of pixels from the top
-left corner of the screen, and the *width:* and *height:* init-keywords
-specify the initial size of the frame.
-
-The *title:* init-keyword is used to specify a title for the frame.
-
-The *state:* init-keyword is used to specify the initial state of the
-frame. This describes whether the frame is mapped, whether it is
-iconified, and so on. By default, new frames are detached.
-
-By default, new frames run in their own thread. If desired, a frame can
-be run in an existing thread by setting the *thread:* init-keyword to
-the thread object concerned. For more information about threads, see the
-manual *Library Reference: Core Features*.
-
-As with threads, new frame run in their own event-queue by default. To
-run the frame in an existing event-queue, use the *event-queue:*
-init-keyword.
-
-You can specify which sheet in the frame initially has the input-focus
-using the *input-focus:* init-keyword. The input-focus dictates where
-information can be typed by default.
-
-The *foreground*,*:* *background:*, and *text-style:* init-keywords
-describes the colors and fonts used in the frame.
-
-Specify a palette for the frame using the *palette:* init-keyword.
-
-Specify a resource-id for the frame using the *resource-id:*
-init-keyword. This is a platform-specific ID or determining which
-resource to use to fill in a frame.
-
-The *resizable?:*, *fixed-width?:*, and *fixed-height?:* init-keywords
-let you specify whether or not the user can resize the frame. If
-*resizable?:* is *#t*, then the frame can be resized in either
-direction; if it is #f, then it cannot be resized at all. In addition,
-if *resizable?:* is *#t*, and one of *fixed-width?:* or
-*fixed-height?:* is also *#t*, then the frame is resizable, but is
-fixed in the appropriate direction. For example, if *resizable?:* is *#t
-and fixed-height?:* is also *#t*, then only the width of the frame can
-be resized.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Frames* module.
-
-`apply-in-frame`_ `See
-call-in-frame`_ `See
-command-enabled?`_
- `command-enabled?-setter`_ `See
-deiconify-frame`_ `See
-destroy-frame`_ `See
-execute-command`_ `See
-exit-frame`_ `frame?`_
- `frame-accelerators`_ `See
-frame-accelerators-setter`_ `See
-frame-can-exit?`_ `See
-frame-default-button`_ `See
-frame-default-button-setter`_ `See
-frame-event-queue`_ `See
-frame-icon`_ `See
-frame-icon-setter`_ `See
-frame-input-focus`_ `See
-frame-input-focus-setter`_ `See
-frame-mapped?`_ `See
-frame-mapped?-setter`_ `See
-frame-mode`_ `frame-owner`_
-`frame-palette`_ `See
-frame-palette-setter`_ `See
-frame-position`_ `frame-size`_
-`frame-state`_ `See
-frame-thread`_ `frame-title`_
-`frame-title-setter`_ `See
-iconify-frame`_ `lower-frame`_
-`layout-frame`_ `See
-raise-frame`_ `redo-command`_
-`set-frame-position`_ `See
-set-frame-size`_ `See
-layout-frame`_ `undo-command`_
-
-The following operations are exported from the *DUIM-Sheets* module.
-
-`beep <silica.htm#60172>`_ `display <silica.htm#56987>`_ `See
-force-display <silica.htm#98525>`_ `See
-frame-manager <silica.htm#15759>`_ `See
-handle-event <silica.htm#94892>`_
-
-The following operations are exported from the *DUIM-DCs* module.
-
-`default-background <dcs.htm#19900>`_ `See
-default-foreground <dcs.htm#40602>`_ `See
-default-text-style <dcs.htm#95321>`_ `find-color <dcs.htm#33969>`_
-`port <silica.htm#51457>`_ `queue-event <silica.htm#94000>`_
-`synchronize-display <silica.htm#16560>`_ `See
-top-level-sheet <silica.htm#60884>`_
-
-frame?
-------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if the specified object is a frame.
-
-Signature
-         
-
-frame? *object* => *frame?*
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *frame?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if *object* is a frame. Use this generic function to test
-that an object is a frame before carrying out frame-related operations
-on it.
-
-See also
-        
-
-`current-frame`_
-
-`<frame>`_
-
-frame-accelerators
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the keyboard accelerators defined for the specified frame.
-
-Signature
-         
-
-frame-accelerators *frame* => *accelerators*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *accelerators* An instance of type *false-or(limited(<sequence>, of:
-   `<gesture> <silica.htm#76256>`_))*.
-
-Description
-           
-
-Returns the keyboard accelerators defined for *frame*.
-
-See also
-        
-
-`frame-accelerators-setter`_
-
-frame-accelerators-setter
--------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Defines the keyboard accelerators for the specified frame.
-
-Signature
-         
-
-frame-accelerators *accelerators* *frame* => *accelerators*
-
-Arguments
-         
-
--  *accelerators* An instance of type *false-or(limited(<sequence>, of:
-   `<gesture> <silica.htm#76256>`_))*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *accelerators* An instance of type *false-or(limited(<sequence>, of:
-   `<gesture> <silica.htm#76256>`_))*.
-
-Description
-           
-
-Defines the keyboard accelerators for *frame*.
-
-See also
-        
-
-`frame-accelerators`_
-
-frame-can-exit?
----------------
-
-Open generic function
-'''''''''''''''''''''
-
-Summary
-       
-
-Returns true if the specified frame can be exited dynamically.
-
-Signature
-         
-
-frame-can-exit? *frame* => *can-exit?*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *can-exit?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if *frame* can be exited dynamically. You can add methods
-to this generic function in order to allow the user to make a dynamic
-decision about whether a frame should exit.
-
-Example
-       
-
-define method frame-can-exit?
-                             
-
-(frame :: <abstract-test-frame>) =>
-
-(can-exit? :: <boolean>)
-
-notify-user("Really exit?",
-
-frame: frame,
-
-style: #"question")
-
-end method frame-can-exit?;
-                           
-
-See also
-        
-
-`exit-frame`_
-
-frame-command-table
--------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the command table associated with the specified frame.
-
-Signature
-         
-
-frame-command-table *frame* => *command-table*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *command-table* An instance of type *false-or(* `See
-   <command-table>`_*)*.
-
-Description
-           
-
-Returns the command table associated with *frame*.
-
-See also
-        
-
-`frame-command-table-setter`_
-
-frame-command-table-setter
---------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the command table associated with the specified frame.
-
-Signature
-         
-
-frame-command-table-setter *command-table* *frame
-* => *command-table*
-
-Arguments
-         
-
--  *command-table* An instance of type `See
-   <command-table>`_.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *command-table* An instance of type `See
-   <command-table>`_.
-
-Description
-           
-
-Specifies the command table associated with *frame*.
-
-See also
-        
-
-`frame-command-table`_
-
-<frame-created-event>
----------------------
-
-Sealed instantiable class
-'''''''''''''''''''''''''
-
-Summary
-       
-
-The class of events that indicate a frame has been created.
-
-Superclasses
-            
-
-`<frame-event> <silica.htm#96445>`_
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The class of events that indicate a frame has been created. An instance
-of this class is distributed to the frame when it is created. Only one
-of these events is passed during the lifetime of any frame.
-
-Operations
-          
-
--  None.
-
-See also
-        
-
-`<frame-destroyed-event>`_
-
-`<frame-exited-event>`_
-
-<frame-destroyed-event>
------------------------
-
-Sealed instantiable class
-'''''''''''''''''''''''''
-
-Summary
-       
-
-The class of events that indicate a frame has been destroyed.
-
-Superclasses
-            
-
-`<frame-event> <silica.htm#96445>`_
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The class of events that indicate a frame has been destroyed. An
-instance of this class is distributed to the frame when it is destroyed.
-Only one of these events is passed during the lifetime of any frame.
-
-Operations
-          
-
--  None.
-
-See also
-        
-
-`destroy-frame`_
-
-`<frame-created-event>`_
-
-`<frame-exited-event>`_
-
-frame-default-button
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the default button associated with the specified frame.
-
-Signature
-         
-
-frame-default-button *frame* => *default-button*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *default-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
-
-Description
-           
-
-Returns the default button associated with *frame*.
-
-See also
-        
-
-`frame-default-button-setter`_
-
-frame-default-button-setter
----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the default button associated with the specified frame.
-
-Signature
-         
-
-frame-default-button-setter *default-button* *frame* => *default-button*
-
-Arguments
-         
-
--  *default-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *default-button* An instance of type *false-or(`See
-   <button> <gadgets.htm#20680>`_)*.
-
-Description
-           
-
-Sets the default button associated with *frame*.
-
-See also
-        
-
-`frame-default-button`_
-
-frame-event-queue
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the event queue that the specified frame is running in.
-
-Signature
-         
-
-frame-event-queue *frame* => *event-queue*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *event-queue* An instance of type *<event-queue>*.
-
-Description
-           
-
-Returns the event queue that *frame* is running in.
-
-See also
-        
-
-`<frame>`_
-
-<frame-exited-event>
---------------------
-
-Sealed instantiable class
-'''''''''''''''''''''''''
-
-Summary
-       
-
-The class of events that indicate a frame has been exited.
-
-Superclasses
-            
-
-`<frame-event> <silica.htm#96445>`_
-
-Init-keywords
-             
-
--  *status-code:* An instance of type *false-or(<integer>)*.
-
-This class also inherits the *frame:* init-keyword from its superclass.
-
-Description
-           
-
-Operations
-          
-
--  None.
-
-Example
-       
-
-The class of events that indicate a frame has been exited. An instance
-of this class is distributed to the frame when it is exited. Only one of
-these events is passed during the lifetime of any frame.
-
-The *status-code:* init-keyword is used to pass a status code, if
-desired. This code can be used to pass the reason that the frame was
-exited.
-
-See also
-        
-
-`<application-exited-event>`_
-
-`exit-frame`_
-
-`<frame-created-event>`_
-
-`<frame-destroyed-event>`_
-
-<frame-exit-event>
-------------------
-
-Sealed instantiable class
-'''''''''''''''''''''''''
-
-Summary
-       
-
-The class of events distributed when a frame is about to exit.
-
-Superclasses
-            
-
-`<frame-event> <silica.htm#96445>`_
-
-Init-keywords
-             
-
-*destroy-frame?:*
-                 
-
--  An instance of type *<boolean>*. Default value: *#f*.
-
-Description
-           
-
-The class of events distributed when a frame is about to exit. Contrast
-this with `<frame-exited-event>`_, which is
-passed after the frame is exited.
-
-The default method uses `frame-can-exit?`_ to
-decide whether or not to exit.
-
-If *destroy-frame?:* is *#t*, then the frame is destroyed.
-
-Operations
-          
-
--  None.
-
-See also
-        
-
-`event-destroy-frame?`_
-
-`frame-can-exit?`_
-
-`<frame-exited-event>`_
-
-<frame-focus-event>
--------------------
-
-Sealed instantiable class
-'''''''''''''''''''''''''
-
-Summary
-       
-
-The class of events distributed when a frame receives focus.
-
-Superclasses
-            
-
-`<frame-event> <silica.htm#96445>`_
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The class of events distributed when a frame receives the mouse focus.
-
-Operations
-          
-
--  None.
-
-See also
-        
-
-`event-destroy-frame?`_
-
-`frame-can-exit?`_
-
-`<frame-exited-event>`_
-
-frame-fixed-height?
--------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if the height of the specified frame is not resizable.
-
-Signature
-         
-
-frame-fixed-width? *frame* => *fixed-height?*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *fixed-height?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if the height of *frame* is not resizable.
-
-Example
-       
-
-See also
-        
-
-`frame-fixed-width?`_
-
-`frame-resizable?`_
-
-frame-fixed-width?
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if the width of the specified frame is not resizable.
-
-Signature
-         
-
-frame-fixed-width? *frame* => *fixed-width?*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *fixed-width?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if the width of *frame* is not resizable.
-
-Example
-       
-
-See also
-        
-
-`frame-fixed-height?`_
-
-`frame-resizable?`_
-
-frame-icon
-----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the icon associated with the specified frame.
-
-Signature
-         
-
-frame-icon *frame* => *icon*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *icon* An instance of type *false-or(`<image> <dcs.htm#51234>`_)*
-   .
-
-Description
-           
-
-Returns the icon associated with *frame*. This is the icon used to
-represent the frame when it has been iconized. In Windows 95 and Windows
-NT 4.0, this icon is also visible in the left hand corner of the title
-bar of the frame when it is not iconized.
-
-See also
-        
-
-`deiconify-frame`_
-
-`frame-icon-setter`_
-
-`iconify-frame`_
-
-frame-icon-setter
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the icon associated with the specified frame.
-
-Signature
-         
-
-frame-icon-setter *icon* *frame* => *icon*
-
-Arguments
-         
-
--  *icon* An instance of type *false-or(* `See
-   <image> <dcs.htm#51234>`_*)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *icon* An instance of type *false-or(* `See
-   <image> <dcs.htm#51234>`_*)*.
-
-Description
-           
-
-Specifies the icon associated with *frame*. This icon is used when the
-frame is iconified, and in Windows 95 and Windows NT 4.0 is also visible
-on the left hand side of the title bar of the frame.
-
-See also
-        
-
-`frame-icon`_
-
-frame-input-focus
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the sheet in the specified frame that has the input focus.
-
-Signature
-         
-
-frame-input-focus *frame* => *focus*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *focus* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
-
-Description
-           
-
-Returns the sheet in *frame* that has the input focus.
-
-See also
-        
-
-`frame-input-focus-setter`_
-
-frame-input-focus-setter
-------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets which sheet in the specified frame has the input focus.
-
-Signature
-         
-
-frame-input-focus-setter *focus frame* => *focus*
-
-Arguments
-         
-
--  *focus* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *focus* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
-
-Description
-           
-
-Sets which sheet in *frame* has the input focus.
-
-See also
-        
-
-`frame-input-focus`_
-
-frame-layout
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the layout used in the specified frame.
-
-Signature
-         
-
-frame-layout *frame* => *layout*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *layout* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
-
-Description
-           
-
-Returns the layout used in *frame*.
-
-See also
-        
-
-`frame-layout-setter`_
-
-frame-layout-setter
--------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Specifies the layout used in the specified frame.
-
-Signature
-         
-
-frame-layout-setter *layout* *frame* => *layout*
-
-Arguments
-         
-
--  *layout* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *layout* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*.
-
-Description
-           
-
-Specifies the layout used in *frame*.
-
-See also
-        
-
-`frame-layout`_
-
-frame-mapped?
--------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if the specified frame is mapped.
-
-Signature
-         
-
-frame-mapped? *frame* => *mapped?*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *mapped?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if *frame* is mapped, that is, is currently displayed
-on-screen. Note that a frame is considered to be mapped if it is
-anywhere on the screen, even if it is not completely visible because
-other windows are covering it either partially or completely, or if it
-is iconized.
-
-Example
-       
-
-The following example creates a simple frame, then displays it and exits
-it. In between starting and exiting the frame, *frame-mapped?* is
-called. You should run this code in the interactor, pressing the RETURN
-key at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-
-frame-mapped?(\*frame\*);*RETURN*
-                                 
-
-=> #t
-     
-
-exit-frame(\*frame\*);*RETURN*
-
-frame-mapped?(\*frame\*);*RETURN*
-                                 
-
-=> #f
-     
-
-See also
-        
-
-`frame-mapped?-setter`_
-
-<frame-mapped-event>
---------------------
-
-Sealed instantiable class
-'''''''''''''''''''''''''
-
-Summary
-       
-
-The class of events that indicate a frame has been mapped.
-
-Superclasses
-            
-
-`<frame-event> <silica.htm#96445>`_
-
-Init-keywords
-             
-
--  None.
-
-Description
-           
-
-The class of events that indicate a frame has been mapped, that is,
-displayed on screen. An instance of this class is distributed whenever a
-frame is mapped.
-
-Operations
-          
-
--  None.
-
-Example
-       
-
-The following example defines a method that can inform you when an
-instance of a class of frame you have defined is mapped.
-
-define method handle-event
-                          
-
-(frame :: <my-frame>,
-
-event :: <frame-mapped-event>) => ()
-
-notify-user
-
-(format-to-string("Frame %= mapped", frame))
-
-end method handle-event;
-                        
-
-See also
-        
-
-`<frame-unmapped-event>`_
-
-frame-mapped?-setter
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Maps or unmaps the specified frame.
-
-Signature
-         
-
-frame-mapped?-setter *mapped?* *frame* => *mapped?*
-
-Arguments
-         
-
--  *mapped?* An instance of type *<boolean>*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *mapped?* An instance of type *<boolean>*.
-
-Description
-           
-
-Maps or unmaps *frame*, that is, displays frame on the screen or
-removes it from the screen, depending on whether *mapped?* is true or
-false. Note that a frame is considered to be mapped if it is anywhere on
-the screen, even if it is not completely visible because other windows
-are covering it either partially or completely, or if it is iconized.
-
-Example
-       
-
-The following example creates a simple frame, then displays it and
-unmaps it using *frame-mapped?-setter* rather than `See
-start-frame`_ and `See
-exit-frame`_. You should run this code in the
-interactor, pressing the RETURN key at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-frame-mapped?-setter(#t, \*frame\*);*RETURN*
-
-frame-mapped?-setter(#f, \*frame\*);*RETURN*
-
-See also
-        
-
-`exit-frame`_
-
-`frame-mapped?`_
-
-`start-frame`_
-
-frame-menu-bar
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the menu bar used in the specified frame.
-
-Signature
-         
-
-frame-menu-bar *frame* => *menu-bar*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *menu-bar* An instance of type *false-or(`See
-   <menu-bar> <gadgets.htm#30138>`_)*.
-
-Description
-           
-
-Returns the menu bar used in *frame*.
-
-See also
-        
-
-`frame-menu-bar-setter`_
-
-frame-menu-bar-setter
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the menu bar used in the specified frame.
-
-Signature
-         
-
-frame-menu-bar-setter *menu-bar* *frame* => *menu-bar*
-
-Arguments
-         
-
--  *menu-bar* An instance of type *false-or(`See
-   <menu-bar> <gadgets.htm#30138>`_)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *menu-bar* An instance of type *false-or(`See
-   <menu-bar> <gadgets.htm#30138>`_)*.
-
-Description
-           
-
-Sets the menu bar used in *frame*.
-
-See also
-        
-
-`frame-menu-bar`_
-
-frame-mode
-----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the mode of the specified frame.
-
-Signature
-         
-
-frame-mode *frame* => *mode*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *mode* An instance of type *one-of(#"modeless", #"modal",
-   #"system-modal")*.
-
-Description
-           
-
-Returns the mode of *frame*. This is the same value as was specified
-for the *mode:* init-keyword when the frame was created.
-
-If *frame* is modal, such as a dialog, then it must be dismissed before
-the user can interact with the user interface of an application (for
-instance, before a menu can be displayed).
-
-If *frame* is modeless, then the user can interact with its parent frame
-while the frame is still visible. Typically, the user will move the
-frame to a convenient position on the screen and continue work, keeping
-the frame on screen for as long as is desired. For example it is often
-useful to make the Find dialog box in an application modeless, so that
-the user can keep it on screen while performing other tasks.
-
-If *frame* is system-modal, then it prevents the user from interacting
-with *any* other running applications, such as the Shutdown dialog in
-Windows 95. System modal frames are rarely used, and should be used with
-caution.
-
-*Note:* You can only set the mode of a frame when it is first created.
-The mode cannot subsequently be changed.
-
-See also
-        
-
-`<frame>`_
-
-frame-owner
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the controlling frame for the specified frame.
-
-Signature
-         
-
-frame-owner *frame* => *owner*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *owner* An instance of type *false-or(`See
-   <frame>`_)*.
-
-Description
-           
-
-Returns the controlling frame for *frame*. The controlling frame for
-any hierarchy of existing frames is the one that owns the thread in
-which the frames are running. Thus, the controlling frame for *frame* is
-not necessarily its direct owner: it may be the owner of *frame* ’s
-owner, and so on, depending on the depth of the hierarchy.
-
-frame-palette
--------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the palette used in the specified frame.
-
-Signature
-         
-
-frame-palette *frame* => *palette*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *palette* An instance of type `<palette> <dcs.htm#11494>`_.
-
-Description
-           
-
-Returns the palette used in *frame*.
-
-See also
-        
-
-`frame-palette-setter`_
-
-frame-palette-setter
---------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the palette used in the specified frame.
-
-Signature
-         
-
-frame-palette-setter *palette* *frame* => *palette*
-
-Arguments
-         
-
--  *palette* An instance of type `<palette> <dcs.htm#11494>`_.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *palette* An instance of type `<palette> <dcs.htm#11494>`_.
-
-Description
-           
-
-Sets the palette used in *frame*.
-
-See also
-        
-
-`frame-palette`_
-
-frame-position
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the position on the screen of the specified frame.
-
-Signature
-         
-
-frame-position *frame* => *x* *y*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *x* An instance of type *<integer>*.
--  *y* An instance of type *<integer>*.
-
-Description
-           
-
-Returns the position on the screen of *frame*. Coordinates are
-expressed relative to the top left corner of the screen, measured in
-pixels.
-
-Example
-       
-
-The following example creates a simple frame, then displays it and tests
-its position. You should run this code in the interactor, pressing the
-RETURN key at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-
-frame-position(\*frame\*);*RETURN*
-
-See also
-        
-
-`frame-size`_
-
-`frame-state`_
-
-`set-frame-position`_
-
-frame-resizable?
-----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns true if the specified frame is resizable.
-
-Signature
-         
-
-frame-resizable? *frame* => *resizable?*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *resizable?* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns true if *frame* is resizable, that is can have one or both of
-its width and height modified by the user.
-
-Example
-       
-
-See also
-        
-
-`frame-fixed-height?`_
-
-`frame-fixed-width?`_
-
-frame-size
-----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the size of the specified frame.
-
-Signature
-         
-
-frame-size *frame* => *width* *height*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *width* An instance of type *<integer>*.
--  *height* An instance of type *<integer>*.
-
-Description
-           
-
-Returns the size of *frame*, measured in pixels.
-
-Example
-       
-
-The following example creates a simple frame, then displays it and tests
-its size. You should run this code in the interactor, pressing the
-RETURN key at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-
-frame-size(\*frame\*);*RETURN*
-
-See also
-        
-
-`frame-position`_
-
-`frame-state`_
-
-`set-frame-size`_
-
-frame-state
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the visible state of the specified frame.
-
-Signature
-         
-
-frame-state *frame* => *state*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *state* An instance of type *one-of(#"detached", #"unmapped",
-   #"mapped", #"iconified", #"destroyed")*.
-
-Description
-           
-
-Returns the visible state of the specified frame. The return value from
-this function indicates whether frame is currently iconified, whether it
-is mapped or unmapped, whether it has been destroyed, or whether it has
-become detached from the thread of which it was a part.
-
-Example
-       
-
-The following example creates a simple frame, then displays it and tests
-its position. You should run this code in the interactor, pressing the
-RETURN key at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-
-frame-state(\*frame\*);*RETURN*
-                               
-
-=> #"mapped"
-            
-
-See also
-        
-
-`frame-position`_
-
-`frame-size`_
-
-frame-status-bar
-----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the status bar used in the specified frame.
-
-Signature
-         
-
-frame-status-bar *frame* => *status-bar*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *status-bar* An instance of type *false-or(`See
-   <status-bar> <gadgets.htm#50900>`_)*.
-
-Description
-           
-
-Returns the status bar used in *frame*.
-
-See also
-        
-
-`frame-status-bar-setter`_
-
-frame-status-bar-setter
------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the status bar used in the specified frame.
-
-Signature
-         
-
-frame-status-bar-setter *status-bar* *frame* => *status-bar*
-
-Arguments
-         
-
--  *status-bar* An instance of type *`See
-   <status-bar> <gadgets.htm#50900>`_*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *status-bar* An instance of type *false-or(`See
-   <status-bar> <gadgets.htm#50900>`_)*.
-
-Description
-           
-
-Sets the status bar used in *frame*.
-
-See also
-        
-
-`frame-status-bar`_
-
-frame-status-message
---------------------
-
-Open generic function
-'''''''''''''''''''''
-
-Summary
-       
-
-Returns the status message for the specified frame.
-
-Signature
-         
-
-frame-status-message *frame* => *status-message*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *status-message* An instance of type *false-or(<string>)*.
-
-Description
-           
-
-Returns the status message for *frame*. This is the label in the status
-bar for the frame. If the frame has no status bar, or if the label is
-not set, this this function returns false.
-
-See also
-        
-
-`frame-status-bar`_
-
-`frame-status-message-setter`_
-
-`<status-bar> <gadgets.htm#50900>`_
-
-frame-status-message-setter
----------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the status message for the specified frame.
-
-Signature
-         
-
-frame-status-message *status-message* *frame* => *status-message*
-
-Arguments
-         
-
--  *status-message* An instance of type *false-or(<string>)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *status-message* An instance of type *false-or(<string>)*.
-
-Description
-           
-
-Sets the status message for *frame*. This is the label in the status
-bar for the frame. If the frame has no status bar, then attempting to
-set the label fails silently.
-
-See also
-        
-
-`frame-status-bar-setter`_
-
-`frame-status-message`_
-
-`<status-bar> <gadgets.htm#50900>`_
-
-frame-thread
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the thread with which the specified frame is associated.
-
-Signature
-         
-
-frame-thread *frame* => *thread*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *thread* An instance of type *<thread>*.
-
-Description
-           
-
-Returns the thread with which *frame* is associated.
-
-For more information about threads, refer to the manual *Library
-Reference: Core Features*.
-
-frame-title
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the title of the specified frame.
-
-Signature
-         
-
-frame-title *frame* => *title*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *title* An instance of type *false-or(<string>)*.
-
-Description
-           
-
-Returns the title of *frame*. If this is *#f*, then the title bar is
-removed from the frame, if this is possible. If this is not possible,
-then a default message is displayed. Whether the title bar can be
-removed from the frame or not is platform dependent.
-
-See also
-        
-
-`frame-title-setter`_
-
-frame-title-setter
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the title of the specified frame.
-
-Signature
-         
-
-frame-title-setter *title* *frame* => *title*
-
-Arguments
-         
-
--  *title* An instance of type *false-or(<string>)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *title* An instance of type *false-or(<string>)*.
-
-Description
-           
-
-Sets the title of *frame*. The title of a frame is displayed in the
-title bar of the frame. If *title* is *#f*, then the platform attempts
-to remove the title bar from the frame, if possible.
-
-See also
-        
-
-`frame-title`_
-
-frame-tool-bar
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the tool bar used in the specified frame.
-
-Signature
-         
-
-frame-tool-bar *frame* => *tool-bar*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *tool-bar* An instance of type *false-or(`See
-   <tool-bar> <gadgets.htm#58915>`_)*.
-
-Description
-           
-
-Returns the tool bar used in *frame*.
-
-See also
-        
-
-`frame-tool-bar-setter`_
-
-frame-tool-bar-setter
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the tool bar used in the specified frame.
-
-Signature
-         
-
-frame-tool-bar-setter *tool-bar* *frame* => *tool-bar*
-
-Arguments
-         
-
--  *tool-bar* An instance of type *false-or(`See
-   <tool-bar> <gadgets.htm#58915>`_)*.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *tool-bar* An instance of type *false-or(`See
-   <tool-bar> <gadgets.htm#58915>`_)*.
-
-Description
-           
-
-Sets the tool bar used in *frame*.
-
-See also
-        
-
-`frame-tool-bar`_
-
-frame-top-level
----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the top level loop function for the specified frame.
-
-Signature
-         
-
-frame-top-level *frame* => *top-level*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *top-level* An instance of type *<function>*.
-
-Description
-           
-
-Returns the top level loop function for *frame*. The top level loop
-function for a frame is the “command loop” for the frame.
-
-The default method for *frame-top-level* calls *read-event* and then
-*`handle-event <silica.htm#94892>`_*.
-
-See also
-        
-
-*`handle-event <silica.htm#94892>`_*
-
-<frame-unmapped-event>
-----------------------
-
-Sealed instantiable class
-'''''''''''''''''''''''''
-
-Summary
-       
-
-The class of events that indicate a frame has been unmapped.
-
-Superclasses
-            
-
-`<frame-event> <silica.htm#96445>`_
-
-Init-keywords
-             
-
--  None.
-
-Description
-           
-
-The class of events that indicate a frame has been unmapped, that is,
-removed from the screen. An instance of this class is distributed
-whenever a frame is unmapped. A frame may be unmapped by either
-iconifying it, or by exiting or destroying the frame completely, so that
-it no longer exists.
-
-Operations
-          
-
--  None.
-
-Example
-       
-
-The following example defines a method that can inform you when an
-instance of a class of frame you have defined is unmapped.
-
-define method handle-event
-                          
-
-(frame :: <my-frame>,
-
-event :: <frame-unmapped-event>) => ()
-
-notify-user
-
-(format-to-string("Frame %= unmapped", frame))
-
-end method handle-event;
-                        
-
-See also
-        
-
-`<frame-mapped-event>`_
-
-\*global-command-table\*
-------------------------
-
-Variable
-''''''''
-
-Summary
-       
-
-The command table inherited by all new command tables.
-
-Type
-    
-
-`<command-table>`_
-
-Description
-           
-
-This is the command table from which all other command tables inherit by
-default. You should not explicitly add anything to or remove anything
-from this command table. DUIM can use this command to store internals or
-system-wide commands. You should not casually install any commands or
-translators into this command table.
-
-See also
-        
-
-`<command-table>`_
-
-`\*user-command-table\*`_
-
-iconify-frame
--------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Iconifies the specified frame.
-
-Signature
-         
-
-iconify-frame *frame* => ()
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
-None
-
-Description
-           
-
-Iconifies *frame*. The appearance of the iconified frame depends on the
-behavior of the operating system in which the application is running.
-For instance, in Windows 95 or Windows NT 4.0, the icon is displayed in
-the task bar at the bottom of the screen.
-
-Example
-       
-
-The following example creates and displays a simple frame, then
-iconifies it. You should run this code in the interactor, pressing the
-RETURN key at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-                               
-
-iconify-frame(\*frame\*);*RETURN*
-                                 
-
-See also
-        
-
-`deiconify-frame`_
-
-`destroy-frame`_
-
-`exit-frame`_
-
-`frame-icon`_
-
-`lower-frame`_
-
-`raise-frame`_
-
-layout-frame
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Resizes the specified frame and lays out the current pane hierarchy
-inside it.
-
-Signature
-         
-
-layout-frame *frame* #key *width height* => ()
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
--  *width* An instance of type *false-or(<integer>)*.
--  *height* An instance of type *false-or(<integer>)*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Resizes the frame and lays out the current pane hierarchy according to
-the layout protocol. This function is automatically invoked on a frame
-when it is adopted, after its pane hierarchy has been generated.
-
-If *width* and *height* are provided, then this function resizes the
-frame to the specified size. It is an error to provide just *width*.
-
-If no optional arguments are provided, this function resizes the frame
-to the preferred size of the top-level pane as determined by the space
-composition pass of the layout protocol.
-
-In either case, after the frame is resized, the space allocation pass of
-the layout protocol is invoked on the top-level pane.
-
-lower-frame
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Lowers the specified frame to the bottom of the stack of visible
-windows.
-
-Signature
-         
-
-lower-frame *frame* => ()
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
-None
-
-Description
-           
-
-Lowers *frame* to the bottom of the stack of visible windows. After
-calling this function, *frame* will appear beneath any occluding windows
-that may be on the screen.
-
-Example
-       
-
-The following example creates and displays a simple frame, then lowers
-it.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));
-                        
-
-start-frame(\*frame\*);
-                       
-
-lower-frame(\*frame\*);
-                       
-
-See also
-        
-
-`deiconify-frame`_
-
-`destroy-frame`_
-
-`exit-frame`_
-
-`iconify-frame`_
-
-`raise-frame`_
-
-make
-----
-
-G.f. method
-'''''''''''
-
-Summary
-       
-
-Creates an instance of a *<frame>*.
-
-Signature
-         
-
-make *(class* == <frame>*)*
- #key *top-level command-queue layout icon
-* *pointer-documentation command-table menu-bar tool-bar
-* *status-bar title calling-frame top-level-sheet state
-* *geometry resizable? properties thread event-queue
-* *foreground background text-style palette save-under?
-* *drop-shadow? dialog-for*
- => *simple-frame*
-
-Arguments
-         
-
--  *class* The class *`<frame>`_*.
--  *top-level* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*. Default value: *#f*.
--  *command-queue* An instance of type *false-or(<event-queue>)*.
-   Default value: *#f*.
--  *layout* An instance of type *false-or(`See
-   <sheet> <silica.htm#13118>`_)*. Default value: *#f*.
--  *icon* An instance of type *false-or(* `See
-   <image> <dcs.htm#51234>`_*)*. Default value: *#f*.
-
-*pointer-documentation*
-                       
-
--  An instance of type *false-or(<string>)*. Default value: *#f*.
--  *command-table* An instance of type *false-or(* `See
-   <command-table>`_*)*. Default value: *#f*.
--  *menu-bar* An instance of type *false-or(* `See
-   <menu-bar> <gadgets.htm#30138>`_*)*. Default value: *#f*.
--  *tool-bar* An instance of type *false-or(* `See
-   <tool-bar> <gadgets.htm#58915>`_*)*. Default value: *#f*.
--  *status-bar* An instance of type *false-or(* `See
-   <status-bar> <gadgets.htm#50900>`_*)*. Default value: *#f*.
--  *title* An instance of type *false-or(<string>)*. Default value:
-   *#f*.
--  *calling-frame* An instance of type *false-or(`See
-   <frame>`_)*. Default value: *#f*.
--  *state* An instance of type *one-of(#"detached", #"unmapped",
-   #"mapped", #"iconified")*. Default value: *#"detached"*.
--  *geometry* An instance of type *<vector>*. Default value:
-   *vector(#f, #f, #f, #f)*.
--  *resizable?* An instance of type *<boolean>*. Default value: *#t*.
--  *properties* An instance of type *<stretchy-object-vector>*. Default
-   value: *make(<stretchy-vector>)*.
--  *thread* An instance of type *false-or(<thread>)*. Default value:
-   *#f*.
--  *event-queue* An instance of type *false-or(<event-queue>)*. Default
-   value: *#f*.
--  *foreground* An instance of type *false-or(* `See
-   <ink> <dcs.htm#15007>`_*)*. Default value: *#f*.
--  *background* An instance of type *false-or(* `See
-   <ink> <dcs.htm#15007>`_*)*. Default value: *#f*.
--  *text-style* An instance of type *false-or(* `See
-   <text-style> <dcs.htm#85385>`_*)*. Default value: *#f*.
--  *palette* An instance of type *false-or(* `See
-   <palette> <dcs.htm#11494>`_*)*. Default value: *#f*.
--  *save-under?* An instance of type *<boolean>*. Default value: *#f*.
--  *drop-shadow?* An instance of type *<boolean>*. Default value: *#f*
-   .
--  *dialog-for* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *simple-frame* An instance of type `<frame>`_.
-
-Description
-           
-
-Creates and returns an instance of `<frame>`_ or
-one of its subclasses.
-
-The *top-level* argument specifies the top-level command-loop in which
-the frame runs.
-
-The *command-queue* argument specifies a command-queue for the frame.
-
-The *layout* argument specifies a layout for the frame.
-
-The *icon* argument specifies an icon that will be used when the frame
-is iconized. In all current versions of Windows, this icon is also
-visible in the left hand corner of the title bar of the frame when it is
-not iconized.
-
-The *pointer-documentation* argument specifies pointer-documentation for
-the frame.
-
-The *command-table* argument specifies a command table for the frame.
-
-The *menu-bar* argument specifies a menu bar for the frame.
-
-The *tool-bar* argument specifies a tool bar for the frame.
-
-The *status-bar* argument specifies a status bar for the frame.
-
-The *title* argument specifies a title for the frame.
-
-The *calling-frame* argument specifies a calling frame for the frame.
-
-The *state* argument specifies a frame-state. The frame can be mapped or
-unmapped (that is, visible on the screen, or not), iconified, or
-detached.
-
-The *geometry* argument specifies a for the frame. The four components
-of this keyword represent the x and y position of the frame, and the
-width and height of the frame, respectively.
-
-The *resizable?* argument specifies whether or not the frame is
-resizable.
-
-The *properties* argument specifies properties for the frame.
-
-The *thread* argument specifies the thread in which the frame will run.
-See the *Library Reference: Core Features* manual for full details about
-how threads are handled.
-
-The *event-queue* specifies an event-queue for the frame.
-
-The arguments *foreground* and *background* specify a foreground color
-for the frame. In addition, *text-style* specifies a text style for the
-frame, and *palette* specifies a color palette for the frame.
-
-See also
-        
-
-`<frame>`_
-
-make-menu-from-command-table-menu
----------------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns a menu from the menu definition in the specified command table.
-
-Signature
-         
-
-make-menu-from-command-table-menu
- *command-table-menu-items* *frame* *framem*
- #key *command-table* *label* *mnemonic* *item-callback*
- => *menu*
-
-Arguments
-         
-
-*command-table-menu-items*
-                          
-
--  An instance of type *<sequence>*.
--  *frame* An instance of type `<frame>`_.
--  *framem* An instance of type `See
-   <frame-manager> <silica.htm#32466>`_.
--  *command-table* An instance of type `See
-   <command-table>`_.
--  *label* An instance of type `<label> <gadgets.htm#68802>`_.
--  *mnemonic* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*.
--  *item-callback* An instance of type *<function>*.
-
-Values
-      
-
--  *menu* An instance of type `<menu> <gadgets.htm#81833>`_.
-
-Description
-           
-
-Returns a menu from the menu definition in the specified command table.
-This function is used by `See
-make-menus-from-command-table`_ to individually
-create each menu defined in the command table. The function `See
-make-menus-from-command-table`_ then puts each of the
-menus created together in the appropriate way.
-
-The *command-table-menu-items* argument defines the items that are to be
-placed in the menu. It is a sequence of instances of `See
-<command-table-menu-item>`_.
-
-The *frame* and *framem* arguments define the frame and the frame
-manager in which the menu created is to be placed.
-
-The *command-table* argument specifies the command table in which the
-definition of the menu created can be found.
-
-The *label* argument defines a label for the menu created.
-
-The *mnemonic* argument defines a keyboard mnemonic for the menu
-created.
-
-See also
-        
-
-`make-menus-from-command-table`_
-
-make-menus-from-command-table
------------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns a set of menus from the menu definitions in the specified
-command table.
-
-Signature
-         
-
-make-menus-from-command-table *command-table* *frame* *framem* #key
-*label* => *menus*
-
-Arguments
-         
-
--  *command-table* An instance of type `See
-   <command-table>`_.
--  *frame* An instance of type `<frame>`_.
--  *framem* An instance of type `See
-   <frame-manager> <silica.htm#32466>`_.
--  *label* An instance of type `<label> <gadgets.htm#68802>`_.
-
-Values
-      
-
--  *menus* An instance of type *limited(<sequence>, of:* `See
-   <menu> <gadgets.htm#81833>`_*)*.
-
-Description
-           
-
-Returns a set of menus from the menu definitions in *command-table*.
-
-The *frame* and *framem* arguments specify the frame and frame manager
-in which the menus are to be placed.
-
-The *label* argument lets you specify a label for the set of menus.
-
-See also
-        
-
-`make-menu-from-command-table-menu`_
-
-menu-item-accelerator
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the accelerator for the specified command table menu item.
-
-Signature
-         
-
-menu-item-accelerator *menu-item* => *accelerator*
-
-Arguments
-         
-
--  *menu-item* An instance of type `See
-   <command-table-menu-item>`_.
-
-Values
-      
-
--  *accelerator* An instance of type `See
-   <gesture> <silica.htm#76256>`_.
-
-Description
-           
-
-Returns the keyboard accelerator for *menu-item*. Note that *menu-item*
-must be defined in a command table.
-
-See also
-        
-
-`menu-item-mnemonic`_
-
-menu-item-mnemonic
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the mnemonic for the specified menu item.
-
-Signature
-         
-
-menu-item-mnemonic *menu-item* => *mnemonic*
-
-Arguments
-         
-
--  *menu-item* An instance of type `See
-   <command-table-menu-item>`_.
-
-Values
-      
-
--  *mnemonic* An instance of type *false-or(* `See
-   <gesture> <silica.htm#76256>`_*)*.
-
-Description
-           
-
-Returns the keyboard mnemonic for *menu-item*.
-
-See also
-        
-
-`menu-item-accelerator`_
-
-menu-item-name
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the name of the specified menu item.
-
-Signature
-         
-
-menu-item-name *menu-item* => *name*
-
-Arguments
-         
-
--  *menu-item* An instance of type `See
-   <command-table-menu-item>`_.
-
-Values
-      
-
--  *name* An instance of type *<string>*.
-
-Description
-           
-
-Returns the name of *menu-item*.
-
-See also
-        
-
-`menu-item-options`_
-
-`menu-item-type`_
-
-`menu-item-value`_
-
-menu-item-options
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the options for the specified menu item.
-
-Signature
-         
-
-menu-item-options *menu-item* => *options*
-
-Arguments
-         
-
--  *menu-item* An instance of type `See
-   <command-table-menu-item>`_.
-
-Values
-      
-
--  *options* An instance of type *<object>*.
-
-Description
-           
-
-Returns the options for *menu-item*.
-
-See also
-        
-
-`menu-item-name`_
-
-`menu-item-type`_
-
-`menu-item-value`_
-
-menu-item-type
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the type of the specified menu item.
-
-Signature
-         
-
-menu-item-type *menu-item* => *type*
-
-Arguments
-         
-
--  *menu-item* An instance of type `See
-   <command-table-menu-item>`_.
-
-Values
-      
-
--  *type* An instance of type *<object>*.
-
-Description
-           
-
-Returns the type of *menu-item*.
-
-See also
-        
-
-`menu-item-name`_
-
-`menu-item-options`_
-
-`menu-item-value`_
-
-menu-item-value
----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the value of the specified menu item.
-
-Signature
-         
-
-menu-item-value *menu-item* => *value*
-
-Arguments
-         
-
--  *menu-item* An instance of type `See
-   <command-table-menu-item>`_.
-
-Values
-      
-
--  *value* An instance of type *<object>*.
-
-Description
-           
-
-Returns the value of *menu-item*.
-
-See also
-        
-
-`menu-item-name`_
-
-`menu-item-options`_
-
-`menu-item-type`_
-
-move-to-next-page
------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Moves to the next page of the specified multi-page dialog.
-
-Signature
-         
-
-move-to-next-page *wizard* => ()
-
-Arguments
-         
-
--  *wizard* An instance of type `See
-   <wizard-frame>`_.
-
-Values
-      
-
-None.
-
-Description
-           
-
-Moves to the next page in sequence of *wizard*. This is the default
-callback for the Next button in a wizard frame.
-
-See also
-        
-
-`dialog-next-callback`_
-
-`<wizard-frame>`_
-
-move-to-previous-page
----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Moves to the previous page of the specified multi-page dialog.
-
-Signature
-         
-
-move-to-previous-page *wizard* => ()
-
-Arguments
-         
-
--  *wizard* An instance of type `See
-   <wizard-frame>`_.
-
-Values
-      
-
-None.
-
-Description
-           
-
-Moves to the previous page in sequence of *wizard*. This is the default
-callback for the Back button in a wizard frame.
-
-See also
-        
-
-`dialog-back-callback`_
-
-`<wizard-frame>`_
-
-note-progress
--------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Note the progress of an event in the specified progress note.
-
-Signature
-         
-
-note-progress *numerator* *denominator*
- #key *note* *label* *pointer-cursor* => ()
-
-Arguments
-         
-
--  *numerator* An instance of type *<integer>*.
--  *denominator* An instance of type *<integer>*.
--  *note* An instance of type *<progress-note>*. Default value: `See
-   \*progress-note\*`_.
--  *label* An instance of type `<label> <gadgets.htm#68802>`_.
--  *pointer-cursor* An instance of type `See
-   <pointer> <silica.htm#85241>`_.
-
-Values
-      
-
-None
-
-Description
-           
-
-Note the progress of an event in *note*.
-
-If a *numerator* and *denominator* are supplied, then the progress is
-displayed in terms of those figures. For example, if *numerator* is 1,
-and *denominator* is 10, then the progress is displayed in tenths.
-
-If supplied, *pointer-cursor* is used as a cursor when the mouse pointer
-is placed over the owner frame.
-
-See also
-        
-
-`noting-progress`_
-
-`\*progress-note\*`_
-
-noting-progress
----------------
-
-Statement macro
-'''''''''''''''
-
-Summary
-       
-
-Performs a body of code, noting its progress.
-
-Macro call
-          
-
-noting-progress ({*sheet* }, {*label* }) {*body* } end
-
-Arguments
-         
-
--  *sheet* A Dylan expression*bnf*.
--  *label* A Dylan expression*bnf*.
--  body A Dylan body*bnf*.
-
-Values
-      
-
--  None.
-
-Description
-           
-
-Performs a body of code, noting its progress, for the specified sheet.
-
-The sheet argument is an expression that evaluates to an instance of
-`<sheet> <silica.htm#13118>`_. The label argument is an expression
-that evaluates to an instance of *<string>*.
-
-See also
-        
-
-`note-progress`_
-
-\*progress-note\*
------------------
-
-Fluid variable
-''''''''''''''
-
-Summary
-       
-
-Specifies a default progress note that can be used.
-
-Type
-    
-
-*<object>*
-
-Initial value
-             
-
-#f
-
-Description
-           
-
-This variable is used to supply a default progress note to use if no
-progress note is explicitly specified.
-
-See also
-        
-
-`note-progress`_
-
-<property-frame>
-----------------
-
-Open instantiable class
-'''''''''''''''''''''''
-
-Summary
-       
-
-The class of property frames.
-
-Superclasses
-            
-
-`<dialog-frame>`_
-
-Init-keywords
-             
-
--  *pages:* An instance of type *false-or(limited(<sequence>, of: `See
-   <page> <gadgets.htm#93333>`_))*. Default value: *#f*.
-
-*apply-callback:*
-                 
-
--  An instance of type *false-or(<function>)*. Default value: *#f*.
--  *apply-button:* An instance of type *false-or(* `See
-   <button> <gadgets.htm#20680>`_*)*. Default value: *#f*.
-
-*Note:* The following two useful init-keywords are inherited from `See
-<dialog-frame>`_:
-
--  *pages:* An instance of type *false-or(<sequence>)*. Default value:
-   *#f*.
-
-*page-changed-callback:*
-                        
-
--  An instance of type *false-or(<function>)*. Default value: *#f*.
-
-Description
-           
-
-The class of property frames. These are dialogs that can contain
-property sheets of some description. This is the class of dialogs with
-several pages, each presented as a label in a tab control.
-
-A property frame
-                
-
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-
-.. figure:: images/frames-5.png
-   :align: center
-   :alt: 
-The *pages:* init-keyword defines the pages available for the property
-frame.
-
-The apply callback and button define an additional Apply button
-available in property frames. The Apply button applies any changes made
-in the current page of the dialog, but does not dismiss the dialog from
-the screen. By default, there is no Apply button defined.
-
-The page-changed callback lets you specified a callback that should be
-invoked if the current page in the property frame is changed by clicking
-on a different page tab.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Frames* module.
-
-`dialog-apply-button`_ `See
-dialog-apply-button-setter`_
- `dialog-apply-callback`_ `See
-dialog-current-page`_
- `dialog-current-page-setter`_
- `dialog-page-changed-callback`_ `See
-dialog-page-changed-callback-setter`_ `See
-dialog-page-complete?`_ `See
-dialog-page-complete?-setter`_ `See
-dialog-pages`_ `See
-dialog-pages-setter`_
-
-See also
-        
-
-`dialog-apply-button`_
-
-`dialog-apply-callback`_
-
-`<dialog-frame>`_
-
-`<property-page>`_
-
-`<wizard-frame>`_
-
-<property-page>
----------------
-
-Open instantiable class
-'''''''''''''''''''''''
-
-Summary
-       
-
-The class of property pages.
-
-Superclasses
-            
-
-`<page> <gadgets.htm#93333>`_
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The class of property pages. These are pages that can be displayed in an
-instance of `<property-frame>`_.
-
-A property page
-               
-
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-
-.. figure:: images/frames-6.png
-   :align: center
-   :alt: 
-Internally, this class maps into the Windows property page control.
-
-Operations
-          
-
--  None.
-
-See also
-        
-
-`<page> <gadgets.htm#93333>`_
-
-`<property-frame>`_
-
-`<property-page>`_
-
-`<tab-control-page> <gadgets.htm#47108>`_
-
-`<wizard-page>`_
-
-raise-frame
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Raises the specified frame to the top of the stack of visible windows.
-
-Signature
-         
-
-raise-frame *frame* => ()
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
-None
-
-Description
-           
-
-Raises *frame* to the top of the stack of visible windows. After calling
-this function, *frame* will appear above any occluding windows that may
-be on the screen.
-
-Example
-       
-
-The following example creates and displays a simple frame, then lowers
-and raises it. You should run this code in the interactor, pressing the
-RETURN key at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-                               
-
-lower-frame(\*frame\*);*RETURN*
-
-raise-frame(\*frame\*);*RETURN*
-                               
-
-See also
-        
-
-`deiconify-frame`_
-
-`destroy-frame`_
-
-`exit-frame`_
-
-`iconify-frame`_
-
-`lower-frame`_
-
-redo-command
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Performs the last performed command again.
-
-Signature
-         
-
-redo-command *command* *frame* => #rest *values*
-
-Arguments
-         
-
--  *command* An instance of type `<command>`_.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *values* Instances of type *<object>*.
-
-Description
-           
-
-Performs *command* again. The command is the command that was last
-executed using `execute-command`_.
-
-Note that the command described by *command* must be undoable.
-
-You can both specialize this function and call it directly in your code.
-
-See also
-        
-
-`execute-command`_
-
-remove-command
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Removes a command from the specified command table.
-
-Signature
-         
-
-remove-command *command-table* *command* => ()
-
-Arguments
-         
-
--  *command-table* An instance of type `See
-   <command-table>`_.
--  *command* An instance of type `<command>`_.
-
-Values
-      
-
-None
-
-Description
-           
-
-Removes *command* from *command-table*.
-
-See also
-        
-
-`add-command`_
-
-remove-command-table
---------------------
-
-Function
-''''''''
-
-Summary
-       
-
-Removes the specified command table.
-
-Signature
-         
-
-remove-command-table *command-table* => ()
-
-Arguments
-         
-
--  *command-table* An instance of type `See
-   <command-table>`_.
-
-Values
-      
-
-None
-
-Description
-           
-
-Removes *command-table*.
-
-remove-command-table-menu-item
-------------------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Removes a menu item from the specified command table.
-
-Signature
-         
-
-remove-command-table-menu-item *command-table* *string* => ()
-
-Arguments
-         
-
--  *command-table* An instance of type `See
-   <command-table>`_.
--  *string* An instance of type *<string>*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Removes the menu item identified by *string* from *command-table*.
-
-See also
-        
-
-`add-command-table-menu-item`_
-
-set-frame-position
-------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the position of the specified frame.
-
-Signature
-         
-
-set-frame-position *frame* *x* *y* => ()
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
--  *x* An instance of type *<integer>*.
--  *y* An instance of type *<integer>*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Sets the position of *frame*. The coordinates *x* and *y* are measured
-from the top left of the screen, measured in pixels.
-
-See also
-        
-
-`frame-position`_
-
-`set-frame-size`_
-
-set-frame-size
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Sets the size of the specified frame.
-
-Signature
-         
-
-set-frame-size *frame* *width* *height* => ()
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
--  *width* An instance of type *<integer>*.
--  *height* An instance of type *<integer>*.
-
-Values
-      
-
-None
-
-Description
-           
-
-Sets the size of *frame*.
-
-Example
-       
-
-The following example creates and displays a simple frame, then resizes
-it. You should run this code in the interactor, pressing the RETURN key
-at the points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>, label: "Button"));*RETURN*
-                                                 
-
-set-frame-size(\*frame\*, 100, 500);*RETURN*
-
-See also
-        
-
-`frame-size`_
-
-`set-frame-position`_
-
-<simple-command>
-----------------
-
-Open abstract instantiable class
-''''''''''''''''''''''''''''''''
-
-Summary
-       
-
-The class of simple commands.
-
-Superclasses
-            
-
-*<object>*
-
-Init-keywords
-             
-
--  *function:* An instance of type *<function>*. Required.
--  *arguments:* An instance of type *<sequence>*. Default value *#[]*.
-
-Description
-           
-
-The class of simple commands. A simple command has an associated
-function and some arguments. Simple commands are not undoable.
-
-The first argument to the function is always the frame.
-
-Operations
-          
-
-None.
-
-See also
-        
-
-`<command>`_
-
-<simple-frame>
---------------
-
-Open abstract instantiable class
-''''''''''''''''''''''''''''''''
-
-Summary
-       
-
-The class of simple frames.
-
-Superclasses
-            
-
-`<frame>`_
-
-Init-keywords
-             
-
--  *command-queue:* An instance of type *false-or(<event-queue)*.
-   Default value: *make(<event-queue>)*.
--  *layout:* An instance of type *false-or(* `See
-   <sheet> <silica.htm#13118>`_*)*. Default value: *#f*.
--  *command-table:* An instance of type *false-or(* `See
-   <command-table>`_*)*. Default value: *#f*.
--  *menu-bar:* An instance of type *false-or(* `See
-   <menu-bar> <gadgets.htm#30138>`_*)*. Default value: *#f*.
--  *tool-bar:* An instance of type *false-or(* `See
-   <tool-bar> <gadgets.htm#58915>`_*)*. Default value: *#f*.
--  *status-bar:* An instance of type *false-or(* `See
-   <status-bar> <gadgets.htm#50900>`_*)*. Default value: *#f*.
-
-Description
-           
-
-The class of simple frames.
-
-The *command-queue:* init-keyword specifies a command-queue for the
-frame.
-
-The *layout:* init-keyword specifies a layout for the frame.
-
-The *command-table:* init-keyword specifies a command table for the
-frame.
-
-The *menu-bar:* init-keyword specifies a menu bar for the frame.
-
-The *tool-bar:* init-keyword specifies a tool bar for the frame.
-
-The *status-bar:* init-keyword specifies a status bar for the frame.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Frames* module.
-
-`frame-command-table`_ `See
-frame-command-table-setter`_ `See
-frame-layout`_ `See
-frame-layout-setter`_ `See
-frame-menu-bar`_ `See
-frame-menu-bar-setter`_ `See
-frame-status-bar`_ `See
-frame-status-bar-setter`_ `See
-frame-status-message`_ `See
-frame-status-message-setter`_ `See
-frame-tool-bar`_ `See
-frame-tool-bar-setter`_ `See
-frame-top-level`_ `See
-start-frame`_
-
-<simple-undoable-command>
--------------------------
-
-Open abstract instantiable class
-''''''''''''''''''''''''''''''''
-
-Summary
-       
-
-The class of simple commands that can contain an undo action.
-
-Superclasses
-            
-
-*<object>*
-
-Init-keywords
-             
-
--  *undo-command:* An instance of type `See
-   <command>`_.
-
-Description
-           
-
-The class of simple commands that can contain an undo action. A simple
-undoable command is like a simple command, except that it points to a
-command that can undo it, represented by the *undo-command:*
-init-keyword.
-
-Operations
-          
-
--  None.
-
-See also
-        
-
-`<simple-command>`_
-
-start-dialog
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Displays a DUIM frame as a dialog box.
-
-Signature
-         
-
-start-dialog *dialog* => #rest *values*
-
-Arguments
-         
-
--  *dialog* An instance of type `See
-   <dialog-frame>`_.
-
-Values
-      
-
--  *values* Instances of type *<object>*.
-
-Description
-           
-
-Displays a DUIM frame as a dialog box.
-
-The function *start-dialog* dynamically binds an *<abort>* restart
-around the event loop for the dialog that is started. The restart allows
-the event loop to be re-entered, and enables any callbacks run from the
-dialog to signal an *<abort>* (via the *abort* function, for instance),
-in order to terminate execution of the current callback and return to
-event processing. This facility is useful for implementing operations
-that cancel gestures and for debugging DUIM applications from Dylan
-debuggers.
-
-See also
-        
-
-`cancel-dialog`_
-
-`<dialog-frame>`_
-
-`exit-dialog`_
-
-`start-frame`_
-
-start-frame
------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Starts the specified frame.
-
-Signature
-         
-
-start-frame *frame* #key *owner* *mode* => *status-code*
-
-Arguments
-         
-
--  *frame* An instance of type `<frame>`_.
--  *owner* An instance of type *false-or(`See
-   <frame>`_)*. Default value: *#f*.
--  *mode* An instance of type *one-of("modal", #"modeless",
-   #"system-modal")*. Default value: *#f*.
-
-Values
-      
-
--  *status-code* An instance of type *<integer>*.
-
-Description
-           
-
-Starts *frame*, optionally setting the *owner* of the frame and the
-*mode* in which it will run.
-
-The function *start-frame* dynamically binds an *<abort>* restart around
-the event loop for the frame that is started. The restart allows the
-event loop to be re-entered, and enables any callbacks run from the
-frame to signal an *<abort>* (via the *abort* function, for instance),
-in order to terminate execution of the current callback and return to
-event processing. This facility is useful for implementing operations
-that cancel gestures and for debugging DUIM applications from Dylan
-debuggers.
-
-Example
-       
-
-The following example creates a simple frame, then displays it. You
-should run this code in the interactor, pressing the RETURN key at the
-points indicated.
-
-define variable \*frame\* =
-                           
-
-make(<simple-frame>, title: "A frame",
-
-layout: make(<button>));*RETURN*
-                                
-
-start-frame(\*frame\*);*RETURN*
-
-See also
-        
-
-`exit-frame`_
-
-`frame-mapped?-setter`_
-
-`start-dialog`_
-
-undo-command
-------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Calls the undo command for the specified command.
-
-Signature
-         
-
-undo-command *command* *frame* => #rest *values*
-
-Arguments
-         
-
--  *command* An instance of type `<command>`_.
--  *frame* An instance of type `<frame>`_.
-
-Values
-      
-
--  *values* Instances of type *<object>*.
-
-Description
-           
-
-Calls the undo command for *command*, undoing the effects of calling
-*command*. Note that *command* must be undoable.
-
-You can call this command directly in your own code, as well as
-specialize it.
-
-See also
-        
-
-`command-undoable?`_
-
-\*user-command-table\*
-----------------------
-
-Variable
-''''''''
-
-Summary
-       
-
-A user-defined command table that can be inherited by other command
-tables.
-
-Type
-    
-
-`<command-table>`_
-
-Description
-           
-
-This is a command table that can be used by the programmer for any
-purpose. DUIM does not use it for anything, and its contents are
-completely undefined.
-
-If desired, all new command tables can inherit the command table
-specified by this variable.
-
-See also
-        
-
-`<command-table>`_
-
-`\*global-command-table\*`_
-
-<wizard-frame>
---------------
-
-Open instantiable class
-'''''''''''''''''''''''
-
-Summary
-       
-
-The class of wizard frames.
-
-Superclasses
-            
-
-`<dialog-frame>`_
-
-Init-keywords
-             
-
--  *page:* An instance of type `<page> <gadgets.htm#93333>`_.
--  *pages:* An instance of type *false-or(limited(<sequence>, of:* `See
-   <page> <gadgets.htm#93333>`_*)*. Default value: *#f*.
-
-*apply-callback:*
-                 
-
--  An instance of type *false-or(<function>)*. Default value: *#f*.
--  *apply-button:* An instance of type *false-or(* `See
-   <button> <gadgets.htm#20680>`_*)*. Default value: *#f*.
-
-Note that the following two useful init-keywords are inherited from `See
-<dialog-frame>`_:
-
--  *pages:* An instance of type *false-or(<sequence>)*. Default value:
-   *#f*.
-
-*page-changed-callback:*
-                        
-
--  An instance of type *false-or(<function>)*. Default value: *#f*.
-
-Description
-           
-
-The class of wizard frames. These are frames that are used to create
-wizards (series of connected dialogs) that are used to guide the user
-through a structured task, such as installing an application.
-
-A wizard frame
-              
-
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-
-.. figure:: images/frames-7.png
-   :align: center
-   :alt: 
-A wizard frame is a multi-page dialog, in which the user specifies
-requested information before proceeding to the next page in the
-sequence. At the end of the sequence, the user exits the dialog to send
-the relevant information back to the controlling application.
-
-When a wizard frame is created, each page in the frame automatically has
-a Next and Back button to let the user navigate forward and backward
-through the sequence of pages.
-
-In addition, if *apply-button:* is specified, an Apply button is
-displayed in the frame. By default, clicking on this button lets the
-user apply the changes made so far without dismissing the frame from the
-screen. If specified, the *apply-callback:* function is invoked when the
-Apply button is clicked.
-
-The layout of a wizard frame is controlled using a `See
-<stack-layout> <layouts.htm#99774>`_.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Frames* module.
-
-`compute-next-page`_ `See
-compute-previous-page`_ `See
-dialog-back-button`_ `See
-dialog-back-button-setter`_ `See
-dialog-back-callback`_ `See
-dialog-current-page`_ `See
-dialog-current-page-setter`_ `See
-dialog-next-button`_ `See
-dialog-next-button-setter`_ `See
-dialog-next-callback`_ `See
-dialog-next-enabled?`_
- `dialog-next-enabled?-setter`_ `See
-dialog-next-page`_ `See
-dialog-next-page-setter`_ `See
-dialog-page-changed-callback`_ `See
-dialog-page-changed-callback-setter`_ `See
-dialog-page-complete?`_ `See
-dialog-page-complete?-setter`_ `See
-dialog-pages`_ `See
-dialog-pages-setter`_ `See
-dialog-previous-page`_ `See
-dialog-previous-page-setter`_ `See
-move-to-next-page`_ `See
-move-to-previous-page`_
-
-Example
-       
-
-define frame <my-wizard> (<wizard-frame>)
-                                         
-
-pane name-pane (frame)
-
-make(<text-field>);
-
-pane organization-pane (frame)
-
-make(<text-field>);
-
-pane job-description-pane (frame)
-
-make(<text-field>);
-
-pane years-employed-pane (frame)
-
-make(<text-field>, value-type: <integer>);
-
-pane first-page-layout (frame)
-
-make(<table-layout>,
-
-columns: 2,
-
-x-alignment: #(#"right", #"left"),
-
-children: vector(make(<label>,
-
-label: "Name:"),
-
-frame.name-pane,
-
-make(<label>,
-
-label: "Organization:"),
-
-frame.organization-pane));
-
-pane second-page-layout (frame)
-
-make(<table-layout>,
-
-columns: 2,
-
-x-alignment: #(#"right", #"left"),
-
-children: vector
-
-(make(<label>,
-
-label: "Job Description:"),
-
-frame.job-description-pane,
-
-make(<label>,
-
-label: "Years Employed:"),
-
-frame.years-employed-pane));
-
-pane first-page (frame)
-
-make(<wizard-page>,
-
-child: frame.first-page-layout);
-
-pane second-page (frame)
-
-make(<wizard-page>,
-
-child: frame.second-page-layout);
-
-pages (frame)
-
-vector(frame.first-page, frame.second-page);
-
-keyword title: = "My Wizard";
-
-end frame <my-wizard>;
-                      
-
-See also
-        
-
-`<dialog-frame>`_
-
-`<property-frame>`_
-
-`<wizard-page>`_
-
-<wizard-page>
--------------
-
-Open instantiable class
-'''''''''''''''''''''''
-
-Summary
-       
-
-The class of wizard pages.
-
-Superclasses
-            
-
-`<page> <gadgets.htm#93333>`_
-
-Init-keywords
-             
-
-None.
-
-Description
-           
-
-The class of wizard pages. These are pages that can be displayed in an
-instance of `<wizard-frame>`_, and are used for a
-single dialog in the structured task that the wizard guides the user
-through.
-
-A wizard page
-             
-
-.. figure:: images/frames-2.png
-   :align: center
-   :alt: 
-
-.. figure:: images/frames-8.png
-   :align: center
-   :alt: 
-Operations
-          
-
--  None.
-
-See also
-        
-
-`<page> <gadgets.htm#93333>`_
-
-`<property-page>`_
-
-`<tab-control-page> <gadgets.htm#47108>`_
-
-`<wizard-frame>`_
-
-
+     - :class:`<page>`
+     - :class:`<property-page>`
+     - :class:`<tab-control-page>`
+     - :class:`<wizard-frame>`

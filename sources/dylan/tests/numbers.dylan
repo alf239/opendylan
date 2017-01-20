@@ -27,7 +27,7 @@ define method test-number-class
   end
 end method test-number-class;
 
-//--- An extra method to test special features of arrays
+//--- An extra method to test floating point values
 define method test-number-class
     (class :: subclass(<float>), #key abstract?, #all-keys) => ()
   next-method();
@@ -35,6 +35,12 @@ define method test-number-class
     test-number("1.5", as(class, 1.5));
     test-number("-1.5", as(class, -1.5));
   end
+end method test-number-class;
+
+define method test-number-class
+    (class == <integer>, #key abstract?, #all-keys) => ()
+  next-method();
+  test-limited-integers();
 end method test-number-class;
 
 
@@ -338,3 +344,76 @@ define arithmetic function-test logbit? () end;
 define arithmetic function-test ash () end;
 define arithmetic function-test lcm () end;
 define arithmetic function-test gcd () end;
+
+define method test-limited-integers () => ()
+  test-limited-integer-instance?();
+end method test-limited-integers;
+
+// This is used below to hide some info from the compiler
+// so that we don't get a compile time warning in our test
+// for some run-time behavior.
+define not-inline function hide-type-info(o) => (o)
+  o
+end;
+
+define macro check-limited-integer-instance?
+  { check-limited-integer-instance?(?limited-type:expression) }
+  =>
+  {
+    begin
+      let name = ?"limited-type";
+      let limited-type = ?limited-type;
+      let lower-bound = limited-type.limited-integer-min;
+      if (lower-bound)
+        assert-instance?(?limited-type, lower-bound);
+        assert-not-instance?(?limited-type, lower-bound - 1);
+        assert-instance?(?limited-type, lower-bound + 1);
+        assert-no-errors(begin
+                           let x :: ?limited-type = lower-bound;
+                         end);
+        assert-signals(<type-error>,
+                       begin
+                         let x :: ?limited-type = lower-bound - 1;
+                       end);
+        assert-no-errors(begin
+                           let x :: ?limited-type = lower-bound + 1;
+                         end);
+      end if;
+      let upper-bound = limited-type.limited-integer-max;
+      if (upper-bound)
+        assert-instance?(?limited-type, upper-bound);
+        assert-instance?(?limited-type, upper-bound - 1);
+        assert-not-instance?(?limited-type, upper-bound + 1);
+        assert-no-errors(begin
+                           let x :: ?limited-type = upper-bound;
+                         end);
+        assert-no-errors(begin
+                           let x :: ?limited-type = upper-bound - 1;
+                         end);
+        assert-signals(<type-error>,
+                       begin
+                         let x :: ?limited-type = upper-bound + 1;
+                       end);
+      end if;
+      assert-not-instance?(?limited-type, "Howdy!");
+      assert-not-instance?(?limited-type, 1.0);
+      assert-signals(<type-error>,
+                     begin
+                       let x :: ?limited-type = hide-type-info("Howdy!");
+                     end);
+      assert-signals(<type-error>,
+                     begin
+                       let x :: ?limited-type = hide-type-info(1.0);
+                     end);
+    end;
+  }
+end macro check-limited-integer-instance?;
+
+define method test-limited-integer-instance? () => ()
+  check-limited-integer-instance?(limited(<integer>, min: 0));
+  check-limited-integer-instance?(limited(<integer>, min: 1));
+  check-limited-integer-instance?(limited(<integer>, min: 0, max: 255));
+  check-limited-integer-instance?(limited(<integer>, min: 1, max: 100000000));
+  check-limited-integer-instance?(limited(<integer>, min: -128, max: 128));
+  check-limited-integer-instance?(limited(<integer>, max: 0));
+end method test-limited-integer-instance?;

@@ -7,84 +7,192 @@ subdir		= sources/lib/run-time
 VPATH		= $(srcdir)
 
 LIBDEST         = $(OPEN_DYLAN_USER_INSTALL)/lib
+INCDEST         = $(OPEN_DYLAN_USER_INSTALL)/include/opendylan
 
-OPEN_DYLAN_PLATFORM_NAME = @OPEN_DYLAN_PLATFORM_NAME@
-OBJDIR          = obj-$(OPEN_DYLAN_PLATFORM_NAME)
+OPEN_DYLAN_TARGET_PLATFORM = @OPEN_DYLAN_TARGET_PLATFORM@
+OBJDIR_BASE     = obj-$(OPEN_DYLAN_TARGET_PLATFORM)
+OBJDIR_HARP     = $(OBJDIR_BASE)-harp
+OBJDIR_LLVM     = $(OBJDIR_BASE)-llvm
+OBJDIR_C        = $(OBJDIR_BASE)-c
 
-HARP_RUNTIME_LIBRARY  = $(OBJDIR)/libdylan-harp-runtime.a
-LLVM_RUNTIME_LIBRARY  = $(OBJDIR)/libdylan-llvm-runtime.a
-C_RUNTIME_LIBRARY     = $(OBJDIR)/libdylan-c-runtime.a
+HARP_RUNTIME_LIBRARY  = $(OBJDIR_HARP)/libdylan-harp-runtime.a
+LLVM_RUNTIME_LIBRARY  = $(OBJDIR_LLVM)/libdylan-llvm-runtime.a
+C_RUNTIME_LIBRARY     = $(OBJDIR_C)/libdylan-c-runtime.a
 
-# For all platforms, we want to build an LLVM and a C runtime.
-# but for now, we'll modify this below to only build HARP on
-# some platforms where we need HARP because we don't actually
-# support a working C or LLVM runtime yet and when we use
-# this directory on x86-linux and x86-freebsd, we only want to
-# build HARP for now.
-PLATFORM_RUNTIME_LIBRARIES=$(LLVM_RUNTIME_LIBRARY) $(C_RUNTIME_LIBRARY)
-PLATFORM_INSTALL_RUNTIMES=install-llvm-runtime install-c-runtime
+MPS_CFLAGS        = @MPS_CFLAGS@ -DGC_USE_MPS
+BDW_GC_CFLAGS     = @BDW_GC_CFLAGS@ -DGC_THREADS -DGC_USE_BOEHM
+BDW_GC_STATIC     = @BDW_GC_STATIC@
+BDW_GC_STATIC_LIB = @BDW_GC_STATIC_LIB@
+MALLOC_CFLAGS     = -DGC_USE_MALLOC
 
-ifeq ($(OPEN_DYLAN_PLATFORM_NAME),x86-linux)
-  PLATFORM_CFLAGS=-D_REENTRANT=1 -DOPEN_DYLAN_PLATFORM_LINUX -DOPEN_DYLAN_PLATFORM_UNIX
-  # Later, this = will become +=
-  PLATFORM_RUNTIME_LIBRARIES = $(HARP_RUNTIME_LIBRARY)
-  PLATFORM_INSTALL_RUNTIMES = install-harp-runtime
-endif
-ifeq ($(OPEN_DYLAN_PLATFORM_NAME),x86_64-linux)
-  PLATFORM_CFLAGS=-D_REENTRANT=1 -DOPEN_DYLAN_PLATFORM_LINUX -DOPEN_DYLAN_PLATFORM_UNIX
-endif
-ifeq ($(OPEN_DYLAN_PLATFORM_NAME),x86-freebsd)
-  PLATFORM_CFLAGS=-D_REENTRANT=1 -DOPEN_DYLAN_PLATFORM_FREEBSD -DOPEN_DYLAN_PLATFORM_UNIX
-  # Later, this = will become +=
-  PLATFORM_RUNTIME_LIBRARIES = $(HARP_RUNTIME_LIBRARY)
-  PLATFORM_INSTALL_RUNTIMES = install-harp-runtime
-endif
-ifeq ($(OPEN_DYLAN_PLATFORM_NAME),x86_64-freebsd)
-  PLATFORM_CFLAGS=-D_REENTRANT=1 -DOPEN_DYLAN_PLATFORM_FREEBSD -DOPEN_DYLAN_PLATFORM_UNIX
-endif
-ifeq ($(OPEN_DYLAN_PLATFORM_NAME),x86-darwin)
-  PLATFORM_CFLAGS=-arch i386 -D_REENTRANT=1 -DOPEN_DYLAN_PLATFORM_DARWIN -DOPEN_DYLAN_PLATFORM_UNIX
-endif
-ifeq ($(OPEN_DYLAN_PLATFORM_NAME),x86_64-darwin)
-  PLATFORM_CFLAGS=-arch x86_64 -D_REENTRANT=1 -DOPEN_DYLAN_PLATFORM_DARWIN -DOPEN_DYLAN_PLATFORM_UNIX
+HARP_COLLECTOR    = @HARP_COLLECTOR@
+LLVM_COLLECTOR    = @LLVM_COLLECTOR@
+C_COLLECTOR       = @C_COLLECTOR@
+
+HARP_GC_CFLAGS    = $(@HARP_COLLECTOR@_CFLAGS)
+LLVM_GC_CFLAGS    = $(@LLVM_COLLECTOR@_CFLAGS)
+C_GC_CFLAGS       = $(@C_COLLECTOR@_CFLAGS)
+
+.PHONY: install install-c-runtime install-llvm-runtime \
+	install-harp-runtime clean
+
+all: runtime-libraries
+
+PLATFORM_RUNTIME_LIBRARIES=$(C_RUNTIME_LIBRARY)
+PLATFORM_INSTALL_RUNTIMES+=install-c-runtime
+ifdef OPEN_DYLAN_LLVM_RUNTIME_GENERATOR
+  PLATFORM_INSTALL_RUNTIMES+=install-llvm-runtime
 endif
 
-GC_CFLAGS       = @GC_CFLAGS@
-GC_CHOICE       = @GC_CHOICE@
+ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86-linux)
+  PLATFORM_CFLAGS=-m32 -D_REENTRANT=1 -D_GNU_SOURCE \
+    -DOPEN_DYLAN_PLATFORM_LINUX -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86
+  PLATFORM_LFLAGS=-m32
+  PLATFORM_RUNTIME_LIBRARIES+=$(HARP_RUNTIME_LIBRARY)
+  PLATFORM_INSTALL_RUNTIMES+=install-harp-runtime
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86_64-linux)
+  PLATFORM_CFLAGS=-m64 -fPIC -D_REENTRANT=1 -D_GNU_SOURCE \
+    -DOPEN_DYLAN_PLATFORM_LINUX -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86_64
+  PLATFORM_LFLAGS=-m64 -fPIC
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),arm-linux)
+  PLATFORM_CFLAGS=-fPIC -D_REENTRANT=1 -D_GNU_SOURCE \
+    -DOPEN_DYLAN_PLATFORM_LINUX -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_ARM
+  PLATFORM_LFLAGS=-fPIC
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86-freebsd)
+  PLATFORM_CFLAGS=-m32 -D_REENTRANT=1 \
+    -DOPEN_DYLAN_PLATFORM_FREEBSD -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86
+  PLATFORM_LFLAGS=-m32
+  PLATFORM_RUNTIME_LIBRARIES+=$(HARP_RUNTIME_LIBRARY)
+  PLATFORM_INSTALL_RUNTIMES+=install-harp-runtime
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86_64-freebsd)
+  PLATFORM_CFLAGS=-m64 -fPIC -D_REENTRANT=1 \
+    -DOPEN_DYLAN_PLATFORM_FREEBSD -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86_64
+  PLATFORM_LFLAGS=-m64 -fPIC
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86-netbsd)
+  PLATFORM_CFLAGS=-m32 -D_REENTRANT=1 \
+    -DOPEN_DYLAN_PLATFORM_NETBSD -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86
+  PLATFORM_LFLAGS=-m32
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86_64-netbsd)
+  PLATFORM_CFLAGS=-m64 -fPIC -D_REENTRANT=1 \
+    -DOPEN_DYLAN_PLATFORM_NETBSD -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86_64
+  PLATFORM_LFLAGS=-m64 -fPIC
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86-darwin)
+  PLATFORM_CFLAGS=-arch i386 -D_REENTRANT=1 \
+    -DOPEN_DYLAN_PLATFORM_DARWIN -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86 -Wno-unknown-attributes
+  PLATFORM_LFLAGS=-arch i386
+  DARWIN=yes
+else ifeq ($(OPEN_DYLAN_TARGET_PLATFORM),x86_64-darwin)
+  PLATFORM_CFLAGS=-arch x86_64 -D_REENTRANT=1 \
+    -DOPEN_DYLAN_PLATFORM_DARWIN -DOPEN_DYLAN_PLATFORM_UNIX \
+    -DOPEN_DYLAN_ARCH_X86_64 -Wno-unknown-attributes
+  PLATFORM_LFLAGS=-arch x86_64
+  DARWIN=yes
+endif
 
 CC = @CC@
 AR = ar -rcs
 
-CFLAGS		= $(PLATFORM_CFLAGS) -Wall -O -g $(GC_CFLAGS) -I$(srcdir)
+CFLAGS		= $(PLATFORM_CFLAGS) -Wall -O -g -I$(srcdir)
+LFLAGS		= $(PLATFORM_LFLAGS)
 
-OBJS		= $(OBJDIR)/collector.o \
-		  $(OBJDIR)/unix-threads-primitives.o \
-		  $(OBJDIR)/unix-spy-interfaces.o \
-		  $(OBJDIR)/unix-support.o \
-		  $(OBJDIR)/heap-display.o \
-		  $(OBJDIR)/heap-utils.o \
-		  $(OBJDIR)/heap-trail.o \
-		  $(OBJDIR)/heap-order1.o \
-		  $(OBJDIR)/heap-order2.o \
-		  $(OBJDIR)/heap-table.o
+HARP_CFLAGS     = -DOPEN_DYLAN_BACKEND_HARP
 
-HARP_SUPPORT_DIR = $(srcdir)/harp-support/$(OPEN_DYLAN_PLATFORM_NAME)
-HARP_OBJS        = $(HARP_SUPPORT_DIR)/runtime.o \
-                   $(HARP_SUPPORT_DIR)/dylan-support.o
+LLVM_CFLAGS     = -DOPEN_DYLAN_BACKEND_LLVM \
+	          -DOPEN_DYLAN_RUNTIME_HEADER=\"llvm-$(OPEN_DYLAN_TARGET_PLATFORM)-runtime.h\" \
+		  -I. \
+		  -fexceptions
+LLVM_LFLAGS     = -fexceptions
 
-LLVM_RUNTIME_OBJS =
+C_CFLAGS        = -DOPEN_DYLAN_BACKEND_C
 
-C_RUNTIME_OBJS    =
+HARP_SUPPORT_DIR = $(srcdir)/harp-support/$(OPEN_DYLAN_TARGET_PLATFORM)
+HARP_RUNTIME_OBJS = \
+		  $(OBJDIR_HARP)/break.o \
+		  $(OBJDIR_HARP)/collector.o \
+		  $(OBJDIR_HARP)/debug-print.o \
+		  $(OBJDIR_HARP)/stack-walker.o \
+		  $(OBJDIR_HARP)/thread-utils.o \
+		  $(OBJDIR_HARP)/trace.o \
+		  $(OBJDIR_HARP)/unix-harp-support.o \
+		  $(OBJDIR_HARP)/unix-spy-interfaces.o \
+		  $(OBJDIR_HARP)/unix-threads-primitives.o \
+		  $(HARP_SUPPORT_DIR)/runtime.o
 
-ifeq ($(GC_CHOICE),mps)
-  OBJS += $(OBJDIR)/mps-dylan.o
+ifeq ($(HARP_COLLECTOR),MPS)
+  HARP_RUNTIME_OBJS += \
+		  $(OBJDIR_HARP)/mps-dylan.o \
+		  $(OBJDIR_HARP)/heap-display.o \
+		  $(OBJDIR_HARP)/heap-utils.o \
+		  $(OBJDIR_HARP)/heap-trail.o \
+		  $(OBJDIR_HARP)/heap-order1.o \
+		  $(OBJDIR_HARP)/heap-order2.o \
+		  $(OBJDIR_HARP)/heap-table.o \
+		  $(OBJDIR_HARP)/unix-mps-support.o
 endif
 
-HARP_RUNTIME_LIBDEST  = $(LIBDEST)/runtime/harp-$(OPEN_DYLAN_PLATFORM_NAME)
-LLVM_RUNTIME_LIBDEST  = $(LIBDEST)/runtime/llvm-$(OPEN_DYLAN_PLATFORM_NAME)
-C_RUNTIME_LIBDEST     = $(LIBDEST)/runtime/c-$(OPEN_DYLAN_PLATFORM_NAME)
+LLVM_RUNTIME_GEN = $(OPEN_DYLAN_TARGET_PLATFORM)-runtime.bc
+LLVM_RUNTIME_HEADER = llvm-$(OPEN_DYLAN_TARGET_PLATFORM)-runtime.h
+LLVM_RUNTIME_OBJS = \
+		  $(OBJDIR_LLVM)/$(OPEN_DYLAN_TARGET_PLATFORM)-runtime.o \
+		  $(OBJDIR_LLVM)/break.o \
+		  $(OBJDIR_LLVM)/collector.o \
+		  $(OBJDIR_LLVM)/stack-walker.o \
+		  $(OBJDIR_LLVM)/thread-utils.o \
+		  $(OBJDIR_LLVM)/unix-spy-interfaces.o \
+		  $(OBJDIR_LLVM)/llvm-runtime-init.o \
+		  $(OBJDIR_LLVM)/llvm-nlx.o \
+		  $(OBJDIR_LLVM)/llvm-posix-os.o \
+		  $(OBJDIR_LLVM)/llvm-posix-threads.o \
+		  $(OBJDIR_LLVM)/llvm-exceptions.o
 
-all: $(OBJS) $(PLATFORM_RUNTIME_LIBRARIES)
+ifeq ($(LLVM_COLLECTOR),MPS)
+  LLVM_RUNTIME_OBJS += \
+		  $(OBJDIR_LLVM)/mps-dylan.o \
+		  $(OBJDIR_LLVM)/heap-display.o \
+		  $(OBJDIR_LLVM)/heap-utils.o \
+		  $(OBJDIR_LLVM)/heap-trail.o \
+		  $(OBJDIR_LLVM)/heap-order1.o \
+		  $(OBJDIR_LLVM)/heap-order2.o \
+		  $(OBJDIR_LLVM)/heap-table.o \
+		  $(OBJDIR_LLVM)/unix-mps-support.o
+endif
+
+ifdef DARWIN
+mach_exc.h mach_excServer.c:
+	mig /usr/include/mach/mach_exc.defs
+
+$(OBJDIR_LLVM)/llvm-exceptions.o: mach_exc.h
+
+LLVM_RUNTIME_OBJS += $(OBJDIR_LLVM)/mach_excServer.o
+endif
+
+C_RUNTIME_OBJS	= $(OBJDIR_C)/break.o \
+		  $(OBJDIR_C)/collector.o \
+		  $(OBJDIR_C)/debug-print.o \
+		  $(OBJDIR_C)/stack-walker.o \
+		  $(OBJDIR_C)/thread-utils.o \
+		  $(OBJDIR_C)/trace.o \
+		  $(OBJDIR_C)/unix-spy-interfaces.o \
+		  $(OBJDIR_C)/c-run-time.o \
+		  $(OBJDIR_C)/c-support.o \
+		  $(OBJDIR_C)/c-primitives-debug.o \
+		  $(OBJDIR_C)/c-primitives-math.o \
+		  $(OBJDIR_C)/c-run-time-nlx.o \
+		  $(OBJDIR_C)/posix-threads.o
+
+HARP_RUNTIME_LIBDEST  = $(LIBDEST)/runtime/harp-$(OPEN_DYLAN_TARGET_PLATFORM)
+LLVM_RUNTIME_LIBDEST  = $(LIBDEST)/runtime/llvm-$(OPEN_DYLAN_TARGET_PLATFORM)
+C_RUNTIME_LIBDEST     = $(LIBDEST)/runtime/c-$(OPEN_DYLAN_TARGET_PLATFORM)
+
+runtime-libraries: $(PLATFORM_RUNTIME_LIBRARIES)
 
 $(HARP_RUNTIME_LIBDEST):
 	mkdir -p $(HARP_RUNTIME_LIBDEST)
@@ -95,37 +203,69 @@ $(LLVM_RUNTIME_LIBDEST):
 $(C_RUNTIME_LIBDEST):
 	mkdir -p $(C_RUNTIME_LIBDEST)
 
-$(OBJDIR)/%.o: $(srcdir)/%.c
-	mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -MMD -c -o $@ $<
+$(OBJDIR_HARP)/%.o: $(srcdir)/%.c
+	mkdir -p $(OBJDIR_HARP)
+	$(CC) $(CFLAGS) $(HARP_CFLAGS) $(HARP_GC_CFLAGS) -MMD -c -o $@ $<
 
-$(HARP_RUNTIME_LIBRARY): $(OBJS) $(HARP_OBJS)
-	$(AR) $(HARP_RUNTIME_LIBRARY) $(OBJS) $(HARP_SUPPORT_DIR)/runtime.o
+$(LLVM_RUNTIME_GEN) $(LLVM_RUNTIME_HEADER): $(OPEN_DYLAN_LLVM_RUNTIME_GENERATOR)
+	$(OPEN_DYLAN_LLVM_RUNTIME_GENERATOR) \
+	  $(top_srcdir)/sources/dylan/dylan.lid $(OPEN_DYLAN_TARGET_PLATFORM)
 
-install-harp-runtime: $(HARP_RUNTIME_LIBRARY) $(HARP_RUNTIME_LIBDEST) $(HARP_OBJS)
+$(OBJDIR_LLVM)/%.o: %.c $(LLVM_RUNTIME_HEADER)
+	mkdir -p $(OBJDIR_LLVM)
+	$(CC) $(CFLAGS) $(LLVM_CFLAGS) $(LLVM_GC_CFLAGS) -MMD -c -o $@ $<
+
+$(OBJDIR_LLVM)/%.o: %.bc
+	mkdir -p $(OBJDIR_LLVM)
+	$(CC) $(LFLAGS) $(LLVM_LFLAGS) -c -o $@ $<
+
+$(OBJDIR_C)/%.o: $(srcdir)/%.c
+	mkdir -p $(OBJDIR_C)
+	$(CC) $(CFLAGS) $(C_CFLAGS) $(C_GC_CFLAGS) -MMD -c -o $@ $<
+
+$(HARP_RUNTIME_LIBRARY): $(HARP_RUNTIME_OBJS)
+	$(AR) $(HARP_RUNTIME_LIBRARY) $(HARP_RUNTIME_OBJS)
+
+install-harp-runtime: $(HARP_RUNTIME_LIBRARY) $(HARP_RUNTIME_LIBDEST)
 	cp -fp $(HARP_RUNTIME_LIBRARY) $(HARP_RUNTIME_LIBDEST)
-	cp -fp $(HARP_OBJS) $(HARP_RUNTIME_LIBDEST)
+	cp -fp $(HARP_SUPPORT_DIR)/dylan-support.o $(HARP_RUNTIME_LIBDEST)
 	cp -fp $(HARP_SUPPORT_DIR)/dylan-elf-dll.script $(LIBDEST)
 	cp -fp $(HARP_SUPPORT_DIR)/dylan-elf-exe.script $(LIBDEST)
 
-$(LLVM_RUNTIME_LIBRARY): $(OBJS) $(LLVM_RUNTIME_OBJS)
-	$(AR) $(LLVM_RUNTIME_LIBRARY) $(OBJS) $(LLVM_RUNTIME_OBJS)
+$(LLVM_RUNTIME_LIBRARY): $(LLVM_RUNTIME_OBJS)
+	$(AR) $(LLVM_RUNTIME_LIBRARY) $(LLVM_RUNTIME_OBJS)
 
 install-llvm-runtime: $(LLVM_RUNTIME_LIBRARY) $(LLVM_RUNTIME_LIBDEST)
 	cp -fp $(LLVM_RUNTIME_LIBRARY) $(LLVM_RUNTIME_LIBDEST)
+	@if [ x$(LLVM_COLLECTOR) = xBDW_GC ] && [ -n "$(BDW_GC_STATIC)" ]; then \
+	    cp -fp $(BDW_GC_STATIC_LIB) $(LLVM_RUNTIME_LIBDEST); \
+	fi
 
-$(C_RUNTIME_LIBRARY): $(OBJS) $(C_RUNTIME_OBJS)
-	$(AR) $(C_RUNTIME_LIBRARY) $(OBJS) $(C_RUNTIME_OBJS)
+$(C_RUNTIME_LIBRARY): $(C_RUNTIME_OBJS)
+	$(AR) $(C_RUNTIME_LIBRARY) $(C_RUNTIME_OBJS)
 
-install-c-runtime: $(C_RUNTIME_LIBRARY) $(C_RUNTIME_LIBDEST)
+$(INCDEST):
+	mkdir -p $(INCDEST)
+
+install-c-runtime: $(C_RUNTIME_LIBRARY) $(C_RUNTIME_LIBDEST) $(INCDEST)
 	cp -fp $(C_RUNTIME_LIBRARY) $(C_RUNTIME_LIBDEST)
+	cp -fp $(srcdir)/trace.h $(INCDEST)
+	cp -fp $(srcdir)/run-time.h $(INCDEST)
+	@if [ x$(C_COLLECTOR) = xBDW_GC ] && [ -n "$(BDW_GC_STATIC)" ]; then \
+	    cp -fp $(BDW_GC_STATIC_LIB) $(C_RUNTIME_LIBDEST); \
+	fi
+
 
 install: $(PLATFORM_INSTALL_RUNTIMES)
 
 clean:
-	rm -rf $(OBJDIR)
+	rm -rf $(OBJDIR_HARP) $(OBJDIR_LLVM) $(OBJDIR_C)
+	rm -f $(LLVM_RUNTIME_GEN) $(LLVM_RUNTIME_HEADER)
+	rm -f mach_exc*
 
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	cd $(top_builddir) && ./config.status $(subdir)/Makefile
 
--include $(OBJS:%.o=%.d)
+-include $(HARP_RUNTIME_OBJS:%.o=%.d)
+-include $(LLVM_RUNTIME_OBJS:%.o=%.d)
+-include $(C_RUNTIME_OBJS:%.o=%.d)

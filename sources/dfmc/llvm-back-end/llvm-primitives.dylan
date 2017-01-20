@@ -1,6 +1,6 @@
 Module: dfmc-llvm-back-end
 Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
-              Additional code is Copyright 2009-2010 Gwydion Dylan Maintainers
+              Additional code is Copyright 2009-2013 Gwydion Dylan Maintainers
               All rights reserved.
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
@@ -47,16 +47,22 @@ define macro &primitive-descriptor-definer
                  = primitive-emitter-method (?parameters) => (?values)
                      ?body
                    end;
+               let declarator
+                 = vector(name: ?"name",
+                          parameter-names:
+                            primitive-parameter-names(?parameters),
+                          parameter-types-spec:
+                            primitive-parameter-types(?parameters),
+                          value-types-spec:
+                            primitive-parameter-types(?values));
                let attributes = #[?adjectives];
                make(<llvm-primitive-descriptor>,
                     emitter: emitter,
                     mapped-emitter:
-                      make-primitive-mapped-emitter
-                        (emitter, attributes,
-                         parameter-types-spec:
-                           primitive-parameter-types(?parameters),
-                         value-types-spec:
-                           primitive-parameter-types(?values)),
+                      apply(make-primitive-mapped-emitter,
+                            emitter, attributes,
+                            declarator),
+                    declarator: declarator,
                     attributes: attributes);
              end;
          do-define-llvm-primitive-descriptor(?#"name", ?name ## "-descriptor") }
@@ -214,9 +220,15 @@ define macro primitive-call-emitter-method
            let attribute-list = function.llvm-function-attribute-list;
            llvm-builder-declare-global(be, function.llvm-global-name,
                                        function);
-           ins--call(be, function, parameters,
-                     calling-convention: calling-convention,
-                     attribute-list: attribute-list)
+           if (member?(#"can-unwind", ?descriptor.primitive-attributes))
+             op--call(be, function, parameters,
+                      calling-convention: calling-convention,
+                      attribute-list: attribute-list)
+           else
+             ins--call(be, function, parameters,
+                       calling-convention: calling-convention,
+                       attribute-list: attribute-list)
+           end if
          end }
 values:
     { } => { }
@@ -495,29 +507,204 @@ define function call-primitive
   apply(primitive.primitive-emitter, back-end, arguments)
 end function;
 
+define method llvm-primitive-values-rest?
+    (back-end :: <llvm-back-end>, desc :: <llvm-primitive-descriptor>)
+ => (rest? :: <boolean>);
+  apply(primitive-rest-values-test, back-end,
+        desc.primitive-function-declarator)
+end method;
+
+define function primitive-rest-values-test
+    (back-end :: <llvm-back-end>,
+     #key value-types-spec :: <simple-object-vector> = #[],
+     #all-keys)
+ => (rest? :: <boolean>);
+  ~empty?(value-types-spec) & value-types-spec.last == #"rest"
+end function;
+
+// Signatures
+define method llvm-primitive-signature
+    (back-end :: <llvm-back-end>, desc :: <llvm-primitive-descriptor>)
+ => (signature-model :: <&signature>);
+  apply(make-primitive-signature, back-end, desc,
+        desc.primitive-function-declarator)
+end method;
+
+define method make-primitive-signature
+    (back-end :: <llvm-back-end>, descriptor :: <llvm-primitive-descriptor>,
+     #key name :: <string>,
+          parameter-names :: <simple-object-vector> = #[],
+          parameter-types-spec :: <simple-object-vector>,
+          value-types-spec :: <simple-object-vector>,
+     #all-keys)
+ => (signature-model :: <&signature>);
+  let (required-parameter-type-specs, required-parameter-names, rest-parameter-name)
+    = if (~empty?(parameter-types-spec) & parameter-types-spec.last == #"rest")
+        let required-count = parameter-types-spec.size - 1;
+        values(copy-sequence(parameter-types-spec, end: required-count),
+               copy-sequence(parameter-names, end: required-count),
+               parameter-names.last)
+      else
+        values(parameter-types-spec, parameter-names, #f)
+      end if;
+  let (required-value-type-specs, values-rest?)
+    = if (~empty?(value-types-spec) & value-types-spec.last == #"rest")
+        let required-count = value-types-spec.size - 1;
+        values(copy-sequence(value-types-spec, end: required-count), #t)
+      else
+        values(value-types-spec, #f)
+      end if;
+  ^make(<&signature>,
+        rest-value?:     values-rest?,
+        rest?:           true?(rest-parameter-name),
+        number-values:   size(required-value-type-specs),
+        number-required: size(required-parameter-type-specs),
+        required:        as-sig-types(map(dylan-value,
+                                          required-parameter-type-specs)),
+        values:          as-sig-types(map(dylan-value,
+                                          required-value-type-specs)))
+end method;
+
+
+/// Primitive function debug info
+
+define method llvm-emit-primitive-dbg-function
+    (back-end :: <llvm-back-end>, function :: <llvm-function>,
+     dbg-file :: <llvm-metadata-value>,desc :: <llvm-primitive-descriptor>)
+ => ();
+  let (dbg-function :: <llvm-metadata-value>, dbg-parameters :: <sequence>)
+    = apply(make-primitive-dbg-function, back-end, function, dbg-file,
+            desc, desc.primitive-function-declarator);
+  add!(back-end.llvm-back-end-dbg-functions, dbg-function);
+
+  // Emit a llvm.dbg.value call for each parameter
+  ins--dbg(back-end, 0, 0, dbg-function, #f);
+  for (dbg-parameter in dbg-parameters,
+       argument in function.llvm-function-arguments)
+    let v = llvm-make-dbg-value-metadata(argument);
+    ins--call-intrinsic(back-end, "llvm.dbg.value",
+                        vector(v, i64(0), dbg-parameter));
+  end for;
+end method;
+
+define method make-primitive-dbg-function
+    (back-end :: <llvm-back-end>, function :: <llvm-function>,
+     dbg-file :: <llvm-metadata-value>,
+     descriptor :: <llvm-primitive-descriptor>,
+     #key name :: <string>,
+          parameter-names :: <simple-object-vector> = #[],
+          parameter-types-spec :: <simple-object-vector>,
+          value-types-spec :: <simple-object-vector>,
+     #all-keys)
+ => (dbg-function :: <llvm-metadata-value>, dbg-parameters :: <sequence>);
+  let dbg-parameter-types = make(<stretchy-object-vector>);
+
+  let (required-parameter-type-specs, required-parameter-names,
+       rest-parameter-name)
+    = if (~empty?(parameter-types-spec) & parameter-types-spec.last == #"rest")
+        let required-count = parameter-types-spec.size - 1;
+        values(copy-sequence(parameter-types-spec, end: required-count),
+               copy-sequence(parameter-names, end: required-count),
+               parameter-names.last)
+      else
+        values(parameter-types-spec, parameter-names, #f)
+      end if;
+  let (required-value-type-specs, values-rest?)
+    = if (~empty?(value-types-spec) & value-types-spec.last == #"rest")
+        let required-count = value-types-spec.size - 1;
+        values(copy-sequence(value-types-spec, end: required-count), #t)
+      else
+        values(value-types-spec, #f)
+      end if;
+
+  // Required parameters
+  for (type-spec in required-parameter-type-specs)
+    add!(dbg-parameter-types,
+         llvm-reference-dbg-type(back-end, dylan-value(type-spec)));
+  end for;
+
+  // Remaining parameters
+  if (rest-parameter-name)
+    add!(dbg-parameter-types, llvm-make-dbg-unspecified-parameters());
+  end if;
+
+  // Return value
+  let dbg-return-type
+    = if (values-rest?)
+        llvm-reference-dbg-type(back-end, back-end.%mv-struct-type)
+      elseif (required-value-type-specs.empty?)
+        #f
+      else
+        let return-types
+          = map(method (type-name :: <symbol>)
+                  llvm-reference-dbg-type(back-end, dylan-value(type-name))
+                end method,
+                required-value-type-specs);
+        if (return-types.size = 1)
+          return-types.first
+        else
+          error("struct return for runtime primitives is not yet implemented");
+        end if
+      end if;
+  let dbg-function-type
+    = llvm-make-dbg-function-type(dbg-file, dbg-return-type,
+                                  dbg-parameter-types);
+
+  let dbg-function
+    = llvm-make-dbg-function(dbg-file,
+                             name,
+                             function.llvm-global-name,
+                             dbg-file,
+                             0,
+                             dbg-function-type,
+                             definition?: #t,
+                             function: function);
+
+  let dbg-parameters
+    = map(method (parameter-name, dbg-parameter-type, index)
+            llvm-make-dbg-local-variable(#"argument",
+                                         dbg-function,
+                                         as(<string>, parameter-name),
+                                         dbg-file, 0,
+                                         dbg-parameter-type,
+                                         arg: index)
+          end,
+          required-parameter-names, dbg-parameter-types, range(from: 1));
+  values(dbg-function, dbg-parameters)
+end method;
+
 
 /// Runtime support variables
 
 define class <llvm-runtime-variable-descriptor> (<object>)
+  constant slot runtime-variable-name :: <symbol>,
+    required-init-keyword: name:;
   constant slot runtime-variable-type-name :: <symbol>,
     required-init-keyword: type-name:;
   constant slot runtime-variable-init-function :: <function>,
     required-init-keyword: init-function:;
+  constant slot runtime-variable-attributes :: <sequence>,
+    required-init-keyword: attributes:;
   constant slot runtime-variable-section :: <symbol>,
     required-init-keyword: section:;
-  slot runtime-variable-global :: <llvm-global-variable>;
 end class;
 
 define macro runtime-variable-definer
-  { define runtime-variable ?:name :: ?type-name:name = ?init:expression,
-           #key ?section:expression = #"untraced-data"; }
+  { define ?adjectives:* runtime-variable ?:name :: ?type-name:name
+        = ?init:expression,
+        #key ?section:expression = #"untraced-data"; }
     => { define constant ?name ## "-descriptor"
            = make(<llvm-runtime-variable-descriptor>,
+		  name: ?#"name",
                   type-name: ?#"type-name",
                   init-function: method() ?init end,
+		  attributes: #[?adjectives],
                   section: ?section);
          do-define-llvm-runtime-variable-descriptor
            (?#"name", ?name ## "-descriptor") }
+adjectives:
+    { } => { }
+    { ?adjective:name ...} => { ?#"adjective", ... }
 end macro;
 
 define constant $llvm-runtime-variable-descriptors = make(<object-table>);
@@ -527,3 +714,61 @@ define function do-define-llvm-runtime-variable-descriptor
  => ();
   $llvm-runtime-variable-descriptors[name] := descriptor;
 end function;
+
+define method llvm-runtime-variable
+    (back-end :: <llvm-back-end>, module :: <llvm-module>,
+     descriptor :: <llvm-runtime-variable-descriptor>,
+     #key initialized? = #f)
+ => (reference :: <llvm-constant-value>)
+  let mangled-name
+    = raw-mangle(back-end, as(<string>, descriptor.runtime-variable-name));
+  let global = element(module.llvm-global-table, mangled-name, default: #f);
+  if (global)
+    global
+  else
+    let type-name = descriptor.runtime-variable-type-name;
+    let type
+      = select (type-name)
+          #"<teb>" =>
+	    llvm-reference-type(back-end, back-end.llvm-teb-struct-type);
+	  otherwise =>
+	    llvm-reference-type(back-end, dylan-value(type-name));
+	end select;
+    let linkage = #"external";
+    let attributes = descriptor.runtime-variable-attributes;
+    let thread-local?
+      = member?(#"thread-local", attributes)
+      & llvm-thread-local-support?(back-end);
+    let section
+      = llvm-section-name(back-end, descriptor.runtime-variable-section,
+                          thread-local?: thread-local?);
+    let global
+      = make(<llvm-global-variable>,
+	     name: mangled-name,
+	     type: llvm-pointer-to(back-end, type),
+	     initializer:
+	       if (initialized?)
+		 let init-value = descriptor.runtime-variable-init-function();
+		 if (init-value)
+		   emit-reference(back-end, module, init-value)
+		 else
+		   make(<llvm-null-constant>, type: type)
+		 end if
+	       end,
+	     constant?: #f,
+	     linkage: linkage,
+	     thread-local: thread-local?,
+	     section: section);
+    llvm-builder-define-global(back-end, mangled-name, global)
+  end
+end method;
+
+define method llvm-runtime-variable
+    (back-end :: <llvm-back-end>, module :: <llvm-module>,
+     name :: <symbol>,
+     #key initialized? = #f)
+ => (reference :: <llvm-constant-value>)
+  llvm-runtime-variable(back-end, module,
+                        $llvm-runtime-variable-descriptors[name],
+                        initialized?: initialized?)
+end method;

@@ -16,6 +16,7 @@ define constant $caret-width :: <integer> = 2;
 define sealed class <gtk-port> (<basic-port>)
   sealed slot %app-context = #f;
   sealed slot %app-shell   = #f;
+  sealed slot %focus       = #f;
   sealed slot %modifier-map :: <simple-object-vector> = #[];
   // Cache for image cursors
   sealed slot %cursor-cache :: <object-table> = make(<object-table>);
@@ -24,7 +25,7 @@ end class <gtk-port>;
 
 define sealed method initialize
     (_port :: <gtk-port>, #key server-path) => ()
-  initialize-gtk();
+  gtk-init(0, "");
   next-method();
 end method initialize;
 
@@ -35,8 +36,7 @@ define sideways method class-for-make-port
  => (class :: <class>, initargs :: false-or(<sequence>))
   values(<gtk-port>,
          concatenate(initargs,
-                     list(event-processor-type:,
-                          if ($os-name == #"win32") #"n" else #"n+1" end)))
+                     list(event-processor-type:, #"n")))
 end method class-for-make-port;
 
 define sealed method port-type
@@ -59,10 +59,10 @@ end method destroy-port;
 define function shutdown-gtk-duim ()
   let ports :: <stretchy-object-vector> = make(<stretchy-vector>);
   do-ports(method (_port)
-	     when (instance?(_port, <gtk-port>))
-	       add!(ports, _port)
-	     end
-	   end method);
+             when (instance?(_port, <gtk-port>))
+               add!(ports, _port)
+             end
+           end method);
   do(destroy-port, ports)
 end function shutdown-gtk-duim;
 
@@ -92,14 +92,14 @@ define sealed method do-pointer-position
 end method do-pointer-position;
 
 define sealed method do-set-pointer-position
-    (_port :: <gtk-port>, pointer :: <pointer>, sheet :: <sheet>, 
+    (_port :: <gtk-port>, pointer :: <pointer>, sheet :: <sheet>,
      x :: <integer>, y :: <integer>)
  => ()
   ignoring("do-set-pointer-position")
 end method do-set-pointer-position;
 
 define sealed method do-set-pointer-position
-    (_port :: <gtk-port>, pointer :: <pointer>, sheet :: <display>, 
+    (_port :: <gtk-port>, pointer :: <pointer>, sheet :: <display>,
      x :: <integer>, y :: <integer>) => ()
   ignoring("do-set-pointer-position")
 end method do-set-pointer-position;
@@ -153,15 +153,22 @@ define method grab-pointer
   when (widget)
     //---*** Get real current time...
     let current-time = 0;
-    result
-      := with-gdk-lock gdk-pointer-grab(widget,
-                                        0,		// owner events
-                                        logior($GDK-POINTER-MOTION-MASK,
-                                               $GDK-BUTTON-PRESS-MASK,
-                                               $GDK-BUTTON-RELEASE-MASK),
-                                        null-pointer(<GdkWindow>),		// confine to
-                                        null-pointer(<GdkCursor>),		// cursor
-                                        current-time) end;
+    let device = gtk-get-current-event-device();
+    if (null-pointer?(device))
+      let display = gdk-display-get-default();
+      device := gdk-device-manager-get-client-pointer(gdk-display-get-device-manager(display));
+    end;
+    result := with-gdk-lock
+      gdk-device-grab(device,
+                      gtk-widget-get-window(widget),
+                      $gdk-ownership-none,
+                      #f,
+                      logior($gdk-pointer-motion-mask,
+                             $gdk-button-press-mask,
+                             $gdk-button-release-mask),
+                      null-pointer(<GdkCursor>),
+                      current-time)
+    end;
   end;
   result ~= 0
 end method grab-pointer;
@@ -176,7 +183,12 @@ define method ungrab-pointer
   if (widget)
     //---*** How do we get the current time?
     let current-time = 0;
-    with-gdk-lock gdk-pointer-ungrab(current-time) end;
+    let device = gtk-get-current-event-device();
+    if (null-pointer?(device))
+      let display = gdk-display-get-default();
+      device := gdk-device-manager-get-client-pointer(gdk-display-get-device-manager(display));
+    end;
+    with-gdk-lock gdk-device-ungrab(device, current-time) end;
     #t
   end
 end method ungrab-pointer;
@@ -251,13 +263,21 @@ end method do-hide-caret;
 define sealed method note-focus-in
     (_port :: <gtk-port>, sheet :: <sheet>) => ()
   next-method();
-  ignoring("note-focus-in")
+  let mirror = sheet-mirror(sheet);
+  let widget = mirror & mirror-widget(mirror);
+  when (widget)
+    _port.%focus := widget;
+    gtk-widget-grab-focus(widget);
+  end;
+  // let frame = sheet-frame(sheet);
+  // frame & call-in-frame(frame, method () set-focus(sheet) end)
 end method note-focus-in;
 
 define sealed method note-focus-out
     (_port :: <gtk-port>, sheet :: <sheet>) => ()
   next-method();
-  ignoring("note-focus-out")
+  _port.%focus := #f;
+  ignoring("note-focus-out");
 end method note-focus-out;
 
 
@@ -302,8 +322,8 @@ end method query-widget-for-color;
 // We arrange to map this to something close to ANSI_VAR_FONT
 define constant $gtk-default-text-style
     = make(<text-style>,
-	   family: #"sans-serif", weight: #"normal",
-	   slant: #"roman", size: #"normal");
+           family: #"sans-serif", weight: #"normal",
+           slant: #"roman", size: #"normal");
 
 // Note that this "default default" text style is _not_ the one that we use
 // for gadgets.  There's another method for that on <gtk-gadget-mixin>.

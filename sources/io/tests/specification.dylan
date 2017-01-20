@@ -6,21 +6,6 @@ Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
-define library-spec io ()
-  module streams;
-  // module streams-internals;
-  module pprint;
-  module print;
-  // module print-internals;
-  // module format;
-  // module format-internals;
-  // module standard-io;
-  // module format-out;
-  suite universal-streams-suite;
-  suite additional-streams-suite;
-  suite format-test-suite;
-end library-spec io;
-
 define module-spec streams ()
 
   // Constants
@@ -51,7 +36,7 @@ define module-spec streams ()
   open generic-function read-text (<stream>, <integer>, #"key", #"on-end-of-stream")
     => (<object>);
   open generic-function read-text-into! (<stream>, <integer>, <string>,
-					 #"key", #"start", #"on-end-of-stream")
+                                         #"key", #"start", #"on-end-of-stream")
     => (<object>);
   function skip-through (<stream>, <object>, #"key", #"test")
     => (<boolean>);
@@ -83,7 +68,7 @@ define module-spec streams ()
   open generic-function inner-stream-setter (<stream>, <wrapper-stream>)
     => (<stream>);
   open generic-function outer-stream (<stream>) => (<wrapper-stream>);
-  open generic-function outer-stream-setter 
+  open generic-function outer-stream-setter
        (<wrapper-stream>, <stream>)
     => (<wrapper-stream>);
 
@@ -146,6 +131,12 @@ define module-spec streams ()
   macro-test with-output-buffer-test;
   macro-test with-output-to-string-test;
   macro-test with-input-from-string-test;
+
+  // Indenting streams
+  sealed instantiable class <indenting-stream> (<wrapper-stream>);
+  function indent (<indenting-stream>, <integer>)
+    => ();
+  macro-test with-indentation-test;
 end module-spec streams;
 
 
@@ -156,9 +147,9 @@ define module-spec pprint ()
   sealed instantiable class <pretty-stream> (<stream>);
 
   function pprint-logical-block (<stream>) => ();
-  function pprint-newline (<symbol>, <stream>) => ();
-  function pprint-indent (<symbol>, <integer>, <stream>) => ();
-  function pprint-tab (<symbol>, <integer>, <integer>, <stream>) => ();
+  function pprint-newline (one-of(#"linear", #"fill", #"miser", #"mandatory"), <stream>) => ();
+  function pprint-indent (one-of(#"block", #"current"), <integer>, <stream>) => ();
+  function pprint-tab (one-of(#"line", #"line-relative", #"section", #"section-relative"), <integer>, <integer>, <stream>) => ();
 
   macro-test printing-logical-block-test;
 end module-spec pprint;
@@ -177,3 +168,18 @@ define module-spec print ()
 
   macro-test printing-object-test;
 end module-spec print;
+
+define library-spec io ()
+  module streams;
+  // module streams-internals;
+  module pprint;
+  module print;
+  // module print-internals;
+  // module format;
+  // module format-internals;
+  // module standard-io;
+  // module format-out;
+  suite universal-streams-suite;
+  suite additional-streams-suite;
+  suite format-test-suite;
+end library-spec io;

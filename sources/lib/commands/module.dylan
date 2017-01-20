@@ -48,6 +48,7 @@ end module commands;
 define module commands-internals
   use dylan;
   use common-extensions;
+  use simple-format;
   use commands, export: all;
 
   export command-pattern-string,

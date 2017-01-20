@@ -50,9 +50,8 @@ Though these script files were poorly documented and insufficiently
 flexible, they did inspire the introduction of a real scripting language
 to direct the final stages of compilation in Open Dylan.
 
-`Jam <http://www.perforce.com/jam/jam.html>`_ is a build tool designed
-by Christopher Seiwald, founder of `Perforce
-Software <http://www.perforce.com/>`_. It is similar in some ways to
+`Jam`_ is a build tool designed by Christopher Seiwald, founder of
+`Perforce Software`_. It is similar in some ways to
 ``make``, the traditional Unix build tool. However, instead of using
 only simple declarative rules to define build targets and the
 dependencies between them, Jam contains a full scripting language,
@@ -73,13 +72,11 @@ Normally you can simply use the build script supplied with Open Dylan
 that corresponds to the external linker you will be using. The
 supplied build scripts include the following:
 
- ``x86-win32-vc6-build.jam``
+``x86-win32-vc6-build.jam``
     Build script for Microsoft Visual C++ 6.0.
- ``x86-win32-vc7-build.jam``
+``x86-win32-vc7-build.jam``
     Build script for Microsoft Visual C++ .NET.
- ``x86-win32-mingw-build.jam``
-    Build script for `MinGW <http://www.mingw.org/>`_ gcc.
- ``x86-linux-build.jam``
+``x86-linux-build.jam``
     Build script for x86 Linux systems using gcc.
 
 The default build script is ``platform-name-build.jam``. You can select
@@ -88,15 +85,12 @@ dialog in the IDE, or using the ``-build-script`` option on the console
 compiler or console environment command-line.
 
 Build scripts are written using the Jam script language, as described in
-the `Jam manual
-page <http://public.perforce.com/public/jam/src/Jam.html>`_. Most
-Open Dylan build scripts ``include`` the ``mini-jambase.jam``
-file, which contains excerpts from the
-`Jambase <http://public.perforce.com/public/jam/src/Jambase>`_ file
-included with Perforce Jam and described in the `Jambase
-Reference <http://public.perforce.com/public/jam/src/Jambase.html>`_.
+the `Jam manual page`_. Most Open Dylan build scripts ``include`` the
+``mini-jambase.jam`` file, which contains excerpts from the `Jambase`_
+file included with Perforce Jam and described in the `Jambase Reference`_.
 They can also make use of additional built-in rules defined by the
-Open Dylan build system, as described in `Additional Built-In Jam Rules`_.
+Open Dylan build system, as described in `Additional Built-In Jam Rules`_
+and `Built-In Jam Variables`_.
 
 How the Compiler Uses the Build System
 ======================================
@@ -163,22 +157,22 @@ file and builds the targets accordingly.
 The Open Dylan compiler's project manager expects the build
 script to define the following pseudo (``NotFile``) targets:
 
- ``exports``
+``exports``
     Describe exports.
- ``unify-dll``
+``unify-dll``
     Describe unify-dll.
- ``dll``
+``dll``
     Link the project as a dynamically-linked library.
- ``unify-exe``
+``unify-exe``
     Describe unify-exe.
- ``exe``
+``exe``
     Link the project as an executable program.
- ``release``
+``release``
     Describe release.
- ``clean-all``
+``clean-all``
     Remove build products in the top-level project, and in all of the
     non-system libraries that it uses.
- ``clean``
+``clean``
     Remove build products in the top-level project.
 
 Automatically-invoked Jam Rules
@@ -195,99 +189,144 @@ this is a list whose first element is the library name (from the
 component is the base name of the executable or shared library (from the
 ``Executable:`` keyword of the ``.mkf`` file).
 
-DylanLibrary *image* : *version* ;
-----------------------------------
+``DylanLibrary *image* : *version* ;``
+    Link a Dylan library as a shared library or executable image. This is
+    always the first rule invoked for a given library, and it is usually
+    charged with establishing the library target and setting global and
+    target-specific variables.
 
-Link a Dylan library as a shared library or executable image. This is
-always the first rule invoked for a given library, and it is usually
-charged with establishing the library target and setting global and
-target-specific variables.
+    The *version* argument normally contains two components, the first
+    obtained from the ``Major-version:`` keyword of the ``.mkf`` file, and
+    the second from the ``Minor-version:`` keyword.
 
-The *version* argument normally contains two components, the first
-obtained from the ``Major-version:`` keyword of the ``.mkf`` file, and
-the second from the ``Minor-version:`` keyword.
+``DylanLibraryLinkerOptions *image* : *options* ;``
+    Add the given options to the link command line of the shared library and
+    executable images. The link options provided in the ``Linker-options:``
+    keyword of the ``.mkf`` file are expanded using the usual Jam variable
+    expansion rules before being passed to this rule. (This allows
+    ``Linker-options:`` keywords in LID and HDP files to refer to
+    platform-specific variables such as ``$(guilflags)``).
 
-DylanLibraryLinkerOptions *image* : *options* ;
------------------------------------------------
+``DylanLibraryBaseAddress *image* : *address* ;``
+    Set the base address of the shared library. The compiler-computed base
+    addresses are probably only usable on the Win32 platform.
 
-Add the given options to the link command line of the shared library and
-executable images. The link options provided in the ``Linker-options:``
-keyword of the ``.mkf`` file are expanded using the usual Jam variable
-expansion rules before being passed to this rule. (This allows
-``Linker-options:`` keywords in LID and HDP files to refer to
-platform-specific variables such as ``$(guilflags)``).
+``DylanLibraryCLibraries *image* : *libraries* ;``
+    Link C (or other externally-derived) libraries into the shared library.
+    The link options provided in the ``C-libraries:`` keyword of the
+    ``.mkf`` file are expanded using the usual Jam variable expansion rules
+    before being passed to this rule.
 
-DylanLibraryBaseAddress *image* : *address* ;
----------------------------------------------
+``DylanLibraryCObjects *image* : *objects* ;``
+    Link C (or other externally-derived) object files into the shared
+    library.
 
-Set the base address of the shared library. The compiler-computed base
-addresses are probably only usable on the Win32 platform.
+``DylanLibraryCSources *image* : *sources* ;``
+    Link C source files into the shared library.
 
-DylanLibraryCLibraries *image* : *libraries* ;
-----------------------------------------------
+``DylanLibraryCHeaders *image* : *headers* ;``
+    This rule normally does nothing. The ``C-header-files:`` HDP/LID file is
+    normally used to ensure that files of various sorts (not just C header
+    files) are copied into the build directory.
 
-Link C (or other externally-derived) libraries into the shared library.
-The link options provided in the ``C-libraries:`` keyword of the
-``.mkf`` file are expanded using the usual Jam variable expansion rules
-before being passed to this rule.
+``DylanLibraryC++Sources *image* : *sources* ;``
+    Link C++ source files into the shared library.
 
-DylanLibraryCObjects *image* : *objects* ;
-------------------------------------------
+``DylanLibraryRCFiles *image* : *rcfiles* ;``
+    Link Win32 resource files into the shared library and executable.
 
-Link C (or other externally-derived) object files into the shared
-library.
+``DylanLibraryJamIncludes *image* : *includes* ;``
+    Include other Jam files into the build definition. This is typically
+    used via the ``jam-includes:`` keyword in the HDP/LID file. It is
+    useful for setting up extensions to library or include search
+    paths.
 
-DylanLibraryCSources *image* : *sources* ;
-------------------------------------------
-
-Link C source files into the shared library.
-
-DylanLibraryCHeaders *image* : *headers* ;
-------------------------------------------
-
-This rule normally does nothing. The ``C-header-files:`` HDP/LID file is
-normally used to ensure that files of various sorts (not just C header
-files) are copied into the build directory.
-
-DylanLibraryRCFiles *image* : *rcfiles* ;
------------------------------------------
-
-Link Win32 resource files into the shared library and executable.
-
-DylanLibraryJamIncludes *image* : *includes* ;
-----------------------------------------------
-
-Not yet implemented.
-
-DylanLibraryUses *image* : *library* : *dir* ;
-----------------------------------------------
-
-Link other Dylan libraries into the shared library. The *library*
-argument gives the name of the other library, and the *dir* argument
-gives the name of the other library's build directory. If *dir* is
-``system``, then the library is an installed system library.
+``DylanLibraryUses *image* : *library* : *dir* ;``
+    Link other Dylan libraries into the shared library. The *library*
+    argument gives the name of the other library, and the *dir* argument
+    gives the name of the other library's build directory. If *dir* is
+    ``system``, then the library is an installed system library.
 
 Additional Built-In Jam Rules
 =============================
 
 The build system defines the following additional built-in rules.
 
-IncludeMKF *includes* ;
------------------------
+``IncludeMKF *includes* ;``
+    Read each of the given ``.mkf`` files and invoke Jam rules as described
+    in `Automatically-invoked Jam Rules`_.
 
-Read each of the given ``.mkf`` files and invoke Jam rules as described
-in `Automatically-invoked Jam Rules`_.
+``DFMCMangle *name* ;``
+    Mangle the given *name* according to the Open Dylan compiler's
+    mangling rules. If *name* has a single component, it is considered to be
+    a raw name; if there are three components they correspond to the
+    variable-name, module-name, and library-name respectively.
 
-DFMCMangle *name* ;
--------------------
+Built-In Jam Variables
+======================
 
-Mangle the given *name* according to the Open Dylan compiler's
-mangling rules. If *name* has a single component, it is considered to be
-a raw name; if there are three components they correspond to the
-variable-name, module-name, and library-name respectively.
+By default, the Jam build system is provided with some values. Some of these
+are derived from the base Jam implementation and are documented in the
+`Jam manual page`_ while others are Open Dylan extensions.
+
+``.``
+   The build directory.
+
+   *Open Dylan extension.*
+
+``COMPILER_BACKEND``
+   The name of the compiler back-end currently in use. Typically one ``c``,
+   ``harp`` or ``llvm``.
+
+   *Open Dylan extension.*
+
+``JAMDATE``
+   The current date, in ISO-8601 format.
+
+``NT``
+   True on Windows.
+
+``OS``
+   The OS of the build host, not the target. This will typically be something
+   like ``linux``, ``freebsd``, ``darwin`` or ``win32``.
+
+``OSPLAT``
+   The CPU architecture of the build host, not the target. This will
+   typically be something like ``x86`` or ``x86_64``.
+
+``PERSONAL_ROOT``
+   The root of the destination build path, when the ``-personal-root`` compiler
+   option or the ``OPEN_DYLAN_USER_ROOT`` environment variable is set.
+
+   *Open Dylan extension.*
+
+``SYSTEM_BUILD_SCRIPTS``
+   The path where the installed build scripts can be found.
+
+   *Open Dylan extension.*
+
+``SYSTEM_ROOT``
+   The path where the installation of Open Dylan can be found.
+
+   *Open Dylan extension.*
+
+``TARGET_PLATFORM``
+   The Open Dylan identifier for the target platform. This is something
+   like ``x86-linux`` or ``x86_64-darwin``.
+
+   *Open Dylan extension.*
+
+``UNIX``
+   True on non-Windows platforms, like Linux, FreeBSD and Mac OS X.
 
 Editing Jam Files
 =================
 
-An Emacs major mode for Jam files can be found
-`here <http://www.tenfoot.dsl.pipex.com/emacs/jam-mode.el>`_.
+There is an `Emacs major mode`_ for editing Jam files.
+
+.. _Jam: http://www.perforce.com/resources/documentation/jam
+.. _Perforce Software: http://www.perforce.com/
+.. _Jam manual page: https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jam.html
+.. _Jambase: https://swarm.workshop.perforce.com/files/guest/perforce_software/jam/src/Jambase
+.. _Jambase reference: https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jambase.html
+.. _Emacs major mode: https://github.com/emacsmirror/jam-mode

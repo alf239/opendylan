@@ -9,7 +9,7 @@ define library sql-odbc-test
   use dylan;
   use common-dylan;
   use memory-manager;
-  use sql-odbc; 
+  use sql-odbc;
 
   use io;
   use c-ffi;
@@ -37,7 +37,7 @@ create
  *dbms-sql-statement-class*;
 end module;
 
-  
+
 
 define module sql-odbc-test-bignums
   use generic-arithmetic-common-dylan;
@@ -60,7 +60,7 @@ end module;
 
 define module sql-odbc-test
   use dylan;
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use memory-manager;
   use threads;
   use sql-odbc;

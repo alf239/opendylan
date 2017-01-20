@@ -33,7 +33,8 @@ define dont-copy-slots  <queueable-item-mixin>       using <dfm-copier> =
 
 define dont-copy-slots  <computation>                using <dfm-copier> =
   { computation-source-location => parent-source-location(),
-    computation-type => #f };
+    computation-type => #f,
+    %node-id => #f };
 
 define dont-copy-slots  <bind-exit>                  using <dfm-copier> =
   { %label => #f };
@@ -52,12 +53,16 @@ define dont-copy-slots  <emitted-object>             using <dfm-copier> =
 define dont-copy-slots  <&lambda>                    using <dfm-copier> =
   { lambda-heap            => #f,
     // private-signature-spec => #f,
-    // private-body-spec      => #f 
+    // private-body-spec      => #f
    };
 
 define dont-copy-slots  <&iep>                       using <dfm-copier> =
   { code              => #f };
 
+define dont-copy-slots  <temporary>                  using <dfm-copier> =
+  { %node-id     => #f };
+define dont-copy-slots  <object-reference>           using <dfm-copier> =
+  { %node-id     => #f };
 // If a call checked incompatible out of line, it might still become
 // compatible inline (and so amenable to upgrading and inlining), so
 // we reset its state in the inline copy.
@@ -112,7 +117,7 @@ define method do-deep-copy
 end method;
 
 
-define method deep-copy 
+define method deep-copy
     (copier :: <dfm-copier>, object :: <dood-slot-value-proxy>) => (value)
   deep-copy(copier, dood-force-slot-value-proxy(object))
 end method;
@@ -131,7 +136,7 @@ define method deep-copy
   let m = next-method();
   if (m == object) // maybe in process of being inline-only copied?
     element(walker-walked(copier), object, default: #f) | m
-  else 
+  else
     m
   end if
 end method;
@@ -151,7 +156,9 @@ define method do-deep-copy
   if (*dfm-copier-environment-context*)
     let state = entry-state(object);
     exits(state) := add-new!(exits(state), copy);
-    add-user!(state, copy);
+    dynamic-bind (*trace-dfm-callback* = #f)
+      add-user!(state, copy);
+    end
   end if;
   copy
 end method;
@@ -163,7 +170,7 @@ define method deep-copy
         | (copying-environment &
             inner-environment?(object, copying-environment)))
     maybe-do-deep-copy(copier, object);
-  else    
+  else
     object
   end if;
 end method;
@@ -175,7 +182,7 @@ define method deep-copy
         | (copying-environment &
             inner-environment?(environment(object), copying-environment)))
     maybe-do-deep-copy(copier, object);
-  else    
+  else
     object
   end if;
 end method;
@@ -187,7 +194,7 @@ define method deep-copy
         | (copying-environment &
             inner-environment?(environment(object), copying-environment)))
     maybe-do-deep-copy(copier, object);
-  else    
+  else
     object
   end if;
 end method;
@@ -211,7 +218,7 @@ end method;
 // For now, this handles manually mapping the type vectors in the
 // signatures of non-key methods (enough for the FFI).
 define method do-deep-copy
-    (copier :: <dfm-copier>, object :: <&signature>) 
+    (copier :: <dfm-copier>, object :: <&signature>)
  => (value :: <&signature>)
   let copy = next-method();
   let copy-required = ^signature-required(copy);
@@ -226,7 +233,7 @@ define method do-deep-copy
 end method;
 
 define method do-deep-copy
-    (copier :: <dfm-copier>, object :: <&keyword-signature>) 
+    (copier :: <dfm-copier>, object :: <&keyword-signature>)
  => (value :: <&signature>)
   let copy = next-method();
   let copy-keys = ^signature-keys(copy);
@@ -240,9 +247,9 @@ define method do-deep-copy
   copy
 end method;
 
-// Unlike primitves, of which they're a slightly suspect subclass, 
-// raw c-function objects don't have definitions of their own and 
-// must be copied.
+// Unlike primitives, of which they're a slightly suspect subclass,
+// raw c-function and objc-msgsend objects don't have definitions
+// of their own and must be copied.
 define method deep-copy
     (copier :: <dfm-copier>, object :: <&c-function>) => (value)
   maybe-do-deep-copy(copier, object)
@@ -273,7 +280,7 @@ end function;
 define function current-dfm-copier (capacity :: <integer>) => (res :: <dfm-copier>)
   copier-reset
     (library-description-dfm-copier(dylan-library-description())
-       | (library-description-dfm-copier(dylan-library-description()) 
+       | (library-description-dfm-copier(dylan-library-description())
             := make(<dfm-copier>)),
      capacity: capacity);
 end function;

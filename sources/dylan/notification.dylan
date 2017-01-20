@@ -20,21 +20,20 @@ define sealed domain synchronization-name (<notification>);
 
 
 // A little grounding goes a long way.
-define constant make-notification = method (lock :: <simple-lock>)
+define function make-notification (lock :: <simple-lock>)
  => (notification :: <notification>);
   let instance :: <notification> = system-allocate-simple-instance(<notification>, fill: #f);
   associated-lock(instance) := lock;
   initialize-notification(instance);
   instance
-end method;
+end function;
 
-define constant initialize-notification =
-  method (notif :: <notification>) => ()
-    drain-finalization-queue();
-    let res = primitive-make-notification(notif, notif.synchronization-name);
-    check-synchronization-creation(notif, res);
-    finalize-when-unreachable(notif);
-  end method;
+define function initialize-notification (notif :: <notification>) => ()
+  drain-finalization-queue();
+  let res = primitive-make-notification(notif, notif.synchronization-name);
+  check-synchronization-creation(notif, res);
+  finalize-when-unreachable(notif);
+end function;
 
 define sealed method initialize (notif :: <notification>, #key) => ()
   next-method();
@@ -42,13 +41,13 @@ define sealed method initialize (notif :: <notification>, #key) => ()
 end method;
 
 
-define function notification-release-result 
+define function notification-release-result
     (notif :: <notification>, res :: <integer>) => ()
   unless (res == $success)
     select (res)
-      $unlocked => error(make(<not-owned-error>, 
+      $unlocked => error(make(<not-owned-error>,
                               lock: notif.associated-lock));
-      otherwise => error(make(<unexpected-synchronization-error>, 
+      otherwise => error(make(<unexpected-synchronization-error>,
                               synchronization: notif));
     end select;
   end unless;
@@ -69,7 +68,7 @@ end;
 
 define sealed method wait-for (notif :: <notification>, #key timeout) => (success?)
   let lock = notif.associated-lock;
-  let res 
+  let res
     = if (timeout)
         primitive-wait-for-notification-timed(notif, lock, timeout.millisecs)
       else
@@ -79,7 +78,7 @@ define sealed method wait-for (notif :: <notification>, #key timeout) => (succes
     $success => #t;
     $timeout => #f;
     $unlocked => error(make(<not-owned-error>, lock: lock));
-    otherwise => error(make(<unexpected-synchronization-error>, 
+    otherwise => error(make(<unexpected-synchronization-error>,
                             synchronization: notif));
   end select;
 end method;

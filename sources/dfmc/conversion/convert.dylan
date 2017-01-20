@@ -386,7 +386,7 @@ define function pad-multiple-values
     mv[i] := ref;
   finally
     for (j :: <integer> from i below max-size)
-      mv[i] := make-object-reference(#f);
+      mv[j] := make-object-reference(#f);
     end for;
   end for;
   mv
@@ -491,14 +491,14 @@ end function;
 
 define inline function make-object-reference
     (object) => (ref :: <value-reference>)
-  let (ignore-first, ignore-last, ref)
+  let (_, _, ref)
     = convert-object-reference-1($top-level-environment, object);
   ref
 end function;
 
 define inline function make-value-reference
     (object, ref-class :: <class>) => (ref :: <value-reference>)
-  let (ignore-first, ignore-last, ref)
+  let (_, _, ref)
     = convert-value-reference($top-level-environment, $single, object, ref-class);
   ref
 end function;
@@ -672,7 +672,7 @@ end function;
 
 define inline function make-global-reference
     (name :: <variable-name-fragment>) => (ref :: <value-reference>);
-  let (ignore-first, ignore-last, ref)
+  let (_, _, ref)
     = convert-global-reference($top-level-environment, name);
   ref
 end function;
@@ -685,7 +685,7 @@ end function;
 
 define inline function make-dylan-reference
     (name :: <name>) => (ref :: <value-reference>);
-  let (ignore-first, ignore-last, ref)
+  let (_, _, ref)
     = convert-dylan-reference(name);
   ref
 end function;
@@ -1624,7 +1624,7 @@ define method bind-next-method
 end method;
 
 // This function is called if the next-method variable is referenced in
-// order to generate whatever code is necesary.
+// order to generate whatever code is necessary.
 
 // TODO: Lots of things. It may be that there should be a next-method
 // call instruction in the DFM to make statically resolving next
@@ -1872,8 +1872,7 @@ define function convert-lambda-into*-d
       = join-2x2!(ret-types-first, ret-types-last, type-first, type-last);
     ret-types-first := _types-first;
     ret-types-last  := _types-last;
-    fixed-types[i]
-      := type-checked-at-run-time?(fast-constant-value(type-temp)) & type-temp;
+    fixed-types[i]  := type-temp;
   end for;
   let (ret-types-first, ret-types-last, rest-type-temp)
     = if (rest-type)
@@ -1924,7 +1923,7 @@ define function convert-lambda-into*-d
       let (types-first, types-last)
         = join-1x1!(types-first, check-c);
       values(types-last, check-temp)
-    elseif (size(fixed-types) = 0 /* | (size(fixed-types) = 1 & ~fixed-types[0]) */)
+    elseif (empty?(fixed-types))
       // no types to check
       values(types-first, adj-temp)
     // elseif (size(fixed-types) = 1)
@@ -2042,6 +2041,7 @@ define method ^make-signature-argument-reference
   let arg = ^make-signature-argument(sig-t, argument-index);
   if (vector-index)
     ^vector-element-reference(arg, vector-index)
+      | error("argument reference %d beyond limit", vector-index)
   else
     arg
   end if
@@ -2854,6 +2854,27 @@ define method convert-using-definition
          macro-name:      fragment-macro(form));
     convert-error-fallback(env, context);
   end;
+end method;
+
+define serious-program-warning <forward-macro-reference>
+  slot condition-macro-name,
+    required-init-keyword: macro-name:;
+  format-string    "Forward reference to macro %=.";
+  format-arguments macro-name;
+end serious-program-warning;
+
+define method convert-using-definition
+    (env :: <environment>, context :: <value-context>,
+     def :: <expander-defining-form>, form :: <variable-name-fragment>)
+ => (first :: false-or(<computation>), last :: false-or(<computation>), ref :: false-or(<value-reference>))
+  note(<forward-macro-reference>,
+       source-location: fragment-source-location(form),
+       context-id:      dfm-context-id(env),
+       macro-name:      form.fragment-name);
+  convert-error-call(env, context,
+                     concatenate("Forward reference to macro \"",
+                                 as(<string>, form.fragment-name),
+                                 "\"."))
 end method;
 
 define method convert-using-definition
@@ -4175,8 +4196,7 @@ define method convert-lambda-into*
                   = join-2x2!(types-first, types-last, type-first, type-last);
                 types-first := _types-first;
                 types-last  := _types-last;
-                type-checked-at-run-time?(fast-constant-value(type-temp)) &
-                  type-temp
+                type-temp
               end;
         let fixed-types = map(convert-type, required-values);
 

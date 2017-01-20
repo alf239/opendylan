@@ -21,7 +21,7 @@ define library build-system
 end library build-system;
 
 define module build-system
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use dylan-primitives;
   use threads;
   use operating-system;
@@ -41,24 +41,19 @@ define module build-system
   export
     build-system,
 
+    target-platform-name,
+
     default-build-script,
     default-build-script-setter,
+    calculate-default-build-script,
 
-    //$personal-lib,
     $personal-bin,
-    //$system-lib,
-    //$system-bin,
-    //$system-build,
-    //$release-root,
-    //$override-default-linker,
-    //$override-default-dll-policy,
-    //$dylan-executable-name,
-    //$dylan-support,
 
     system-install-path,
     system-registry-path,
     system-release-path,
     system-build-path,
+    system-build-scripts-path,
     user-registry-path,
     user-projects-path,
     user-projects-path-setter,

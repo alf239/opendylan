@@ -34,7 +34,7 @@ define open generic concatenate!
     (sequence :: <sequence>, #rest more-sequences)
  => (result-sequence :: <sequence>);
 
-define method concatenate! 
+define method concatenate!
     (s :: <sequence>, #rest more) => (result-sequence :: <sequence>)
   apply(concatenate, s, more);
 end method concatenate!;
@@ -56,37 +56,37 @@ define method concatenate! (x :: <list>, #rest more) => (z :: <list>)
   iterate find-result (r :: <list> = x, i :: <integer> = 0)
     if (i = size(more))
       r
-    elseif (empty?(r)) 
+    elseif (empty?(r))
       find-result(as(<list>, more[i]), i + 1) // skip empty arg prefix
     else
       // p points into r (which is growing).  p is non-empty.
       iterate connect (p :: <list> = r, i :: <integer> = i)
         if (i = size(more))
           r
-	else
-	  // find next non-empty arg. to add
+        else
+          // find next non-empty arg. to add
           let x = as(<list>, more[i]);
           if (empty?(x))
             connect(p, i + 1)      // skip empty arg
-	  else
-	    // cdr to end of p and side-effect tail
- 	    iterate find-tail (p :: <list> = p) 
-	      if (empty?(tail(p)))
-	        tail(p) := x;      // DESTRUCTIVE UPDATE
+          else
+            // cdr to end of p and side-effect tail
+             iterate find-tail (p :: <list> = p)
+              if (empty?(tail(p)))
+                tail(p) := x;      // DESTRUCTIVE UPDATE
                 connect(x, i + 1)  // connect next arg
-	      else
-	        find-tail(tail(p))
-	      end if
-	    end iterate
+              else
+                find-tail(tail(p))
+              end if
+            end iterate
           end if
         end if;
-      end iterate 
+      end iterate
     end if
   end iterate
 end method;
 
 define open generic difference
-    (sequence-1 :: <sequence>, sequence-2 :: <sequence>, 
+    (sequence-1 :: <sequence>, sequence-2 :: <sequence>,
      #key test :: <function>)
  => (result-sequence :: <sequence>);
 
@@ -110,8 +110,8 @@ define open generic position
  => (position :: false-or(<integer>));
 
 define method position
-    (sequence :: <sequence>, target, 
-     #key test :: <function> = \==, 
+    (sequence :: <sequence>, target,
+     #key test :: <function> = \==,
           start: _start :: <integer> = 0,
           end: _end,
           skip :: <integer> = 0,
@@ -144,8 +144,8 @@ end method position;
 
 // Specialization for random-access sequences (subclasses of <vector>)
 define method position
-    (sequence :: <vector>, target, 
-     #key test :: <function> = \==, 
+    (sequence :: <vector>, target,
+     #key test :: <function> = \==,
           start: _start :: <integer> = 0,
           end: _end :: <integer> = sequence.size,
           skip :: <integer> = 0,
@@ -169,8 +169,8 @@ define method position
 end method position;
 
 define sealed copy-down-method position
-    (sequence :: <simple-object-vector>, target, 
-     #key test :: <function> = \==, 
+    (sequence :: <simple-object-vector>, target,
+     #key test :: <function> = \==,
           start: _start :: <integer> = 0,
           end: _end :: <integer> = sequence.size,
           skip :: <integer> = 0,
@@ -178,15 +178,15 @@ define sealed copy-down-method position
  => (position :: false-or(<integer>));
 
 define sealed copy-down-method position
-    (sequence :: <byte-string>, target, 
-     #key test :: <function> = \==, 
+    (sequence :: <byte-string>, target,
+     #key test :: <function> = \==,
           start: _start :: <integer> = 0,
           end: _end :: <integer> = sequence.size,
           skip :: <integer> = 0,
           count)
  => (position :: false-or(<integer>));
 
-// Split a sequence into parts at each occurrance of the 'separator'
+// Split a sequence into parts at each occurrence of the 'separator'
 // and return a sequence containing the parts.  The sequence is
 // searched from beginning to end for the given 'separator' and stops
 // when it reaches the end of 'sequence' or when the size of the
@@ -228,6 +228,7 @@ define method split
                          nparts :: <integer> = 1)
              let (sep-start, sep-end) = find-separator(seq, bpos, epos);
              if (sep-start & sep-end & (sep-end <= epos))
+               let sep-end :: <integer> = sep-end;
                let part = copy-sequence(seq, start: bpos, end: sep-start);
                if (remove-if-empty? & empty?(part))
                  loop(sep-end, parts, nparts)
@@ -247,7 +248,7 @@ define method split
            end)
 end method split;
 
-// Splits seq around occurrances of the separator subsequence.
+// Splits seq around occurrences of the separator subsequence.
 // Works for the relatively common case where seq and separator
 // are both <string>s.
 define method split
@@ -383,7 +384,7 @@ define method join
     result
   end if
 end method join;
-    
+
 define open generic find-element
     (collection :: <collection>, predicate :: <function>,
      #key skip :: <integer>, failure)
@@ -444,7 +445,7 @@ end method;
 define last-handler <serious-condition> = default-last-handler;
 
 define sideways method default-handler (condition :: <warning>)
-  debug-message("Warning: %s", condition-to-string(condition) | condition);  
+  debug-message("Warning: %s", condition-to-string(condition) | condition);
 end method;
 
 

@@ -6,18 +6,6 @@ Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
-define library-spec system ()
-  module operating-system;
-  module date;
-  module locators;
-  module file-system;
-  module settings;
-  module simple-xml;
-  suite universal-streams-suite;
-  suite additional-streams-suite;
-  suite system-regressions;
-end library-spec system;
-
 define module-spec date ()
   // Classes
   sealed class <date> (<number>);
@@ -29,11 +17,11 @@ define module-spec date ()
 
   //---*** Note that these leave out the keyword arguments!
   function encode-date (<integer>, <integer>, <integer>, <integer>,
-			<integer>, <integer>)
+                        <integer>, <integer>)
            => (<date>);
   function decode-date (<date>)
             => (<integer>, <integer>, <integer>, <integer>,
-		<integer>, <integer>, <day-of-week>, <integer>);
+                <integer>, <integer>, <day-of-week>, <integer>);
   function parse-iso8601-string (<string>) => (<date>);
   open generic-function \= (<date>, <date>) => (<boolean>);
   open generic-function \< (<date>, <date>) => (<boolean>);
@@ -65,8 +53,6 @@ define module-spec locators ()
   open abstract class <physical-locator> (<locator>);
   open abstract instantiable class <directory-locator> (<physical-locator>);
   open abstract instantiable class <file-locator> (<physical-locator>);
-  sealed instantiable class <native-directory-locator> (<directory-locator>);
-  sealed instantiable class <native-file-locator> (<file-locator>);
   open generic-function supports-open-locator? (<locator>) => (<boolean>);
   open generic-function open-locator (<locator>) => (<stream>);
   open generic-function supports-list-locator? (<locator>) => (<boolean>);
@@ -92,9 +78,9 @@ define module-spec locators ()
   function locator-error (<string>, #"rest") => (#"rest");
 
   // Utilities
-  function relative-locator 
+  function relative-locator
     (<physical-locator>, <physical-locator>) => (<physical-locator>);
-  function subdirectory-locator 
+  function subdirectory-locator
     (<directory-locator>, #"rest") => (<directory-locator>);
   function simplify-locator
     (<physical-locator>) => (<physical-locator>);
@@ -205,7 +191,7 @@ define module-spec operating-system ()
   function owner-name () => (false-or(<string>));
   function owner-organization () => (false-or(<string>));
   class <application-process> (<object>);
-  function run-application 
+  function run-application
     (type-union(<string>, limited(<sequence>, of: <string>)),
      #"key", #"under-shell?", #"inherit-console?", #"activate?",
      #"minimize?", #"hide?", #"outputter", #"asynchronous?",
@@ -217,13 +203,14 @@ define module-spec operating-system ()
   function wait-for-application-process
     (<application-process>) => (<integer>, false-or(<integer>));
   function load-library (<string>) => (<object>);
+  function current-process-id () => (<integer>);
+  function parent-process-id () => (<integer>);
 
   // Application startup handling
   function application-name () => (false-or(<string>));
   //---*** application-filename should return <file-locator>...
   function application-filename () => (false-or(<string>));
   function application-arguments () => (<sequence>);
-  function tokenize-command-string (<string>) => (<sequence>);
   function command-line-option-prefix () => (<character>);
   function exit-application (<integer>) => ();
   function register-application-exit-function (<function>) => ();
@@ -276,3 +263,15 @@ define module-spec simple-xml ()
   function select-nodes (<xml-element>, <string>) => (<vector>);
   function select-single-node (<xml-element>, <string>) => (false-or(<xml-element>));
 end module-spec simple-xml;
+
+define library-spec system ()
+  module operating-system;
+  module date;
+  module locators;
+  module file-system;
+  module settings;
+  module simple-xml;
+  suite universal-streams-suite;
+  suite additional-streams-suite;
+  suite system-regressions;
+end library-spec system;

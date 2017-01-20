@@ -9,13 +9,19 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 define library gtk-duim
   use common-dylan;
   use system;
+  use strings;
 
   use duim-utilities;
   use duim-core;
-  use gtk-duim-gadget-panes;	//---*** until we've got all native gadgets in
+  use gtk-duim-gadget-panes; //---*** until we've got all native gadgets in
 
   use c-ffi;
 
+  use glib;
+  use gobject;
+  use pango;
+  use cairo;
+  use gdk;
   use gtk;
 
   export gtk-duim;

@@ -50,11 +50,11 @@ define protocol <<gtk-mirror-protocol>> ()
   function set-mirror-parent
     (mirror :: <gtk-mirror>, parent :: <gtk-mirror>) => ();
   function move-mirror
-    (parent :: <gtk-mirror>, mirror :: <gtk-mirror>, 
+    (parent :: <gtk-mirror>, mirror :: <gtk-mirror>,
      x :: <integer>, y :: <integer>)
  => ();
   function size-mirror
-    (parent :: <gtk-mirror>, mirror :: <gtk-mirror>, 
+    (parent :: <gtk-mirror>, mirror :: <gtk-mirror>,
      width :: <integer>, height :: <integer>)
  => ();
 end protocol <<gtk-mirror-protocol>>;
@@ -99,7 +99,7 @@ end method widget-mirror-setter;
 define sealed method mirror-edges
     (_port :: <gtk-port>, sheet :: <sheet>, mirror :: <gtk-mirror>)
  => (left :: <integer>, top :: <integer>, right :: <integer>, bottom :: <integer>)
-  values(0, 0, 100, 100)	//--- kludge city
+  values(0, 0, 100, 100)        //--- kludge city
 end method mirror-edges;
 
 // The real methods are on more specific classes, such as <widget-mirror>
@@ -123,7 +123,7 @@ define sealed method unmap-mirror
 end method unmap-mirror;
 
 // Ditto...
-define sealed method destroy-mirror 
+define sealed method destroy-mirror
     (_port :: <gtk-port>, sheet :: <sheet>, mirror :: <gtk-mirror>) => ()
   sheet-direct-mirror(sheet) := #f
 end method destroy-mirror;
@@ -158,8 +158,8 @@ define sealed inline method make
  => (mirror :: <widget-mirror>)
   let (left, top, right, bottom) = sheet-native-edges(sheet);
   apply(next-method, mirror,
-	region: make-bounding-box(left, top, right, bottom),
-	args)
+        region: make-bounding-box(left, top, right, bottom),
+        args)
 end method make;
 
 define method initialize
@@ -171,7 +171,7 @@ define method initialize
   end
 end method initialize;
 
-define sealed method destroy-mirror 
+define sealed method destroy-mirror
     (_port :: <gtk-port>, sheet :: <sheet>, mirror :: <widget-mirror>) => ()
   let widget = mirror-widget(mirror);
   mirror-widget(mirror) := #f;
@@ -209,7 +209,7 @@ define sealed method unmap-mirror
   end
 end method unmap-mirror;
 
-define sealed method raise-mirror 
+define sealed method raise-mirror
     (_port :: <gtk-port>, sheet :: <sheet>, mirror :: <widget-mirror>,
      #key activate? = #t)
  => ()
@@ -230,12 +230,12 @@ define sealed method lower-mirror
   end
 end method lower-mirror;
 
-define sealed method mirror-visible? 
+define sealed method mirror-visible?
     (_port :: <gtk-port>, sheet :: <sheet>, mirror :: <widget-mirror>)
  => (visible? :: <boolean>)
   let widget = mirror-widget(mirror);
   with-gdk-lock
-    gdk-window-is-visible(widget.gtk-widget-get-window) == $false
+    gdk-window-is-visible(widget.gtk-widget-get-window) == #f
   end
 end method mirror-visible?;
 
@@ -299,15 +299,17 @@ define class <fixed-container-mirror> (<widget-mirror>)
 end class <fixed-container-mirror>;
 
 define class <drawing-area-mirror> (<widget-mirror>)
+  slot drawing-area-fixed-layout :: <GtkFixed>,
+    required-init-keyword: layout:;
 end class <drawing-area-mirror>;
 
-define method make-gtk-mirror 
+define method make-gtk-mirror
     (sheet :: <mirrored-sheet-mixin>)
 => (mirror :: <widget-mirror>)
   do-make-gtk-mirror(sheet)
 end method make-gtk-mirror;
 
-define method do-make-gtk-mirror 
+define method do-make-gtk-mirror
     (sheet :: <mirrored-sheet-mixin>)
 => (mirror :: <widget-mirror>)
   let widget = with-gdk-lock gtk-fixed-new() end;
@@ -322,12 +324,14 @@ define method do-make-gtk-mirror
     (sheet :: <standard-repainting-mixin>)
   => (mirror :: <widget-mirror>)
   with-gdk-lock
+    let layout = gtk-fixed-new();
     let widget = gtk-drawing-area-new();
     gtk-widget-set-size-request(widget, 200, 200);
-    widget.@can-focus := $true;
+    widget.@can-focus := #t;
     make(<drawing-area-mirror>,
          widget: widget,
-         sheet:  sheet);
+         sheet:  sheet,
+         layout: layout);
   end;
 end method do-make-gtk-mirror;
 
@@ -344,7 +348,7 @@ define macro duim-g-signal-connect
          end
        end; }
 end;
-                                             
+
 define macro with-disabled-event-handler
   { with-disabled-event-handler (?mirror:expression, ?signal-name:expression)
       ?body:*
@@ -368,7 +372,7 @@ define method install-event-handlers
     (sheet :: <mirrored-sheet-mixin>, mirror :: <fixed-container-mirror>) => ()
   next-method();
   let widget = mirror-widget(mirror);
-  duim-g-signal-connect(sheet, #"expose-event") (widget, event) handle-gtk-expose-event(sheet, event) end;
+  duim-g-signal-connect(sheet, #"draw") (widget, gcontext) handle-gtk-draw-event(sheet, gcontext) end;
   with-gdk-lock
     gtk-widget-add-events(widget, $GDK-EXPOSURE-MASK);
   end
@@ -378,8 +382,8 @@ define method install-event-handlers
     (sheet :: <mirrored-sheet-mixin>, mirror :: <drawing-area-mirror>) => ()
   next-method();
   let widget = mirror-widget(mirror);
-  duim-g-signal-connect(sheet, #"expose-event") (widget, event) handle-gtk-expose-event(sheet, event) end;
-  duim-g-signal-connect(sheet, #"button-press-event") (widget, event) 
+  duim-g-signal-connect(sheet, #"draw") (widget, gcontext) handle-gtk-draw-event(sheet, gcontext) end;
+  duim-g-signal-connect(sheet, #"button-press-event") (widget, event)
      gtk-widget-grab-focus(widget);
      handle-gtk-button-event(sheet, event)
   end;
@@ -396,25 +400,21 @@ define method install-event-handlers
   end
 end method install-event-handlers;
 
-define sealed method handle-gtk-expose-event
-    (sheet :: <mirrored-sheet-mixin>, event :: <GdkEventExpose>)
+define sealed method handle-gtk-draw-event
+    (sheet :: <mirrored-sheet-mixin>, gcontext :: <CairoContext>)
  => (handled? :: <boolean>)
-  let area   = event.GdkEventExpose-area;
-  let x      = area.GdkRectangle-x;
-  let y      = area.GdkRectangle-y;
-  let width  = area.GdkRectangle-width;
-  let height = area.GdkRectangle-height;
-  let region = make-bounding-box(x, y, x + width, y + height);
+  let (x1, y1, x2, y2) = cairo-clip-extents(gcontext);
   duim-debug-message("Repainting %=: %d, %d %d x %d",
-		     sheet, x, y, width, height);
+                     sheet, x1, y1, x2 - x1, y2 - y1);
+  let region = make-bounding-box(x1, y1, x2, y2);
   // We call 'handle-event' instead of 'distribute-event' because we
   // want the repainting to happen between BeginPaint and EndPaint
   distribute-event(port(sheet),
                    make(<window-repaint-event>,
-		        sheet: sheet,
-		        region: region));
+                        sheet: sheet,
+                        region: region));
   #f;
-end method handle-gtk-expose-event;
+end method handle-gtk-draw-event;
 
 define method set-mirror-parent
     (child :: <widget-mirror>, parent :: <fixed-container-mirror>)
@@ -431,8 +431,9 @@ define method set-mirror-parent
     (child :: <widget-mirror>, parent :: <drawing-area-mirror>)
  => ()
   let (x, y) = sheet-native-edges(mirror-sheet(child));
+  let layout = drawing-area-fixed-layout(parent);
   with-gdk-lock
-    gtk-fixed-put(mirror-widget(parent),
+    gtk-fixed-put(layout,
                   mirror-widget(child),
                   x, y)
   end
@@ -452,7 +453,7 @@ define method set-mirror-parent
     (child :: <popup-menu-mirror>, parent :: <display-mirror>)
  => ()
    gtk-container-add(GTK-CONTAINER(mirror-widget(parent)),
-		    mirror-widget(child))
+                    mirror-widget(child))
 end;
 */
 

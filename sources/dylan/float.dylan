@@ -20,7 +20,7 @@ end method;
 ///---*** NOTE: Is there a way to eliminate contagious-type???
 
 // The methods more specific than <float> are just here because the compiler
-// can't fols object-class({type estimate: <some-leaf-class>}) yet.
+// can't fold object-class({type estimate: <some-leaf-class>}) yet.
 
 define inline method contagious-type
     (x :: <abstract-integer>, y :: <float>) => (result :: <class>)
@@ -79,14 +79,14 @@ end method as;
 // These are needed because the more specific single/double combos seem to
 // prevent the above method from being selected.
 
-define sealed inline method as 
-    (class == <single-float>, x :: <single-float>) 
+define sealed inline method as
+    (class == <single-float>, x :: <single-float>)
  => (result :: <single-float>)
   x
 end method as;
 
-define sealed inline method as 
-    (class == <double-float>, x :: <double-float>) 
+define sealed inline method as
+    (class == <double-float>, x :: <double-float>)
  => (result :: <double-float>)
   x
 end method as;
@@ -120,6 +120,10 @@ end method as;
 define function float-divide-by-0 ()
   error(make(<division-by-zero-error>))
 end function float-divide-by-0;
+
+define function float-invalid ()
+  error(make(<arithmetic-domain-error>))
+end function float-invalid;
 
 define function float-overflow ()
   error(make(<arithmetic-overflow-error>))
@@ -160,17 +164,17 @@ define inline-only function encode-single-float (x :: <machine-word>)
     (primitive-cast-machine-word-as-single-float(primitive-unwrap-machine-word(x)))
 end function encode-single-float;
 
-define sealed inline method \= 
+define sealed inline method \=
     (x :: <single-float>, y :: <single-float>) => (result :: <boolean>)
   primitive-single-float-equals?
-    (primitive-single-float-as-raw(x), 
+    (primitive-single-float-as-raw(x),
      primitive-single-float-as-raw(y))
 end method \=;
 
 define sealed inline method \<
     (x :: <single-float>, y :: <single-float>) => (result :: <boolean>)
   primitive-single-float-less-than?
-    (primitive-single-float-as-raw(x), 
+    (primitive-single-float-as-raw(x),
      primitive-single-float-as-raw(y))
 end method \<;
 
@@ -193,7 +197,7 @@ define sealed inline method negative? (x :: <single-float>) => (result :: <boole
 end method negative?;
 
 define sealed inline method integral? (x :: <single-float>) => (result :: <boolean>)
-  let (integer, remainder :: <single-float>) = truncate/(x, 1.0);
+  let (_integer, remainder :: <single-float>) = truncate/(x, 1.0);
   remainder = 0.0
 end method integral?;
 
@@ -201,35 +205,35 @@ define sealed inline method \+
     (x :: <single-float>, y :: <single-float>) => (z :: <single-float>)
   primitive-raw-as-single-float
     (primitive-single-float-add
-       (primitive-single-float-as-raw(x), 
-	primitive-single-float-as-raw(y)))
+       (primitive-single-float-as-raw(x),
+        primitive-single-float-as-raw(y)))
 end method \+;
 
 define sealed inline method \-
     (x :: <single-float>, y :: <single-float>) => (z :: <single-float>)
   primitive-raw-as-single-float
     (primitive-single-float-subtract
-       (primitive-single-float-as-raw(x), 
-	primitive-single-float-as-raw(y)))
+       (primitive-single-float-as-raw(x),
+        primitive-single-float-as-raw(y)))
 end method \-;
 
 define sealed inline method \*
     (x :: <single-float>, y :: <single-float>) => (z :: <single-float>)
   primitive-raw-as-single-float
     (primitive-single-float-multiply
-       (primitive-single-float-as-raw(x), 
-	primitive-single-float-as-raw(y)))
+       (primitive-single-float-as-raw(x),
+        primitive-single-float-as-raw(y)))
 end method \*;
 
 define sealed inline method \/
     (x :: <single-float>, y :: <single-float>) => (z :: <single-float>)
   primitive-raw-as-single-float
     (primitive-single-float-divide
-       (primitive-single-float-as-raw(x), 
-	primitive-single-float-as-raw(y)))
+       (primitive-single-float-as-raw(x),
+        primitive-single-float-as-raw(y)))
 end method \/;
 
-define sealed inline method negative 
+define sealed inline method negative
     (x :: <single-float>) => (z :: <single-float>)
   primitive-raw-as-single-float
     (primitive-single-float-negate(primitive-single-float-as-raw(x)))
@@ -239,8 +243,8 @@ define sealed inline method truncate/ (real :: <single-float>, divisor :: <singl
  => (result :: <integer>, remainder :: <single-float>)
   let divided = real / divisor;
   let result = raw-as-integer
-		 (primitive-single-float-as-integer
-		    (primitive-single-float-as-raw(divided)));
+                 (primitive-single-float-as-integer
+                    (primitive-single-float-as-raw(divided)));
   values(result, divisor * (divided - as(<single-float>, result)))
 end method truncate/;
 
@@ -248,9 +252,9 @@ define sealed inline method \^ (base :: <single-float>, power :: <integer>)
  => (result :: <single-float>)
   let negative-result? = negative?(base) & odd?(power);
   let result = primitive-raw-as-single-float
-		 (primitive-single-float-expt
-		    (primitive-single-float-as-raw(abs(base)),
-		     primitive-integer-as-single-float(integer-as-raw(power))));
+                 (primitive-single-float-expt
+                    (primitive-single-float-as-raw(abs(base)),
+                     primitive-integer-as-single-float(integer-as-raw(power))));
   if (negative-result?) negative(result) else result end
 end method \^;
 
@@ -284,20 +288,20 @@ define inline-only function encode-double-float
     (low :: <machine-word>, high :: <machine-word>) => (encoded :: <double-float>)
   primitive-raw-as-double-float
     (primitive-cast-machine-words-as-double-float(primitive-unwrap-machine-word(low),
-						  primitive-unwrap-machine-word(high)))
+                                                  primitive-unwrap-machine-word(high)))
 end function encode-double-float;
 
-define sealed inline method \= 
+define sealed inline method \=
     (x :: <double-float>, y :: <double-float>) => (result :: <boolean>)
   primitive-double-float-equals?
-    (primitive-double-float-as-raw(x), 
+    (primitive-double-float-as-raw(x),
      primitive-double-float-as-raw(y))
 end method \=;
 
 define sealed inline method \<
     (x :: <double-float>, y :: <double-float>) => (result :: <boolean>)
   primitive-double-float-less-than?
-    (primitive-double-float-as-raw(x), 
+    (primitive-double-float-as-raw(x),
      primitive-double-float-as-raw(y))
 end method \<;
 
@@ -320,7 +324,7 @@ define sealed inline method negative? (x :: <double-float>) => (result :: <boole
 end method negative?;
 
 define sealed inline method integral? (x :: <double-float>) => (result :: <boolean>)
-  let (integer, remainder :: <double-float>) = truncate/(x, 1.0d0);
+  let (_integer, remainder :: <double-float>) = truncate/(x, 1.0d0);
   remainder = 0.0d0
 end method integral?;
 
@@ -328,35 +332,35 @@ define sealed inline method \+
     (x :: <double-float>, y :: <double-float>) => (z :: <double-float>)
   primitive-raw-as-double-float
     (primitive-double-float-add
-       (primitive-double-float-as-raw(x), 
-	primitive-double-float-as-raw(y)))
+       (primitive-double-float-as-raw(x),
+        primitive-double-float-as-raw(y)))
 end method \+;
 
 define sealed inline method \-
     (x :: <double-float>, y :: <double-float>) => (z :: <double-float>)
   primitive-raw-as-double-float
     (primitive-double-float-subtract
-       (primitive-double-float-as-raw(x), 
-	primitive-double-float-as-raw(y)))
+       (primitive-double-float-as-raw(x),
+        primitive-double-float-as-raw(y)))
 end method \-;
 
 define sealed inline method \*
     (x :: <double-float>, y :: <double-float>) => (z :: <double-float>)
   primitive-raw-as-double-float
     (primitive-double-float-multiply
-       (primitive-double-float-as-raw(x), 
-	primitive-double-float-as-raw(y)))
+       (primitive-double-float-as-raw(x),
+        primitive-double-float-as-raw(y)))
 end method \*;
 
 define sealed inline method \/
     (x :: <double-float>, y :: <double-float>) => (z :: <double-float>)
   primitive-raw-as-double-float
     (primitive-double-float-divide
-       (primitive-double-float-as-raw(x), 
-	primitive-double-float-as-raw(y)))
+       (primitive-double-float-as-raw(x),
+        primitive-double-float-as-raw(y)))
 end method \/;
 
-define sealed inline method negative 
+define sealed inline method negative
     (x :: <double-float>) => (z :: <double-float>)
   primitive-raw-as-double-float
     (primitive-double-float-negate(primitive-double-float-as-raw(x)))
@@ -366,8 +370,8 @@ define sealed inline method truncate/ (real :: <double-float>, divisor :: <doubl
  => (result :: <integer>, remainder :: <double-float>)
   let divided = real / divisor;
   let result = raw-as-integer
-		 (primitive-double-float-as-integer
-		    (primitive-double-float-as-raw(divided)));
+                 (primitive-double-float-as-integer
+                    (primitive-double-float-as-raw(divided)));
   values(result, divisor * (divided - as(<double-float>, result)))
 end method truncate/;
 
@@ -375,9 +379,9 @@ define sealed inline method \^ (base :: <double-float>, power :: <integer>)
  => (result :: <double-float>)
   let negative-result? = negative?(base) & odd?(power);
   let result = primitive-raw-as-double-float
-		 (primitive-double-float-expt
-		    (primitive-double-float-as-raw(abs(base)),
-		     primitive-integer-as-double-float(integer-as-raw(power))));
+                 (primitive-double-float-expt
+                    (primitive-double-float-as-raw(abs(base)),
+                     primitive-integer-as-double-float(integer-as-raw(power))));
   if (negative-result?) negative(result) else result end
 end method \^;
 

@@ -10,8 +10,8 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define constant <in-port-t> = <C-unsigned-short>;
 define constant <in-port-t*> = <C-unsigned-short*>;
-define constant <in-addr-t> = <C-raw-unsigned-long>;
-define constant <in-addr-t*> = <C-raw-unsigned-long*>;
+define constant <in-addr-t> = <C-raw-unsigned-int>;
+define constant <in-addr-t*> = <C-raw-unsigned-int*>;
 
 // TODO: Abide by the letter of the law?
 /*
@@ -51,6 +51,7 @@ define C-struct <sockaddr-in>
   pointer-type-name: <sockaddr-in*>;
 end C-struct;
 
+ignore(sin-len, sin-len-setter);
 ignore(sin-data, sin-data-setter);
 
 // IP_PROTO*
@@ -60,7 +61,7 @@ define constant $INADDR-BROADCAST = as(<machine-word>, #xffffffff);
 define constant $INADDR-NONE = as(<machine-word>, #xffffffff);
 
 define constant <uint16-t> = <C-unsigned-short>;
-define constant <uint32-t> = <C-raw-unsigned-long>;
+define constant <uint32-t> = <C-raw-unsigned-int>;
 
 define inline-only C-function ntohl
   parameter netlong :: <uint32-t>;
@@ -103,7 +104,7 @@ define C-struct <netent>
   slot n-name-value :: <C-char*>;
   slot n-aliases-value :: <C-char**>;
   slot n-addrtype-value :: <C-int>;
-  slot n-net-value :: <C-raw-unsigned-long>;
+  slot n-net-value :: <C-raw-unsigned-int>;
   pointer-type-name: <netent*>;
 end C-struct;
 

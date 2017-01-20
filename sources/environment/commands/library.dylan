@@ -13,12 +13,14 @@ define library environment-commands
   use io;
   use commands;
 
+  use build-system;
   use environment-protocols;
   use environment-manager;
   use environment-reports;
   use release-info;
   use source-control-manager;
 
+  use projects;
   use dfmc-environment-projects;
 
   export command-lines,

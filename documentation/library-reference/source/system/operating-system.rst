@@ -9,7 +9,7 @@ Introduction
 ------------
 
 The operating-system module is part of the System library. It provides
-an interface to some features of the host machine’s operating system.
+an interface to some features of the host machine's operating system.
 
 This chapter describes the functions and constants that the
 operating-system module contains.
@@ -25,7 +25,7 @@ environment variable in the system.
 
 The following constants contain machine-specific information:
 
-- :const:`$architecture-little-endian`
+- :const:`$architecture-little-endian?`
 - :const:`$machine-name`
 - :const:`$os-name`
 - :const:`$os-variant`
@@ -50,6 +50,11 @@ the current machine, where available.
 - :func:`owner-name`
 - :func:`owner-organization`
 
+Running Applications
+--------------------
+
+- :func:`run-application`
+
 Manipulating application information
 ------------------------------------
 
@@ -59,18 +64,25 @@ the environment as a whole. You can run or quit any application, and
 interrogate the running application for application-specific
 information.
 
-- :func:`run-application`
 - :func:`exit-application`
+- :func:`register-application-exit-function`
 - :func:`application-arguments`
 - :func:`application-name`
 - :func:`application-filename`
 - :func:`tokenize-command-string`
+- :func:`current-process-id`
+- :func:`parent-process-id`
+
+Working with shared libraries
+-----------------------------
+
+- :func:`load-library`
 
 The operating-system module
 ---------------------------
 
 This section contains a reference entry for each item exported from the
-operating-system library's operating-system module.
+System library's operating-system module.
 
 .. function:: application-arguments
 
@@ -78,18 +90,18 @@ operating-system library's operating-system module.
 
    :signature: application-arguments => *arguments*
 
-   :value arguments: An instance of ``<simple-object-vector>``.
+   :value arguments: An instance of :drm:`<simple-object-vector>`.
 
    :description:
 
      Returns the arguments passed to the running application as a vector
-     of instances of ``<byte-string>``.
+     of instances of :drm:`<byte-string>`.
 
-   See also
+   :seealso:
 
-   - :func:`application-filename`
-   - :func:`application-name`
-   - :func:`tokenize-command-string`
+     - :func:`application-filename`
+     - :func:`application-name`
+     - :func:`tokenize-command-string`
 
 .. function:: application-filename
 
@@ -112,11 +124,11 @@ operating-system library's operating-system module.
 
        "C:\\Program Files\\foo\\bar.exe"
 
-   See also
+   :seealso:
 
-   - :func:`application-arguments`
-   - :func:`application-name`
-   - :func:`tokenize-command-string`
+     - :func:`application-arguments`
+     - :func:`application-name`
+     - :func:`tokenize-command-string`
 
 .. function:: application-name
 
@@ -124,7 +136,7 @@ operating-system library's operating-system module.
 
    :signature: application-name => *name*
 
-   :value name: An instance of ``<byte-string>``.
+   :value name: An instance of :drm:`<byte-string>`.
 
    :description:
 
@@ -139,13 +151,13 @@ operating-system library's operating-system module.
 
        "foo\\bar.exe"
 
-   See also
+   :seealso:
 
-   - :func:`application-arguments`
-   - :func:`application-filename`
-   - :func:`tokenize-command-string`
+     - :func:`application-arguments`
+     - :func:`application-filename`
+     - :func:`tokenize-command-string`
 
-.. constant:: $architecture-little-endian
+.. constant:: $architecture-little-endian?
 
    Constant specifying whether the processor architecture is little-endian.
 
@@ -159,13 +171,30 @@ operating-system library's operating-system module.
      least-significant bit.) For processors implementing the Intel x86
      architecture this value is ``#t``.
 
-   See also
+   :seealso:
 
-   - :const:`$machine-name`
-   - :const:`$os-name`
-   - :const:`$os-variant`
-   - :const:`$os-version`
-   - :const:`$platform-name`
+     - :const:`$machine-name`
+     - :const:`$os-name`
+     - :const:`$os-variant`
+     - :const:`$os-version`
+     - :const:`$platform-name`
+
+.. function:: current-process-id
+
+   Returns the integer value for the current process ID.
+
+   :signature: current-process-id => *pid*
+
+   :value pid: An instance of :drm:`<integer>`.
+
+   :description:
+
+     Returns the integer value of the current process ID.
+
+   :seealso:
+
+     - :func:`current-thread-id`
+     - :func:`parent-process-id`
 
 .. function:: environment-variable
 
@@ -173,17 +202,17 @@ operating-system library's operating-system module.
 
    :signature: environment-variable *name* => *value*
 
-   :parameter name: An instance of ``<byte-string>``.
-   :value value: An instance of ``<byte-string>``, or ``#f``.
+   :parameter name: An instance of :drm:`<byte-string>`.
+   :value value: An instance of :drm:`<byte-string>`, or ``#f``.
 
    :description:
 
      Returns the value of the environment variable specified by *name*,
      or ``#f`` if there is no such environment variable.
 
-   See also
+   :seealso:
 
-   - :func:`environment-variable-setter`
+     - :func:`environment-variable-setter`
 
 .. function:: environment-variable-setter
 
@@ -191,9 +220,9 @@ operating-system library's operating-system module.
 
    :signature: environment-variable-setter *new-value* *name* => *new-value*
 
-   :parameter new-value: An instance of ``<byte-string>``, or ``#f``.
-   :parameter name: An instance of ``<byte-string>``.
-   :value new-value: An instance of ``<byte-string>``, or ``#f``.
+   :parameter new-value: An instance of :drm:`<byte-string>`, or ``#f``.
+   :parameter name: An instance of :drm:`<byte-string>`.
+   :value new-value: An instance of :drm:`<byte-string>`, or ``#f``.
 
    :description:
 
@@ -209,9 +238,9 @@ operating-system library's operating-system module.
        environment variable if it is possible within these restrictions.
        See the relevant Windows 95 documentation for more details.
 
-   See also
+   :seealso:
 
-   - :func:`environment-variable`
+     - :func:`environment-variable`
 
 .. function:: exit-application
 
@@ -219,7 +248,7 @@ operating-system library's operating-system module.
 
    :signature: exit-application *status* => ()
 
-   :parameter status: An instance of ``<integer>``.
+   :parameter status: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -227,13 +256,36 @@ operating-system library's operating-system module.
      value of *status* to whatever launched the application, for example
      an MS-DOS window or Windows 95/NT shell.
 
-   See also
+     .. note:: This function is also available from the ``dylan-extensions``
+        module in the ``dylan`` library and the ``common-extensions`` module
+        of the ``common-dylan`` library.
 
-   - :func:`run-application`
+   :seealso:
+
+     - :func:`register-application-exit-function`
+
+.. function:: load-library
+
+   Loads a shared library into the current process.
+
+   :signature: load-library *name* => *module*
+
+   :parameter name: An instance of :drm:`<string>`.
+   :value module: An instance of :class:`<machine-word>`.
+
+   :description:
+
+     Loads the library specified by *name* into the current process. The
+     library must be a shared library.
+
+     If the library is a library written in Dylan, then when it loaded,
+     constructor functions will run which set up the various methods and other
+     Dylan objects within the shared library. Top level code within the library
+     will be executed.
 
 .. function:: login-name
 
-   Returns as an instance of ``<string>`` the name of the user logged on
+   Returns as an instance of :drm:`<string>` the name of the user logged on
    to the current machine, or ``#f`` if unavailable.
 
    :signature: login-name () => *name-or-false*
@@ -242,12 +294,12 @@ operating-system library's operating-system module.
 
    :description:
 
-     Returns as an instance of ``<string>`` the name of the user logged
+     Returns as an instance of :drm:`<string>` the name of the user logged
      on to the current machine, or ``#f`` if unavailable.
 
-   See also
+   :seealso:
 
-   - :func:`login-group`
+     - :func:`login-group`
 
 .. function:: login-group
 
@@ -257,13 +309,13 @@ operating-system library's operating-system module.
 
    :description:
 
-     Returns as an instance of ``<string>`` the group (for example NT
+     Returns as an instance of :drm:`<string>` the group (for example NT
      domain, or Windows Workgroup) of which the user logged on to the
      current machine is a member, or ``#f`` if the group is unavailable.
 
-   See also
+   :seealso:
 
-   - :func:`login-name`
+     - :func:`login-name`
 
 .. constant:: $machine-name
 
@@ -277,13 +329,13 @@ operating-system library's operating-system module.
      This constant is a symbol that represents the type of hardware
      installed in the host machine.
 
-   See also
+   :seealso:
 
-   - :const:`$architecture-little-endian`
-   - :const:`$os-name`
-   - :const:`$os-variant`
-   - :const:`$os-version`
-   - :const:`$platform-name`
+     - :const:`$architecture-little-endian?`
+     - :const:`$os-name`
+     - :const:`$os-variant`
+     - :const:`$os-version`
+     - :const:`$platform-name`
 
 .. constant:: $os-name
 
@@ -297,13 +349,13 @@ operating-system library's operating-system module.
      This constant is a symbol that represents the operating system
      running on the host machine.
 
-   See also
+   :seealso:
 
-   - :const:`$architecture-little-endian`
-   - :const:`$machine-name`
-   - :const:`$os-variant`
-   - :const:`$os-version`
-   - :const:`$platform-name`
+     - :const:`$architecture-little-endian?`
+     - :const:`$machine-name`
+     - :const:`$os-variant`
+     - :const:`$os-version`
+     - :const:`$platform-name`
 
 .. constant:: $os-variant
 
@@ -320,13 +372,13 @@ operating-system library's operating-system module.
      possible values are ``#"win3.1"``, ``#"win95"``, ``#"win98"``, and
      ``#"winnt"``.
 
-   See also
+   :seealso:
 
-   - :const:`$architecture-little-endian`
-   - :const:`$machine-name`
-   - :const:`$os-name`
-   - :const:`$os-version`
-   - :const:`$platform-name`
+     - :const:`$architecture-little-endian?`
+     - :const:`$machine-name`
+     - :const:`$os-name`
+     - :const:`$os-version`
+     - :const:`$platform-name`
 
 .. constant:: $os-version
 
@@ -342,13 +394,13 @@ operating-system library's operating-system module.
      would be *"4.0.1381 Service Pack 3"*. For Windows 95, a typical
      value would be *"4.0.1212 B"*.
 
-   See also
+   :seealso:
 
-   - :const:`$architecture-little-endian`
-   - :const:`$machine-name`
-   - :const:`$os-name`
-   - :const:`$os-variant`
-   - :const:`$platform-name`
+     - :const:`$architecture-little-endian?`
+     - :const:`$machine-name`
+     - :const:`$os-name`
+     - :const:`$os-variant`
+     - :const:`$platform-name`
 
 .. function:: owner-name
 
@@ -360,7 +412,7 @@ operating-system library's operating-system module.
 
    :description:
 
-     Returns as an instance of ``<string>`` the name of the user who
+     Returns as an instance of :drm:`<string>` the name of the user who
      owns the current machine (that is, the name entered when the
      machine was registered), or ``#f`` if the name is unavailable.
 
@@ -375,9 +427,28 @@ operating-system library's operating-system module.
 
    :description:
 
-     Returns as an instance of ``<string>`` the organization to which
+     Returns as an instance of :drm:`<string>` the organization to which
      the user who owns the current machine belongs, or ``#f`` if the
      name is unavailable.
+
+.. function:: parent-process-id
+
+   Returns the integer value for the parent process ID.
+
+   :signature: parent-process-id => *pid*
+
+   :value pid: An instance of :drm:`<integer>`.
+
+   :description:
+
+     Returns the integer value of the parent process ID.
+
+     .. note:: This is not yet implemented on Windows.
+
+   :seealso:
+
+     - :func:`current-process-id`
+     - :func:`current-thread-id`
 
 .. constant:: $platform-name
 
@@ -385,7 +456,7 @@ operating-system library's operating-system module.
    hardware installed in the host machine.
 
    :type: <symbol>
-   :value: #"x86-win32", #"x86-linux", etc.
+   :value: ``#"x86-win32"``, ``#"x86-linux"``, etc.
 
    :description:
 
@@ -396,11 +467,42 @@ operating-system library's operating-system module.
 
    :example:
 
-     ``#"x86-win32"``, ``#"alpha-osf3"``
+     ``#"x86-win32"``, ``#"x86_64-linux"``
 
-   See also
-   - `$machine-name`
-   - `$os-name`
+   :seealso:
+
+     - :const:`$machine-name`
+     - :const:`$os-name`
+
+.. function:: register-application-exit-function
+
+   Register a function to be executed when the application is about to exit.
+
+   :signature: register-application-exit-function *function* => ()
+
+   :parameter function: An instance of :drm:`<function>`.
+
+   :description:
+
+     Register a function to be executed when the application is about to
+     exit. The Dylan runtime will make sure that these functions are executed.
+
+     The *function* should not expect any arguments, nor expect that any return
+     values be used.
+
+     .. note:: Currently, the registered functions will be invoked in the reverse
+        order in which they were added. This is **not** currently a contractual
+        guarantee and may be subject to change.
+
+     .. note:: This function is also available from the ``dylan-extensions``
+        module in the ``dylan`` library and the ``common-extensions`` module
+        of the ``common-dylan`` library.
+
+   :example:
+
+   :seealso:
+
+     - :func:`exit-application`
 
 .. function:: run-application
 
@@ -408,12 +510,12 @@ operating-system library's operating-system module.
 
    :signature: run-application *command* #key *minimize?* *activate?* *under-shell?* *inherit-console?* => *status*
 
-   :parameter command: An instance of ``<string>``.
-   :parameter #key minimize?: An instance of ``<boolean>``.
-   :parameter #key activate?: An instance of ``<boolean>``.
-   :parameter #key under-shell?: An instance of ``<boolean>``.
-   :parameter #key inherit-console?: An instance of ``<boolean>``.
-   :value status: An instance of ``<integer>``.
+   :parameter command: An instance of :drm:`<string>`.
+   :parameter #key minimize?: An instance of :drm:`<boolean>`.
+   :parameter #key activate?: An instance of :drm:`<boolean>`.
+   :parameter #key under-shell?: An instance of :drm:`<boolean>`.
+   :parameter #key inherit-console?: An instance of :drm:`<boolean>`.
+   :value status: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -422,7 +524,7 @@ operating-system library's operating-system module.
      a MS-DOS window. The return value is the exit status returned by
      the application.
 
-     If the *minimize?* keyword is ``#t``, the command’s shell will
+     If the *minimize?* keyword is ``#t``, the command's shell will
      appear minimized. It is ``#f`` by default.
 
      If the *activate?* keyword is ``#t``, the shell window becomes the
@@ -437,8 +539,9 @@ operating-system library's operating-system module.
      the new application is created with a separate console window. It
      is ``#t`` by default.
 
-   See also
-   - :func:`exit-application`
+   :seealso:
+
+     - :func:`exit-application`
 
 .. function:: tokenize-command-string
 
@@ -446,17 +549,18 @@ operating-system library's operating-system module.
 
    :signature: tokenize-command-string *line* => *command* #rest *arguments*
 
-   :parameter line: An instance of ``<byte-string>``.
-   :value command: An instance of ``<byte-string>``.
-   :value #rest arguments: Instances of ``<byte-string>``.
+   :parameter line: An instance of :drm:`<byte-string>`.
+   :value command: An instance of :drm:`<byte-string>`.
+   :value #rest arguments: Instances of :drm:`<byte-string>`.
 
    :description:
 
      Parses the command specified in *line* into a command name and
      arguments. The rules used to tokenize the string are given in
-     Microsoft’s C/C++ reference in the section `“Parsing C Command-Line
-     Arguments” <http://msdn.microsoft.com/en-us/library/a1y7w461.aspx>`_.
+     Microsoft's C/C++ reference in the section `"Parsing C Command-Line
+     Arguments" <http://msdn.microsoft.com/en-us/library/a1y7w461.aspx>`_.
 
-   See also
-   - :func:`application-arguments`
-   - :func:`application-name`
+   :seealso:
+
+     - :func:`application-arguments`
+     - :func:`application-name`

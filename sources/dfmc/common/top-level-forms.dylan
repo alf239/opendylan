@@ -38,14 +38,14 @@ define macro form-properties-aux-definer
           (?slots:*) (?cslots) (?mergers) end }
     => { define ?adjectives dood-class ?name (?supers) ?cslots end;
          define form-properties-accessors ?name ?slots end;
-         define method form-properties-class 
+         define method form-properties-class
              (form :: ?name) => (c :: singleton(?name))
-	   ?name
+           ?name
          end method;
          define method merge-form-properties!
              (old :: ?name, new :: ?name, #next next-method)
-	   next-method();
-	   ?mergers;
+           next-method();
+           ?mergers;
          end method; }
 cslots:
   { } => { }
@@ -70,14 +70,14 @@ define macro form-properties-accessors-definer
       ?more:*
     end }
     => { define method ?accessor (object :: ?class) => (val :: ?type)
-	   let p = form-properties-in-context
-	              (current-library-description(), object, #f);
-	   if (p) "shadowable-" ## ?accessor(p) else ?default end
-	 end method;
+           let p = form-properties-in-context
+                      (current-library-description(), object, #f);
+           if (p) "shadowable-" ## ?accessor(p) else ?default end
+         end method;
          define method ?accessor ## "-setter" (value, object :: ?class)
-	   let p = form-properties-in-context
-	              (current-library-description(), object, #t);
-	   "shadowable-" ## ?accessor ## "-setter" (value, p)
+           let p = form-properties-in-context
+                      (current-library-description(), object, #t);
+           "shadowable-" ## ?accessor ## "-setter" (value, p)
          end method;
          define form-properties-accessors ?class ?more end }
 end macro;
@@ -106,11 +106,11 @@ define function make-default-form-properties
 end function;
 
 define generic merge-form-properties! (old :: <form-properties>,
-				      new :: <form-properties>);
+                                      new :: <form-properties>);
 
 // Base case.
 define method merge-form-properties! (old :: <form-properties>,
-				      new :: <form-properties>)
+                                      new :: <form-properties>)
 end method;
 
 
@@ -134,7 +134,7 @@ end method;
 
 define compiler-open generic form-source-location (object);
 
-define compiler-open dood-class <top-level-form> /* abstract */ 
+define compiler-open dood-class <top-level-form> /* abstract */
     (<top-level-form-properties>)
   constant slot form-compilation-record :: <compilation-record>
     = current-compilation-record();
@@ -154,13 +154,13 @@ define compiler-open dood-class <top-level-form> /* abstract */
   lazy slot form-referenced-variables = #f;
 end;
 
-define constant <top-level-form-sequence> = <sequence>; 
-// TODO: NEED REAL LIMITED SEQUENCE STORED IN SLOT 
+define constant <top-level-form-sequence> = <sequence>;
+// TODO: NEED REAL LIMITED SEQUENCE STORED IN SLOT
 //  = limited(<sequence>, of: <top-level-form>);
 
 // HACK: SHOULD TIGHTEN TO <TOP-LEVEL-FORM> AFTER FIXING PACKED-SLOTS
 define compiler-open generic form-properties-in-context
-    (context, form :: <form-properties>, create?) 
+    (context, form :: <form-properties>, create?)
  => (p :: false-or(<form-properties>));
 
 define generic form-parent-form
@@ -169,7 +169,7 @@ define generic form-parent-form
 define generic form-adjectives
     (form :: <top-level-form>) => (adjectives :: false-or(<sequence>));
 
-define method form-adjectives 
+define method form-adjectives
     (form :: <top-level-form>) => (adjectives :: false-or(<sequence>));
   #f
 end method;
@@ -177,7 +177,7 @@ end method;
 define compiler-open generic form-define-word
   (form :: <top-level-form>) => (word :: false-or(<symbol>));
 
-define method form-define-word 
+define method form-define-word
     (form :: <top-level-form>) => (word :: false-or(<symbol>));
   #f
 end method;
@@ -191,7 +191,7 @@ define generic form-original-library
 define compiler-open generic form-macro-word-class
     (form :: <top-level-form>) => (class);
 
-define method form-macro-word-class 
+define method form-macro-word-class
     (form :: <top-level-form>) => (class)
   #f
 end;
@@ -262,17 +262,17 @@ define inline function do-with-dependent (stage, dependent, f)
     f()
   else
     debug-assert(~*interactive-compilation-layer*
-		   | ~compilation-record-downloaded?
-		        (compilation-record-of(dependent)),
-		 // Trying to compile something that's already been downloaded?
-		 "Changing interactive context to downloaded dependent?");
+                   | ~compilation-record-downloaded?
+                        (compilation-record-of(dependent)),
+                 // Trying to compile something that's already been downloaded?
+                 "Changing interactive context to downloaded dependent?");
     debug-assert(current-library-description?
-		   (compilation-record-library
-		      (compilation-record-of(dependent))),
-		 "New dependent %s is not in current context %s!",
-		 dependent, current-library-description());
+                   (compilation-record-library
+                      (compilation-record-of(dependent))),
+                 "New dependent %s is not in current context %s!",
+                 dependent, current-library-description());
     dynamic-bind (*current-stage* = stage,
-		  *current-dependent* = dependent)
+                  *current-dependent* = dependent)
       f()
     end;
   end if;
@@ -281,8 +281,8 @@ end function;
 define macro without-dependency-tracking
   { without-dependency-tracking ?:body end }
     => { dynamic-bind (*current-stage* = #"testing",
-		       *current-dependent* = $no-dependent)
-	  ?body
+                       *current-dependent* = $no-dependent)
+          ?body
          end }
 end macro;
 
@@ -344,7 +344,7 @@ define function dependency-stage-match? (stage, stage-mask)
   logand(make-dependency-condition(stage, dep$all), stage-mask) ~== 0
 end function;
 
-define compiler-open generic note-binding-dependency-of 
+define compiler-open generic note-binding-dependency-of
   (dependent, condition, binding);
 define compiler-open generic note-name-dependency-of
   (dependent, condition, binding, name, module);
@@ -370,8 +370,8 @@ define function note-binding-dependency (binding, kind)
       error("Unknown dependent for binding dependency on %s", binding.name);
     end;
     note-binding-dependency-of(dependent,
-			       make-dependency-condition(stage, kind),
-			       binding)
+                               make-dependency-condition(stage, kind),
+                               binding)
   end;
 end function;
 
@@ -383,8 +383,8 @@ define function note-name-dependency (binding, kind, word, module)
       error("Unknown dependent for binding dependency on %s", binding.name);
     end;
     note-name-dependency-of(dependent,
-			    make-dependency-condition(stage, kind),
-			    binding, word, module)
+                            make-dependency-condition(stage, kind),
+                            binding, word, module)
   end;
 end function;
 
@@ -406,8 +406,8 @@ end macro;
 
 define inline function do-with-boot-form-creation (seq, parent, fn)
   dynamic-bind (*last-form-sequence-number* = seq - 1,
-		*current-dependent* = parent,
-		*current-stage* = $top-level-processing)
+                *current-dependent* = parent,
+                *current-stage* = $top-level-processing)
     fn()
   end;
 end function;
@@ -450,13 +450,13 @@ define inline function library-defined-after? (base-lib, other-lib)
     ~other-lib
   else
     debug-assert(current-library-in-context?(other-lib) |
-		   current-library-in-context?(base-lib));
+                   current-library-in-context?(base-lib));
     current-library-in-context?(other-lib)
   end;
 end function;
 
 define inline method defined-after? (cr1 :: <compilation-record>,
-				     cr2 :: <compilation-record>) => after?;
+                                     cr2 :: <compilation-record>) => after?;
   let lib1 = cr1.compilation-record-original-library;
   let lib2 = cr2.compilation-record-original-library;
   if (lib1 == lib2)
@@ -469,34 +469,34 @@ define inline method defined-after? (cr1 :: <compilation-record>,
 end method;
 
 define inline method defined-before? (cr1 :: <compilation-record>,
-				      cr2 :: <compilation-record>) => before?;
+                                      cr2 :: <compilation-record>) => before?;
   defined-after?(cr2, cr1)
 end;
 
 define method defined-after? (cr :: <compilation-record>,
-			      form :: <top-level-form>) => after?;
+                              form :: <top-level-form>) => after?;
   let form-cr :: <compilation-record> = form.form-compilation-record;
   defined-after?(cr, form-cr)
 end;
 
 define method defined-after? (form :: <top-level-form>,
-			      cr :: <compilation-record>) => after?;
+                              cr :: <compilation-record>) => after?;
   defined-before?(cr, form)
 end;
 
 define method defined-before? (cr :: <compilation-record>,
-			       form :: <top-level-form>) => before?;
+                               form :: <top-level-form>) => before?;
   let form-cr :: <compilation-record> = form.form-compilation-record;
   defined-before?(cr, form-cr)
 end;
 
 define method defined-before? (form :: <top-level-form>,
-			       cr :: <compilation-record>) => before?;
+                               cr :: <compilation-record>) => before?;
   defined-after?(cr, form)
 end;
 
 define method defined-after? (base :: <top-level-form>,
-			      form :: <top-level-form>) => after?;
+                              form :: <top-level-form>) => after?;
   let base-cr = base.form-compilation-record;
   let form-cr = form.form-compilation-record;
   let base-lib = base-cr.compilation-record-original-library;
@@ -505,18 +505,18 @@ define method defined-after? (base :: <top-level-form>,
     library-defined-after?(base-lib, form-lib)
   elseif (base-cr == form-cr)
     local method after?(base, form)
-	    let base-parent = base.form-parent-form;
-	    let form-parent = form.form-parent-form;
-	    if (base-parent == form-parent)
-	      base.form-sequence-number < form.form-sequence-number
-	    elseif (base == form-parent)
-	      #t
-	    elseif (base-parent == #f)
-	      after?(base, form-parent)
-	    else
-	      after?(base-parent, form)
-	    end
-	  end method;
+            let base-parent = base.form-parent-form;
+            let form-parent = form.form-parent-form;
+            if (base-parent == form-parent)
+              base.form-sequence-number < form.form-sequence-number
+            elseif (base == form-parent)
+              #t
+            elseif (base-parent == #f)
+              after?(base, form-parent)
+            else
+              after?(base-parent, form)
+            end
+          end method;
     after?(base, form)
   else
     base-cr.compilation-record-sequence-number
@@ -525,11 +525,11 @@ define method defined-after? (base :: <top-level-form>,
 end method;
 
 define method defined-before? (base :: <top-level-form>,
-			       form :: <top-level-form>) => before?;
+                               form :: <top-level-form>) => before?;
   defined-after?(form, base)
 end method;
 
-// All non-definition top-level forms are classed as miscellaneous 
+// All non-definition top-level forms are classed as miscellaneous
 // initialisations.
 
 define compiler-open generic retract-body-fragments (x);
@@ -567,7 +567,7 @@ define dood-class <macro-call-form> (<top-level-form>)
     required-init-keyword: define-word:;
 end;
 
-define method form-top-level-methods 
+define method form-top-level-methods
     (form :: <macro-call-form>) => (method-models)
   #()
 end method;
@@ -584,11 +584,11 @@ end dood-class;
 // it actually defines, or is associated with, a variable in any way. We
 // can browse its adjectives, at least.
 
-define /* abstract */ compiler-open class <defining-form> 
-    (<modified-top-level-form>) 
+define /* abstract */ compiler-open class <defining-form>
+    (<modified-top-level-form>)
 end class;
 
-define compiler-open form-properties <installable-form-properties> 
+define compiler-open form-properties <installable-form-properties>
     (<top-level-form-properties>)
 end;
 
@@ -597,7 +597,7 @@ define packed-slots form-properties-flags
   boolean slot form-top-level-installed? = #f;
 end packed-slots;
 
-define inline method shadowable-form-top-level-installed? 
+define inline method shadowable-form-top-level-installed?
     (form :: <installable-form-properties>) => (res :: <boolean>)
   // HACK: REALLY WANT THIS TO WORK WITH A TRANSPARENT ACCESSOR
   let offset :: <integer>
@@ -614,11 +614,11 @@ define method form-top-level-installed? (form :: <top-level-form>)
   ~form-top-level-installable?(form) |
     begin
       let p = form-properties-in-context
-	       (current-library-description(), form, #f);
+               (current-library-description(), form, #f);
       if (p)
-	shadowable-form-top-level-installed?(p)
+        shadowable-form-top-level-installed?(p)
       else
-	#t
+        #t
       end
     end
 end method;
@@ -634,7 +634,10 @@ define form-properties <variable-defining-form-properties>
     (<installable-form-properties>)
 end;
 
-define inline function pack-installed? (x) => (z :: <integer>)
+define constant <form-installed-type> = one-of(#f, #t, #"processing");
+
+define inline function pack-installed?
+    (x :: <form-installed-type>) => (z :: <integer>)
   select (x)
     #f            => 0;
     #"processing" => 1;
@@ -642,7 +645,8 @@ define inline function pack-installed? (x) => (z :: <integer>)
   end select;
 end function;
 
-define inline function unpack-installed? (x :: <integer>) => (res)
+define inline function unpack-installed?
+    (x :: <integer>) => (res :: <form-installed-type>)
   select (x)
     0 => #f            ;
     1 => #"processing" ;
@@ -652,20 +656,42 @@ end function;
 
 define packed-slots form-properties-flags
     (<variable-defining-form-properties>, <installable-form-properties>)
-  eval slot form-models-installed? = #f, field-size: 2,
+  eval slot %form-models-installed? :: <form-installed-type> = #f, field-size: 2,
     pack-function: pack-installed?, unpack-function: unpack-installed?;
 end packed-slots;
 
 /* abstract */
 define compiler-open dood-class <variable-defining-form>
     (<defining-form>, <variable-defining-form-properties>)
-  lazy constant slot form-variable-name-or-names 
+  lazy constant slot form-variable-name-or-names
                        :: type-union(<sequence>, <variable-name-fragment>),
     required-init-keyword: variable-name:;
+  virtual slot form-models-installed? :: <form-installed-type>;
   slot form-properties :: <integer> = 0;
 end dood-class;
 
-define inline function pack-inline-policy 
+// Track circular definitions.
+
+define variable *forms-in-processing* :: <list> = #();
+
+define method form-models-installed?
+    (form :: <variable-defining-form>) => (installed? :: <form-installed-type>)
+  form.%form-models-installed?
+end method;
+
+define method form-models-installed?-setter
+    (new-value :: <form-installed-type>, form :: <variable-defining-form>)
+ => (new-value :: <form-installed-type>)
+  select (new-value)
+    #"processing" =>
+      *forms-in-processing* := add!(*forms-in-processing*, form);
+    otherwise =>
+      *forms-in-processing* := remove!(*forms-in-processing*, form);
+  end select;
+  form.%form-models-installed? := new-value
+end method;
+
+define inline function pack-inline-policy
     (policy :: <symbol>) => (encoding :: <integer>)
   select (policy)
     #"default-inline" => 0;
@@ -688,10 +714,10 @@ define inline function unpack-inline-policy
 end function;
 
 /*
-define generic form-inline-policy 
+define generic form-inline-policy
     (form :: <top-level-form>) => (policy :: <symbol>);
 
-define method form-inline-policy 
+define method form-inline-policy
     (form :: <top-level-form>) => (policy :: <symbol>)
   #"default-inline"
 end method;
@@ -699,9 +725,9 @@ end method;
 
 define packed-slots form-properties
     (<variable-defining-form>, <variable-defining-form-properties>)
-  eval slot form-inline-policy = #"default-inline", 
+  eval slot form-inline-policy = #"default-inline",
     field-size: 3,
-    pack-function: pack-inline-policy, 
+    pack-function: pack-inline-policy,
     unpack-function: unpack-inline-policy,
     init-keyword: inline-policy:;
 end packed-slots;
@@ -742,7 +768,7 @@ define compiler-open class <missing-variable-defining-form>
     (<variable-defining-form>)
 end class;
 
-define packed-slots form-properties 
+define packed-slots form-properties
     (<missing-variable-defining-form>, <variable-defining-form>)
 end packed-slots;
 
@@ -763,29 +789,29 @@ define method form-implicitly-defined?
 end method;
 
 // Queries as to whether the variable definition defines normal module
-// variables or special variables of some kind to do with threads. 
+// variables or special variables of some kind to do with threads.
 // Default is normal.
 
-define compiler-open generic form-thread? 
+define compiler-open generic form-thread?
     (form :: <variable-defining-form>) => (result :: <boolean>);
 
-define method form-thread? 
+define method form-thread?
     (form :: <variable-defining-form>) => (result :: <boolean>)
   #f
 end method;
 
-define compiler-open generic form-locked? 
+define compiler-open generic form-locked?
     (form :: <variable-defining-form>) => (result :: <boolean>);
 
-define method form-locked? 
+define method form-locked?
     (form :: <variable-defining-form>) => (result :: <boolean>)
   #f
 end method;
 
-define compiler-open generic form-atomic? 
+define compiler-open generic form-atomic?
     (form :: <variable-defining-form>) => (result :: <boolean>);
 
-define method form-atomic? 
+define method form-atomic?
     (form :: <variable-defining-form>) => (result :: <boolean>)
   #f
 end method;
@@ -811,7 +837,7 @@ end packed-slots;
 // A typed-definition is a definition-form with space for an
 // explicitly-declared type.
 
-define /* abstract */ compiler-open dood-class 
+define /* abstract */ compiler-open dood-class
     <explicitly-typed-variable-defining-form> (<variable-defining-form>)
   lazy constant slot form-type-expressions :: <sequence>,
     required-init-keyword: type-expressions:;
@@ -821,7 +847,7 @@ define generic form-type-expressions
     (form :: <variable-defining-form>) => (expressions :: <sequence>);
 
 define generic form-type-expression
-    (form :: <variable-defining-form>, name :: <variable-name-fragment>) 
+    (form :: <variable-defining-form>, name :: <variable-name-fragment>)
       => (expression :: <type-expression>);
 
 // Namespace functions.
@@ -840,7 +866,7 @@ define compiler-open generic define-parsed-module
 
 // Variable-defining forms implement this method to compute and install
 // the model objects for the variables they defined. A default method
-// on compute-and-install-form-model-objects exists which calls 
+// on compute-and-install-form-model-objects exists which calls
 // compute-form-model-object on each variable name and then stores the
 // result if this is more convenient.
 
@@ -860,7 +886,7 @@ define compiler-open generic compute-form-model-object
 // Code computation.
 
 define compiler-open generic compute-and-install-form-dfm
-    (form :: <variable-defining-form>) => ();  
+    (form :: <variable-defining-form>) => ();
 
 define method compute-and-install-form-dfm
     (form :: <variable-defining-form>) => ()
@@ -873,7 +899,7 @@ end method;
 // be compiled statically or expanded to code to create the corresponding
 // object dynamically?
 
-define compiler-open generic form-dynamic? 
+define compiler-open generic form-dynamic?
     (form :: <top-level-form>) => (loose? :: <boolean>);
 
 define compiler-open generic form-binding-guaranteed-initialized?

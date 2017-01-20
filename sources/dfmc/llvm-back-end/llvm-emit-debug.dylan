@@ -29,8 +29,7 @@ define method llvm-source-record-dbg-file
     | begin
         let location = source-record-location(sr);
         back-end.%source-record-dbg-file-table[sr]
-          := llvm-make-dbg-file(#f,
-                                location.locator-name,
+          := llvm-make-dbg-file(location.locator-name,
                                 location.locator-directory)
       end
 end method;
@@ -38,6 +37,7 @@ end method;
 define method emit-lambda-dbg-function
     (back-end :: <llvm-back-end>, o :: <&iep>) => ()
   let fun = function(o);
+  let c-callable? = instance?(fun, <&c-callable-function>);
   let signature = ^function-signature(fun);
   let sig-spec = signature-spec(fun);
 
@@ -53,11 +53,37 @@ define method emit-lambda-dbg-function
       end if;
 
   // Compute the function type
-  let (return-type :: false-or(<llvm-metadata-value>),
-       parameter-types :: <sequence>)
-    = llvm-signature-dbg-types(back-end, o, sig-spec, signature);
+  let (dbg-return-type :: false-or(<llvm-metadata-value>),
+       dbg-parameter-types :: <sequence>)
+    = if (signature)
+        llvm-signature-dbg-types(back-end, o, sig-spec, signature)
+      else
+        llvm-dynamic-signature-dbg-types(back-end, o, sig-spec)
+      end if;
+
+  let obj-dbg-type
+    = llvm-reference-dbg-type(back-end, dylan-value(#"<object>"));
+  let dbg-calling-convention-parameter-types
+    = if (c-callable?)
+        #[]
+      else
+        vector(obj-dbg-type,      // next-methods
+               obj-dbg-type)      // function
+      end if;
+
+  let dbg-function-parameter-types
+    = if (o.parameters.size > $entry-point-argument-count)
+        concatenate(copy-sequence(dbg-parameter-types,
+                                  end: $entry-point-argument-count),
+                    vector(llvm-dbg-pointer-to(back-end, obj-dbg-type)),
+                    dbg-calling-convention-parameter-types)
+      else
+        concatenate(dbg-parameter-types,
+                    dbg-calling-convention-parameter-types)
+      end if;
   let dbg-function-type
-    = llvm-make-dbg-function-type(dbg-file, return-type, parameter-types);
+    = llvm-make-dbg-function-type(dbg-file, dbg-return-type,
+                                  dbg-function-parameter-types);
 
   // Construct the function metadata
   let module = back-end.llvm-builder-module;
@@ -75,23 +101,48 @@ define method emit-lambda-dbg-function
   add!(back-end.llvm-back-end-dbg-functions, dbg-function);
 
   // Emit a llvm.dbg.value call for each parameter
+  // FIXME handle "extra" parameters
   ins--dbg(back-end, dbg-line, 0, dbg-function, #f);
-  for (index from 1, param in parameters(o), param-type in parameter-types)
-    let v
-      = make(<llvm-metadata-node>,
-             function-local?: #t,
-             node-values: list(temporary-value(param)));
+  for (index from 1, param in parameters(o),
+       dbg-param-type in dbg-parameter-types)
+    let v = llvm-make-dbg-value-metadata(temporary-value(param));
     let lv
       = llvm-make-dbg-local-variable(#"argument",
                                      dbg-function,
                                      as(<string>, param.name),
                                      dbg-file, dbg-line,
-                                     param-type,
-                                     arg: index,
-                                     module: module,
-                                     function-name: function-name);
+                                     dbg-param-type,
+                                     arg: index);
     ins--call-intrinsic(back-end, "llvm.dbg.value", vector(v, i64(0), lv));
   end for;
+
+  // Emit a llvm.dbg.value call for each of the calling convention
+  // parameters
+  local
+    method artificial-parameter(name :: <string>, index :: <integer>)
+      let v = llvm-make-dbg-value-metadata(llvm-builder-local(back-end, name));
+      let obj-dbg-type
+        = llvm-reference-dbg-type(back-end, dylan-value(#"<object>"));
+      let lv
+        = llvm-make-dbg-local-variable(#"argument",
+                                       dbg-function,
+                                       name,
+                                       dbg-file, dbg-line,
+                                       obj-dbg-type,
+                                       arg: index + 1,
+                                       artificial?: #t);
+      ins--call-intrinsic(back-end, "llvm.dbg.value", vector(v, i64(0), lv));
+    end method;
+  unless (c-callable?)
+    let calling-convention-index = parameters(o).size;
+    artificial-parameter($next-methods-parameter-name,
+                         calling-convention-index);
+    artificial-parameter($function-parameter-name,
+                         calling-convention-index + 1);
+  end unless;
+
+  // Assign debug scopes to each computation
+  assign-computations-dbg-scope(back-end, dbg-function, o.body, #f);
 end method;
 
 define method llvm-signature-dbg-types
@@ -115,13 +166,66 @@ define method llvm-signature-dbg-types
   for (spec in spec-argument-key-variable-specs(sig-spec))
     add!(parameter-types, llvm-reference-dbg-type(back-end, obj-type));
   end for;
-  // Calling convention parameters (next-methods, function)
-  add!(parameter-types, llvm-reference-dbg-type(back-end, obj-type));
-  add!(parameter-types, llvm-reference-dbg-type(back-end, obj-type));
 
   let return-type
     = llvm-reference-dbg-type(back-end, back-end.%mv-struct-type);
   values(return-type, parameter-types)
+end method;
+
+define method llvm-dynamic-signature-dbg-types
+    (back-end :: <llvm-back-end>, o :: <&iep>,
+     sig-spec :: <signature-spec>)
+ => (return-type :: false-or(<llvm-metadata-value>),
+     parameter-types :: <sequence>);
+  let parameter-types = make(<stretchy-object-vector>);
+  let obj-dbg-type
+    = llvm-reference-dbg-type(back-end, dylan-value(#"<object>"));
+
+  // Required parameters
+  for (spec in spec-argument-required-variable-specs(sig-spec))
+    add!(parameter-types, obj-dbg-type);
+  end for;
+  // Optional parameters
+  if (spec-argument-optionals?(sig-spec))
+    add!(parameter-types, obj-dbg-type);
+  end if;
+  // Keyword parameters
+  for (spec in spec-argument-key-variable-specs(sig-spec))
+    add!(parameter-types, obj-dbg-type);
+  end for;
+
+  let return-type
+    = llvm-reference-dbg-type(back-end, back-end.%mv-struct-type);
+  values(return-type, parameter-types)
+end method;
+
+
+/// Local variable declarations
+
+define method emit-dbg-local-variable
+    (back-end :: <llvm-back-end>, c :: <computation>, tmp :: <temporary>,
+     kind :: one-of(#"auto", #"argument", #"return"),
+     value :: <llvm-value>, #key address? = #f)
+ => ();
+  let source-location = c.dfm-source-location;
+  if (source-location)
+    let (dbg-file, dbg-line)
+      = source-location-dbg-file-line(back-end, source-location);
+    let var-type
+      = llvm-reference-dbg-type(back-end, type-estimate(tmp));
+    let v = llvm-make-dbg-value-metadata(value);
+    let lv
+      = llvm-make-dbg-local-variable(kind,
+                                     *computation-dbg-scope-table*[c],
+                                     as(<string>, tmp.name),
+                                     dbg-file, dbg-line,
+                                     var-type);
+    if (address?)
+      ins--call-intrinsic(back-end, "llvm.dbg.declare", vector(v, lv));
+    else
+      ins--call-intrinsic(back-end, "llvm.dbg.value", vector(v, i64(0), lv));
+    end if;
+  end if;
 end method;
 
 define method llvm-reference-dbg-type
@@ -130,6 +234,7 @@ define method llvm-reference-dbg-type
   element(back-end.%dbg-type-table, o, default: #f)
     | (back-end.%dbg-type-table[o]
          := begin
+              let dummy-file = llvm-make-dbg-file("dummy-raw-struct.dylan", "");
               let placeholder = make(<llvm-symbolic-metadata>, name: 0);
               let (type-size, type-alignment, member-bit-offsets)
                 = compute-raw-aggregate-layout(o);
@@ -144,7 +249,7 @@ define method llvm-reference-dbg-type
                         llvm-make-dbg-derived-type
                           (#"member", placeholder,
                            format-to-string("F%d", index),
-                           #f, #f, 8 * member-size, 8 * member-alignment,
+                           dummy-file, #f, 8 * member-size, 8 * member-alignment,
                            member-offset, member-dbg-type)
                       end,
                       o.raw-aggregate-members, range(from: 0));
@@ -152,7 +257,7 @@ define method llvm-reference-dbg-type
                 = llvm-make-dbg-composite-type
                     (#"struct", #f,
                      o.^debug-name | "",
-                     #f, #f, type-size, type-alignment, elements, #f);
+                     dummy-file, #f, type-size, type-alignment, elements, #f);
               placeholder.llvm-placeholder-value-forward := aggregate
             end)
 end method;
@@ -166,13 +271,7 @@ define method llvm-reference-dbg-type
               let type-name = o.^debug-name;
               let type-size = o.raw-type-size;
               let type-alignment = o.raw-type-alignment;
-              let kind = 
-                select (o)
-                  dylan-value(#"<raw-pointer>") => #"pointer";
-                  dylan-value(#"<raw-byte>")    => #"unsigned-char";
-                  otherwise =>
-                    error("No debug type mapping for %s", type-name);
-                end;
+              let kind = back-end.%raw-type-dbg-encoding-table[o];
               if (kind == #"pointer")
                 llvm-make-dbg-derived-type
                   (kind, #f,
@@ -185,19 +284,144 @@ define method llvm-reference-dbg-type
             end)
 end method;
 
+define function llvm-dbg-pointer-to
+    (back-end :: <llvm-back-end>, dbg-type :: false-or(<llvm-metadata-value>))
+ => (dbg-type :: <llvm-metadata-value>);
+  let word-size = back-end-word-size(back-end);
+  llvm-make-dbg-derived-type(#"pointer",
+                             #f,
+                             "",
+                             #f, #f,
+                             8 * word-size, 8 * word-size, 0,
+                             #f)
+end function;
+
 define method llvm-reference-dbg-type
     (back-end :: <llvm-back-end>, o :: <&type>)
  => (dbg-type :: <llvm-metadata-value>);
   let obj-type = dylan-value(#"<object>");
   let word-size = back-end-word-size(back-end);
   element(back-end.%dbg-type-table, obj-type, default: #f)
-    | (back-end.%dbg-type-table[obj-type]
-         := llvm-make-dbg-derived-type(#"pointer",
+    | begin
+        let dummy-file = llvm-make-dbg-file("dummy-objects.dylan", "");
+        let pointer-type = llvm-dbg-pointer-to(back-end, #f);
+        back-end.%dbg-type-table[obj-type]
+         := llvm-make-dbg-derived-type(#"typedef",
                                        #f,
-                                       "<object>",
-                                       #f, #f,
-                                       8 * word-size, 8 * word-size, 0,
-                                       #f))
+                                       "dylan_value",
+                                       dummy-file, #f,
+                                       0, 0, 0,
+                                       pointer-type)
+      end
+end method;
+
+define method llvm-reference-dbg-type
+    (back-end :: <llvm-back-end>, o :: <type-estimate>)
+ => (dbg-type :: <llvm-metadata-value>);
+  llvm-reference-dbg-type(back-end, dylan-value(#"<object>"))
+end method;
+
+define method llvm-reference-dbg-type
+    (back-end :: <llvm-back-end>, o :: <type-estimate-raw>)
+ => (dbg-type :: <llvm-metadata-value>);
+  llvm-reference-dbg-type(back-end, o.type-estimate-raw)
+end method;
+
+define method llvm-reference-dbg-type
+    (back-end :: <llvm-back-end>, o :: <type-estimate-limited-instance>)
+ => (dbg-type :: <llvm-metadata-value>);
+  llvm-reference-dbg-type(back-end, ^object-class(type-estimate-singleton(o)))
+end method;
+
+define method llvm-reference-dbg-type
+    (back-end :: <llvm-back-end>, o :: <type-estimate-union>)
+ => (dbg-type :: <llvm-metadata-value>);
+  llvm-reference-dbg-type(back-end, first(type-estimate-unionees(o)))
+end method;
+
+define method llvm-reference-dbg-type
+    (back-end :: <llvm-back-end>, o :: <type-estimate-values>)
+ => (dbg-type :: <llvm-metadata-value>);
+  let fixed-values = type-estimate-fixed-values(o);
+  if (size(fixed-values) > 0)
+    llvm-reference-dbg-type(back-end, fixed-values[0])
+  else
+    llvm-reference-dbg-type(back-end, dylan-value(#"<object>"))
+  end if
+end method;
+
+
+/// Computation variable scope handling
+
+define thread variable *computation-dbg-scope-table* :: false-or(<object-table>)
+  = #f;
+
+define method assign-computations-dbg-scope
+    (back-end :: <llvm-back-end>, scope :: <llvm-metadata-value>,
+     c :: <computation>, last)
+ => ()
+  iterate loop (c :: false-or(<computation>) = c,
+                scope :: <llvm-metadata-value> = scope)
+    if (c & c ~== last)
+      let loc = dfm-source-location(c);
+      let temp = c.temporary;
+      if (loc & temp & temp.named?)
+        let (dbg-file :: <llvm-metadata-value>, dbg-line :: <integer>)
+          = source-location-dbg-file-line(back-end, loc);
+        let inner-scope
+          = llvm-make-dbg-lexical-block(scope, dbg-file, dbg-line, 0);
+        assign-computation-dbg-scope(back-end, inner-scope, c);
+        loop(c.next-computation, inner-scope);
+      else
+        assign-computation-dbg-scope(back-end, scope, c);
+        loop(c.next-computation, scope);
+      end if;
+    end if;
+  end iterate;
+end method;
+
+define method assign-computation-dbg-scope
+    (back-end :: <llvm-back-end>, scope :: <llvm-metadata-value>,
+     c :: <computation>)
+ => ()
+  *computation-dbg-scope-table*[c] := scope;
+end method;
+
+define method assign-computation-dbg-scope
+    (back-end :: <llvm-back-end>, scope :: <llvm-metadata-value>,
+     c :: <if>)
+ => ()
+  next-method();
+  let merge :: <if-merge> = next-computation(c);
+  assign-computations-dbg-scope(back-end, scope, c.consequent, merge);
+  assign-computations-dbg-scope(back-end, scope, c.alternative, merge);
+end method;
+
+define method assign-computation-dbg-scope
+    (back-end :: <llvm-back-end>, scope :: <llvm-metadata-value>,
+     c :: <loop>)
+ => ()
+  next-method();
+  assign-computations-dbg-scope(back-end, scope,
+                                c.loop-body, c.next-computation);
+end method;
+
+define method assign-computation-dbg-scope
+    (back-end :: <llvm-back-end>, scope :: <llvm-metadata-value>,
+     c :: <block>)
+ => ()
+  next-method();
+  assign-computations-dbg-scope(back-end, scope,
+                                c.body, c.next-computation);
+end method;
+
+define method assign-computation-dbg-scope
+    (back-end :: <llvm-back-end>, scope :: <llvm-metadata-value>,
+     c :: <unwind-protect>)
+ => ()
+  next-method();
+  assign-computations-dbg-scope(back-end, scope,
+                                c.cleanups, c.next-computation);
 end method;
 
 
@@ -210,7 +434,7 @@ define function op--scl(back-end :: <llvm-back-end>, c :: <computation>) => ()
     let start-offset = source-location-start-offset(loc);
     let start-line = source-offset-line(start-offset);
     ins--dbg(back-end, start-line + source-record-start-line(sr), 0,
-             back-end.llvm-back-end-dbg-functions.last, #f);
+             *computation-dbg-scope-table*[c], #f);
   end if;
 end function;
 

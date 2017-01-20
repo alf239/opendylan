@@ -24,17 +24,32 @@ Built-In Classes
 ================
 
 Dylan has a large variety of built-in classes. Several of these
-represent primitive data types, such as ``<integer>``
-and ``<character>``. A few represent
-actual language-level entities, such as ``<class>``
-and ``<function>``. Most of the others
+represent primitive data types, such as :drm:`<integer>`
+and :drm:`<character>`. A few represent
+actual language-level entities, such as :drm:`<class>`
+and :drm:`<function>`. Most of the others
 implement collection classes, similar to those found in C++'s
 Standard Template Library. A few of the most important classes are
 shown here:
 
-.. figure: missing.png
+.. table:: Several Standard Dylan Classes
+   :class: table-striped
 
-   Several Standard Dylan Classes
+   +-----------------------+-----------------+
+   | Primitive Types       | Collections     |
+   +=======================+=================+
+   | :drm:`<character>`    | :drm:`<string>` |
+   +-----------------------+-----------------+
+   | :drm:`<integer>`      | :drm:`<list>`   |
+   +-----------------------+-----------------+
+   | :drm:`<boolean>`      | :drm:`<vector>` |
+   +-----------------------+-----------------+
+   | :drm:`<single-float>` | :drm:`<table>`  |
+   +-----------------------+-----------------+
+   | :drm:`<double-float>` | :drm:`<pair>`   |
+   +-----------------------+-----------------+
+   | :drm:`<symbol>`       | :drm:`<deque>`  |
+   +-----------------------+-----------------+
 
 The built-in collection classes include a number of common data
 structures. Arrays, tables, vectors, ranges and deques should be
@@ -64,7 +79,7 @@ their data. A simple Dylan class shows how slots are declared:
 
 The above code would be quick and convenient to write while building a
 prototype, but it could be improved. The slots have no declared types
-so they default to ``<object>``, and they don't specify default values
+so they default to :drm:`<object>`, and they don't specify default values
 so they default to ``#f``.  The following snippet fixes both problems:
 
 .. code-block:: dylan

@@ -1,36 +1,14 @@
 #
 # Generated config
 #
-include $(SYSTEM_ROOT)/lib/config.jam ;
+include $(SYSTEM_BUILD_SCRIPTS)/config.jam ;
 
 #
 # Configuration variables
 #
-SUFDLL  ?= .dylib ;             # shared library suffix
-
-CCFLAGS  += -fno-strict-aliasing -arch x86_64 -D_POSIX_C_SOURCE
-            -DOPEN_DYLAN_PLATFORM_UNIX -DOPEN_DYLAN_PLATFORM_DARWIN ;
-
-#
-# Runtime
-#
-
-RTOBJS_llvm ?= ;
-
-#
-# Library search path
-#
-LINKFLAGSEXE ?= -Wl,-rpath,@executable_path/../lib/ ;
+CCFLAGS  += -arch x86_64 -DOPEN_DYLAN_ARCH_X86_64 ;
 
 #
 # Common build script
 #
-include $(SYSTEM_ROOT)/lib/posix-build.jam ;
-
-#
-# Overrides/redefinitions
-#
-
-actions together LinkDLL bind NEEDLIBS {
-  $(LINK) -dynamiclib -o $(<) -install_name @rpath/$(<:BS=$(SUFDLL)) $(LINKFLAGS) $(>) -L"$(LIBPATH)" $(NEEDLIBS) $(LINKLIBS)
-}
+include $(SYSTEM_BUILD_SCRIPTS)/shared-darwin-build.jam ;

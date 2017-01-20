@@ -107,7 +107,7 @@ end method;
 
 
 define constant $elf-as-assemble-command-line =
-  "as -L -o %s.o %s.s";
+  "as -L --32 -o %s.o %s.s";
 
 define method assemble-harp-outputter
     (outputter :: <harp-elf-as-outputter>, filename) => ()
@@ -417,6 +417,15 @@ define method output-footer
   // Set this flag to communicate completion to assembler
   outputter.finished-outputting? := #t;
 end method;
+
+
+define method output-footer
+      (be :: <harp-back-end>, outputter :: <harp-elf-as-outputter>) => ()
+  let stream = outputter.destination;
+  format(stream, ".section .note.GNU-stack,\"\",@progbits\n");
+  next-method();
+end method;
+
 
 define method output-code-start
       (be :: <harp-back-end>, outputter :: <harp-gnu-as-outputter>) => ()

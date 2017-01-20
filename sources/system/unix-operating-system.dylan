@@ -11,12 +11,13 @@ define macro with-storage
   { with-storage (?:name, ?size:expression) ?:body end }
   => { begin
          let ?name = primitive-wrap-machine-word(integer-as-raw(0));
+         let storage-size :: <integer> = ?size;
          block ()
            ?name := primitive-wrap-machine-word
                       (primitive-cast-pointer-as-raw
-                         (%call-c-function ("GC_malloc")
-                            (nbytes :: <raw-c-unsigned-long>) => (p :: <raw-c-pointer>)
-                            (integer-as-raw(?size))
+                         (%call-c-function ("MMAllocMisc")
+                            (nbytes :: <raw-c-size-t>) => (p :: <raw-c-pointer>)
+                            (integer-as-raw(storage-size))
                           end));
            if (primitive-machine-word-equal?
                  (primitive-unwrap-machine-word(?name), integer-as-raw(0)))
@@ -26,8 +27,10 @@ define macro with-storage
          cleanup
            if (primitive-machine-word-not-equal?
                  (primitive-unwrap-machine-word(?name), integer-as-raw(0)))
-             %call-c-function ("GC_free") (p :: <raw-c-pointer>) => (void :: <raw-c-void>)
-               (primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(?name)))
+             %call-c-function ("MMFreeMisc")
+               (p :: <raw-c-pointer>, nbytes :: <raw-c-size-t>) => ()
+                 (primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(?name)),
+                  integer-as-raw(storage-size))
              end;
              #f
            end
@@ -110,32 +113,22 @@ end function environment-variable;
 define function environment-variable-setter
     (new-value :: false-or(<byte-string>), name :: <byte-string>)
  => (new-value :: false-or(<byte-string>))
-  let thing = concatenate-as(<byte-string>, name, "=", new-value | "");
-  //--- NOTE: The string passed to putenv must be statically allocated
-  //--- as it will remain in use after this function returns to its caller.
-  let static-thing = primitive-wrap-machine-word
-                       (primitive-cast-pointer-as-raw
-                          (%call-c-function ("GC_malloc")
-                               (nbytes :: <raw-c-unsigned-long>) => (p :: <raw-c-pointer>)
-                             (integer-as-raw(size(thing) + 1))
-                           end));
-  if (primitive-machine-word-not-equal?(primitive-unwrap-machine-word(static-thing),
-                                        integer-as-raw(0)))
-    //--- NOTE: We can't use primitive-replace-bytes! as our
-    //--- first argument isn't a Dylan object.  (Sigh)
-    %call-c-function ("strcpy")
-        (dst :: <raw-c-pointer>, src :: <raw-c-pointer>)
-     => (dst :: <raw-c-pointer>)
-      (primitive-cast-raw-as-pointer
-         (primitive-unwrap-machine-word(static-thing)),
-       primitive-string-as-raw(thing))
-    end;
+  if (new-value)
     //---*** Should we signal something if this call fails?
-    %call-c-function ("putenv")
-      (new-value :: <raw-byte-string>) => (result :: <raw-c-signed-int>)
-      (primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(static-thing)))
-    end
-  end;
+    %call-c-function ("setenv")
+        (name :: <raw-byte-string>, new-value :: <raw-byte-string>,
+         overwrite :: <raw-c-signed-int>)
+     => (result :: <raw-c-signed-int>)
+      (primitive-string-as-raw(name), primitive-string-as-raw(new-value),
+       integer-as-raw(1))
+    end;
+  else
+    %call-c-function ("unsetenv")
+        (name :: <raw-byte-string>)
+     => (result :: <raw-c-signed-int>)
+      (primitive-string-as-raw(name))
+    end;
+  end if;
   new-value
 end function environment-variable-setter;
 
@@ -153,8 +146,9 @@ define function make-pipe() => (read-fd :: <integer>, write-fd :: <integer>);
     let result
       = raw-as-integer
           (%call-c-function("pipe")
-             (new-value :: <raw-byte-string>) => (result :: <raw-c-signed-int>)
-             (primitive-unwrap-machine-word(fildes))
+             (new-value :: <raw-c-pointer>) => (result :: <raw-c-signed-int>)
+             (primitive-cast-raw-as-pointer
+                (primitive-unwrap-machine-word(fildes)))
            end);
     if (result < 0)
       error("pipe creation failed");
@@ -294,20 +288,9 @@ define function run-application
     close-fds := add(close-fds, write-fd);
   end if;
 
-  let envp
-    = if (environment)
-        make-envp(environment);
-      else
-        primitive-wrap-machine-word
-          (%call-c-function ("system_environ")
-             () => (environ :: <raw-c-pointer>)
-             ()
-           end);
-      end if;
-
   let dir = working-directory & as(<byte-string>, working-directory);
 
-  let (program, argv-size)
+  let (program :: <byte-string>, argv-size :: <integer>)
     = if (under-shell?)
         if (instance?(command, <string>))
           values($posix-shell, 4)
@@ -357,32 +340,58 @@ define function run-application
           end if
         end if;
 
-        primitive-c-pointer-at(primitive-unwrap-c-pointer(argv),
-                               integer-as-raw(argv-size - 1), integer-as-raw(0))
-          := integer-as-raw(0);
+        let (envp, envp-size)
+            = if (environment)
+                make-envp(environment)
+              else
+                values(primitive-wrap-machine-word
+			 (primitive-cast-pointer-as-raw
+			    (%call-c-function ("system_environ")
+			       () => (environ :: <raw-c-pointer>)
+			       ()
+			     end)),
+		       0)
+              end if;
 
-        raw-as-integer
-          (%call-c-function("system_spawn")
-             (program :: <raw-byte-string>,
-              argv :: <raw-c-pointer>,
-              envp :: <raw-c-pointer>,
-              dir :: <raw-byte-string>,
-              inherit-console? :: <raw-c-signed-int>,
-              input-fd :: <raw-c-signed-int>,
-              output-fd :: <raw-c-signed-int>,
-              error-fd :: <raw-c-signed-int>) => (pid :: <raw-c-signed-int>)
-             (primitive-string-as-raw(program),
-              primitive-cast-raw-as-pointer
-                (primitive-unwrap-machine-word(argv)),
-              primitive-cast-raw-as-pointer
-                (primitive-unwrap-machine-word(envp)),
-              if (dir) primitive-string-as-raw(dir)
-              else integer-as-raw(0) end,
-              primitive-boolean-as-raw(inherit-console?),
-              integer-as-raw(input-fd),
-              integer-as-raw(output-fd),
-              integer-as-raw(error-fd))
-           end)
+        block ()
+          primitive-c-pointer-at(primitive-unwrap-c-pointer(argv),
+                                 integer-as-raw(argv-size - 1), integer-as-raw(0))
+            := primitive-cast-raw-as-pointer(integer-as-raw(0));
+
+          raw-as-integer
+            (%call-c-function("system_spawn")
+               (program :: <raw-byte-string>,
+                argv :: <raw-c-pointer>,
+                envp :: <raw-c-pointer>,
+                dir :: <raw-byte-string>,
+                inherit-console? :: <raw-c-signed-int>,
+                input-fd :: <raw-c-signed-int>,
+                output-fd :: <raw-c-signed-int>,
+                error-fd :: <raw-c-signed-int>) => (pid :: <raw-c-signed-int>)
+               (primitive-string-as-raw(program),
+                primitive-cast-raw-as-pointer
+                  (primitive-unwrap-machine-word(argv)),
+                primitive-cast-raw-as-pointer
+                  (primitive-unwrap-machine-word(envp)),
+                if (dir)
+                  primitive-string-as-raw(dir)
+                else
+                  primitive-cast-raw-as-pointer(integer-as-raw(0))
+                end,
+                integer-as-raw(if (inherit-console?) 1 else 0 end),
+                integer-as-raw(input-fd),
+                integer-as-raw(output-fd),
+                integer-as-raw(error-fd))
+             end)
+        cleanup
+          if (environment)
+            %call-c-function ("MMFreeMisc")
+              (p :: <raw-c-pointer>, nbytes :: <raw-c-size-t>) => ()
+                (primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(envp)),
+                 integer-as-raw(envp-size))
+            end;
+          end if;
+        end block;
       end with-storage;
 
   // Close fds that belong to the child
@@ -396,7 +405,7 @@ define function run-application
       run-outputter(outputter, outputter-read-fd);
     end if;
 
-    let (return-pid, status-code) = %waitpid(pid, 0);
+    let (_return-pid, status-code) = %waitpid(pid, 0);
     let signal-code = logand(status-code, #o177);
     let exit-code = ash(status-code, -8);
     apply(values, exit-code, (signal-code ~= 0) & signal-code, #f,
@@ -411,7 +420,8 @@ define function run-outputter
   let dylan-output-buffer = make(<byte-string>, size: $BUFFER-MAX, fill: '\0');
   let output-buffer
     = primitive-wrap-machine-word
-        (primitive-string-as-raw(dylan-output-buffer));
+        (primitive-cast-pointer-as-raw
+           (primitive-string-as-raw(dylan-output-buffer)));
   iterate loop ()
     let count = unix-raw-read(outputter-read-fd, output-buffer, $BUFFER-MAX);
     if (count > 0)
@@ -426,7 +436,7 @@ define function wait-for-application-process
     (process :: <application-process>)
  => (exit-code :: <integer>, signal :: false-or(<integer>));
   if (process.%application-process-state == #"running")
-    let (return-pid, return-status)
+    let (_return-pid, return-status)
       = %waitpid(process.application-process-id, 0);
     process.%application-process-status-code := return-status;
     process.%application-process-state := #"exited";
@@ -445,7 +455,10 @@ define function %waitpid
       = raw-as-integer
           (%call-c-function ("waitpid")
              (wpid :: <raw-c-signed-int>, timeloc :: <raw-c-pointer>, options :: <raw-c-unsigned-int>) => (pid :: <raw-c-signed-int>)
-             (integer-as-raw(wpid), primitive-unwrap-machine-word(statusp), integer-as-raw(options))
+             (integer-as-raw(wpid),
+              primitive-cast-raw-as-pointer
+                (primitive-unwrap-machine-word(statusp)),
+              integer-as-raw(options))
            end);
     let status
       = raw-as-integer
@@ -456,24 +469,26 @@ define function %waitpid
   end with-storage
 end function;
 
+// The result returned from this must be freed with MMFreeMisc.
 define function make-envp
     (environment :: <explicit-key-collection>)
- => (result :: <machine-word>)
+ => (result :: <machine-word>, size :: <integer>)
   let temp-table :: <string-table> = make(<string-table>);
 
   // Obtain the current environment as a <string-table> keyed by the
   // environment variable name
   let old-envp :: <machine-word>
-    = primitive-wrap-machine-word
+    = primitive-wrap-machine-word(primitive-cast-pointer-as-raw
         (%call-c-function ("system_environ") () => (environ :: <raw-c-pointer>)
            ()
-         end);
+         end));
   block (envp-done)
     for (i :: <integer> from 0)
       let raw-item
         = primitive-c-pointer-at(primitive-unwrap-machine-word(old-envp),
                                  integer-as-raw(i), integer-as-raw(0));
-      if (primitive-machine-word-equal?(raw-item, integer-as-raw(0)))
+      if (primitive-machine-word-equal?
+            (raw-item, primitive-cast-raw-as-pointer(integer-as-raw(0))))
         envp-done();
       else
         let item = primitive-raw-as-string(raw-item);
@@ -500,8 +515,8 @@ define function make-envp
   let new-envp
     = primitive-wrap-machine-word
         (primitive-cast-pointer-as-raw
-           (%call-c-function ("GC_malloc")
-              (nbytes :: <raw-c-unsigned-long>) => (p :: <raw-c-pointer>)
+           (%call-c-function ("MMAllocMisc")
+              (nbytes :: <raw-c-size-t>) => (p :: <raw-c-pointer>)
               (integer-as-raw(envp-size))
             end));
   for (i :: <integer> from 0, item keyed-by key in temp-table)
@@ -511,7 +526,7 @@ define function make-envp
       := primitive-string-as-raw(item);
   end for;
 
-  new-envp
+  values(new-envp, envp-size)
 end function;
 
 ///---*** NOTE: The following functions need real implementations!
@@ -536,12 +551,29 @@ end function signal-application-event;
 
 define function load-library
     (name :: <string>) => (module)
-  let module =
-    primitive-wrap-machine-word
-    (%call-c-function ("system_dlopen")
-       (name :: <raw-byte-string>)
-       => (handle :: <raw-c-pointer>)
-       (primitive-cast-raw-as-pointer(primitive-string-as-raw(name)))
-    end);
+  let module
+    = primitive-wrap-machine-word
+        (primitive-cast-pointer-as-raw
+	   (%call-c-function ("system_dlopen")
+	        (name :: <raw-byte-string>)
+	     => (handle :: <raw-c-pointer>)
+	      (primitive-string-as-raw(name))
+	    end));
   module
 end function load-library;
+
+define function current-process-id
+    () => (pid :: <integer>)
+  raw-as-integer(%call-c-function("getpid")
+                     () => (pid :: <raw-c-signed-int>)
+                     ()
+                 end);
+end;
+
+define function parent-process-id
+    () => (pid :: <integer>)
+  raw-as-integer(%call-c-function("getppid")
+                     () => (pid :: <raw-c-signed-int>)
+                     ()
+                 end);
+end;

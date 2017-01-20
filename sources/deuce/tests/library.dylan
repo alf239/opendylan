@@ -18,13 +18,14 @@ end library deuce-test-suite;
 
 define module deuce-test-suite
   use common-dylan,
-    exclude: { position, position-if, format-to-string };
+    exclude: { position, position-if };
   use format;
   use threads;
   use deuce-internals;
 
   use streams,
-    rename: { <buffer> => streams/<buffer> };
+    rename: { <buffer> => streams/<buffer>,
+              read-character => streams/read-character };
   use testworks;
 
   export deuce-test-suite;

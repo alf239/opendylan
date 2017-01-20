@@ -8,6 +8,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define module duim-gui-test-suite
   use common-dylan;
+  use simple-format;
   use simple-profiling;
   use dylan-extensions,
     import: { debug-name };
@@ -20,24 +21,24 @@ define module duim-gui-test-suite
   //--- It would be nice not to need to do this...
   use duim-internals,
     import: { \with-abort-restart,
-	      $default-text-style,
-	      <basic-gadget>,
-	      <oriented-gadget-mixin>,
-	      collection-gadget-default-label-key,
-	      <basic-frame>,
-	      do-command-menu-gadgets,
-	      do-copy-area,
+              $default-text-style,
+              <basic-gadget>,
+              <oriented-gadget-mixin>,
+              collection-gadget-default-label-key,
+              <basic-frame>,
+              do-command-menu-gadgets,
+              do-copy-area,
               duim-debug-message,
 
               // Cursors
               pointer-cursor-override, pointer-cursor-override-setter,
 
               // Scrolling
-	      <scrolling-sheet-mixin>,
-	      update-scroll-bars,
-	      line-scroll-amount,
-	      page-scroll-amount,
-	      sheet-scroll-range,
+              <scrolling-sheet-mixin>,
+              update-scroll-bars,
+              line-scroll-amount,
+              page-scroll-amount,
+              sheet-scroll-range,
               sheet-visible-range, set-sheet-visible-range };
 
   // The start up function

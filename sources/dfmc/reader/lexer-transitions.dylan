@@ -11,15 +11,12 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 // Copyright (c) 1994  Carnegie Mellon University
 // All rights reserved.
 
-// $Initial-State -- internal.
-//
-// Build the state graph and save the initial state.
-//
-
 define constant $ascii-8-bit-extensions
   = as(<string>, vector(as(<character>, 128), '-', as(<character>, 255)));
 
-define constant $Initial-State :: <state>
+// Build the state graph and save the initial state.
+//
+define constant $initial-state :: <state>
   = compile-state-machine
       (state(#"start", #f,
              pair(" \t\f\r", #"whitespace"),
@@ -219,7 +216,8 @@ define constant $Initial-State :: <state>
        state(#"lbrace", fragment-builder(<lbrace-fragment>)),
        state(#"rbrace", fragment-builder(<rbrace-fragment>)),
        state(#"minus", make-minus,
-             pair("0-9", #"signed-decimal")),
+             pair("0-9", #"signed-decimal"),
+             pair('.', #"fp-frac")),
        state(#"equal", make-equal,
              pair('=', #"double-equal"),
              pair('>', #"arrow"),
@@ -320,7 +318,8 @@ define constant $Initial-State :: <state>
              pair("-0-9!&*<=>|^$%@_+~?/", #"backslash-digit"),
              pair("a-zA-Z", #"backslash-symbol")),
        state(#"plus", make-binary-operator,
-             pair("0-9", #"signed-decimal")),
+             pair("0-9", #"signed-decimal"),
+             pair('.', #"fp-frac")),
        state(#"tilde", make-tilde,
              pair('=', #"tilde-equal")),
        state(#"tilde-equal", make-binary-operator,
@@ -524,7 +523,8 @@ define constant $Initial-State :: <state>
        state(#"signed-decimal", parse-integer-literal,
              pair("0-9", #"signed-decimal"),
              pair('/', #"signed-decimal-slash"),
-             pair('.', #"fp-frac")),
+             pair('.', #"fp-frac"),
+             pair("eEsSdDxX", #"fp-e")),
        state(#"signed-decimal-slash", #f,
              pair("0-9", #"signed-ratio")),
        state(#"signed-ratio", parse-ratio-literal,

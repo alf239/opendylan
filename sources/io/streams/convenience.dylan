@@ -34,7 +34,7 @@ define method read-to
   // signal end-of-stream instead of incomplete read
   if (stream-at-end?(stream))
     values(end-of-stream-value(stream, on-end-of-stream), #f)
-  else 
+  else
     let seq = make(<stretchy-vector>);
     let matched? = #f;
     while (~stream-at-end?(stream) & ~matched?)
@@ -57,7 +57,7 @@ define method read-through
   // signal end-of-stream instead of incomplete read
   if (stream-at-end?(stream))
     values(end-of-stream-value(stream, on-end-of-stream), #f)
-  else 
+  else
     let seq = make(<stretchy-vector>);
     let matched? = #f;
     while (~stream-at-end?(stream) & ~matched?)
@@ -132,7 +132,7 @@ define method read-line
   // signal end-of-stream instead of incomplete read
   if (stream-at-end?(stream))
     values(end-of-stream-value(stream, on-end-of-stream), #f)
-  else 
+  else
     let seq = make(<stretchy-vector>);
     let matched? = #f;
     while (~stream-at-end?(stream) & ~matched?)
@@ -161,18 +161,18 @@ define method read-line-into!
   let index :: <integer> = start;
   let overflow = #f;
   local method add-with-overflow (elt)
-	  if (grow? & index >= ssize)
-	    unless (overflow)
-	      overflow := make(<stretchy-vector>,
-			       size: max(0, start - ssize),
-			       fill: ' ')
-	    end;
-	    add!(overflow, elt)
-	  else
-	    string[index] := elt;
-	    index := index + 1
-	  end
-	end method;
+          if (grow? & index >= ssize)
+            unless (overflow)
+              overflow := make(<stretchy-vector>,
+                               size: max(0, start - ssize),
+                               fill: ' ')
+            end;
+            add!(overflow, elt)
+          else
+            string[index] := elt;
+            index := index + 1
+          end
+        end method;
   // Same deal as 'read-line'
   if (stream-at-end?(stream))
     values(end-of-stream-value(stream, on-end-of-stream), #f)
@@ -202,11 +202,8 @@ end method read-line-into!;
 define method write-line
     (stream :: <stream>, elements :: <string>,
      #key start: start-index = 0, end: _end = #f) => ()
-  with-stream-locked (stream)
-    write(stream, elements, start: start-index, end: _end | elements.size);
-    new-line(stream)
-  end;
-  #f
+  write(stream, elements, start: start-index, end: _end | elements.size);
+  new-line(stream);
 end method write-line;
 
 
@@ -241,12 +238,12 @@ define method read-character
     let character = read-element(stream);
     select (character)
       '\r' =>
-	if (peek(stream, on-end-of-stream: #f) == '\n')
-	  read-element(stream)
-	end;
-	'\n';
+        if (peek(stream, on-end-of-stream: #f) == '\n')
+          read-element(stream)
+        end;
+        '\n';
       otherwise =>
-	character;
+        character;
     end
   end
 end method read-character;
@@ -273,21 +270,21 @@ define method read-text-into!
  => (count-or-eof)
   block (return)
     for (count :: <integer> from 0 below n,
-	 index :: <integer> from start)
+         index :: <integer> from start)
       if (stream-at-end?(stream))
-	return(end-of-stream-value(stream, on-end-of-stream))
+        return(end-of-stream-value(stream, on-end-of-stream))
       end;
       let character = read-element(stream);
       let character :: <character>
-	= select (character)
-	    '\r' =>
-	      if (peek(stream, on-end-of-stream: #f) == '\n')
-		read-element(stream)
-	      end;
-	      '\n';
-	    otherwise =>
-	      character;
-	  end;
+        = select (character)
+            '\r' =>
+              if (peek(stream, on-end-of-stream: #f) == '\n')
+                read-element(stream)
+              end;
+              '\n';
+            otherwise =>
+              character;
+          end;
       text[index] := character
     end;
     n
@@ -306,23 +303,20 @@ define method write-text
      #key start: start-index :: <integer> = 0,
           end: end-index :: <integer> = text.size)
  => ()
-  with-stream-locked (stream)
-    let old-index :: <integer> = start-index;
-    for (index :: <integer> from start-index below end-index)
-      if (text[index] == '\n')
-	write(stream, text, start: old-index, end: index);
-	new-line(stream);
-	old-index := index + 1;
-      end
-    end;
-    write(stream, text, start: old-index, end: end-index)
+  let old-index :: <integer> = start-index;
+  for (index :: <integer> from start-index below end-index)
+    if (text[index] == '\n')
+      write(stream, text, start: old-index, end: index);
+      new-line(stream);
+      old-index := index + 1;
+    end
   end;
-  #f
+  write(stream, text, start: old-index, end: end-index);
 end method write-text;
 
 define inline method write-text
     (stream :: <string-stream>, text :: <string>,
-     #key start: start-index :: <integer> = 0, 
+     #key start: start-index :: <integer> = 0,
           end: end-index :: <integer> = text.size)
  => ()
   write(stream, text, start: start-index, end: end-index)

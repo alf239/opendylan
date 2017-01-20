@@ -45,7 +45,6 @@ define module dfmc-optimization
     maybe-upgrade-call,
 
     // inlining.dylan
-    *inlining?*,
     try-inlining,
     inline-call,
 
@@ -65,18 +64,7 @@ define module dfmc-optimization
     *warn-about-bogus-upgrades*,
     *colorize-bogus-upgrades*,
 
-    *profile-all-calls?*,
-    *partial-dispatch?*,
-
-    *trace-optimizations?*,
-    *trace-optimizing-method*,
-    *trace-optimizing-library*,
-    *trace-optimizing-file*,
-    *dump-dfm?*,
-    *dump-dfm-method*,
-    *dump-dfm-library*,
-    *dump-dfm-file*,
-    *call-upgrading?*;
+    *profile-all-calls?*;
 
   export
     best-function-key?,

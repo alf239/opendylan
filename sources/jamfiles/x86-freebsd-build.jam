@@ -1,20 +1,22 @@
 #
 # Generated config
 #
-include $(SYSTEM_ROOT)/lib/config.jam ;
+include $(SYSTEM_BUILD_SCRIPTS)/config.jam ;
 
 #
 # Configuration variables
 #
 
-CCFLAGS  += -DOPEN_DYLAN_PLATFORM_UNIX -DOPEN_DYLAN_PLATFORM_FREEBSD ;
+CCFLAGS  += -DOPEN_DYLAN_PLATFORM_UNIX -DOPEN_DYLAN_PLATFORM_FREEBSD -m32
+            -DOPEN_DYLAN_ARCH_X86 ;
 
 #
-# Library search path
+# Library search path and turn off executable stacks
 #
-LINKFLAGSEXE ?= -Wl,-z,origin -Wl,-rpath,\\$ORIGIN/../lib/ -pthread ;
+LINKFLAGSEXE ?= -Wl,-z,origin -Wl,-rpath,\\$ORIGIN/../lib/ -pthread -Wl,-z,noexecstack ;
+LINKFLAGSDLL ?= -Wl,-z,noexecstack ;
 
 #
 # Common build script
 #
-include $(SYSTEM_ROOT)/lib/posix-build.jam ;
+include $(SYSTEM_BUILD_SCRIPTS)/posix-build.jam ;

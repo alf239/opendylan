@@ -8,12 +8,12 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define module command-lines
   use dylan;
-  use common-extensions, exclude: { format-to-string };
+  use common-extensions;
   use dylan-extensions,
     import: { <keyboard-interrupt>,
-	      keyboard-interrupt?, keyboard-interrupt?-setter,
-	      keyboard-interrupt-polling?-setter,
-	      keyboard-interrupt-polling-thread?-setter };
+              keyboard-interrupt?, keyboard-interrupt?-setter,
+              keyboard-interrupt-polling?-setter,
+              keyboard-interrupt-polling-thread?-setter };
   use commands;
   use file-system;
   use operating-system;
@@ -116,14 +116,16 @@ define module command-lines
 end module command-lines;
 
 define module environment-commands
+  use build-system;
   use environment-imports;
   use environment-protocols,
     exclude: { <optional-parameter>,
-	       parameter-name,
-	       parameter-type,
-	       parameter-keyword };
+               parameter-name,
+               parameter-type,
+               parameter-keyword };
   use environment-manager;
   use environment-reports;
+  use projects, import: { target-platform-name-setter };
 
   use commands;
   use command-lines;
@@ -131,6 +133,8 @@ define module environment-commands
   // Environment context
   export <environment-context>,
          context-notification,
+         context-call-active?,
+         context-call-active?-setter,
          context-project;
 
   // Project context

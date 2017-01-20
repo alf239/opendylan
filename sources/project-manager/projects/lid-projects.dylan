@@ -23,6 +23,7 @@ define constant $standard-lid-keyword = #[#"comment",
                                           #"c-header-files",
                                           #"c-object-files",
                                           #"c-libraries",
+                                          #"c++-source-files",
                                           #"rc-files",
                                           #"major-version",
                                           #"minor-version",
@@ -43,10 +44,10 @@ define constant $simple-build-keyword = #[#"executable",
 
 define constant $list-build-keyword = #[#"linker-options",
                                         #"c-source-files",
-                                        #"c-files",
                                         #"c-header-files",
                                         #"c-object-files",
                                         #"c-libraries",
+                                        #"c++-source-files",
                                         #"rc-files",
                                         #"other-files",
                                         #"broken-files",
@@ -97,22 +98,19 @@ define open abstract class <lid-project> (<project>)
   slot project-compiler-back-end :: <symbol>,
     init-keyword: compiler-back-end:,
     setter: project-compiler-back-end-slot-setter;
-  slot project-processor,
-    init-keyword: processor:,
-    setter: project-processor-slot-setter;
-  slot project-operating-system,
-    init-keyword: operating-system:,
-    setter: project-operating-system-slot-setter;
+  slot project-platform-name,
+    init-keyword: platform-name:,
+    setter: project-platform-name-slot-setter;
   slot project-target-type :: <project-target-type> = #"executable",
     init-keyword: target-type:,
     setter: project-target-type-slot-setter;
 end class;
 
-define method project-read-only?(project :: <lid-project>) => (flag :: <boolean>);
+define method project-read-only? (project :: <lid-project>) => (flag :: <boolean>);
   ~project.project-personal-library?
 end;
 
-define method project-dylan-sources(project :: <lid-project>)
+define method project-dylan-sources (project :: <lid-project>)
  => (sources :: <vector>);
   project.project-source-files | #[]
 end;
@@ -121,17 +119,17 @@ end;
 // TO DO: we are checking only the locator equivalency
 // is this OK long term ?
 
-define method
-    project-source-canonical-source-record(project :: <lid-project>, file :: <file-locator>)
+define method project-source-canonical-source-record
+    (project :: <lid-project>, file :: <file-locator>)
  => (record :: false-or(<source-record>), modified? :: <boolean>);
-  let sr = any?(method(sr) sr.source-record-location = file & sr end,
+  let sr = any?(method (sr) sr.source-record-location = file & sr end,
                 project.project-canonical-source-records);
   values(sr, sr & source-record-modified?(sr))
 end;
 
-define method project-keyword-property (project :: <lid-project>,
-                                        key :: <symbol>,
-                                        #key default = unsupplied())
+define method project-keyword-property
+    (project :: <lid-project>, key :: <symbol>,
+     #key default = unsupplied())
  => (value);
   let properties = project-lid-file-info(project);
   let value = element(properties, key, default: $unfound);
@@ -148,9 +146,10 @@ define function project-keyword-property-setter
   properties[key] := value
 end;
 
-define method project-build-settings(project :: <lid-project>)
- => (settings :: <sequence>);
-  unless(project.project-build-settings-slot)
+define method project-build-settings
+    (project :: <lid-project>)
+ => (settings :: <sequence>)
+  unless (project.project-build-settings-slot)
     let src-location = project-source-location(project);
     let properties = project-lid-file-info(project);
     project.project-build-settings-slot :=
@@ -160,9 +159,9 @@ define method project-build-settings(project :: <lid-project>)
 end;
 
 
-define method project-build-property(project :: <lid-project>,
-                                     key :: <symbol>)
- => (property);
+define method project-build-property
+    (project :: <lid-project>, key :: <symbol>)
+ => (property)
   case
     member?(key, $list-build-keyword) =>
       project-keyword-property(project, key, default: #f);
@@ -176,26 +175,26 @@ define method project-build-property(project :: <lid-project>,
 end;
 
 /** TODO: commented out for the sake of the emulator
-define method project-build-property(project :: <lid-project>,
-                                     key :: <symbol>)
- => (property == #f);
+define method project-build-property
+    (project :: <lid-project>, key :: <symbol>)
+ => (property == #f)
   error("project-build-property: %s is not a build property", key);
   #f
 end;
 
-define method project-build-property(project :: <lid-project>,
-                                     key :: <extra-build-keyword>)
- => (property :: false-or(<sequence>));
+define method project-build-property
+    (project :: <lid-project>, key :: <extra-build-keyword>)
+ => (property :: false-or(<sequence>))
   project-keyword-property(project, key, default: #f);
 end;
 **/
 
 /** TO DO: commented out for the sake of emulator
-define method project-build-property(project :: <lid-project>,
-                                     key :: <simple-build-keyword>)
- => (property :: false-or(<string>));
+define method project-build-property
+    (project :: <lid-project>, key :: <simple-build-keyword>)
+ => (property :: false-or(<string>))
   let property = project-keyword-property(project, key, default: #f);
-  if(property)
+  if (property)
     first(property)
   else
     #f
@@ -203,10 +202,9 @@ define method project-build-property(project :: <lid-project>,
 end;
 **/
 
-define method project-build-property-setter(property,
-                                            project :: <lid-project>,
-                                            key :: <symbol>)
- => (property);
+define method project-build-property-setter
+    (property, project :: <lid-project>, key :: <symbol>)
+ => (property)
   case
     member?(key, $list-build-keyword) =>
       // invalidate current settings
@@ -223,18 +221,18 @@ define method project-build-property-setter(property,
 end;
 
 /*
-define method project-build-property-setter(value :: false-or(<sequence>),
-                                            project :: <lid-project>,
-                                            key :: <extra-build-keyword>)
- => (property :: false-or(<sequence>));
+define method project-build-property-setter
+    (value :: false-or(<sequence>), project :: <lid-project>,
+     key :: <extra-build-keyword>)
+ => (property :: false-or(<sequence>))
   // invalidate current settings
   project.project-build-settings-slot := #f;
   project-keyword-property(project, key) := value
 end;
 
-define method project-build-property-setter(value :: false-or(<sequence>),
-                                            project :: <lid-project>,
-                                            key :: <symbol>)
+define method project-build-property-setter
+    (value :: false-or(<sequence>), project :: <lid-project>,
+     key :: <symbol>)
  => (property == #f)
   error("project-build-property-setter: %s is not an extra build property", key);
   #f
@@ -242,8 +240,8 @@ end;
 */
 
 //---*** andrewa: it would be nice to preserve the case here...
-define method project-executable-name(project :: <lid-project>)
- => (name :: <string>);
+define method project-executable-name (project :: <lid-project>)
+ => (name :: <string>)
   let executable-properties
     = project-keyword-property(project, #"executable", default: #f);
   let symbol
@@ -255,88 +253,87 @@ define method project-executable-name(project :: <lid-project>)
   as-lowercase(as(<string>, symbol))
 end;
 
-define method project-executable-name-setter(name :: <string>,
-                                             project :: <lid-project>)
- => (name :: <string>);
+define method project-executable-name-setter
+    (name :: <string>, project :: <lid-project>)
+ => (name :: <string>)
   // invalidate current settings
   project.project-build-settings-slot := #f;
   project-keyword-property(project, #"executable") := list(name);
   name
 end;
 
-define method project-target-type-setter(type :: <project-target-type>,
-                                         project :: <lid-project>)
- => (type :: <project-target-type>);
+define method project-target-type-setter
+    (type :: <project-target-type>, project :: <lid-project>)
+ => (type :: <project-target-type>)
   project-keyword-property(project, #"target-type") := list(type);
   project.project-target-type-slot := type
 end;
 
-define method project-library-loose-bindings-setter(bindings :: <sequence>,
-                                                    project :: <lid-project>)
- => (bindings :: <sequence>);
+define method project-library-loose-bindings-setter
+    (bindings :: <sequence>, project :: <lid-project>)
+ => (bindings :: <sequence>)
   project-keyword-property(project, #"loose-library-bindings") := bindings;
   project.project-library-loose-bindings-slot := bindings
 end;
 
-define method project-library-tight-bindings-setter(bindings :: <sequence>,
-                                                    project :: <lid-project>)
- => (bindings :: <sequence>);
+define method project-library-tight-bindings-setter
+    (bindings :: <sequence>, project :: <lid-project>)
+ => (bindings :: <sequence>)
   let properties = project-lid-file-info(project);
   properties[#"tight-library-bindings"] := bindings;
   project.project-library-tight-bindings-slot := bindings
 end;
 
 define method project-name
-    (project :: <lid-project>) => (name :: <symbol>)
+    (project :: <lid-project>)
+ => (name :: <symbol>)
   project.project-registered-name
 end method project-name;
 
 define method project-library-name
-    (project :: <lid-project>) => (name :: <symbol>)
+    (project :: <lid-project>)
+ => (name :: <symbol>)
   project.project-lid-library-name
 end method project-library-name;
 
-define method project-compiler-back-end-setter(back-end, project :: <lid-project>)
+define method project-compiler-back-end-setter
+    (back-end, project :: <lid-project>)
   project-compiler-back-end-slot(project) := back-end;
   project-compiler-setting(project, back-end:) := back-end;
 end;
 
-define method project-processor-setter(processor, project :: <lid-project>)
-  project-processor-slot(project) := processor;
-  project-compiler-setting(project, processor:) := processor;
+define method project-platform-name-setter
+    (platform-name, project :: <lid-project>)
+  project-platform-name-slot(project) := platform-name;
+  project-compiler-setting(project, platform-name:) := platform-name;
 end;
 
-define method project-operating-system-setter(os, project :: <lid-project>)
-  project-operating-system-slot(project) := os;
-  project-compiler-setting(project, opearating-system:) := os;
-end;
-
-define method project-major-version-setter(version :: <integer>,
-                                           project :: <lid-project>)
- => (version :: <integer>);
+define method project-major-version-setter
+    (version :: <integer>, project :: <lid-project>)
+ => (version :: <integer>)
   project-keyword-property(project, #"major-version")
     := list(integer-to-string(version));
   project.project-major-version-slot := version
 end;
 
-define method project-minor-version-setter(version :: <integer>,
-                                           project :: <lid-project>)
- => (version :: <integer>);
+define method project-minor-version-setter
+    (version :: <integer>, project :: <lid-project>)
+ => (version :: <integer>)
   project-keyword-property(project, #"minor-version")
     := list(integer-to-string(version));
   project.project-minor-version-slot := version
 end;
 
-define method project-library-pack-setter(library-pack :: <integer>,
-                                          project :: <lid-project>)
- => (version :: <integer>);
+define method project-library-pack-setter
+    (library-pack :: <integer>, project :: <lid-project>)
+ => (version :: <integer>)
   project-keyword-property(project, #"library-pack")
     := list(integer-to-string(library-pack));
   project.project-library-pack-slot := library-pack;
   project-compiler-setting(project, library-pack:) := library-pack
 end;
 
-define method project-compilation-mode-setter(mode, project :: <lid-project>)
+define method project-compilation-mode-setter (mode, project :: <lid-project>)
   project-compilation-mode-slot(project) := mode;
   project-keyword-property(project, #"compilation-mode") := list(mode);
   // TO DO: this is a conservative approach to avoid a crash in compiler/dood
@@ -345,14 +342,14 @@ define method project-compilation-mode-setter(mode, project :: <lid-project>)
   project-compiler-setting(project, mode:) := mode;
 end;
 
-define method project-library-version(p :: <lid-project>)
- => (major-ver :: <integer>, minor-ver :: <integer>);
+define method project-library-version (p :: <lid-project>)
+ => (major-ver :: <integer>, minor-ver :: <integer>)
   values(p.project-major-version, p.project-minor-version)
 end;
 
 define method project-inter-library-binding
     (project ::  <lid-project>, used-project :: <lid-project> )
- => (mode :: one-of(#"tight", #"loose"));
+ => (mode :: one-of(#"tight", #"loose"))
   let binding = project-dynamic-environment(#"default-binding");
   let default-binding = binding & as(<symbol>, binding);
   let loose-bindings = project.project-library-loose-bindings;
@@ -368,10 +365,12 @@ end;
 
 define method initialize (project :: <lid-project>, #rest keys,
                           #key lid-location = #f,
-                          library-name = #f,
-                          lid-file-info = #f,
-                          source-record-class = #f,
-                          processor, operating-system, mode, #all-keys)
+                               library-name = #f,
+                               lid-file-info = #f,
+                               source-record-class = #f,
+                               platform-name,
+                               mode,
+                          #all-keys)
   next-method();
   assert(source-record-class, "<lid-project>: source-record-class not supplied");
   project-source-record-class(project) := source-record-class;
@@ -379,7 +378,7 @@ define method initialize (project :: <lid-project>, #rest keys,
   unless (library-name & lid-file-info)
     assert(lid-location, "<lid-project>: lid-location not supplied");
     project-lid-location(project) := lid-location;
-    project-lid-date(project) := file-property(lid-location, #"write-date");
+    project-lid-date(project) := file-property(lid-location, #"modification-date");
     let (library-name, files, properties) = read-lid-data(lid-location);
     project-lid-library-name(project) := library-name;
     project-lid-file-info(project) := properties;
@@ -390,9 +389,11 @@ define method initialize (project :: <lid-project>, #rest keys,
 
 end method;
 
-define method reinitialize-lid-project(project :: <lid-project>,
-                                       #key processor, operating-system, mode,
-                                       #all-keys) => ();
+define method reinitialize-lid-project
+    (project :: <lid-project>,
+     #key platform-name, mode,
+     #all-keys)
+ => ()
   let properties = project-lid-file-info(project);
 
   let compilation-mode
@@ -411,7 +412,7 @@ define method reinitialize-lid-project(project :: <lid-project>,
   project-compilation-mode-slot(project) := compilation-mode;
 
   let major-version = element(properties, #"major-version", default: #f);
-  if(major-version)
+  if (major-version)
     major-version := string-to-integer(major-version.first);
   else
     major-version := *default-library-major-version*
@@ -420,7 +421,7 @@ define method reinitialize-lid-project(project :: <lid-project>,
   project-major-version-slot(project) := major-version;
 
   let minor-version = element(properties, #"minor-version", default: #f);
-  if(minor-version) minor-version := string-to-integer(minor-version.first)
+  if (minor-version) minor-version := string-to-integer(minor-version.first)
   else minor-version := *default-library-minor-version* end;
   project-minor-version-slot(project) := minor-version;
 
@@ -435,9 +436,9 @@ define method reinitialize-lid-project(project :: <lid-project>,
   end;
   project-library-pack-slot(project) := library-pack | *default-library-library-pack*;
 
-// those two slots are defaulted in the class definition
+  // those two slots are defaulted in the class definition
   let target-type = element(properties, #"target-type", default: #f);
-  if(target-type)
+  if (target-type)
     let target = as(<symbol>, first(target-type));
     if (instance?(target, <project-target-type>))
       project-target-type-slot(project) := target;
@@ -447,12 +448,12 @@ define method reinitialize-lid-project(project :: <lid-project>,
   end;
 
   let loose-bindings = element(properties, #"loose-library-bindings", default: #());
-  if(loose-bindings)
+  if (loose-bindings)
     project-library-loose-bindings-slot(project)
       := map(curry(as, <symbol>), loose-bindings)
   end;
   let tight-bindings = element(properties, #"tight-library-bindings", default: #());
-  if(tight-bindings)
+  if (tight-bindings)
     project-library-tight-bindings-slot(project)
       := map(curry(as, <symbol>), tight-bindings)
   end;
@@ -498,22 +499,19 @@ define function lid-build-settings (source-loc, properties)
           merge-locators(as(<file-locator>, file-name), source-loc)
         end;
   let c-names = element(properties, #"c-source-files", default: #f);
-  if (c-names)
-    add-setting(c-source-files: map(source-dir, c-names))
-  else
-    let c-names = element(properties, #"c-files", default: #f);
-    if (c-names) add-setting(c-source-files: map(source-dir, c-names)) end
-  end;
+  if (c-names) add-setting(c-source-files: map(source-dir, c-names)) end;
   let h-names = element(properties, #"c-header-files", default: #f);
   if (h-names) add-setting(c-header-files: map(source-dir, h-names)) end;
   let o-names = element(properties, #"c-object-files", default: #f);
   if (o-names) add-setting(c-object-files: map(source-dir, o-names)) end;
   let c-libs = element(properties, #"c-libraries", default: #f);
   if (c-libs) add-setting(c-libraries: c-libs) end;
+  let c++-names = element(properties, #"c++-source-files", default: #f);
+  if (c++-names) add-setting(c++-source-files: map(source-dir, c++-names)) end;
   let rc-names = element(properties, #"rc-files", default: #f);
   if (rc-names) add-setting(rc-files: map(source-dir, rc-names)) end;
   let jam-names = element(properties, #"jam-includes", default: #f);
-  if (jam-names) add-setting(rc-files: map(source-dir, jam-names)) end;
+  if (jam-names) add-setting(jam-includes: map(source-dir, jam-names)) end;
   //
   //---*** NOTE: Gwydion uses Executable: as well to name the file but,
   //---*** in their implementation, its presence also indicates that
@@ -523,8 +521,12 @@ define function lid-build-settings (source-loc, properties)
   //
   let raw-base-address = element(properties, #"base-address", default: #f);
   if (raw-base-address)
-    let (base-address, extra?) = string-to-machine-word(first(raw-base-address));
-    //---*** Should we do something (i.e., complain) if there's extra text?
+    let base-address-string = first(raw-base-address);
+    let (base-address, extra-index)
+      = string-to-machine-word(base-address-string);
+    if (extra-index < base-address-string.size)
+      user-warning("Invalid base-address: \"%s\"", base-address-string);
+    end if;
     add-setting(base-address: base-address)
   end;
   let linker-options = element(properties, #"linker-options", default: #f);
@@ -537,7 +539,7 @@ end function;
 // TO DO:
 // we calculate here the location of dylan source files relative to lid/project file location
 // In other places we use project-source-location
-// remnant of registry projects, but stll works
+// remnant of registry projects, but it still works
 define function read-lid-data (lid-location :: <file-locator>)
   let (library-name, file-names, properties)
     = read-file-library-description(lid-location);
@@ -556,7 +558,7 @@ end function;
 
 define open generic update-project-files (project :: <lid-project>) => ();
 
-define open generic update-project-location(project :: <lid-project>);
+define open generic update-project-location (project :: <lid-project>);
 
 define open generic project-compiler-source-files
     (project :: <lid-project>)
@@ -564,13 +566,13 @@ define open generic project-compiler-source-files
 
 define method project-compiler-source-files
     (project :: <lid-project>)
- => (location :: false-or(<sequence>));
+ => (location :: false-or(<sequence>))
   project.project-source-files;
 end;
 
 define function project-files-to-source-records
     (project :: <lid-project>, #key directory, files, id-source-record)
- => sr*;
+ => (sr*)
   //debug-out(#"project-manager", "to-source-records: directory: %s, files: %s",
   //          as(<string>, directory),
   //          map(curry(as, <string>), files));
@@ -588,7 +590,7 @@ end;
 
 define function compute-compiler-source-records
     (project :: <lid-project>)
- => sr*;
+ => (sr*)
   update-project-files(project);
   local
     method id-source-record (id)
@@ -620,7 +622,9 @@ define method copy-extra-records (project :: <lid-project>,
                           c-source-files = #(),
                           c-header-files = #(),
                           c-object-files = #(),
+                          c++-source-files = #(),
                           rc-files = #(),
+                          jam-includes = #(),
                           c-libraries = #())
           local method do-one-set (source-files)
                   for (source-file in source-files)
@@ -631,23 +635,25 @@ define method copy-extra-records (project :: <lid-project>,
                       = make(<file-locator>,
                              directory: project.project-build-location,
                              name: locator-name(source-file));
-                    block()
+                    block ()
                       copy-file(source-file, target-file, if-exists: #"replace")
-                    exception(e :: <file-system-error>)
+                    exception (e :: <file-system-error>)
                       apply(user-warning, condition-format-string(e),
                             condition-format-arguments(e))
                     end block;
                   end for
                 end method do-one-set;
           if (~empty?(c-source-files) | ~empty?(c-header-files) | ~empty?(c-object-files)
-                | ~empty?(rc-files))
+                | ~empty?(c++-source-files) | ~empty?(rc-files) | ~empty?(jam-includes))
             debug-out(#"project-manager",
                       "Copying extra files for: %s",
                       project);
             do-one-set(c-source-files);
             do-one-set(c-header-files);
             do-one-set(c-object-files);
+            do-one-set(c++-source-files);
             do-one-set(rc-files);
+            do-one-set(jam-includes);
           end
         end method doit;
   apply(doit, build-settings)

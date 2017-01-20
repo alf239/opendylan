@@ -19,12 +19,13 @@ define library llvm-runtime-generator
 end library;
 
 define module llvm-runtime-generator
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use operating-system;
   use format;
   use standard-io;
   use llvm;
   use llvm-builder;
+  use llvm-debug;
   use dfmc-core;
   use dfmc-imports;
   use dfmc-management;

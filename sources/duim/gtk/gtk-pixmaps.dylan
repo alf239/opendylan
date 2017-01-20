@@ -10,7 +10,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 // /*---*** Not doing pixmaps yet!
 
 define sealed class <gtk-pixmap> (<pixmap>)
-  sealed slot %pixmap :: false-or(<GdkPixmap>) = #f,
+  sealed slot %pixmap :: false-or(<CairoSurface>) = #f,
     init-keyword: pixmap:;
   sealed slot %medium :: <gtk-medium>,
     required-init-keyword: medium:;
@@ -20,7 +20,7 @@ define sealed domain make (singleton(<gtk-pixmap>));
 define sealed domain initialize (<gtk-pixmap>);
 
 define sealed method do-make-pixmap
-    (_port :: <gtk-port>, medium :: <gtk-medium>, 
+    (_port :: <gtk-port>, medium :: <gtk-medium>,
      width :: <integer>, height :: <integer>)
  => (pixmap :: <gtk-pixmap>)
   make(<gtk-pixmap>, medium: medium, width: width, height: height)
@@ -45,10 +45,10 @@ define sealed method destroy-pixmap
     (pixmap :: <gtk-pixmap>) => ()
   let x-pixmap  = pixmap.%pixmap;
   pixmap.%pixmap := #f;
-  gdk-pixmap-unref(x-pixmap)
+  cairo-surface-destroy(x-pixmap)
 end method destroy-pixmap;
 
-define sealed method port 
+define sealed method port
     (pixmap :: <gtk-pixmap>) => (port :: <gtk-port>)
   port(pixmap.%medium)
 end method port;
@@ -60,7 +60,7 @@ end method pixmap-drawable;
 
 /* ---*** Implement me
 
-define sealed method image-width 
+define sealed method image-width
     (pixmap :: <gtk-pixmap>) => (width :: <integer>)
   let x-display = port(pixmap).%display;
   let x-pixmap  = pixmap.%pixmap;
@@ -70,7 +70,7 @@ define sealed method image-width
   width
 end method image-width;
 
-define sealed method image-height 
+define sealed method image-height
     (pixmap :: <gtk-pixmap>) => (height :: <integer>)
   let x-display = port(pixmap).%display;
   let x-pixmap  = pixmap.%pixmap;
@@ -80,7 +80,7 @@ define sealed method image-height
   height
 end method image-height;
 
-define sealed method image-depth 
+define sealed method image-depth
     (pixmap :: <gtk-pixmap>) => (depth :: <integer>)
   let x-display = port(pixmap).%display;
   let x-pixmap  = pixmap.%pixmap;
@@ -95,7 +95,7 @@ end method image-depth;
 /// GTK pixmap mediums
 
 define sealed class <gtk-pixmap-medium>
-    (<gtk-medium>, 
+    (<gtk-medium>,
      <basic-pixmap-medium>)
 end class <gtk-pixmap-medium>;
 
@@ -108,9 +108,9 @@ define sealed method make-pixmap-medium
   with-sheet-medium (medium = sheet)
     let pixmap = do-make-pixmap(_port, medium, width, height);
     let medium = make(<gtk-pixmap-medium>,
-		      port: _port,
-		      sheet: sheet,
-		      pixmap: pixmap);
+                      port: _port,
+                      sheet: sheet,
+                      pixmap: pixmap);
     medium-drawable(medium) := pixmap;
     medium
   end
@@ -125,28 +125,59 @@ define sealed method do-copy-area
      to-medium :: <gtk-medium>, to-x :: <integer>, to-y :: <integer>,
      #key function = $boole-1) => ()
   if (from-medium == to-medium)
-    let (drawable, gcontext) = get-gcontext(from-medium);
+    let gcontext  = get-gcontext(from-medium);
+    let drawable  = medium-drawable(from-medium);
     let sheet     = medium-sheet(from-medium);
     let transform = sheet-device-transform(sheet);
     with-device-coordinates (transform, from-x, from-y, to-x, to-y)
       with-device-distances (transform, width, height)
-	gdk-draw-drawable(drawable, gcontext, drawable, from-x, from-y,
-                          to-x, to-y, width, height)
+        with-stack-structure (area :: <CairoRectangleInt>)
+          area.cairo-rectangle-int-x := to-x;
+          area.cairo-rectangle-int-y := to-y;
+          area.cairo-rectangle-int-width := width;
+          area.cairo-rectangle-int-height := height;
+
+          gdk-cairo-rectangle(gcontext, area);
+          cairo-clip(gcontext);
+          cairo-push-group(gcontext);
+          cairo-set-source-surface(gcontext,
+                                   drawable,
+                                   as(<double-float>, from-x - to-x),
+                                   as(<double-float>, from-y - to-y));
+          cairo-paint(gcontext);
+          cairo-pop-group-to-source(gcontext);
+          cairo-paint(gcontext);
+          cairo-destroy(gcontext);
+        end with-stack-structure
       end
     end
   else
-    let from-drawable = get-gcontext(from-medium);
-    let (to-drawable, gcontext) = get-gcontext(from-medium);
+    let from-drawable  = get-gcontext(from-medium);
+    let to-drawable    = medium-drawable(to-medium);
+    let gcontext       = get-gcontext(to-medium);
     let from-sheet     = medium-sheet(from-medium);
     let from-transform = sheet-device-transform(from-sheet);
     let to-sheet       = medium-sheet(to-medium);
     let to-transform   = sheet-device-transform(to-sheet);
     with-device-coordinates (from-transform, from-x, from-y)
       with-device-coordinates (to-transform, to-x, to-y)
-	with-device-distances (from-transform, width, height)
-	  gdk-draw-drawable(to-drawable, gcontext, from-drawable, from-x, from-y,
-                            to-x, to-y, width, height)
-	end
+        with-device-distances (from-transform, width, height)
+          with-stack-structure (area :: <CairoRectangleInt>)
+            area.cairo-rectangle-int-x := to-x;
+            area.cairo-rectangle-int-y := to-y;
+            area.cairo-rectangle-int-width := width;
+            area.cairo-rectangle-int-height := height;
+
+            gdk-cairo-rectangle(gcontext, area);
+            cairo-clip(gcontext);
+            gdk-cairo-set-source-window(gcontext,
+                                        to-drawable,
+                                        as(<double-float>, from-x),
+                                        as(<double-float>, from-y));
+            cairo-paint(gcontext);
+            cairo-destroy(gcontext);
+          end with-stack-structure
+        end
       end
     end
   end
@@ -164,7 +195,7 @@ define sealed method do-copy-area
   with-device-coordinates (from-transform, from-x, from-y)
     with-device-distances (from-transform, width, height)
       gdk-window-copy-area(to-drawable, gcontext, to-x, to-y,
-			   from-drawable, from-x, from-y, width, height)
+                           from-drawable, from-x, from-y, width, height)
     end
   end
 end method do-copy-area;
@@ -180,7 +211,7 @@ define sealed method do-copy-area
   with-device-coordinates (from-transform, from-x, from-y)
     with-device-distances (from-transform, width, height)
       gdk-window-copy-area(to-drawable, gcontext, to-x, to-y,
-			   from-drawable, from-x, from-y, width, height)
+                           from-drawable, from-x, from-y, width, height)
     end
   end
 end method do-copy-area;
@@ -195,7 +226,7 @@ define sealed method do-copy-area
   let to-drawable   = medium-drawable(to-medium);
   with-device-coordinates (to-transform, to-x, to-y)
     gdk-window-copy-area(to-drawable, gcontext, to-x, to-y,
-			 from-drawable, from-x, from-y, width, height)
+                         from-drawable, from-x, from-y, width, height)
   end
 end method do-copy-area;
 
@@ -209,7 +240,7 @@ define sealed method do-copy-area
   let to-drawable   = medium-drawable(to-medium);
   with-device-coordinates (to-transform, to-x, to-y)
     gdk-window-copy-area(to-drawable, gcontext, to-x, to-y,
-			 from-drawable, from-x, from-y, width, height)
+                         from-drawable, from-x, from-y, width, height)
   end
 end method do-copy-area;
 
@@ -221,7 +252,7 @@ define sealed method do-copy-area
   let from-drawable = medium-drawable(from-medium);
   let to-drawable   = medium-drawable(to-medium);
   gdk-window-copy-area(to-drawable, gcontext, to-x, to-y,
-		       from-drawable, from-x, from-y, width, height)
+                       from-drawable, from-x, from-y, width, height)
 end method do-copy-area;
 
 define sealed method do-copy-area
@@ -232,6 +263,6 @@ define sealed method do-copy-area
   let from-drawable = from-pixmap.%pixmap;
   let to-drawable   = to-pixmap.%pixmap;
   gdk-window-copy-area(to-drawable, gcontext, to-x, to-y,
-		       from-drawable, from-x, from-y, width, height)
+                       from-drawable, from-x, from-y, width, height)
 end method do-copy-area;
 */

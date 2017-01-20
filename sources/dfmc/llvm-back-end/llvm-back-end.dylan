@@ -5,10 +5,16 @@ Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
+// Maximum number of values for multiple-value return
+define constant $maximum-value-count = 64;
+
 define abstract class <llvm-back-end> (<back-end>, <llvm-builder>)
   // Predefined LLVM types
   constant slot %type-table :: <mutable-explicit-key-collection>
     = make(<string-table>);
+
+  // Heap fixup table entry type
+  slot llvm-heap-fixup-entry-llvm-type :: <llvm-type>;
 
   // LLVM type for each defined <&raw-type> instance
   constant slot %raw-type-table :: <object-table>
@@ -60,7 +66,17 @@ define abstract class <llvm-back-end> (<back-end>, <llvm-builder>)
     = make(<object-table>);
 
   // Precomputed multiple value return structure type
-  slot %mv-struct-type;
+  slot %mv-struct-type :: <&raw-struct-type>;
+
+  // Precomputed Thread Environment Block structure type
+  slot llvm-teb-struct-type :: <&raw-struct-type>;
+
+  // Precomputed Bind Exit Frame structure type
+  slot llvm-bef-struct-type :: <&raw-struct-type>;
+
+  // gep indices for each field
+  constant slot %raw-struct-field-index :: <object-table>
+    = make(<object-table>);
 end;
 
 define generic llvm-back-end-target-triple
@@ -83,6 +99,12 @@ define sealed method initialize
                           raw-type: dylan-value(#"<raw-pointer>")),
                      make(<raw-aggregate-ordinary-member>,
                           raw-type: dylan-value(#"<raw-byte>"))));
+
+  // Initialize TEB structure
+  initialize-teb-struct-type(back-end);
+
+  // Initialize NLX bind exit frame structure
+  initialize-bef-struct-type(back-end);
 
   // Initialize predefined/raw LLVM types
   initialize-type-table(back-end);

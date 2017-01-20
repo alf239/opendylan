@@ -55,10 +55,10 @@ Reference
 
    :signature: get-property *plist* *indicator* #key *default* => *property*
 
-   :parameter plist: An instance of ``<sequence>``.
-   :parameter indicator: An instance of ``<object>``.
-   :parameter #key default: An instance of ``<object>``.
-   :value property: An instance of ``<object>``.
+   :parameter plist: An instance of :drm:`<sequence>`.
+   :parameter indicator: An instance of :drm:`<object>`.
+   :parameter #key default: An instance of :drm:`<object>`.
+   :value property: An instance of :drm:`<object>`.
 
 .. generic-function:: keyword-sequence
 
@@ -66,12 +66,12 @@ Reference
 
    :signature: keyword-sequence *plist* => *keywords*
 
-   :parameter plist: An instance of ``<sequence>``.
-   :value keywords: An instance of ``<sequence>``.
+   :parameter plist: An instance of :drm:`<sequence>`.
+   :value keywords: An instance of :drm:`<sequence>`.
 
-   See also:
+   :seealso:
 
-   - :gf:`value-sequence`
+     - :gf:`value-sequence`
 
 .. macro:: put-property!
    :statement:
@@ -83,9 +83,9 @@ Reference
 
        put-property!(*plist*, *indicator*, *value*)
 
-   :parameter plist: An instance of ``<sequence>``.
-   :parameter indicator: An instance of ``<object>``.
-   :parameter value: An instance of ``<object>``.
+   :parameter plist: An instance of :drm:`<sequence>`.
+   :parameter indicator: An instance of :drm:`<object>`.
+   :parameter value: An instance of :drm:`<object>`.
 
    :example:
 
@@ -94,9 +94,9 @@ Reference
        put-property!(buffer-contents-properties(buffer),
                      #"optimization-colors", #f)
 
-   See also:
+   :seealso:
 
-   - :macro:`remove-property!`
+     - :macro:`remove-property!`
 
 .. generic-function:: remove-keywords
 
@@ -104,14 +104,14 @@ Reference
 
    :signature: remove-keywords *plist* *keywords* => *plist*
 
-   :parameter plist: An instance of ``<sequence>``.
-   :parameter keywords: An instance of ``<sequence>``.
-   :value plist: An instance of ``<sequence>``.
+   :parameter plist: An instance of :drm:`<sequence>`.
+   :parameter keywords: An instance of :drm:`<sequence>`.
+   :value plist: An instance of :drm:`<sequence>`.
 
-   See also:
+   :seealso:
 
-   - :macro:`remove-property!`
-   - :macro:`with-keywords-removed`
+     - :macro:`remove-property!`
+     - :macro:`with-keywords-removed`
 
 .. macro:: remove-property!
    :statement:
@@ -124,9 +124,9 @@ Reference
 
        remove-property!(*plist*, *indicator*)
 
-   :parameter plist: An instance of ``<sequence>``.
-   :parameter indicator: An instance of ``<object>``.
-   :value value: An instance of ``<object>``.
+   :parameter plist: An instance of :drm:`<sequence>`.
+   :parameter indicator: An instance of :drm:`<object>`.
+   :value value: An instance of :drm:`<object>`.
 
    :example:
 
@@ -134,11 +134,11 @@ Reference
 
        remove-property!(buffer-properties(buffer), #"project");
 
-   See also:
+   :seealso:
 
-   - :macro:`put-property!`
-   - :gf:`remove-keywords`
-   - :macro:`with-keywords-removed`
+     - :macro:`put-property!`
+     - :gf:`remove-keywords`
+     - :macro:`with-keywords-removed`
 
 .. generic-function:: value-sequence
 
@@ -146,12 +146,12 @@ Reference
 
    :signature: value-sequence *plist* => *values*
 
-   :parameter plist: An instance of ``<sequence>``.
-   :value values: An instance of ``<sequence>``.
+   :parameter plist: An instance of :drm:`<sequence>`.
+   :value values: An instance of :drm:`<sequence>`.
 
-   See also:
+   :seealso:
 
-   - :gf:`keyword-sequence`
+     - :gf:`keyword-sequence`
 
 .. macro:: with-keywords-removed
    :statement:
@@ -164,8 +164,8 @@ Reference
        end
 
    :parameter var: A Dylan name *bnf*.
-   :parameter plist: An instance of ``<sequence>``.
-   :parameter keywords: An instance of ``<sequence>``.
+   :parameter plist: An instance of :drm:`<sequence>`.
+   :parameter keywords: An instance of :drm:`<sequence>`.
    :parameter body: A Dylan body *bnf*.
 
    :description:
@@ -197,8 +197,8 @@ Reference
          end
        end method make;
 
-   See also:
+   :seealso:
 
-   - :gf:`remove-keywords`
-   - :macro:`remove-property!`
-   - :macro:`with-keywords-removed`
+     - :gf:`remove-keywords`
+     - :macro:`remove-property!`
+     - :macro:`with-keywords-removed`

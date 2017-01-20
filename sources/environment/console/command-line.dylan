@@ -21,7 +21,7 @@ define abstract class <basic-main-command> (<basic-command>)
     init-keyword: project:;
   constant slot %help?          :: <boolean> = #f,
     init-keyword: help?:;
-  constant slot %logo?          :: <boolean> = #t,
+  constant slot %logo?          :: <boolean> = #f,
     init-keyword: logo?:;
   constant slot %version?       :: <boolean> = #f,
     init-keyword: version?:;
@@ -43,16 +43,18 @@ define abstract class <basic-main-command> (<basic-command>)
     init-keyword: clean?:;
   constant slot %release?       :: <boolean> = #f,
     init-keyword: release?:;
+  constant slot %back-end :: false-or(<symbol>) = #f,
+    init-keyword: back-end:;
   constant slot %build-script :: false-or(<file-locator>) = #f,
     init-keyword: build-script:;
   constant slot %target :: false-or(<symbol>) = #f,
     init-keyword: target:;
   constant slot %force? :: <boolean> = #f,
     init-keyword: force?:;
+  constant slot %verbose? :: <boolean> = #f,
+    init-keyword: verbose?:;
   constant slot %unify? :: <boolean> = #f,
     init-keyword: unify?:;
-  constant slot %save? :: <boolean> = #t,
-    init-keyword: save?:;
   constant slot %harp?          :: <boolean> = #f,
     init-keyword: harp?:;
   constant slot %assemble?                   = #f,
@@ -72,10 +74,10 @@ define method execute-main-command
     (context :: <server-context>, command :: <basic-main-command>)
  => (status-code :: <integer>)
   local method run
-	    (class :: subclass(<command>), #rest arguments) => ()
-	  let command = apply(make, class, server: context, arguments);
-	  execute-command(command)
-	end method run;
+            (class :: subclass(<command>), #rest arguments) => ()
+          let command = apply(make, class, server: context, arguments);
+          execute-command(command)
+        end method run;
   if (command.%internal-debug)
     let parts = as(<list>, command.%internal-debug);
     debugging?() := #t;
@@ -91,11 +93,11 @@ define method execute-main-command
   let build? = command.%build?;
   if (build? | command.%compile?)
     run(<build-project-command>,
-	clean?:      command.%clean?,
-	save?:       command.%save?,
-	link?:       #f,
-	release?:    command.%release?,
-	subprojects: command.%subprojects?,
+        clean?:      command.%clean?,
+        link?:       #f,
+        release?:    command.%release?,
+        verbose?:    command.%verbose?,
+        subprojects: command.%subprojects?,
         output:      begin
                        let output = make(<stretchy-object-vector>);
                        if (command.%assemble?) add!(output, #"assembler") end;
@@ -107,11 +109,12 @@ define method execute-main-command
   if (build? | command.%link?)
     let target = command.%target;
     run(<link-project-command>,
-	build-script: command.%build-script,
-	target:      target,
-	force?:      command.%force? | command.%clean?,
-	subprojects: command.%subprojects?,
-	unify?:      command.%unify?)
+        build-script: command.%build-script,
+        target:      target,
+        force?:      command.%force? | command.%clean?,
+        verbose?:    command.%verbose?,
+        subprojects: command.%subprojects?,
+        unify?:      command.%unify?)
   end;
   $success-exit-code;
 end method execute-main-command;
@@ -119,6 +122,7 @@ end method execute-main-command;
 define method execute-main-loop
     (context :: <server-context>, command :: <basic-main-command>)
  => (status-code :: <integer>)
+  message(context, dylan-banner());
   let echo-input? = command.%echo-input?;
   let profile-commands? = command.%profile-commands?;
   command-line-loop
@@ -135,27 +139,27 @@ define method do-execute-command
   block (return)
     let handler (<serious-condition>)
       = method (condition :: <serious-condition>, next-handler :: <function>)
-	  if (command.%debugger?)
-	    next-handler()
-	  else
-	    display-condition(context, condition);
-	    message(context, "Exiting with return code %d", $error-exit-code);
-	    return($error-exit-code)
-	  end
-	end;
+          if (command.%debugger?)
+            next-handler()
+          else
+            display-condition(context, condition);
+            message(context, "Exiting with return code %d", $error-exit-code);
+            return($error-exit-code)
+          end
+        end;
     local method run
-	      (class :: subclass(<command>), #rest arguments)
+              (class :: subclass(<command>), #rest arguments)
            => (success :: <integer>)
             let command-line = $main-command-line;
             let filename = as(<file-locator>, application-filename());
-	    let command = apply(make, class,
+            let command = apply(make, class,
                                 server: context,
                                 command: command-line,
                                 title: as-uppercase(locator-base(filename)),
                                 arguments);
-	    execute-command(command);
+            execute-command(command);
             $success-exit-code
-	  end method run;
+          end method run;
     if (command.%help?)
       run(<help-command>)
     elseif (command.%version?)
@@ -166,13 +170,16 @@ define method do-execute-command
       command.%logo? & message(context, dylan-banner());
       let personal-root = command.%personal-root;
       let system-root   = command.%system-root;
+      let back-end      = command.%back-end;
       personal-root
-	& set-named-property(context, #"personal-root", personal-root);
+        & set-named-property(context, #"personal-root", personal-root);
       system-root
-	& set-named-property(context, #"system-root",   system-root);
+        & set-named-property(context, #"system-root",   system-root);
+      back-end
+        & set-named-property(context, #"compiler-back-end", back-end);
       case
-	command.%project => execute-main-command(context, command);
-	otherwise        => execute-main-loop(context, command);
+        command.%project => execute-main-command(context, command);
+        otherwise        => execute-main-loop(context, command);
       end
     end
   end

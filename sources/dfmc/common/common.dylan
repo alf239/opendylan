@@ -7,7 +7,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 /// COMPILATION CONTEXT
 
-define compiler-open generic compiled-to-definitions? 
+define compiler-open generic compiled-to-definitions?
     (context :: <compilation-context>);
 
 define compiler-open generic compiled-to-definitions?-setter
@@ -63,9 +63,8 @@ define compiler-open generic current-top-level-library-description?
 define compiler-open generic current-library-in-context? (ld) => (well? :: <boolean>);
 define compiler-open generic current-back-end () => (back-end);
 define compiler-open generic current-back-end-name () => (name :: false-or(<symbol>));
-define compiler-open generic current-compilation-mode () => (mode :: <symbol>);
-define compiler-open generic current-processor-name () => (name :: <symbol>);
-define compiler-open generic current-os-name () => (name :: <symbol>);
+define compiler-open generic target-architecture-name () => (name :: <symbol>);
+define compiler-open generic target-os-name () => (name :: <symbol>);
 define compiler-open generic compiling-dylan-library? () => (well? :: <boolean>);
 
 define compiler-open generic word-size () => (number-bytes :: <integer>);
@@ -103,9 +102,9 @@ define method strip-incremental-slots (x) end;
 
 // GTS DEBUGGING
 // #() to turn off, #("all") to turn everything on:
-define variable *gts-debug* = #(); 
+define variable *gts-debug* = #();
 define function gts-debug(id, format-string, #rest r)
-  if (~empty?(*gts-debug*) & 
+  if (~empty?(*gts-debug*) &
       (member?("all", *gts-debug*, test: \=) | member?(id, *gts-debug*, test: \=)))
     format-out("[%s] ", id);
     apply(format-out, format-string, r);

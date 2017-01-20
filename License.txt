@@ -1,6 +1,6 @@
 Copyright (c) 1995-2004 Functional Objects, Inc.
 
-Portions copyright (c) 2004-2013 Dylan Hackers.
+Portions copyright (c) 2004-2016 Dylan Hackers.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -21,6 +21,30 @@ BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Portions of this software are derived from the Gwydion Dylan
+project at Carnegie Mellon University:
+
+    Copyright (c) 1994  Carnegie Mellon University
+    All rights reserved.
+
+    Use and copying of this software and preparation of derivative
+    works based on this software are permitted, including commercial
+    use, provided that the following conditions are observed:
+
+    1. This copyright notice must be retained in full on any copies
+       and on appropriate parts of any derivative works.
+    2. Documentation (paper or online) accompanying any system that
+       incorporates this software, or any part of it, must acknowledge
+       the contribution of the Gwydion Project at Carnegie Mellon
+       University.
+
+    This software is made available "as is".  Neither the authors nor
+    Carnegie Mellon University make any warranty about the software,
+    its performance, or its conformity to any specification.
+
+    Bug reports, questions, comments, and suggestions should be sent by
+    E-mail to the Internet address "gwydion-bugs@cs.cmu.edu".
 
 A copy of this license may be obtained here:
 https://raw.github.com/dylan-lang/opendylan/master/License.txt
@@ -53,7 +77,7 @@ a manner similar to MySQL.
 License
 -------
 
-Copyright (C) 2001-2012 Ravenbrook Limited <http://www.ravenbrook.com/>.
+Copyright (C) 2001-2013 Ravenbrook Limited <http://www.ravenbrook.com/>.
 All rights reserved.  This is the open source license for the Memory
 Pool System, but it is not the only one.  Contact Ravenbrook
 <mps-questions@ravenbrook.com> if you would like a different license.
@@ -75,7 +99,7 @@ accompanying software that uses this software.  The source code must
 either be included in the distribution or be available for no more than
 the cost of distribution plus a nominal fee, and must be freely
 redistributable under reasonable conditions.  For an executable file,
-complete source code means the source code for all modules it contains. 
+complete source code means the source code for all modules it contains.
 It does not include source code for modules or files that typically
 accompany the major components of the operating system on which the
 executable file runs.

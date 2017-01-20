@@ -8,6 +8,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define library environment-tools
   use dylan;
+  use build-system;
   use environment-protocols;
   use environment-manager;
   use editor-manager;
@@ -19,7 +20,7 @@ define library environment-tools
   use duim-core;
 
   use deuce;
-  use duim-deuce;	// We need to use duim-deuce to share its images
+  use duim-deuce;        // We need to use duim-deuce to share its images
 
   export environment-tools;
 end library environment-tools;

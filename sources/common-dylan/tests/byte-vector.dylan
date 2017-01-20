@@ -1,6 +1,6 @@
 Module:       common-dylan-test-suite
 Synopsis:     Common Dylan library test suite
-Author:	      Andy Armstrong
+Author:       Andy Armstrong
 Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
               All rights reserved.
 License:      See License.txt in this distribution for details.
@@ -10,8 +10,9 @@ define byte-vector constant-test <byte> ()
   //---*** Fill this in...
 end constant-test <byte>;
 
-define sideways method make-test-instance (class == <byte-vector>) => (object)
-  make(<byte-vector>, size: 1);
+define sideways method make-test-instance
+    (class == <byte-vector>) => (object)
+  make(<byte-vector>, size: 1, fill: 0);
 end method make-test-instance;
 
 define byte-vector class-test <byte-vector> ()
@@ -37,7 +38,7 @@ end class-test <byte-vector>;
 define method test-byte-vector-size-and-fill
     (vector-size :: <integer>, fill :: <byte>)
  => ()
-    let v = make(<byte-vector>, size: size, fill: fill);
+    let v = make(<byte-vector>, size: vector-size, fill: fill);
     let name = format-to-string("vector-size-%d-fill-%d", vector-size, fill);
     check-equal(format-to-string("%s empty?", name), v.empty?, vector-size == 0);
     check-equal(format-to-string("%s.size = %d", name, vector-size), v.size, vector-size);

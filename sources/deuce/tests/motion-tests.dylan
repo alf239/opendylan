@@ -71,14 +71,14 @@ define test motion-basic-test ()
     let line1-2-start = line-start(*line1-2*);
     let line1-2-end = line-end(*line1-2*);
     // ... check initial position
-    *format-function*("Checking initial position\n");
+    test-output("Checking initial position\n");
     check-bp-position
       (line1-2-start, start-of-line?, make-bp(*line1-2*, 0));
     check-bp-position
       (line1-2-end, end-of-line?, make-bp(*line1-2*, len));
 
     // ... move within line
-    *format-function*("Moving within line\n");
+    test-output("Moving within line\n");
     increment-bp!(line1-2-start);
     check-bp-position
       (line1-2-start, not-start-of-line?, make-bp(*line1-2*, 1));
@@ -87,7 +87,7 @@ define test motion-basic-test ()
       (line1-2-end, not-end-of-line?, make-bp(*line1-2*, len - 1));
 
     // ... move past line ends
-    *format-function*("Moving past line ends\n");
+    test-output("Moving past line ends\n");
     decrement-bp!(line1-2-start);
     decrement-bp!(line1-2-start);
     check-bp-position
@@ -98,15 +98,15 @@ define test motion-basic-test ()
       (line1-2-end, start-of-line?, make-bp(*line1-3*, 0));
 
     // Test moving past ends of nodes, with and without fixup.
-    *format-function*("Moving out of node/section interval\n");
+    test-output("Moving out of node/section interval\n");
     test-moving-out-of-interval(*node2*);
 
     // Test moving past ends of buffer, with and without fixup.
-    *format-function*("Moving out of buffer interval\n");
+    test-output("Moving out of buffer interval\n");
     test-moving-out-of-interval(*buffer*);
 
     // Test moving past ends of arbitrary interval.
-    *format-function*("Moving out of arbitrary interval\n");
+    test-output("Moving out of arbitrary interval\n");
     test-moving-out-of-interval(*part-sections-interval*);
 
 
@@ -120,22 +120,22 @@ define test motion-basic-test ()
           (char :: <character>, exclude? :: <boolean>, reverse? :: <boolean>,
            target-bp :: <simple-bp>,
            #key interval)
-	let bp :: <basic-bp> = make-bp(*line1-3*, 2);
+        let bp :: <basic-bp> = make-bp(*line1-3*, 2);
         let buff-ivl = bp-buffer(bp);
         let ivl-supplied? :: <boolean> = #t;
         unless (interval)
           interval := buff-ivl;
           ivl-supplied? := #f;
         end;
-	move-forward-or-backward!
+        move-forward-or-backward!
           (bp, matcher(char, exclude?), reverse?, interval: interval);
-	check-equal
-	  (format-to-string
+        check-equal
+          (format-to-string
              ("Move %sward from 'n' to %=, %sclusive%s",
               if (reverse?) "back" else "for" end, char,
               if (exclude?) "ex" else "in" end,
               if (ivl-supplied?) ", bounded by interval" else "" end),
-	   bp, target-bp);
+           bp, target-bp);
       end method;
 
     // ... moving to a different character
@@ -174,13 +174,13 @@ define test motion-over-test ()
       method check-move-over
           (move-over :: <function>, n :: <integer>, target-bp :: <simple-bp>,
            #rest args)
-	let bp :: <basic-bp> = start-bp;
-	let result-bp :: <basic-bp> = apply(move-over, bp, n, args);
-	check-equal
-	  (format-to-string
+        let bp :: <basic-bp> = start-bp;
+        let result-bp :: <basic-bp> = apply(move-over, bp, n, args);
+        check-equal
+          (format-to-string
              ("Move %d from %= to %=",
               n, bp-character(bp), bp-character(target-bp)),
-	   result-bp, target-bp);
+           result-bp, target-bp);
       end method;
 
     // -=- move-over-characters -=-
@@ -286,7 +286,7 @@ define test motion-over-test ()
     check-move-over(move-over-lists, -2, make-bp(list-line, 7));
 
     // ... starting from just after the second unescaped
-    // $list-double-quote in the line 
+    // $list-double-quote in the line
     start-bp := make-bp(list-line, 17);
     check-move-over(move-over-lists, 0, start-bp);
     check-move-over(move-over-lists, 1, make-bp(list-line, 23));
@@ -329,10 +329,10 @@ define test motion-bp-info-test ()
                (line :: <text-line>, index :: <integer>, target :: <string>)
         let bp :: <basic-bp> = make-bp(line, index);
         let (start-bp, end-bp) = atom-under-bp(bp);
-	check-equal
-	  (format-to-string("Looking for atom at %=", bp),
-	   as(<string>, make-interval(start-bp, end-bp, in-order?: #t)),
-	   target);
+        check-equal
+          (format-to-string("Looking for atom at %=", bp),
+           as(<string>, make-interval(start-bp, end-bp, in-order?: #t)),
+           target);
       end method;
 
     // ... check at start/middle of line
@@ -361,18 +361,18 @@ define test motion-bp-info-test ()
       method index->bp-checker
                  (converter :: <function>, description :: <string>)
               => (checker :: <method>)
-	       let check-message :: <string>
-		 = format-to-string
-		     ("Converting %s-index %%d to bp", description);
+               let check-message :: <string>
+                 = format-to-string
+                     ("Converting %s-index %%d to bp", description);
                let converter :: <function> = curry(converter, *buffer*);
                method (index :: <integer>, target :: false-or(<basic-bp>))
                  let check-message :: <string>
-		   = format-to-string(check-message, index);
-		 if (index >= 0)
-		   check-equal(check-message, converter(index), target);
-		 else
-		   check-condition(check-message, <error>, converter(index));
-		 end if;
+                   = format-to-string(check-message, index);
+                 if (index >= 0)
+                   check-equal(check-message, converter(index), target);
+                 else
+                   check-condition(check-message, <error>, converter(index));
+                 end if;
                end method
       end method;
     let check-char-index->bp = index->bp-checker(char-index->bp, "char");
@@ -396,14 +396,14 @@ define test motion-bp-info-test ()
       method bp->index-checker
                  (converter :: <function>, description :: <string>)
               => (checker :: <method>)
-	       let check-message :: <string>
-		 = format-to-string
-		     ("Converting bp %%= to %s-index", description);
-	       method (bp :: <basic-bp>, target :: <integer>)
-		 check-equal
-		   (format-to-string(check-message, bp),
-		    converter(bp), target);
-	       end method;
+               let check-message :: <string>
+                 = format-to-string
+                     ("Converting bp %%= to %s-index", description);
+               method (bp :: <basic-bp>, target :: <integer>)
+                 check-equal
+                   (format-to-string(check-message, bp),
+                    converter(bp), target);
+               end method;
       end method;
     let check-bp->char-index = bp->index-checker(bp->char-index, "char");
     let check-bp->line-index = bp->index-checker(bp->line-index, "line");
@@ -421,51 +421,51 @@ define test motion-bp-info-test ()
     check-true
       ("char index <-> bp conversion is self-consistent over whole buffer",
        block(return)
-	 let char-index :: <integer> = 0;
-	 do-characters
-	   (method (char :: <character>, line :: <line>, index :: <integer>)
-	      let bp :: <basic-bp> = make-bp(line, index);
-	      let consistent1 :: <boolean>
-		= (char-index->bp(*buffer*, bp->char-index(bp)) = bp);
-	      let consistent2 :: <boolean>
-		= (bp->char-index(char-index->bp(*buffer*, char-index))
-		   == char-index);
-	      unless (consistent1 & consistent2)
-                *format-function*
+         let char-index :: <integer> = 0;
+         do-characters
+           (method (char :: <character>, line :: <line>, index :: <integer>)
+              let bp :: <basic-bp> = make-bp(line, index);
+              let consistent1 :: <boolean>
+                = (char-index->bp(*buffer*, bp->char-index(bp)) = bp);
+              let consistent2 :: <boolean>
+                = (bp->char-index(char-index->bp(*buffer*, char-index))
+                   == char-index);
+              unless (consistent1 & consistent2)
+                test-output
                   ("char index <-> bp conversion self-consistency failed"
                    "  at char %=, line %=, index %d"
                    "  bp is %=, char-index is %=\n",
                    char, line, index, bp, char-index);
                 return(#f);
               end;
-	      inc!(char-index);
-	    end method, *buffer-interval*);
+              inc!(char-index);
+            end method, *buffer-interval*);
          #t // If we get this far, it's worked.
        end block);
 
     check-true
       ("line index <-> bp conversion is self-consistent over whole buffer",
        block(return)
-	 let line-index :: <integer> = 0;
-	 do-lines
-	   (method (line :: <line>, si, ei, last?)
+         let line-index :: <integer> = 0;
+         do-lines
+           (method (line :: <line>, si, ei, last?)
               ignore(si, ei, last?);
-	      let bp :: <basic-bp> = line-start(line);
-	      let consistent1 :: <boolean>
-		= (line-index->bp(*buffer*, bp->line-index(bp)) = bp);
-	      let consistent2 :: <boolean>
-		= (bp->line-index(line-index->bp(*buffer*, line-index))
-		   == line-index);
-	      unless (consistent1 & consistent2)
-                *format-function*
+              let bp :: <basic-bp> = line-start(line);
+              let consistent1 :: <boolean>
+                = (line-index->bp(*buffer*, bp->line-index(bp)) = bp);
+              let consistent2 :: <boolean>
+                = (bp->line-index(line-index->bp(*buffer*, line-index))
+                   == line-index);
+              unless (consistent1 & consistent2)
+                test-output
                   ("line index <-> bp conversion self-consistency failed"
                    "  at line %=,"
                    "  bp is %=, line-index is %=\n",
                    line, bp, line-index);
                 return(#f);
               end;
-	      inc!(line-index);
-	    end method, *buffer-interval*);
+              inc!(line-index);
+            end method, *buffer-interval*);
          #t // If we get this far, it's worked.
        end block);
 
@@ -591,7 +591,7 @@ move-over-lines
   Check behaviour when {only, none of} the chars occur in the text
     (respectively for {over,until}).
 
-[relevant-]defintion-interval
+[relevant-]definition-interval
   Has to be tested separately for each major mode.  Nothing general to
     test.
 

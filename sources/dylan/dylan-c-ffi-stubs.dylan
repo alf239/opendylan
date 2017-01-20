@@ -8,10 +8,10 @@ define inline-only function box-c-signed-char (w :: <raw-machine-word>)
  => (result :: <machine-word>)
   let raw-result
     = if (logand(raw-as-integer(w), #x80) = 0)
-	primitive-machine-word-logand(w, integer-as-raw(#xff));
+        primitive-machine-word-logand(w, integer-as-raw(#xff));
       else
-	primitive-machine-word-logior
-	  (w, primitive-unwrap-machine-word(as(<machine-word>, #xffffff00)));
+        primitive-machine-word-logior
+          (w, primitive-unwrap-machine-word(as(<machine-word>, #xffffff00)));
       end if;
   primitive-wrap-machine-word(raw-result);
 end function;
@@ -26,10 +26,10 @@ define inline-only function box-c-signed-short (w :: <raw-machine-word>)
  => (result :: <machine-word>)
   let raw-result
     = if (logand(raw-as-integer(w), #x8000) = 0)
-	primitive-machine-word-logand(w, integer-as-raw(#xffff));
+        primitive-machine-word-logand(w, integer-as-raw(#xffff));
       else
-	primitive-machine-word-logior
-	  (w, primitive-unwrap-machine-word(as(<machine-word>, #xffff0000)));
+        primitive-machine-word-logior
+          (w, primitive-unwrap-machine-word(as(<machine-word>, #xffff0000)));
       end if;
   primitive-wrap-machine-word(raw-result);
 end function;
@@ -60,11 +60,12 @@ define /* inline */ function make-c-pointer-internal
    init-args :: <simple-object-vector>)
  => (v :: <C-pointer>);
   let instance :: <C-pointer> = allocate-c-pointer-instance(class, init-args);
-  let raw-address :: <raw-pointer> = primitive-unwrap-machine-word(address);
-  let init-args 
+  let raw-address :: <raw-address> = primitive-unwrap-machine-word(address);
+  let init-args
     = concatenate-2(init-args, class.defaulted-initialization-arguments);
   apply(default-initialize, class, instance,
-        raw-pointer-address: raw-address, init-args);
+        raw-pointer-address: primitive-cast-raw-as-pointer(raw-address),
+        init-args);
   apply(initialize, instance, init-args);
   instance
 end;
@@ -83,7 +84,7 @@ define function allocate-c-pointer-instance
   for (i from 0 below size(class-slot-descriptors(iclass)))
     find-or-create-class-slot-storage(iclass, i, #t)
   end for;
-  let (instance-size :: <integer>,
+  let (_instance-size :: <integer>,
        repeated-slot? :: <boolean>, repeated-slot-type :: <type>,
        repeated-size :: <integer>, fill)
     = allocation-attributes(iclass, init-args);
@@ -102,8 +103,8 @@ end function;
 define constant <C-raw-char> = <C-raw-signed-char>;
 define constant <C-raw-char*> = <C-raw-signed-char*>;
 
-define inline method concrete-class 
-    (class :: <designator-class>) 
+define inline method concrete-class
+    (class :: <designator-class>)
  => (cclass :: false-or(<designator-class>))
   class
 end method;

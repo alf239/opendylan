@@ -7,8 +7,65 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 /// Thread environment
 
+define method initialize-teb-struct-type (back-end :: <llvm-back-end>) => ()
+  // Note that this layout is assumed by the debugger-manager library
+  back-end.llvm-teb-struct-type
+    := make(<&raw-struct-type>,
+	    debug-name: "TEB",
+	    options: #[],
+	    members:
+	      vector(// Offset 0: Current bind-exit frame on stack
+		     make(<raw-aggregate-ordinary-member>,
+			  name: #"teb-dynamic-environment",
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Offset 1: thread variables <simple-object-vector>
+		     make(<raw-aggregate-ordinary-member>,
+			  name: #"teb-thread-local-variables",
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Offset 2: <thread> object for this thread
+		     make(<raw-aggregate-ordinary-member>,
+			  name: #"teb-current-thread",
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Offset 3: OS handle for this thread
+		     make(<raw-aggregate-ordinary-member>,
+			  name: #"teb-current-thread-handle",
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Offset 4: <list> of current <handler> objects
+		     make(<raw-aggregate-ordinary-member>,
+			  name: #"teb-current-handler",
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Offset 5: FFI barrier (inside or outside Dylan)
+		     make(<raw-aggregate-ordinary-member>,
+		     	  name: #"teb-runtime-state",
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Padding
+		     make(<raw-aggregate-array-member>,
+			  name: #"teb-pad",
+			  array-length: 2,
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Offset 8: MV count
+		     make(<raw-aggregate-ordinary-member>,
+		     	  name: #"teb-mv-count",
+                          raw-type: dylan-value(#"<raw-pointer>")),
+		     // Offset 9: MV area
+		     make(<raw-aggregate-array-member>,
+			  name: #"teb-mv-area",
+			  array-length: $maximum-value-count,
+                          raw-type: dylan-value(#"<raw-pointer>"))));
+
+  // Record TEB structure field indicies
+  for (member in back-end.llvm-teb-struct-type.raw-aggregate-members,
+       index from 0)
+    back-end.%raw-struct-field-index[member.member-name] := i32(index);
+  end for;
+end method;
+
+// The current TEB (on platforms that support thread-local variables),
+// or the TEB of the initial thread (on platforms without TLV support).
+define thread-local runtime-variable %teb :: <teb> = #f;
+
 // %teb-tlv-index is the variable which contains the handle for the
-// Windows TLV/pthreads key which holds the TEB for each thread.
+// Windows TLV/pthreads key which holds the TEB for each thread on platforms
 //
 define runtime-variable %teb-tlv-index :: <raw-machine-word>
   = make-raw-literal(as(<machine-word>, -1));
@@ -18,13 +75,44 @@ define runtime-variable %teb-tlv-index :: <raw-machine-word>
 define runtime-variable %teb-chain :: <raw-address>
   = make-raw-literal(0);
 
+define method op--teb
+    (be :: <llvm-back-end>) => (teb :: <llvm-value>);
+  let module = be.llvm-builder-module;
+  llvm-runtime-variable(be, module, %teb-descriptor)
+end method;
+
+define method op--teb
+    (be :: <llvm-windows-back-end>) => (teb :: <llvm-value>);
+  error("FIXME windows TEB");
+end method;
+
+define method op--teb-getelementptr
+    (be :: <llvm-back-end>, field :: <symbol>, #rest indices)
+ => (pointer :: <llvm-value>);
+  let teb = op--teb(be);
+  let index = be.%raw-struct-field-index[field];
+  apply(ins--gep-inbounds, be, teb, 0, index, indices)
+end method;
+
+
+/// Thread-local variables
+
+define runtime-variable %tlv-initializations :: <simple-object-vector> = #[],
+  section: #"variables";
+
+// Element index of the first unused vector element
+define runtime-variable %tlv-initializations-cursor :: <raw-integer>
+  = make-raw-literal(0), section: #"data";
+
+// Marker for TLV initializations already perfomed in the current thread
+define thread-local runtime-variable %tlv-initializations-local-cursor :: <raw-integer>
+  = make-raw-literal(0);
+
 
 /// Thread primitives
 
 define side-effecting stateful dynamic-extent &c-primitive-descriptor primitive-make-thread
-    (thread :: <object>, name :: <object>,
-     priority :: <integer>, function :: <function>,
-     synchronous? :: <raw-boolean>)
+    (thread :: <object>, function :: <function>, synchronous? :: <raw-boolean>)
   => (res :: <integer>);
 
 define side-effecting stateful dynamic-extent &c-primitive-descriptor primitive-destroy-thread
@@ -133,6 +221,36 @@ define side-effecting stateful dynamic-extent &primitive-descriptor primitive-co
 end;
 */
 
+define side-effecting stateful indefinite-extent auxiliary &c-primitive-descriptor primitive-register-thread-variable-initializer
+    (initial-value :: <object>, initializer-function :: <raw-pointer>) => ();
+
+define side-effecting stateful dynamic-extent auxiliary &c-primitive-descriptor primitive-initialize-thread-variables
+    () => ();
+
+define method op--initialize-thread-variables
+    (back-end :: <llvm-back-end>) => ();
+  let word-size = back-end-word-size(back-end);
+  let m = back-end.llvm-builder-module;
+
+  let init-bb = make(<llvm-basic-block>);
+  let common-bb = make(<llvm-basic-block>);
+
+  let cursor
+    = ins--load(back-end, llvm-runtime-variable(back-end, m, %tlv-initializations-cursor-descriptor),
+                alignment: word-size);
+  let local-cursor
+    = ins--load(back-end, llvm-runtime-variable(back-end, m, %tlv-initializations-local-cursor-descriptor),
+                alignment: word-size);
+  let cmp = ins--icmp-ult(back-end, local-cursor, cursor);
+  ins--br(back-end, op--unlikely(back-end, cmp), init-bb, common-bb);
+
+  ins--block(back-end, init-bb);
+  call-primitive(back-end, primitive-initialize-thread-variables-descriptor);
+  ins--br(back-end, common-bb);
+
+  ins--block(back-end, common-bb);
+end method;
+
 define side-effecting stateful indefinite-extent &c-primitive-descriptor primitive-allocate-thread-variable
     (initial-value :: <object>) => (handle :: <raw-pointer>);
 
@@ -167,7 +285,7 @@ define stateful side-effect-free dynamic-extent &unimplemented-primitive-descrip
   //---*** Fill this in...
 end;
 
-define side-effecting stateful dynamic-extent &unimplemented-primitive-descriptor primitive-synchronize-side-effects
+define side-effecting stateful dynamic-extent &primitive-descriptor primitive-synchronize-side-effects
     () => ();
-  //---*** Fill this in...
+  ins--fence(be, ordering: #"sequentially-consistent");
 end;

@@ -6,9 +6,6 @@ Copyright:    Original Code is Copyright (c) 1995-2004 Functional Objects, Inc.
 License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
-define constant $null-gpointer = null-pointer(<gpointer>);
-
-
 /// Sealing
 
 define sealed class <sealed-constructor-mixin> (<object>) end;
@@ -21,16 +18,16 @@ define sealed domain initialize (<sealed-constructor-mixin>);
 
 define function not-yet-implemented
     (format-message :: <string>, #rest format-args)
-  apply(error, 
-	concatenate(format-message, " not yet implemented!"),
-	format-args)
+  apply(error,
+        concatenate(format-message, " not yet implemented!"),
+        format-args)
 end function not-yet-implemented;
 
 define function ignoring
     (format-message :: <string>, #rest format-args)
-  apply(duim-debug-message, 
-	concatenate("Ignoring ", format-message),
-	format-args)
+  apply(duim-debug-message,
+        concatenate("Ignoring ", format-message),
+        format-args)
 end function ignoring;
 
 // define constant *gtk-debug* = #f;

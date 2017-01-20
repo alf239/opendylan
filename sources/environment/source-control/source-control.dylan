@@ -23,14 +23,14 @@ end class <source-control-system>;
 
 define method find-source-control-system-named
     (name :: <symbol>) => (sccs :: false-or(<source-control-system>))
-  find-value(*all-source-control-systems*, method (sccs) sccs-name(sccs) == name end)
+  find-element(*all-source-control-systems*, method (sccs) sccs-name(sccs) == name end)
 end method find-source-control-system-named;
 
 define method register-source-control-class
-    (class :: subclass(<source-control-system>), #rest initargs) 
+    (class :: subclass(<source-control-system>), #rest initargs)
  => (sccs :: <source-control-system>)
   let sccs
-    = find-value(*all-source-control-systems*, method (e) object-class(e) == class end);
+    = find-element(*all-source-control-systems*, method (e) object-class(e) == class end);
   if (sccs)
     sccs
   else
@@ -43,7 +43,7 @@ end method register-source-control-class;
 define method unregister-source-control-class
     (class :: subclass(<source-control-system>)) => ()
   let sccs
-    = find-value(*all-source-control-systems*, method (e) object-class(e) == class end);
+    = find-element(*all-source-control-systems*, method (e) object-class(e) == class end);
   when (sccs)
     remove!(*all-source-control-systems*, sccs)
   end
@@ -73,10 +73,10 @@ define function current-source-control-system
   unless (*cscs-initialized?*)
     let default-sccs = default-source-control-system();
     case
-      default-sccs => 
-	*current-source-control-system* := default-sccs;
+      default-sccs =>
+        *current-source-control-system* := default-sccs;
       otherwise =>
-	*current-source-control-system* := find-source-control-system-named(#"HOPE")
+        *current-source-control-system* := find-source-control-system-named(#"HOPE")
                                            | find-source-control-system-named(#"SourceSafe");
     end;
     *cscs-initialized?* := #t
@@ -125,7 +125,7 @@ define abstract class <source-control-command-error-mixin> (<object>)
   sealed constant slot %command,
     required-init-keyword: command:;
 end class <source-control-command-error-mixin>;
-  
+
 // The selected source control system doesn't support this command
 define sealed class <source-control-unsupported-command>
     (<source-control-command-error-mixin>, <source-control-error>)

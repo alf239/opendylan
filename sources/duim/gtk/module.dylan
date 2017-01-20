@@ -10,14 +10,23 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 define module gtk-duim
   use dylan;
   use operating-system;
+  use strings, import: { replace-substrings };
 
   use duim-imports;
   use duim-internals;
-  use duim-gadget-panes-internals;	//---*** until we've got all native gadgets in
+  use duim-gadget-panes-internals;        //---*** until we've got all native gadgets in
 
   use c-ffi;
 
+  use glib, exclude: { $pi };
+  use gobject;
+  use gobject-glue;
+  use pango;
+  use pango-cairo;
+  use cairo;
+  use gdk;
   use gtk;
+  use gtk-properties;
 
   // Basic classes
   export <gtk-port>,
@@ -39,9 +48,9 @@ define module gtk-duim
   // These can be used by someone who wants to import their own GTK gadget
   export \event-handler-definer,
          <gtk-pane-mixin>,
-	 <gtk-gadget-mixin>,
-	 <gtk-text-gadget-mixin>,
-	 <gtk-top-level-sheet-mixin>,
+         <gtk-gadget-mixin>,
+         <gtk-text-gadget-mixin>,
+         <gtk-top-level-sheet-mixin>,
          handle-gtk-destroy-event,
          handle-gtk-delete-event,
          handle-gtk-motion-event,
@@ -50,7 +59,7 @@ define module gtk-duim
          handle-gtk-key-press-event,
          handle-gtk-key-release-event,
          handle-gtk-configure-event,
-         handle-gtk-expose-event,
+         handle-gtk-draw-event,
          handle-gtk-enter-event,
          handle-gtk-leave-event,
          handle-gtk-clicked-event,

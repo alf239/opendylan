@@ -9,7 +9,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 
 define module harp-native-rtg
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use streams;
   use format;
   use print;
@@ -21,8 +21,6 @@ define module harp-native-rtg
 
   export
 
-    genop--start-timer,
-    genop--stop-timer,
     genop--exit-application,
     genop--spy-fixup-imported-dylan-data,
     genop--spy-fixup-unimported-dylan-data,

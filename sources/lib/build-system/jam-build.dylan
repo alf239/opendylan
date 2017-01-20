@@ -24,6 +24,7 @@ define method jam-read-mkf
   // DylanLibraryCObjects image : objects ;
   // DylanLibraryCSources image : sources ;
   // DylanLibraryCHeaders image : headers ;
+  // DylanLibraryC++Sources image ; sources ;
   // DylanLibraryRCFiles image : rcfiles ;
   // DylanLibraryJamIncludes image : includes ;
   let rule-specs
@@ -35,6 +36,7 @@ define method jam-read-mkf
         #["DylanLibraryCObjects", #"c-object-files", #f],
         #["DylanLibraryCSources", #"c-source-files", #f],
         #["DylanLibraryCHeaders", #"c-header-files", #f],
+        #["DylanLibraryC++Sources", #"c++-source-files", #f],
         #["DylanLibraryRCFiles", #"rc-files", #f]];
   for (spec in rule-specs)
     let value = element(variables, spec[1], default: #());
@@ -84,8 +86,8 @@ define function make-jam-state
           compiler-back-end)
  => (jam :: <jam-state>);
   // Ensure that the build-script hasn't been modified, and that the
-  // working directory hasn't changed, and that SYSTEM_ROOT and
-  // PERSONAL_ROOT are still valid
+  // working directory hasn't changed, and that SYSTEM_ROOT,
+  // SYSTEM_BUILD_SCRIPTS, and PERSONAL_ROOT are still valid
   if (build-script = *cached-build-script*
         & file-property(build-script, #"modification-date")
             = *cached-build-script-date*
@@ -95,6 +97,9 @@ define function make-jam-state
         & as(<directory-locator>,
              jam-variable(*cached-jam-state*, "SYSTEM_ROOT")[0])
             = $system-install
+        & as(<directory-locator>,
+             jam-variable(*cached-jam-state*, "SYSTEM_BUILD_SCRIPTS")[0])
+            = system-build-scripts-path()
         & begin
             let root = jam-variable(*cached-jam-state*, "PERSONAL_ROOT");
             let root-locator = ~root.empty? & as(<directory-locator>, root[0]);
@@ -108,6 +113,7 @@ define function make-jam-state
     // Useful built-in variables
     jam-variable(state, "OS") := vector(as(<string>, $os-name));
     jam-variable(state, "OSPLAT") := vector(as(<string>, $machine-name));
+    jam-variable(state, "TARGET_PLATFORM") := vector(as(<string>, target-platform-name()));
 
     select ($os-name)
       #"win32" =>
@@ -174,6 +180,8 @@ define function make-jam-state
       := vector(as(<string>, build-directory));
     jam-variable(state, "SYSTEM_ROOT")
       := vector(as(<string>, $system-install));
+    jam-variable(state, "SYSTEM_BUILD_SCRIPTS")
+      := vector(as(<string>, system-build-scripts-path()));
     if ($personal-install)
       jam-variable(state, "PERSONAL_ROOT")
         := vector(as(<string>, $personal-install));

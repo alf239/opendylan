@@ -3,7 +3,11 @@
 #
 
 CC      ?= pocc ;
-CCFLAGS ?= -DWIN32 -D_WIN32 -D_MT -D_DLL -MD -Ze ;
+CCFLAGS ?= -DWIN32 -D_WIN32 -D_MT -D_DLL -MD -Ze
+           -DOPEN_DYLAN_PLATFORM_WINDOWS
+           -DOPEN_DYLAN_ARCH_X86 ;
+C++     ?= pellesc-has-no-c++compiler ;
+C++FLAGS ?= $(CCFLAGS);
 RC      ?= porc ;
 LINK    ?= polink ;
 
@@ -24,6 +28,8 @@ LINK    ?= polink ;
   BINDIR ?= $(_bin:P=$(PERSONAL_ROOT:E=$(.:P))) ;
 }
 
+libcmt ?= crtmt.lib ;
+
 LINKFLAGS ?= /NODEFAULTLIB /DEBUG /DEBUGTYPE:CV ;
 
-include $(SYSTEM_LIBDIR)/x86-win32-vc6-build.jam ;
+include $(SYSTEM_BUILD_SCRIPTS)/x86-win32-vc6-build.jam ;

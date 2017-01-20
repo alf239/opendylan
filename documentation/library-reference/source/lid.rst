@@ -7,11 +7,11 @@ Introduction
 
 This chapter is about the library interchange definition format, *LID*.
 
-The DRM defines an interchange format for Dylan source files (DRM, page
-21), but does not define an interchange format for Dylan libraries.
+The DRM defines an :drm:`interchange format for Dylan source files <Dylan_Interchange_Format>`,
+but does not define an interchange format for Dylan libraries.
 Without such an agreed format, different Dylan development environments
 would find it difficult to import and build libraries developed using
-another Dylan vendor’s environment. It would also be impossible to
+another Dylan vendor's environment. It would also be impossible to
 automate the process of importing a library into another environment.
 
 LID solves this problem. It allows you to describe Dylan library sources
@@ -49,8 +49,8 @@ LID keyword statements
 ======================
 
 A LID file consists of a series of keyword/value statements, just like
-the Dylan source file interchange format described in DRM (page 21.) In
-this section, we describe the standard LID keywords.
+the Dylan :drm:`source file interchange format <Dylan_Interchange_Format>`.
+In this section, we describe the standard LID keywords.
 
 Library:
 --------
@@ -87,7 +87,7 @@ The order in which the designated source files are specified with the
 *Files:* keyword in the LID file determines the initialization order
 across the files within the defined library.
 
-All the files specified must reside in the same folder (directory) as
+All the files must be specified relative to the same folder (directory) as
 the LID file.
 
 Synopsis:
@@ -122,18 +122,29 @@ LID file keyword
 
     Author: *arbitrary text*
 
-The name of the library’s author.
+The name of the library's author.
 
-Version:
---------
+Major-Version:
+--------------
 
 LID file keyword
 
 .. code-block:: dylan
 
-    Version: *arbitrary text*
+    Major-Version: *number*
 
-The current version number of the library.
+The current major version number of the library.
+
+Minor-Version:
+--------------
+
+LID file keyword
+
+.. code-block:: dylan
+
+    Minor-Version: *number*
+
+The current minor version number of the library.
 
 Description:
 ------------
@@ -159,7 +170,7 @@ LID file keyword
 
 Any additional comments about the library.
 
-Open Dylan’s LID extensions
+Open Dylan's LID extensions
 ===========================
 
 This section contains extensions to LID that Open Dylan supports.
@@ -237,6 +248,8 @@ resulting resource object files are included in the ``.DLL`` or ``.EXE``
 built for the library. The file names given here must include the ``.rc``
 suffix.
 
+.. _lid-c-libraries:
+
 C-Libraries:
 ^^^^^^^^^^^^
 
@@ -275,12 +288,12 @@ and the arguments should be passed one per line and be one of the following:
 
 ``-F path``:
   Add a path to the search path for frameworks.
-  (Mac OS X only)
+  **(Mac OS X only)**
 
 ``-framework framework``:
   Link against the specified shared library. This should be either in the
-  regular linker search path or have a path specified via a ``-L`` flag.
-  (Mac OS X only)
+  regular linker search path or have a path specified via a ``-F`` flag.
+  **(Mac OS X only)**
 
 Unlike the other keywords described in this section, the *C-Libraries:*
 keyword propagates to dependent libraries. For example, suppose library
@@ -312,6 +325,8 @@ contained in that file into the current LID file.
 This is commonly used to share common definitions and settings between
 platform or OS specific LID files.
 
+.. _lid-jam-includes:
+
 Jam-Includes:
 ^^^^^^^^^^^^^
 
@@ -325,10 +340,13 @@ Specifies the name of a JAM file to process. This is typically used
 when integrating with a third party library and needing custom flags
 for the C compiler or linker.
 
-An example JAM file might look like::
+An example JAM (for a library, not an executable) file might look like::
 
-    LINKLIBS += `pkg-config --ldflags gtk+-2.0` ;
-    CCFLAGS += `pkg-config --cflags gtk+-2.0` ;
+    {
+      local _dll = [ FDLLName $(image) ] ;
+      LINKLIBS on $(_dll) += `pkg-config --libs gtk+-3.0` ;
+      CCFLAGS += `pkg-config --cflags gtk+-3.0` ;
+    }
 
 The use of backticks ```...``` will execute the command enclosed
 within and return the output of that command.
@@ -375,7 +393,7 @@ base address for the library. However, it is possible for more than one
 library to end up with the same default base address. If an application
 uses any of these libraries, all but one of them will have to be
 relocated when the application starts. This process is automatic, but
-cuts down on the amount of sharing, increases your application’s memory
+cuts down on the amount of sharing, increases your application's memory
 footprint, and slows down load time. In such circumstances, you may want
 to give one or more libraries an explicit base address using this
 keyword.

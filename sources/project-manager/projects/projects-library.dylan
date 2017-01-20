@@ -58,8 +58,6 @@ define module projects
     save-project,
     save-project-database,
     update-libraries,
-    build-project,
-    target-platform-name,
     target-platform-name-setter,
     load-namespace,
     load-library,
@@ -96,10 +94,8 @@ define module projects
     project-compilation-mode-setter,
     project-compiler-back-end,
     project-compiler-back-end-setter,
-    project-operating-system,
-    project-operating-system-setter,
-    project-processor,
-    project-processor-setter,
+    project-platform-name,
+    project-platform-name-setter,
     project-library-loose-bindings,
     project-library-loose-bindings-setter,
     project-library-pack,
@@ -144,7 +140,7 @@ end module;
 
 define module projects-implementation
   use dylan;
-  use common-extensions, exclude: { format-to-string };
+  use common-extensions;
   use threads;
   use memory-manager;
   use build-system;
@@ -181,7 +177,8 @@ define module projects-implementation
   use dfmc-macro-expander;
   use dfmc-namespace,
     import: { library-description-compiler-back-end-name-setter,
-              library-description-compilation-records };
+              library-description-compilation-records,
+              library-description-platform-name-setter };
 
   use projects, export: all;
   export
@@ -211,10 +208,6 @@ define module projects-implementation
     project-key?,
     make-used-project,
     project-compiler-setting, project-compiler-setting-setter,
-    platform-namestring,
-    platform-namestring-info,
-    default-platform-info,
-    set-default-platform-info,
     note-platform-change,
     *all-open-projects*,
     %close-project,
@@ -238,7 +231,7 @@ end module;
 
 define module lid-projects
   use dylan;
-  use common-extensions, exclude: { format-to-string };
+  use common-extensions;
   use simple-debugging, import: { debug-out };
   // Probably don't need all this, sort it out later...
   use locators;

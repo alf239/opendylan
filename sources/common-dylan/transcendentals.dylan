@@ -26,26 +26,22 @@ define constant $double-e  :: <double-float> = 2.718281828459045d0;
 
 define macro unary-transcendental-definer
   { define unary-transcendental ?:name
-				(?x:name)
+                                (?x:name)
       ?prefix:body
     end }
     => { define open generic ?name (x :: <number>) => (result :: <number>);
-	 define sealed domain ?name (<real>);
-	 define sealed may-inline method ?name (x :: <real>) => (result :: <float>)
-	   ?name(as(<float>, x))
-	 end method ?name;
-	 define sealed may-inline method ?name (?x :: <single-float>)
-	  => (result :: <single-float>)
-	   ?prefix;
-	   primitive-raw-as-single-float
-	     ("primitive-single-float-" ## ?name(primitive-single-float-as-raw(?x)))
-	 end method ?name;
-	 define sealed may-inline method ?name (?x :: <double-float>)
-	  => (result :: <double-float>)
-	   ?prefix;
-	   primitive-raw-as-double-float
-	     ("primitive-double-float-" ## ?name(primitive-double-float-as-raw(?x)))
-	 end method ?name }
+         define sealed may-inline method ?name (?x :: <single-float>)
+          => (result :: <single-float>)
+           ?prefix;
+           primitive-raw-as-single-float
+             ("primitive-single-float-" ## ?name(primitive-single-float-as-raw(?x)))
+         end method ?name;
+         define sealed may-inline method ?name (?x :: <double-float>)
+          => (result :: <double-float>)
+           ?prefix;
+           primitive-raw-as-double-float
+             ("primitive-double-float-" ## ?name(primitive-double-float-as-raw(?x)))
+         end method ?name }
 end macro unary-transcendental-definer;
 
 define unary-transcendental exp (x) end;
@@ -60,19 +56,31 @@ define may-inline function logn (x :: <number>, base :: <number>) => (result :: 
   log(x) / log(base)
 end function logn;
 
-define unary-transcendental sqrt (x)
-  if (negative?(x))
-    error("SQRT would produce a complex number")
-  end
-end unary-transcendental sqrt;
+define inline function ilog2 (x :: <integer>) => (result :: <integer>)
+  truncate(log(as(<single-float>, x)) / log(2.0s0))
+end function ilog2;
+
+define unary-transcendental sqrt (x) end;
 
 define may-inline function isqrt (x :: <integer>) => (result :: <integer>)
-  floor(sqrt(x))
+  floor(sqrt(as(<single-float>, x)))
 end function isqrt;
 
 define unary-transcendental sin (x) end;
 define unary-transcendental cos (x) end;
 define unary-transcendental tan (x) end;
+
+define open generic sincos (x :: <number>) => (sine :: <number>, cosine :: <number>);
+
+define sealed may-inline method sincos (x :: <single-float>)
+ => (sine :: <single-float>, cosine :: <single-float>)
+  values(sin(x), cos(x))
+end method sincos;
+
+define sealed may-inline method sincos (x :: <double-float>)
+ => (sine :: <double-float>, cosine :: <double-float>)
+  values(sin(x), cos(x))
+end method sincos;
 
 define unary-transcendental asin (x)
   if (abs(x) > 1)
@@ -98,18 +106,14 @@ define macro unary-hyperbolic-definer
       ?single:expression, ?double:expression
     end }
     => { define open generic ?name (x :: <number>) => (result :: <number>);
-	 define sealed domain ?name (<real>);
-	 define sealed may-inline method ?name (x :: <real>) => (result :: <float>)
-	   ?name(as(<float>, x))
-	 end method ?name;
-	 define sealed may-inline method ?name (?x :: <single-float>)
-	  => (result :: <single-float>)
-	   ?single
-	 end method ?name;
-	 define sealed may-inline method ?name (?x :: <double-float>)
-	  => (result :: <double-float>)
-	   ?double
-	 end method ?name }
+         define sealed may-inline method ?name (?x :: <single-float>)
+          => (result :: <single-float>)
+           ?single
+         end method ?name;
+         define sealed may-inline method ?name (?x :: <double-float>)
+          => (result :: <double-float>)
+           ?double
+         end method ?name }
 end macro unary-hyperbolic-definer;
 
 define unary-hyperbolic sinh (x)
@@ -143,35 +147,25 @@ define unary-hyperbolic atanh (x)
 end unary-hyperbolic atanh;
 
 
-/// NOTE: Always seals the (<real>, <real>) domain:  The domains, if given, are used
-/// to define the "default" method to avoid sealing violations w.r.t. the Dylan library.
 define macro binary-transcendental-domain-definer
-  { define binary-transcendental-domain ?:name (?x:name, ?y:name)
-					       (?domain1:name, ?domain2:name)}
-    => { define sideways sealed domain ?name (<real>, <real>);
-	 define sideways sealed may-inline method ?name (?x :: ?domain1, ?y :: ?domain2)
-	  => (result :: <float>)
-	   ?name(as(<float>, ?x), as(<float>, ?y))
-	 end method ?name;
-	 define sideways sealed may-inline method ?name
-	     (?x :: <single-float>, ?y :: <double-float>) => (result :: <double-float>)
-	   ?name(as(<double-float>, ?x), ?y)
-	 end method ?name;
-	 define sideways sealed may-inline method ?name 
-	     (?x :: <double-float>, ?y :: <single-float>) => (result :: <double-float>)
-	   ?name(?x, as(<double-float>, ?y))
-	 end method ?name }
   { define binary-transcendental-domain ?:name (?x:name, ?y:name) }
-    => {define binary-transcendental-domain ?name (?x, ?y) (<real>, <real>) }
+    => { define sideways sealed may-inline method ?name
+             (?x :: <single-float>, ?y :: <double-float>) => (result :: <double-float>)
+           ?name(as(<double-float>, ?x), ?y)
+         end method ?name;
+         define sideways sealed may-inline method ?name
+             (?x :: <double-float>, ?y :: <single-float>) => (result :: <double-float>)
+           ?name(?x, as(<double-float>, ?y))
+         end method ?name }
 end macro binary-transcendental-domain-definer;
 
 define macro binary-transcendental-definer
   { define binary-transcendental ?:name (?x:name, ?y:name) }
     => { define open generic ?name (?x :: <number>, ?y :: <number>) => (result :: <number>);
-	 define binary-transcendental-domain ?name (?x, ?y) }
+         define binary-transcendental-domain ?name (?x, ?y) }
 end macro binary-transcendental-definer;
 
-define binary-transcendental-domain \^ (base, power) (<real>, <float>);
+define binary-transcendental-domain \^ (base, power);
 
 define sideways sealed may-inline method \^ (base :: <single-float>, power :: <single-float>)
  => (result :: <single-float>)
@@ -183,8 +177,8 @@ define sideways sealed may-inline method \^ (base :: <single-float>, power :: <s
     end
   else
     primitive-raw-as-single-float(primitive-single-float-expt
-				    (primitive-single-float-as-raw(base),
-				     primitive-single-float-as-raw(power)))
+                                    (primitive-single-float-as-raw(base),
+                                     primitive-single-float-as-raw(power)))
   end
 end method \^;
 
@@ -198,8 +192,8 @@ define sideways sealed may-inline method \^ (base :: <double-float>, power :: <d
     end
   else
     primitive-raw-as-double-float(primitive-double-float-expt
-				    (primitive-double-float-as-raw(base),
-				     primitive-double-float-as-raw(power)))
+                                    (primitive-double-float-as-raw(base),
+                                     primitive-double-float-as-raw(power)))
   end
 end method \^;
 
@@ -208,34 +202,58 @@ define binary-transcendental atan2 (y, x);
 define macro atan2-method-definer
   { define atan2-method (?type:name, ?pi:name, ?zero:expression) end }
     => { define sealed may-inline method atan2 (y :: ?type, x :: ?type) => (result :: ?type)
-	   if (zero?(x))
-	     if (zero?(y))
-	       error("atan2(0, 0) is undefined")
-	     else
-	       if (positive?(y))
-		 ?pi / 2.0
-	       else
-		 -?pi / 2.0
-	       end
-	     end
-	   elseif (zero?(y))
-	     if (positive?(x))
-	       ?zero
-	     else
-	       ?pi
-	     end
-	   else
-	     let atan = atan(y / x);
-	     if (positive?(x))
-	       atan
-	     elseif (positive?(y))
-	       atan + ?pi
-	     else
-	       atan - ?pi
-	     end
-	   end
-	 end method atan2 }
+           if (zero?(x))
+             if (zero?(y))
+               error("atan2(0, 0) is undefined")
+             else
+               if (positive?(y))
+                 ?pi / 2.0
+               else
+                 -?pi / 2.0
+               end
+             end
+           elseif (zero?(y))
+             if (positive?(x))
+               ?zero
+             else
+               ?pi
+             end
+           else
+             let atan = atan(y / x);
+             if (positive?(x))
+               atan
+             elseif (positive?(y))
+               atan + ?pi
+             else
+               atan - ?pi
+             end
+           end
+         end method atan2 }
 end macro atan2-method-definer;
 
 define atan2-method (<single-float>, $single-pi, 0.0s0) end;
 define atan2-method (<double-float>, $double-pi, 0.0d0) end;
+
+define binary-transcendental hypot (x, y);
+
+define sealed may-inline method hypot (x :: <single-float>, y :: <single-float>)
+ => (z :: <single-float>)
+  primitive-raw-as-single-float
+    (%call-c-function("hypotf")
+         (x :: <raw-single-float>, y :: <raw-single-float>)
+      => (z :: <raw-single-float>)
+         (primitive-single-float-as-raw(x),
+          primitive-single-float-as-raw(y))
+     end)
+end method hypot;
+
+define sealed may-inline method hypot (x :: <double-float>, y :: <double-float>)
+ => (z :: <double-float>)
+  primitive-raw-as-double-float
+    (%call-c-function("hypot")
+         (x :: <raw-double-float>, y :: <raw-double-float>)
+      => (z :: <raw-double-float>)
+         (primitive-double-float-as-raw(x),
+          primitive-double-float-as-raw(y))
+     end)
+end method hypot;

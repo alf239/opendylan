@@ -5,6 +5,8 @@ The C-FFI Library
 .. current-library:: c-ffi
 .. current-module:: c-ffi
 
+.. contents::
+
 Introduction
 ============
 
@@ -16,10 +18,10 @@ library C-FFI.
 The C-FFI library consists of macros, classes, and functions that you
 can use to write a complete description of the Dylan interface to a C
 library. Compiling this description generates a set of Dylan classes and
-functions through which Dylan code can manipulate the C library’s data
+functions through which Dylan code can manipulate the C library's data
 and call its functions. Interface descriptions can also allow C code to
 call into Dylan; compiling such a description generates entry points
-compatible with C’s calling conventions.
+compatible with C's calling conventions.
 
 Overview
 ========
@@ -32,7 +34,7 @@ a C interface in a form that the Open Dylan compiler can
 understand; we call these macros the *C interface definition language*.
 
 The C interface definition language provides macros that correspond to
-each of C’s type, function, variable, and constant defining forms. These
+each of C's type, function, variable, and constant defining forms. These
 macros define Dylan classes that designate and encapsulate instances of
 C types, Dylan methods through which to manipulate C variables and call
 out to C functions, and functions with C-compatible entry points through
@@ -57,24 +59,24 @@ forms to specify which elements involve the designated C type. A
 designator class also carries with it the information on how to
 interpret the untyped C data as a tagged Dylan object.
 
-The C-FFI library contains predefined designator classes for C’s
+The C-FFI library contains predefined designator classes for C's
 fundamental types like ``int`` and ``double``. The names of these
 predefined Dylan classes are formed from the C name of the fundamental
 type being designated. The designator class name for a particular C type
-formed using Dylan’s standard class-naming convention; it is prefixed
-with “C-”, hyphenated if it contains more than one word, and enclosed in
+formed using Dylan's standard class-naming convention; it is prefixed
+with "C-", hyphenated if it contains more than one word, and enclosed in
 angle brackets. For example, the C-FFI library provides the class
 ``<C-int>`` to designate the C type ``int`` ; it designates ``double``
 by the class ``<C-double>``, and ``unsigned long`` by the class
 ``<C-unsigned-long>``.
 
 .. note:: Since Dylan variable names are compared without sensitivity to
-   case, the capitalization of the “C” in the names above, and in other
+   case, the capitalization of the "C" in the names above, and in other
    Dylan names appearing in this document, is not binding and can safely be
    ignored.
 
 The C-FFI library also provides predefined classes designating pointers
-to C’s fundamental numeric types. To do so, it adds a ``*`` to the
+to C's fundamental numeric types. To do so, it adds a ``*`` to the
 fundamental C type designator. For example ``<C-double*>`` designates the
 C type ``double*``.
 
@@ -105,7 +107,7 @@ type ``unsigned short`` which is designated by the predefined class
 ``<C-unsigned-short>``. The information about the C type ``unsigned
 short`` carried by this designator class allows the compiler to compute
 the size, alignment, and layout of the struct. The compiler records the
-struct’s size and alignment and associates them with ``<Point>``. The
+struct's size and alignment and associates them with ``<Point>``. The
 designator class ``<Point>`` can then be used in the definition of other
 types, functions, and variables. For example, we could describe
 
@@ -128,11 +130,11 @@ like this:
 As well as acting as a static information carrier for use in other FFI
 definitions, a designator class can also be instantiable, in which case
 Dylan uses an instance of the designator class to represent an object of
-the C type it designates when that object is passed from the “C world”
-to the “Dylan world”.
+the C type it designates when that object is passed from the "C world"
+to the "Dylan world".
 
 *Note:* Only classes that designate C pointer types can be instantiated
-in this way. Instances of C’s fundamental numeric value types like ``int``,
+in this way. Instances of C's fundamental numeric value types like ``int``,
 ``char``, and ``double`` are just converted to an equivalent Dylan object
 with the same value. The ``<Point>`` class is not an instantiable class in
 Dylan because there is nothing in Dylan that corresponds to a C struct.
@@ -176,7 +178,7 @@ what you get when you read the slots of the structure it returns:
     #t
 
 The interactions above show that if we access structure slots that were
-defined as being of one of C’s fundamental numeric types, we get a Dylan
+defined as being of one of C's fundamental numeric types, we get a Dylan
 number of the equivalent value. The same thing happens if an imported C
 function returns a fundamental numeric type: a Dylan number with the
 same value appears in Dylan. Similarly, when setting slots in structs
@@ -292,7 +294,7 @@ simple example. Suppose we have a C ``extern`` function declaration
 
 This function is intended to return the sum of two ``double`` values.
 Instead of implementing the function in C, we can implement it in Dylan
-using Dylan’s generic function ``+``. All we need to do is define a
+using Dylan's generic function ``+``. All we need to do is define a
 C-callable wrapper for ``+``, as follows:
 
 .. code-block:: dylan
@@ -304,7 +306,7 @@ C-callable wrapper for ``+``, as follows:
     end C-callable-wrapper;
 
 We can now call ``AddDouble`` in C. Our wrapper will be invoked, the C
-arguments will be converted and passed to Dylan’s + generic function,
+arguments will be converted and passed to Dylan's + generic function,
 and then the result of the computation will be converted and passed back
 to C:
 
@@ -327,11 +329,11 @@ C variables in Dylan
 
 When you use the interface definition language to describe a C variable
 to the Dylan compiler, the compiler generates new Dylan getter and
-setter functions for reading and setting the variable’s value from
+setter functions for reading and setting the variable's value from
 Dylan. If the variable is constant, it defines a getter function only.
 
 The getter function converts the C value to a Dylan value before
-returning it according to the variable’s declared type. Similarly, the
+returning it according to the variable's declared type. Similarly, the
 setter function converts its argument, as Dylan value, into a C value
 before setting the C variable. These conversions happen according to the
 same rules that apply to other C-Dylan world transition points, such as
@@ -376,7 +378,7 @@ Dylan function:
     1.5
 
 By default, the C-FFI also defines a setter function for the variable.
-The setter name uses Dylan’s convention of appending “-setter” to the
+The setter name uses Dylan's convention of appending "-setter" to the
 getter name.
 
 ::
@@ -396,19 +398,125 @@ necessary.
    C-address` macro, which defines a constant that is a pointer to the
    storage allocated for the C variable.
 
+Notes on Linking
+================
+
+When using C-FFI, you will typically need to link in an existing library
+or framework.
+
+:doc:`LID files <../lid>` provide many options for controlling
+the compilation and linking of the project depending on what exactly
+is required.
+
+Linking against a Library
+-------------------------
+
+This can be done in a :doc:`LID file <../lid>` using the :ref:`C-Libraries <lid-c-libraries>`
+keyword.  This supports both static and shared libraries. It also supports
+specifying a search path.  For example::
+
+    C-Libraries: -lGL
+
+Linking against a Mac OS X Framework
+------------------------------------
+
+Just as with a regular shared library, the :ref:`C-Libraries <lid-c-libraries>`
+keyword in a :doc:`LID file <../lid>`.  For example::
+
+    C-Libraries: -framework OpenGL
+
+Using pkg-config
+----------------
+
+Libraries that use "pkg-config" are slightly more complicated to work with in
+that they require using the :ref:`Jam-Includes <lid-jam-includes>` keyword and
+an additional file within the project.  The GTK+ bindings provide multiple
+examples of this.
+
+In the LID file, you would include the additional Jam file::
+
+    Jam-Includes: gtk-dylan.jam
+
+And you would provide the additional Jam file::
+
+    {
+      local _dll = [ FDLLName $(image) ] ;
+      LINKLIBS on $(_dll) += `pkg-config --libs gtk+-3.0` ;
+      CCFLAGS += `pkg-config --cflags gtk+-3.0` ;
+    }
+
+Tracing FFI Calls
+=================
+
+When working with the C-FFI, it is very useful to be able to trace what
+is happening, what is getting called, what the arguments are, and what
+the return value is. To aid in this, C-FFI enables the programmer to
+enable tracing.
+
+To do this, you will need to exclude the default implementation of
+tracing when importing the ``c-ffi`` module and define your own
+implementation.
+
+In your ``library.dylan``, you would change your module declaration:
+
+.. code-block:: dylan
+
+    use c-ffi;
+
+to:
+
+.. code-block:: dylan
+
+    use c-ffi, exclude: {
+      $trace-ffi-calls,
+      log-entry,
+      log-exit };
+    use format-out;
+
+Note that we've used the ``format-out`` module from the ``io``
+library in addition to the exclusion.
+
+After doing that, you can define your own implementation of
+tracing such that your implementation is in the same lexical
+scope as the ``C-function`` definitions that you want to trace:
+
+.. code-block:: dylan
+
+    define constant $trace-ffi-calls = #t;
+
+    define inline-only function log-entry(c-function-name, #rest args) => ();
+      format-out("entering %s %=", c-function-name, args);
+    end;
+    define inline-only function log-exit(c-function-name, #rest results) => ();
+      format-out(" => %=\n", results);
+    end;
+
+    define C-function ...
+
+When this is run, you will see output like::
+
+    entering nn_socket #[1, 16] => #[0]
+    entering nn_socket #[1, 16] => #[1]
+    entering nn_bind #[0, "inproc://a"] => #[1]
+    entering nn_connect #[1, "inproc://a"] => #[1]
+    entering nn_send #[1, #x007D0AAC, 3, 0] => #[3]
+    entering nn_recv #[0, #x007D0AE4, 3, 0] => #[3]
+    entering nn_close #[0] => #[0]
+    entering nn_close #[1] => #[0]
+
 Terminology
 ===========
 
 For the rest of this chapter, we adopt the following terminology,
 hopefully not too inconsistent with common C terminology:
 
--  *Base type* Basic units of data storage (C’s variously sized
-   integers, characters, and floating point numbers) and aggregate
-   records (structs and unions).
--  *Derived type*. A type based on some other type (C’s pointer, array,
-   and function types).
--  *Fundamental numeric type*. One of C’s integer or floating point types.
-   This does not include pointer types, structure types, or union types.
+- *Base type* Basic units of data storage (C's variously sized
+  integers, characters, and floating point numbers) and aggregate
+  records (structs and unions).
+- *Derived type*. A type based on some other type (C's pointer, array,
+  and function types).
+- *Fundamental numeric type*. One of C's integer or floating point types.
+  This does not include pointer types, structure types, or union types.
 
 Basic options in C-FFI macros
 =============================
@@ -416,22 +524,25 @@ Basic options in C-FFI macros
 The defining macros of the C-FFI share a consistent core set of options
 which are worth describing here:
 
--  A *c-name* argument. Every defining form allows you to specify the
-   corresponding C entity through the keyword *c-name:*. It is optional
-   in some forms but required in others. You can define types that have
-   no named opposite number in C, and the c-name option is always
-   optional in type definitions. On the other hand, you must always name
-   an imported C function or variable so that Dylan knows the correct
-   name from the compiled C library to link with.
+- A *c-name* argument. Every defining form allows you to specify the
+  corresponding C entity through the keyword *c-name:*. It is optional
+  in some forms but required in others. You can define types that have
+  no named opposite number in C, and the c-name option is always
+  optional in type definitions. On the other hand, you must always name
+  an imported C function or variable so that Dylan knows the correct
+  name from the compiled C library to link with.
 
-   In general, any C entity you can declare in C using ``extern`` can only be
-   found by the C-FFI if you pass a *c-name* argument to the corresponding
-   C-FFI definition.
+  In general, any C entity you can declare in C using ``extern`` can only be
+  found by the C-FFI if you pass a *c-name* argument to the corresponding
+  C-FFI definition.
 
--  A *pointer-type-name* argument. All the type-defining forms allow you
-   to name the type for a pointer to the type being defined. This is
-   normally specified throughout the *pointer-type-name:* keyword
-   option.
+  The sole exception to this is the ``define objc-selector`` form which
+  instead takes a ``selector:`` keyword.
+
+- A *pointer-type-name* argument. All the type-defining forms allow you
+  to name the type for a pointer to the type being defined. This is
+  normally specified throughout the *pointer-type-name:* keyword
+  option.
 
 Designator classes
 ==================
@@ -442,8 +553,8 @@ C types and to describe how they are passed to and from Dylan. These
 they designate.
 
 The C-FFI library provides an initial set of designator classes
-corresponding to C’s fundamental types, as well as macros for generating
-designator classes corresponding to C’s pointer types and for extending
+corresponding to C's fundamental types, as well as macros for generating
+designator classes corresponding to C's pointer types and for extending
 the translation between C data and Dylan objects.
 
 Designator classes that correspond to fundamental numeric types are not
@@ -489,11 +600,11 @@ programmatically, but others are implicit and only really exist in the
 compiler. Some of the properties may be empty.
 
 A *referenced type* is the designator type to which a pointer refers. A
-designator’s *referenced-type* only has a value for subtypes of
+designator's *referenced-type* only has a value for subtypes of
 :class:`<C-statically-typed-pointer>`. Programs can access the
 referenced type through the function *referenced-type*.
 
-A designator class’s *pointer-type* only has a value for each of
+A designator class's *pointer-type* only has a value for each of
 those types that has a pointer designator type that refers to it. Most
 of the constructs that define a new designator type also define a
 pointer-type for that designator. Many of the macros that define
@@ -503,12 +614,12 @@ pointer-type is not programmatically available because it may not have
 been defined. You can assure that there is a pointer-type for a
 particular designator by using the macro :macro:`define c-pointer-type`.
 
-A designator class’s *import type* and *export type* are instantiable
+A designator class's *import type* and *export type* are instantiable
 Dylan types that describe the Dylan instantiation of a designator class
 when it is used in a position that *imports* values from C, or *exports*
 values to C.
 
-Nearly all of the C-FFI’s designators have import and export types that
+Nearly all of the C-FFI's designators have import and export types that
 are equivalent. Some, such as :class:`<C-string>`, have different import
 and export types because it is possible to pass a pointer to a Dylan
 object to C directly without creating a C pointer object, or copying the
@@ -518,8 +629,8 @@ and export types for any subtype of :class:`<C-pointer>` are the class
 itself. You can override this by defining a new subclass with the macro
 :macro:`define C-mapped-subtype`.
 
-You can define a designator’s *import-function* and *export-function* by
-using the macro :macro:`define c-mapped-subtype`. These functions are
+You can define a designator's *import-function* and *export-function* by
+using the macro :macro:`define C-mapped-subtype`. These functions are
 merely the procedural specifications for translating the C data to Dylan
 and back. The *import* and *export* functions are inherited when you
 define a subclass for a designator.
@@ -534,7 +645,7 @@ Designator class basics
    :description:
 
      The abstract superclass of all designator classes. It is a subclass
-     of ``<object>``. It has neither an *export-type* nor an
+     of :drm:`<object>`. It has neither an *export-type* nor an
      *import-type*, so you cannot use it when designating a transition
      between C and Dylan.
 
@@ -560,7 +671,7 @@ Designator class basics
    :signature: size-of *designator-class* => *size*
 
    :parameter designator-class: A subclass of :class:`<C-value>`.
-   :value size: An instance of ``<integer>``.
+   :value size: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -569,7 +680,7 @@ Designator class basics
 
      The ``size-of`` function can be applied to any designator class.
      However, if it is applied to :class:`<C-void>`, :class:`<C-value>`,
-     or :class:`<C-struct>`, it returns zero. It corresponds to C’s
+     or :class:`<C-struct>`, it returns zero. It corresponds to C's
      ``sizeof`` operator and returns an integer, *size*, in the same
      units as ``sizeof`` does on the target platform. It can be useful
      when allocating a C object whose declared size is not accurate and
@@ -583,7 +694,7 @@ Designator class basics
    :signature: alignment-of *designator-class* => *alignment*
 
    :parameter designator-class: A subclass of :class:`<C-value>`.
-   :value alignment: An instance of ``<integer>``.
+   :value alignment: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -602,18 +713,18 @@ are instantiable: a number on one side of the interface is converted to
 a number on the other side with the same value.
 
 There are some additional details to note about integer representations.
-Because Dylan’s integer representations do not match C’s exactly, for
+Because Dylan's integer representations do not match C's exactly, for
 each of the C integer types there are three designator classes that can
 be used to translate Dylan representations to that C integer. The
 categories are *plain*, *unsafe*, and *raw* integers.
 
 *Plain* integer designators — of which the class ``<C-unsigned-short>`` is
-an example — translate C integer values to instances of ``<integer>``. If
+an example — translate C integer values to instances of :drm:`<integer>`. If
 the integer being translated is too big for the destination, the C-FFI
 signals an error. There are two ways this can happen.
 
--  On export, the C-FFI signals an error if the Dylan value has more
-   significant bits than the C integer.
+- On export, the C-FFI signals an error if the Dylan value has more
+  significant bits than the C integer.
 
 This can happen if, for example, the designator is ``<C-unsigned-short>``,
 and the Dylan value is negative, or if *unsigned* *short* on that
@@ -622,11 +733,11 @@ significant bits. The check will be omitted if the compiler can
 determine that no Dylan value outside the safe range can reach there.
 This can be done using a limited integer type.
 
--  On import into Dylan, the C-FFI signals an error if it cannot
-   represent the C value using a Dylan ``<integer>``.
+- On import into Dylan, the C-FFI signals an error if it cannot
+  represent the C value using a Dylan :drm:`<integer>`.
 
 This can happen with any C integer type that is more than 30 bits wide.
-The size of a Dylan ``<integer>`` depends on the particular platform, but
+The size of a Dylan :drm:`<integer>` depends on the particular platform, but
 it is guaranteed to be at least 30 bits in length.
 
 The C-FFI never signals an error for the *unsafe* designator classes —
@@ -656,65 +767,77 @@ and unsafe integer designator types exported from the C-FFI module.
    +-------------------------------+--------------------+--------------------+
    | Designator name               | C type             | Dylan type(s)      |
    +===============================+====================+====================+
-   | ``<C-int>``                   | ``int``            | ``<integer>``      |
+   | ``<C-int>``                   | ``int``            | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-int>``               | ``int``            | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-int>``            | ``int``            | ``<integer>``      |
+   | ``<C-unsafe-int>``            | ``int``            | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-signed-int>``        | ``signed int``     | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-signed int>``     | ``signed int``     | ``<integer>``      |
+   | ``<C-unsafe-signed int>``     | ``signed int``     | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-signed-int>``            | ``signed int``     | ``<integer>``      |
+   | ``<C-signed-int>``            | ``signed int``     | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-unsigned-int>``      | ``unsigned int``   | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-unsigned-int>``   | ``unsigned int``   | ``<integer>``      |
+   | ``<C-unsafe-unsigned-int>``   | ``unsigned int``   | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsigned-int>``          | ``unsigned int``   | ``<integer>``      |
+   | ``<C-unsigned-int>``          | ``unsigned int``   | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsigned-long>``         | ``unsigned long``  | ``<integer>``      |
+   | ``<C-unsigned-long>``         | ``unsigned long``  | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-signed-long>``           | ``signed long``    | ``<integer>``      |
+   | ``<C-signed-long>``           | ``signed long``    | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-unsigned-long>``  | ``unsigned long``  | ``<integer>``      |
+   | ``<C-unsafe-unsigned-long>``  | ``unsigned long``  | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-signed-long>``    | ``signed long``    | ``<integer>``      |
+   | ``<C-unsafe-signed-long>``    | ``signed long``    | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-unsigned-long>``     | ``unsigned long``  | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-signed-long>``       | ``signed long``    | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsigned-short>``        | ``unsigned short`` | ``<integer>``      |
+   | ``<C-unsigned-short>``        | ``unsigned short`` | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-signed-short>``          | ``signed short``   | ``<integer>``      |
+   | ``<C-signed-short>``          | ``signed short``   | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-unsigned-short>`` | ``unsigned short`` | ``<integer>``      |
+   | ``<C-unsafe-unsigned-short>`` | ``unsigned short`` | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-signed-short>``   | ``signed short``   | ``<integer>``      |
+   | ``<C-unsafe-signed-short>``   | ``signed short``   | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-unsigned-short>``    | ``unsigned short`` | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-signed-short>``      | ``signed short``   | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsigned-char>``         | ``unsigned char``  | ``<integer>``      |
+   | ``<C-unsigned-char>``         | ``unsigned char``  | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-signed-char>``           | ``signed char``    | ``<integer>``      |
+   | ``<C-signed-char>``           | ``signed char``    | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-unsigned-char>``  | ``unsigned char``  | ``<integer>``      |
+   | ``<C-unsafe-unsigned-char>``  | ``unsigned char``  | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-signed-char>``    | ``signed char``    | ``<integer>``      |
+   | ``<C-unsafe-signed-char>``    | ``signed char``    | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-unsigned-char>``     | ``unsigned char``  | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-signed-char>``       | ``signed char``    | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-char>``                  | ``char``           | ``<integer>``      |
+   | ``<C-char>``                  | ``char``           | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
-   | ``<C-unsafe-char>``           | ``char``           | ``<integer>``      |
+   | ``<C-unsafe-char>``           | ``char``           | :drm:`<integer>`   |
    +-------------------------------+--------------------+--------------------+
    | ``<C-raw-char>``              | ``char``           | ``<machine-word>`` |
+   +-------------------------------+--------------------+--------------------+
+   | ``<C-size-t>``                | ``size_t``         | :drm:`<integer>`   |
+   +-------------------------------+--------------------+--------------------+
+   | ``<C-unsafe-size-t>``         | ``size_t``         | :drm:`<integer>`   |
+   +-------------------------------+--------------------+--------------------+
+   | ``<C-raw-size-t>``            | ``size_t``         | ``<machine-word>`` |
+   +-------------------------------+--------------------+--------------------+
+   | ``<C-ssize-t>``               | ``ssize_t``        | :drm:`<integer>`   |
+   +-------------------------------+--------------------+--------------------+
+   | ``<C-unsafe-ssize-t>``        | ``ssize_t``        | :drm:`<integer>`   |
+   +-------------------------------+--------------------+--------------------+
+   | ``<C-raw-ssize-t>``           | ``ssize_t``        | ``<machine-word>`` |
    +-------------------------------+--------------------+--------------------+
 
 For each of the fundamental integer designator types, *<C-* *xxx* *>*,
@@ -779,7 +902,7 @@ these classes.
      type. Instances of concrete subclasses of :class:`<C-pointer>`
      encapsulate a raw C address. The make methods on subclasses of
      :class:`<C-pointer>` accept the keyword argument ``address:``,
-     which must be a Dylan ``<integer>`` or ``<machine-word>``
+     which must be a Dylan :drm:`<integer>` or ``<machine-word>``
      representation of the C address.
 
 .. function:: pointer-address
@@ -836,7 +959,7 @@ these classes.
    :signature: null-pointer? *C-pointer* => *boolean*
 
    :parameter c-pointer: An instance of :class:`<C-pointer>`.
-   :value boolean: An instance of ``<boolean>``.
+   :value boolean: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -850,14 +973,14 @@ these classes.
 
    :description:
 
-     The class designating C’s ``void*`` pointer type. No
+     The class designating C's ``void*`` pointer type. No
      :gf:`pointer-value` methods are defined on this class.
 
 .. class:: <C-statically-typed-pointer>
    :open:
    :abstract:
 
-   :superclasses: :class:`<C-pointer>`
+   :superclasses: :class:`<C-pointer>`, :class:`<mutable-object-with-elements>`
 
    :description:
 
@@ -911,8 +1034,8 @@ these classes.
    :signature: c-type-cast *type* *value* => *value*
 
    :parameter type: See Description.
-   :parameter value: An instance of ``<object>``.
-   :value value: An instance of ``<object>``.
+   :parameter value: An instance of :drm:`<object>`.
+   :value value: An instance of :drm:`<object>`.
 
    :description:
 
@@ -923,11 +1046,11 @@ these classes.
      C-function wrapper argument.
 
      The first argument can be either a C type designator or one of the Dylan
-     classes ``<boolean>``, ``<character>``, ``<machine-word>``, or any subclass
-     of ``<number>``. For a C type designator, the value is converted to the
+     classes :drm:`<boolean>`, :drm:`<character>`, ``<machine-word>``, or any subclass
+     of :drm:`<number>`. For a C type designator, the value is converted to the
      Dylan class which it maps to. *<C-* [*un* ]*signed-short>* and *<C-*
      [*un* ]*signed-char>* truncate the value as well as ensuring that it is
-     an ``<integer>``.
+     an :drm:`<integer>`.
 
    :example:
 
@@ -963,7 +1086,7 @@ these classes.
 
      The functions :gf:`pointer-value` and :gf:`pointer-value-setter`
      perform the primitive Dylan-to-C and C-to-Dylan conversions as
-     documented with the designator class of the pointer’s contents type
+     documented with the designator class of the pointer's contents type
      (see `The integer designator classes and their mappings.`_). The
      C-FFI signals an error if it cannot convert the object you attempt
      to store in the pointer to a compatible type.
@@ -981,7 +1104,7 @@ these classes.
    :signature: pointer-value *C-typed-pointer* #key *index* => *object*
 
    :parameter c-typed-pointer: An instance of :class:`<C-statically-typed-pointer>`.
-   :value object: An instance of ``<object>``.
+   :value object: An instance of :drm:`<object>`.
 
    :description:
 
@@ -994,9 +1117,9 @@ these classes.
      It is an error if *C-typed-pointer* does not point to a valid
      address or is a null pointer.
 
-   See also
+   :seealso:
 
-   - :gf:`pointer-value-setter`.
+     - :gf:`pointer-value-setter`.
 
 .. generic-function:: pointer-value-setter
    :open:
@@ -1005,10 +1128,10 @@ these classes.
 
    :signature: pointer-value-setter *new-value* *C-typed-pointer* #key *index* => *new-value*
 
-   :parameter new-value: An instance of ``<object>``.
+   :parameter new-value: An instance of :drm:`<object>`.
    :parameter c-typed-pointer: An instance of :class:`<C-statically-typed-pointer>`.
-   :parameter #key index: An instance of ``<integer>``.
-   :value new-value: An instance of ``<object>``.
+   :parameter #key index: An instance of :drm:`<integer>`.
+   :value new-value: An instance of :drm:`<object>`.
 
    :description:
 
@@ -1028,8 +1151,8 @@ these classes.
    :signature: pointer-value-address *C-typed-pointer* #key *index* => *object*
 
    :parameter c-typed-pointer: An instance of :class:`<C-statically-typed-pointer>`.
-   :parameter #key index: An instance of ``<integer>``.
-   :value object: An instance of ``<object>``.
+   :parameter #key index: An instance of :drm:`<integer>`.
+   :value object: An instance of :drm:`<object>`.
 
    :description:
 
@@ -1052,7 +1175,7 @@ these classes.
    :signature: element *C-typed-pointer* *index* => *object*
 
    :parameter c-typed-pointer: An instance of :class:`<C-statically-typed-pointer>`.
-   :value object: An instance of ``<object>``.
+   :value object: An instance of :drm:`<object>`.
 
    :description:
 
@@ -1072,8 +1195,8 @@ these classes.
    :signature: element-setter *new* *C-typed-pointer* *index* => *object*
 
    :parameter c-typed-pointer: An instance of :class:`<C-statically-typed-pointer>`.
-   :parameter index: An instance of ``<integer>``.
-   :value object: An instance of ``<object>``.
+   :parameter index: An instance of :drm:`<integer>`.
+   :value object: An instance of :drm:`<object>`.
 
    :description:
 
@@ -1094,7 +1217,7 @@ these classes.
 
    :parameter c-pointer-1: An instance of :class:`<C-pointer>`.
    :parameter c-pointer-2: An instance of :class:`<C-pointer>`.
-   :value boolean: An instance of ``<boolean>``.
+   :value boolean: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -1108,9 +1231,9 @@ these classes.
      defined on :class:`<C-pointer>`. If pointer arithmetic operations are
      required, use :gf:`pointer-value` with an ``index:`` argument.
 
-   See also
+   :seealso:
 
-   - :gf:`pointer-value`.
+     - :gf:`pointer-value`.
 
 .. method:: <
    :specializer: <C-pointer>
@@ -1121,7 +1244,7 @@ these classes.
 
    :parameter c-pointer-1: An instance of :class:`<C-pointer>`.
    :parameter c-pointer-2: An instance of :class:`<C-pointer>`.
-   :value boolean: An instance of ``<boolean>``.
+   :value boolean: An instance of :drm:`<boolean>`.
 
    :description:
 
@@ -1133,9 +1256,9 @@ these classes.
      defined on :class:`<C-pointer>`. If pointer arithmetic operations
      are required, use :gf:`pointer-value` with an ``index:`` argument.
 
-   See also
+   :seealso:
 
-   - :gf:`pointer-value`.
+     - :gf:`pointer-value`.
 
 The following functions comprise the conceptual foundation on which the
 pointer accessing protocol is based. In the signatures of these
@@ -1499,6 +1622,55 @@ Signature
     C-pointer-at-setter *new* *C-pointer* #key *byte-index* *scaled-index*
       => *C-pointer*
 
+C-size-t-at
+^^^^^^^^^^^
+
+Function
+
+Signature
+
+.. code-block:: dylan
+
+    C-size-t-at *C-pointer* #key *byte-index* *scaled-index* =>
+      *machine-word*
+
+C-size-t-at-setter
+^^^^^^^^^^^^^^^^^^
+
+Function
+
+Signature
+
+.. code-block:: dylan
+
+    C-size-t-at-setter *new* *C-pointer* #key *byte-index* *scaled-index* =>
+      *machine-word*
+
+C-ssize-t-at
+^^^^^^^^^^^^
+
+Function
+
+Signature
+
+.. code-block:: dylan
+
+    C-ssize-t-at *C-pointer* #key *byte-index* *scaled-index* =>
+      *machine-word*
+
+C-ssize-t-at-setter
+^^^^^^^^^^^^^^^^^^^
+
+Function
+
+Signature
+
+.. code-block:: dylan
+
+    C-ssize-t-at-setter *new* *C-pointer* #key *byte-index* *scaled-index* =>
+      *machine-word*
+
+
 Structure types
 ---------------
 
@@ -1537,7 +1709,7 @@ Union types
 Notes on C type macros
 ----------------------
 
-The C-FFI’s C interface description language does not model all of the
+The C-FFI's C interface description language does not model all of the
 ways of defining new types in C, but all C types should be expressible
 in it. As a simplification, we do not support anonymous base types in
 the C interface description language. If a structure or union field has
@@ -1620,7 +1792,7 @@ Defining specialized versions of designator classes
 
      In terms of C, ``define C-subtype`` can be thought of as
      implementing a strongly typed version of ``typedef`` because a new
-     designator class is generated that Dylan’s type system can
+     designator class is generated that Dylan's type system can
      distinguish from the designator class on which it was based. As
      well as inheriting from an existing designator class, other Dylan
      classes can be mixed in too.
@@ -1720,7 +1892,7 @@ Defining specialized versions of designator classes
          parameter m :: <Matrix>;
          parameter n :: <Matrix>;
          result value :: <Matrix>;
-         c-name: “MatrixAdd”;
+         c-name: "MatrixAdd";
        end C-function;
 
        define method \+ (m1 :: <Matrix>, m2 :: <Matrix>) =>
@@ -1740,29 +1912,30 @@ Defining specialized designator classes
      .. code-block:: dylan
 
        define *modifiers* C-mapped-subtype *type-name* (*superclasses*)
-         [map *high-level-type* [, import-function: *import-fun* ]
-         [, export-function: *export-fun* ];]
+         [map *high-level-type*
+           [, import-function: *import-fun* ]
+           [, export-function: *export-fun* ];]
          [import-map *high-level-type*,
-         import-function: *import-function* ;]
+           import-function: *import-fun* ;]
          [export-map *high-level-type*,
-         export-function: *export-function* ;]
+           export-function: *export-fun* ;]
          [type-options]
        end
 
    :parameter modifiers: The same as the modifiers allowed in :drm:`define-class <class>`.
    :parameter type-name: A Dylan variable name.
    :parameter superclasses: A list of Dylan names.
-   :parameter high-level-type: An instance of ``<function>``.
-   :parameter import-fun: An instance of ``<function>``.
-   :parameter export-fun: An instance of ``<function>``.
+   :parameter high-level-type: An instance of a Dylan :drm:`<type>`.
+   :parameter import-fun: An instance of :drm:`<function>`.
+   :parameter export-fun: An instance of :drm:`<function>`.
    :parameter type-options: A property list.
 
    :description:
 
      Allows you to define a name to which to bind a pointer designator.
 
-     The *modifiers* may be *sealed* or *open*. (The default is
-     *sealed*.) Their effect on the class defined is the same as the
+     The *modifiers* may be ``sealed`` or ``open``. (The default is
+     ``sealed``.) Their effect on the class defined is the same as the
      similar modifiers on an ordinary class.
 
      The possible combinations are, a map clause, an import-map clause,
@@ -1808,7 +1981,7 @@ Defining specialized designator classes
          typedef int bool;
 
          bool bool_function (bool b);
-         void bool_pointer_function (bool *b);
+         void bool_pointer_function (bool * b);
 
          //eof
 
@@ -1818,28 +1991,30 @@ Defining specialized designator classes
 
          define C-mapped-subtype <bool> (<C-int>)
            map <boolean>,
-           export-function:
-             method (v :: <boolean>) => (result :: <integer>)
-               as(<integer>, if(v) 1 else 0 end if) end,
-           import-function:
-             method (v :: <integer>) => (result :: <boolean>)
-               ~zero?(v) end;
+             export-function:
+               method (v :: <boolean>) => (result :: <integer>)
+                 as(<integer>, if(v) 1 else 0 end if)
+               end,
+             import-function:
+               method (v :: <integer>) => (result :: <boolean>)
+                 ~zero?(v)
+               end;
          end;
 
          //end module
 
      Mapped string example: an alternate version of C-string which
-     automatically converts instances of ``<byte-string>`` to instances
+     automatically converts instances of :drm:`<byte-string>` to instances
      of ``<C-example-string>`` on export.
 
      string-header.h
 
      .. code-block:: c
 
-         typedef char *string;
+         typedef char * string;
 
          string string-filter(string s);
-         void string-modifier(string *s);
+         void string-modifier(string * s);
 
          //eof
 
@@ -1848,18 +2023,19 @@ Defining specialized designator classes
          module: my-module
 
          define C-mapped-subtype <C-example-string> (<C-char*>, <string>)
-           export-map type-union(<byte-string>,
-                                 <C-example-string>),
-           export-function: c-string-exporter;
+           export-map type-union(<byte-string>, <C-example-string>),
+             export-function: c-string-exporter;
          end;
 
          define method c-string-exporter
-             (s :: <byte-string>) => (result :: <C-char*>)
+             (s :: <byte-string>)
+          => (result :: <C-char*>)
            as(<C-example-string>, s)
          end;
 
          define method c-string-exporter
-             (s :: <C-example-string>) => (result :: <C-example-string>)
+             (s :: <C-example-string>)
+          => (result :: <C-example-string>)
            s
          end;
 
@@ -1870,8 +2046,8 @@ Defining specialized designator classes
      supertype. It is also possible to define a mapped subtype of a
      mapped supertype. When the subtype and supertype both specify an
      export function, the export functions of the subtype and the
-     supertype are composed with the subtype’s export function applied
-     to the result of the supertype’s export function. Import functions
+     supertype are composed with the subtype's export function applied
+     to the result of the supertype's export function. Import functions
      of a mapped subtype and supertype are similarly composed. Mapping
      characteristics are inherited from the supertype where the subtype
      does not define them. (You can think of this as composition with
@@ -1886,13 +2062,14 @@ Defining specialized designator classes
        define C-mapped-subtype <other-string>
            (<C-example-string>)
          import-map <byte-string>,
-         import-function: method (v :: <byte-string>) =>
-               (result :: <C-example-string>)
-             as(<C-example-string>, v)
-           end method;
+           import-function:
+             method (v :: <byte-string>)
+              => (result :: <C-example-string>)
+               as(<C-example-string>, v)
+             end method;
        end;
 
-     The import signature is ``<byte-string>``. The export signature is
+     The import signature is :drm:`<byte-string>`. The export signature is
      inherited from ``<C-example-string>`` ``type-union(<byte-string>,
      <C-example-string>)``. For a example involving composition of
      mapped types consider the following (hypothetical) definitions of
@@ -1900,30 +2077,34 @@ Defining specialized designator classes
      ``<C-raw-int>`` class is a primitive which returns and accepts
      instances of ``<machine-word>``. The ``<C-mapped-int>`` class is a
      mapped subtype which converts the instances of ``<machine-word>``
-     to instances of ``<integer>``. The ``<bool>`` class is a mapped
+     to instances of :drm:`<integer>`. The ``<bool>`` class is a mapped
      subtype of ``<C-mapped-int>`` which converts to and from
-     ``<boolean>``.
+     :drm:`<boolean>`.
 
      .. code-block:: dylan
 
          define C-mapped-subtype <C-mapped-int> (<C-raw-int>)
            map <boolean>,
-           export-function:
-             method (v :: <integer>) => (result :: <machine-word>)
-               as(<machine-word>, v) end,
-           import-function:
-             method (v :: <machine-word>) => (result :: <integer>)
-               as(<integer>, v) end;
+             export-function:
+               method (v :: <integer>) => (result :: <machine-word>)
+                 as(<machine-word>, v)
+               end,
+             import-function:
+               method (v :: <machine-word>) => (result :: <integer>)
+                 as(<integer>, v)
+               end;
          end;
 
          define C-mapped-subtype <bool> (<C-mapped-int>)
            map <boolean>,
-           export-function:
-             method (v :: <boolean>) => (result :: <integer>)
-               if(v) 1 else 0 end if) end,
-           import-function:
-             method (v :: <integer>) => (result :: <boolean>)
-               ~zero?(v) end;
+             export-function:
+               method (v :: <boolean>) => (result :: <integer>)
+                 if(v) 1 else 0 end if
+               end,
+             import-function:
+               method (v :: <integer>) => (result :: <boolean>)
+                 ~zero?(v)
+               end;
          end;
 
 Describing structure types
@@ -1932,7 +2113,7 @@ Describing structure types
 .. macro:: define C-struct
    :defining:
 
-   Describes C’s aggregate structures.
+   Describes C's aggregate structures.
 
    :macrocall:
      .. code-block:: dylan
@@ -1948,12 +2129,12 @@ Describing structure types
 
    :description:
 
-     Describes C’s aggregate structures. The name is defined to be a
+     Describes C's aggregate structures. The name is defined to be a
      designator class encapsulating the value of a structure, not a
      pointer to the structure. This is significant because many of the
      protocols associated with structures work only on pointers to
      structures — pointers to structures being the most common form and
-     the form closest to Dylan’s object model. The new designator class
+     the form closest to Dylan's object model. The new designator class
      is defined to be a subclass of :class:`<C-struct>`.
 
      Once defined, a structure-designating class is most likely to be
@@ -1961,7 +2142,7 @@ Describing structure types
      most further transactions will take place. Structure-designating
      classes are abstract and cannot have direct instances. Accessor
      methods defined for the slots of the structure are specialized on
-     the structure designator’s pointer-type. However, the class itself
+     the structure designator's pointer-type. However, the class itself
      may be needed to specify an in-line structure in another structure,
      union, or array, or a value-passed structure argument or result in
      a C function.
@@ -1988,10 +2169,10 @@ Describing structure types
 
      The getter-name keyword specifies the name of the Dylan function to
      which the getter method for the structure slot will be added. The
-     specializer of the getter method’s single argument will be a
-     designator indicating a pointer to the struct’s name.
+     specializer of the getter method's single argument will be a
+     designator indicating a pointer to the struct's name.
 
-     The c-type specifies the field’s C type, and must be a designator
+     The c-type specifies the field's C type, and must be a designator
      class. Unlike Dylan slot specifications, the type declaration here
      is not optional.
 
@@ -2026,7 +2207,7 @@ Describing structure types
      on which the accessors are defined.
 
      The type option *pack:* *n* indicates that the struct has the
-     packing semantics of Microsoft’s ``#pragma pack(*n*)``.
+     packing semantics of Microsoft's ``#pragma pack(*n*)``.
 
    :example:
 
@@ -2113,7 +2294,7 @@ Describing union types
      subclass of :class:`<c-union>`.
 
      Each of the slots in a union is laid out in memory on top of one another
-     just as in C’s ``union`` construct.
+     just as in C's ``union`` construct.
 
    :example:
 
@@ -2222,7 +2403,7 @@ Describing C functions to Dylan
      be called correctly by Dylan, the same information about the
      function must be given as is needed by C callers, typically
      provided by ``extern`` declarations for the function in a C header
-     file: the function’s name and the types of its parameters and
+     file: the function's name and the types of its parameters and
      results.
 
      The result of processing a ``define C-function`` definition is a
@@ -2265,7 +2446,7 @@ Describing C functions to Dylan
      value itself and passes it to the C function. When the C function
      returns, the value in the location is accessed and returned as an
      extra result from the Dylan function. The C-FFI allocates space for
-     the output parameter’s referenced type, passes a pointer to the
+     the output parameter's referenced type, passes a pointer to the
      allocated space, and returns :gf:`pointer-value` of that pointer. A
      struct or union type may not be used as an output parameter.
 
@@ -2324,10 +2505,15 @@ Describing C functions to Dylan
      A result-spec has the following syntax::
 
        result [name :: c-type]
+       error-result [name :: c-type]
 
      If no *result* is specified, the Dylan function does not return a
      value for the C result, and the C function is expected to have a
      return type of *void*.
+
+     *error-result* is used when it is necessary to call the *import-map*
+     function on the result and then discard it. This is often used when
+     mapping a return value to a Dylan error.
 
      Each *function-option* is a keyword–value pair. The
      *generic-function-method:* option may be either ``#t`` or ``#f``,
@@ -2416,15 +2602,14 @@ Describing C functions to Dylan
 
      .. code-block:: dylan
 
-       define constant foo =
-         method (string, count)
-           let c-string = %as-c-representation(<C-char*>,
-                                               string);
-           let c-count = %as-c-representation(<C-int>, count);
-           let c-result = %call-c-function("foo", c-string,
-                                           c-count);
-           %as-dylan-representation(<C-int>, c-result);
-         end;
+       define functon foo (string, count)
+         let c-string = %as-c-representation(<C-char*>,
+                                             string);
+         let c-count = %as-c-representation(<C-int>, count);
+         let c-result = %call-c-function("foo", c-string,
+                                         c-count);
+         %as-dylan-representation(<C-int>, c-result);
+       end;
 
      with the declared type.
 
@@ -2448,7 +2633,7 @@ Describing Dylan functions for use by C
        end [C-callable-wrapper]
 
    :parameter dylan-rep-name: A Dylan variable name.
-   :parameter dylan-function: An instance of ``<function>``.
+   :parameter dylan-function: An instance of :drm:`<function>`.
    :parameter parameter-spec:
    :parameter result-spec:
    :parameter function-options: A property list.
@@ -2482,13 +2667,13 @@ Describing Dylan functions for use by C
      allows C code to call Dylan code simply by invoking a named
      function. The *export:* option takes the values ``#t`` or ``#f``
      and indicates whether the c-name for the generated
-     *C-callable-wrapper* function is to be exported from the library’s
+     *C-callable-wrapper* function is to be exported from the library's
      *.dll*. ``#t`` means it is exported, ``#f`` means it is not. The
      default is #f. The *c-modifiers:* option is the same as in the
      *c-function* macro, except that the modifiers apply to the C
      function wrapper which is generated. See :macro:`define C-function`.
 
-     If dylan-rep-name is specified, it is bound to an instance of a
+     If *dylan-rep-name* is specified, it is bound to an instance of a
      function-pointer designator class identifying the generated
      C-callable wrapper function. You can pass this pointer to C code
      for use as, for example, a callback.
@@ -2514,7 +2699,7 @@ Describing Dylan functions for use by C
      a pointer type, and the value accepted by the Dylan function is the
      result. The functions pointer-value and pointer-value-setter
      perform the primitive Dylan-to-C and C-to-Dylan conversions as
-     documented with the designator class of the pointer’s contents type
+     documented with the designator class of the pointer's contents type
      (see Table 1.1). The C-FFI signals an error if it cannot convert
      the object you attempt to store in the pointer to a compatible
      type on that pointer. The Dylan function is expected to return
@@ -2652,6 +2837,55 @@ Describing Dylan functions for use by C
        ? c-sort(some-c-strings, callback-for-<);
        {<C-string> array}
 
+Objective C
+-----------
+
+A full-featured Objective C bridge is provided separately, however, parts
+of that bridge are implemented within this library.
+
+.. macro:: define objc-selector
+   :defining:
+
+   Describe Objective C selectors to the *c-ffi*.
+
+   :macrocall:
+     .. code-block:: dylan
+
+       define objc-selector *name*
+         [*parameter-spec*; ...]
+         [*result-spec*;]
+         [*function-option*, ...;]
+       end [C-function] [*name*]
+
+   :parameter name: A Dylan variable name.
+   :parameter parameter-spec:
+   :parameter result-spec:
+   :parameter function-option: A property list.
+
+   :description:
+
+     Defining an Objective C selector is much the same as :macro:`define C-function`,
+     except:
+
+     * There must be at least one parameter specification. The first parameter specifies
+       the target of the method, so it should be either an Objective C class or an
+       object instance.
+     * Rather than specifying a ``c-name:`` for the function, a ``selector`` is specified
+       instead.
+     * The ``c-modifiers`` keyword can be used to select alternate versions of ``objc_msgSend``
+       when calling into the Objective C run-time.
+     * An additional keyword, ``type-encoding:`` must be supplied with a valid type encoding
+       for the selector. See the Objective C bridge documentation for more details.
+
+   :example:
+     .. code-block:: dylan
+
+        define objc-selector sel/alloc
+          parameter target :: <objc/class>;
+          result objc-instance :: <objc/instance-address>;
+          selector: "alloc";
+        end;
+
 Variables
 ---------
 
@@ -2678,7 +2912,7 @@ This section covers describing and accessing C variables.
    :description:
 
      Describes C variables to the C-FFI. It defines a getter and setter
-     function for accessing the variable’s value. The c-name keyword
+     function for accessing the variable's value. The c-name keyword
      argument is required and gives the C name of the variable to be
      accessed. The *setter* keyword allows you to specify the name of
      the setter function, or if a setter function is to be defined at
@@ -2694,7 +2928,7 @@ This section covers describing and accessing C variables.
      ``#f`` as the definition and variable will be linked into the same
      *.dll*. If the definition is in a different project from the C
      source files then they will be in separate *.dll* s and *import:*
-     needs to be ``#t``. The default value is``#f``.
+     needs to be ``#t``. The default value is ``#f``.
 
      For integer, float, or pointer-typed C variables the representation
      is clear and unambiguous. For C struct or union typed variables the
@@ -2770,7 +3004,7 @@ This section covers describing and accessing C variables.
      as the definition and variable will be linked into the same *.dll*.
      If the definition is in a different project from the C source files
      then they will be in separate *.dll* s and *import:* needs to be
-     ``#t``. The default value is``#f``.
+     ``#t``. The default value is ``#f``.
 
 Allocating and deallocating C storage
 =====================================
@@ -2792,10 +3026,10 @@ function *destroy*.
    :signature: make *subclass(<c-pointer>)* #key *allocator* *element-count* *extra-bytes* *address* => *C-pointer*
 
    :parameter subclass: A subclass of :class:`<C-pointer>`.
-   :parameter #key allocator: An instance of ``<function>``.
-   :parameter #key element-count: An instance of ``<integer>``.
-   :parameter #key extra-bytes: An instance of ``<integer>``.
-   :parameter #key address: An instance of ``<integer>`` or ``<machine-word>``.
+   :parameter #key allocator: An instance of :drm:`<function>`.
+   :parameter #key element-count: An instance of :drm:`<integer>`.
+   :parameter #key extra-bytes: An instance of :drm:`<integer>`.
+   :parameter #key address: An instance of :drm:`<integer>` or ``<machine-word>``.
    :value c-pointer: An instance of type :class:`<c-pointer>` pointing to the object.
 
    :description:
@@ -2871,7 +3105,7 @@ function *destroy*.
    :signature: destroy *C-pointer* #key *de-allocator* => ()
 
    :parameter c-pointer: An instance of `<C-pointer>`.
-   :parameter #key de-allocator: An instance of ``<function>``.
+   :parameter #key de-allocator: An instance of :drm:`<function>`.
 
    :description:
 
@@ -2904,8 +3138,8 @@ function *destroy*.
 
    :parameter name: A Dylan variable name.
    :parameter wrapper-type: A Dylan name.
-   :parameter #key element-count: An instance of ``<integer>``.
-   :parameter #key extra-bytes: An instance of ``<integer>``.
+   :parameter #key element-count: An instance of :drm:`<integer>`.
+   :parameter #key extra-bytes: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -2953,8 +3187,8 @@ using :macro:`define c-mapped-subtype`.
    :description:
 
      A mapped subclass of ``<C-int>`` that provides an analogue to
-     Dylan’s ``<boolean>`` class. The Dylan type for both import and
-     export is ``<boolean>``, and the C type is ``int``. The C integer
+     Dylan's :drm:`<boolean>` class. The Dylan type for both import and
+     export is :drm:`<boolean>`, and the C type is ``int``. The C integer
      ``0`` is mapped to ``#f`` in Dylan, and all other values are mapped
      to ``#t``.
 
@@ -2964,16 +3198,16 @@ using :macro:`define c-mapped-subtype`.
 
    :description:
 
-     A mapped subclass of ``<C-char*>`` and ``<string>``. On export the
-     Dylan types ``<C-string>``, or ``<byte-string>`` may be passed to
+     A mapped subclass of ``<C-char*>`` and :drm:`<string>`. On export the
+     Dylan types ``<C-string>``, or :drm:`<byte-string>` may be passed to
      C. On import all values are mapped to ``<C-string>``. A
-     ``<byte-string>`` may be passed to C directly and no copying takes
+     :drm:`<byte-string>` may be passed to C directly and no copying takes
      place. The value in C will be a pointer to the data of the
-     byte-string. The implementation of ``<byte-string>`` is such that,
+     byte-string. The implementation of :drm:`<byte-string>` is such that,
      unless there are ``NULL`` characters embedded in the string,
      ``strlen`` in C and ``size`` in Dylan will return the same value.
 
-     A ``<byte-string>`` may only be safely passed to a C function if
+     A :drm:`<byte-string>` may only be safely passed to a C function if
      its value is never stored and used after the call returns.
 
 .. class:: <C-character>
@@ -2982,14 +3216,14 @@ using :macro:`define c-mapped-subtype`.
 
    :description:
 
-     The Dylan type for import and export is ``<character>``. It is a
-     designator that allows instances of ``<character>`` to be passed to
+     The Dylan type for import and export is :drm:`<character>`. It is a
+     designator that allows instances of :drm:`<character>` to be passed to
      and from C.
 
 .. macro:: with-c-string
    :statement:
 
-   Passes a C pointer to the contents of a ``<byte-string>``.
+   Passes a C pointer to the contents of a :drm:`<byte-string>`.
 
    :macrocall:
      .. code-block:: dylan
@@ -2999,12 +3233,12 @@ using :macro:`define c-mapped-subtype`.
         end
 
    :parameter variable: A Dylan variable name.
-   :parameter string-valued-expression: An instance of ``<string>``.
+   :parameter string-valued-expression: An instance of :drm:`<string>`.
 
    :description:
 
      Use this macro when you need to pass C a pointer to the contents of
-     a ``<byte-string>``, but for some reason it cannot be passed
+     a :drm:`<byte-string>`, but for some reason it cannot be passed
      directly. Inside the *body*, *variable* is bound to a
      :class:`<C-string>` object that refers to the contents of the
      string returned by *string-valued-expression*.
@@ -3022,7 +3256,7 @@ using :macro:`define c-mapped-subtype`.
 
    :parameter pointer: An instance of type :class:`<C-pointer>` that
      points to the memory location at which to start writing zeros.
-   :parameter size: An instance of type ``<integer>``. The number of
+   :parameter size: An instance of type :drm:`<integer>`. The number of
      bytes to clear.
 
    :description:
@@ -3037,16 +3271,18 @@ using :macro:`define c-mapped-subtype`.
 
    :signature: copy-bytes! *destination-pointer*, *source-pointer*, *size* => ()
 
-   :parameter destination-pointer* An instance of type :class:`<C-pointer>`.
-   :parameter source-pointer* An instance of type :class:`<C-pointer>`.
-   :parameter size* An instance of ``<integer>``.
+   :parameter destination-pointer: An instance of type :class:`<C-pointer>`.
+   :parameter source-pointer: An instance of type :class:`<C-pointer>`.
+   :parameter size: An instance of :drm:`<integer>`.
 
    :description:
 
      Copies an arbitrary number of bytes at arbitrary alignment instead
      of copying whole words.
 
-   See also :func:`copy-into!`.
+   :seealso:
+
+     - :func:`copy-into!`.
 
 .. function:: copy-into!
 
@@ -3054,9 +3290,9 @@ using :macro:`define c-mapped-subtype`.
 
    :signature: copy-into! *destination-pointer*, *source-pointer*, *size*) => ()
 
-   :parameter destination-pointer* An instance of type :class:`<C-pointer>`.
-   :parameter source-pointer* An instance of type :class:`<C-pointer>`.
-   :parameter size* An instance of ``<integer>``.
+   :parameter destination-pointer: An instance of type :class:`<C-pointer>`.
+   :parameter source-pointer: An instance of type :class:`<C-pointer>`.
+   :parameter size: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -3067,7 +3303,9 @@ using :macro:`define c-mapped-subtype`.
      pointers are word-aligned and that the two storage areas do not
      overlap.
 
-   See also :func:`copy-bytes!`.
+   :seealso:
+
+     - :func:`copy-bytes!`.
 
 .. function:: equal-memory?
 
@@ -3078,7 +3316,7 @@ using :macro:`define c-mapped-subtype`.
 
    :parameter ptr1: An instance of type :class:`<C-pointer>`.
    :parameter ptr2: An instance of type :class:`<C-pointer>`.
-   :parameter size: An instance of ``<integer>``.
+   :parameter size: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -3117,7 +3355,7 @@ using :macro:`define c-mapped-subtype`.
 
    :signature: register-C-Dylan-object *object*
 
-   :parameter object: An instance of ``<object>``.
+   :parameter object: An instance of :drm:`<object>`.
 
    :description:
 
@@ -3127,9 +3365,11 @@ using :macro:`define c-mapped-subtype`.
      The ``register-C-Dylan-object`` function arranges for the garbage
      collector to leave the storage used by *object* unclaimed, and
      assures that the handle passed to C is not accidentally corrupted
-     (from C’s point of view) by the memory manager.
+     (from C's point of view) by the memory manager.
 
-   See also :func:`unregister-C-Dylan-object`.
+   :seealso:
+
+     - :func:`unregister-C-Dylan-object`.
 
 .. function:: unregister-C-Dylan-object
 
@@ -3137,7 +3377,7 @@ using :macro:`define c-mapped-subtype`.
 
    :signature: unregister-C-Dylan-object *object*
 
-   :parameter object: An instance of ``<object>``.
+   :parameter object: An instance of :drm:`<object>`.
 
    :description:
 
@@ -3158,7 +3398,7 @@ using :macro:`define c-mapped-subtype`.
    :signature: export-C-Dylan-object *object* => *c-dylan-object*
 
    :parameter object: An instance of :class:`<C-Dylan-object>`.
-   :parameter object: An instance of ``<object>``.
+   :parameter object: An instance of :drm:`<object>`.
 
    :description:
 
@@ -3171,7 +3411,7 @@ using :macro:`define c-mapped-subtype`.
    :signature: import-c-dylan-object *c-dylan-object* => *object*
 
    :parameter object: An instance of :class:`<C-Dylan-object>`.
-   :value object: An instance of ``<object>``.
+   :value object: An instance of :drm:`<object>`.
 
    :description:
 

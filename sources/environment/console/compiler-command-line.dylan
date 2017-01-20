@@ -16,6 +16,7 @@ define command-line main => <main-command>
      documentation: "Command-line version of Open Dylan.")
   optional project :: <file-locator> = "the project to be built";
 
+  keyword back-end :: <symbol> = "the compiler back-end to use";
   keyword build-script :: <file-locator> = "the (Jam) build script";
   keyword target :: <symbol> = "the type of executable";
 
@@ -25,6 +26,7 @@ define command-line main => <main-command>
   flag shortversion     = "displays the shortversion";
   flag debugger         = "enter the debugger if this program crashes";
   flag echo-input       = "echoes all input to the console";
+  flag verbose          = "show verbose output";
 
   flag import           = "import the project";
   flag build            = "build the project";
@@ -44,7 +46,4 @@ define command-line main => <main-command>
   flag harp             = "generate HARP output";
   flag assemble         = "generate assembly-language output";
   flag dfm              = "generate Dylan Flow Machine output";
-
-  // Backwards-compatibility options for pentium-dw users
-  flag save             = "save compiler databases";
 end command-line main;

@@ -3,7 +3,6 @@
 
 /* ---*** TODO: Find out how to trap stack overflows on Linux */
 
-#define _GNU_SOURCE
 #include <stdlib.h>
 #include <unistd.h>
 #include <stddef.h>
@@ -18,10 +17,11 @@ extern void dylan_stack_overflow_handler(void *base_address, int size, unsigned 
 extern void dylan_integer_overflow_handler();
 extern void dylan_integer_divide_0_handler();
 extern void dylan_float_divide_0_handler();
+extern void dylan_float_invalid_handler();
 extern void dylan_float_overflow_handler();
 extern void dylan_float_underflow_handler();
 
-extern void walkstack();
+extern void dylan_dump_callstack(void);
 
 /* Linux exception handling: Setup signal handlers for SIGFPE
  * (floating point exceptions), SIGSEGV (segmentation violation), and
@@ -44,10 +44,11 @@ extern void walkstack();
 #define INTO_OPCODE 0xCE        /* x86 INTO instruction */
 
 /* FPU Control Word mask enabling exceptions for divide-by-zero,
- * overflow, and underflow
+ * invalid, overflow, and underflow
  */
 #define DYLAN_FPU_CW (_FPU_DEFAULT              \
                       & ~(_FPU_MASK_ZM          \
+                          | _FPU_MASK_IM        \
                           | _FPU_MASK_OM        \
                           | _FPU_MASK_UM))
 
@@ -139,17 +140,17 @@ static void EstablishDylanExceptionHandlers(void)
 
   unsigned short cw;
 
-  sigfillset(&newFPEHandler.sa_mask);
+  sigemptyset(&newFPEHandler.sa_mask);
   newFPEHandler.sa_sigaction = DylanFPEHandler;
   newFPEHandler.sa_flags = SA_SIGINFO;
   sigaction(SIGFPE, &newFPEHandler, &outer_FPEHandler);
 
-  sigfillset(&newSEGVHandler.sa_mask);
+  sigemptyset(&newSEGVHandler.sa_mask);
   newSEGVHandler.sa_sigaction = DylanSEGVHandler;
   newSEGVHandler.sa_flags = SA_SIGINFO;
   sigaction(SIGSEGV, &newSEGVHandler, &outer_SEGVHandler);
 
-  sigfillset(&newTRAPHandler.sa_mask);
+  sigemptyset(&newTRAPHandler.sa_mask);
   newTRAPHandler.sa_sigaction = DylanTRAPHandler;
   newTRAPHandler.sa_flags = SA_SIGINFO;
   sigaction(SIGTRAP, &newTRAPHandler, &outer_TRAPHandler);
@@ -180,6 +181,7 @@ void RestoreFPState (ucontext_t *uc)
 
 static void DylanFPEHandler (int sig, siginfo_t *info, void *uap)
 {
+  unused(sig);
   if (inside_dylan_ffi_barrier() == 0) {
   } else {
     ucontext_t *uc = (ucontext_t *) uap;
@@ -198,6 +200,11 @@ static void DylanFPEHandler (int sig, siginfo_t *info, void *uap)
     case FPE_FLTDIV:
       RestoreFPState(uc);
       uc->uc_mcontext.gregs[REG_EIP] = (long) dylan_float_divide_0_handler;
+      break;
+
+    case FPE_FLTINV:
+      RestoreFPState(uc);
+      uc->uc_mcontext.gregs[REG_EIP] = (long) dylan_float_invalid_handler;
       break;
 
     case FPE_FLTOVF:
@@ -244,6 +251,6 @@ static void DylanSEGVHandler (int sig, siginfo_t *info, void *uap)
 
 static void DylanTRAPHandler (int sig, siginfo_t *info, void *sc)
 {
-  walkstack();
+  dylan_dump_callstack();
   chain_sigaction(&outer_TRAPHandler, sig, info, sc);
 }

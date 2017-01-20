@@ -1,0 +1,214 @@
+*******************************
+Open Dylan 2016.1 Release Notes
+*******************************
+
+Introduction
+============
+
+This document describes the 2016.1 release of Open Dylan, released
+XXX XX, 2016.
+
+* `Download the release <http://opendylan.org/download/index.html>`_
+* `Report bugs <https://github.com/dylan-lang/opendylan/issues>`_
+* `Source code <https://github.com/dylan-lang/opendylan/tree/v2016.1>`_
+
+Dylan Standard Library
+======================
+
+* Symbol comparisons when using ``\=`` are now the same as using ``\==``
+  rather than being significantly more expensive. See `issue #899`_.
+
+Build System
+============
+
+* The arguments to configure for specifying which garbage collector to
+  use have changed (again). The arguments are now::
+
+    --with-mps=DIR
+    --with-gc=DIR
+    --with-harp-collector=mps|boehm|malloc
+    --with-c-collector=boehm|malloc
+    --with-llvm-collector=boehm|malloc
+
+  The ``with-mps`` option (for pointing to the Memory Pool System
+  source directory) is only needed when using the MPS collector with
+  the HARP back-end on either 32-bit x86 FreeBSD or 32-bit x86 Linux.
+  The system should be able to find the Boehm-Demers-Weiser collector
+  automatically if it is in the standard system install directory; the
+  ``with-gc`` option should only be needed if it is installed in a
+  non-standard location.
+
+  The default collectors are MPS for the HARP back-end's run-time
+  library, and the Boehm-Demers-Weiser collector for the C and LLVM
+  back-ends. These shouldn't be changed unless you're sure you know
+  what you're doing.
+
+* A new option for building C++ code, ``c++-source-files``,  has been
+  added to LID files.  This matches the ``c-source-files:`` keyword.
+
+C-FFI
+=====
+
+* Nested C structs by value are now supported by the C backend. Previously,
+  using this construct would result in a compilation error in the generated
+  C code.
+
+* Using ``%call-c-function`` or ``%objc-msgsend`` with a void result type
+  no longer requires specifying a result type of ``<raw-c-void>``. Simply
+  putting an empty value list is sufficient:
+
+  .. code-block:: dylan
+
+     %call-c-function ("SetLastError", c-modifiers: "__stdcall")
+         (dwErrorCode :: <raw-c-unsigned-long>) => ()
+       (integer-as-raw(0))
+     end;
+
+  Previously, this required specifying the result type explicitly:
+
+  .. code-block:: dylan
+
+     %call-c-function ("SetLastError", c-modifiers: "__stdcall")
+         (dwErrorCode :: <raw-c-unsigned-long>) => (nothing :: <raw-c-void>)
+       (integer-as-raw(0))
+     end;
+
+Coloring-Stream
+===============
+
+* A new library for doing colored text output has been added. It currently
+  supports ANSI codes on Unix terminals. It has been
+  `documented in the library reference`_.
+
+Common Dylan
+============
+
+* The ``transcendentals`` module now has a ``sincos`` generic function.
+* The ``transcendentals`` module now has a ``hypot`` generic function.
+* The ``transcendentals`` module now has an ``ilog2`` function that returns
+  the integer value of the logarithm of a value in base 2.
+* The transcendental and hyperbolic functions are no longer sealing their
+  domains on ``<real>`` parameters.
+* Again in the ``transcendentals`` module, many methods have been removed
+  that converted from ``<real>`` to ``<float>``. Callers should pass in
+  values of the appropriate type and precision instead. This impacts:
+
+  * ``^``, ``exp``, ``log``
+  * ``sqrt``
+  * ``sin``, ``cos``, ``tan``
+  * ``asin``, ``acos``, ``atan``
+  * ``sinh``, ``cosh``, ``tanh``
+  * ``asinh``, ``acosh``, ``atanh``
+* The ``common-dylan`` library now provides a ``classify-float``
+  method which will return if the given float is ``#"normal"``,
+  ``#"zero"``, ``#"infinite"``, ``#"nan"``, or ``#"subnormal"``.
+
+* The ``thread`` module has gained a ``current-thread-id`` function. The
+  ``thread-id`` is also available for any ``<thread>`` object.
+
+* The ``simple-profiling`` module now exports ``start-profiling`` and
+  ``stop-profiling`` rather than requiring that users directly invoke
+  ``start-profiling-type`` and ``stop-profiling-type`` multiple times.
+
+Compiler
+========
+
+* The compiler emits warnings for issues with ``define sealed domain``:
+
+  * Incorrect number of type specializers provided. The number of type
+    specializers must match the number of required parameters for the
+    generic function.
+  * Type specializers are not subtypes of the corresponding required
+    argument of the generic function.
+
+    For example, this is useful for catching an incorrect sealing of
+    ``make``:
+
+    .. code-block:: dylan
+
+       define sealed domain make (<my-class>); // Wrong
+       define sealed domain make (singleton(<my-class>)); // Correct
+
+  * Previously, ``define domain`` was accepted without warning. This is
+    not valid Dylan syntax as it should be ``define sealed domain``.
+
+* Dylan functions that are marked as ``not-inline`` now take that into
+  account when generating code in the LLVM and C back-ends.
+
+* The C back-end no longer generates invalid C when outputting a
+  float with a value of infinity or NaN.
+
+* Some bugs that didn't permit valid floating point literals to be
+  used have been fixed. These are typically edge cases like ``+.5``
+  or ``-3d3`` rather than commonly used literal notations.
+
+* The C back-end correctly handles indirect C-functions (where a
+  function pointer is given to be invoked rather than a direct
+  function call).
+
+* Warnings and errors are now colorized when printing on supporting
+  output devices.
+
+Debugging
+=========
+
+* There is a new ``dylan-lldb`` wrapper script which can be used to
+  launch ``lldb`` and pre-load the Open Dylan LLDB integration scripts.
+  ``lldb`` is the debugger that is part of the LLVM project. It is the
+  default debugger on Mac OS X.
+
+  If you need it to launch a custom build of LLDB, you can set the
+  ``OPEN_DYLAN_LLDB`` environment variable to point to an alternative
+  ``lldb`` executable.
+
+Documentation
+=============
+
+* The documentation generator included within the compiler has been
+  updated to produce better and more accurate documentation that will
+  require less manual editing. To use it, after compiling your library,
+  use this command::
+
+    export -format rst -file my-lib.rst interface-reference
+
+IO
+==
+
+* An implementation of indenting streams for handling indented text
+  output has been added. See ``<indented-stream>``, ``indent``, and
+  ``with-indentation`` in the ``streams`` module.
+
+* Some generic functions that apply to ``<buffered-stream>`` have had
+  their signatures tightened.
+
+Runtime
+=======
+
+* Support for handling "invalid" floating point exceptions has been
+  added. These are generated when taking the square root of a negative
+  number and other similar situations where the numerical domain
+  is invalid.
+
+  When an invalid floating point exception occurs,
+  ``<arithmetic-domain-error>`` will be signaled (much like the other
+  ``<arithmetic-error>`` situations).
+
+* Limited integer instance checks have been optimized. This will have
+  the most impact when using the LLVM compiler backend.
+
+* In the C runtime, the ``primitive_sleep`` now functions correctly.
+
+* Two new primitives, ``primitive-read-cycle-counter`` and
+  ``primitive-read-return-address``, have been added. These are useful
+  for writing profiling and event logging tools.
+
+system
+======
+
+* New specializations on :drm:`as` have been added for creating locators
+  from strings for the ``<file-system-directory-locator>`` and
+  ``<file-system-file-locator>`` classes. These aren't typically used but
+  their omission led to possible confusion for users.
+
+.. _issue #899: https://github.com/dylan-lang/opendylan/issues/899
+.. _documented in the library reference: http://opendylan.org/documentation/library-reference/coloring-stream/

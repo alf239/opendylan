@@ -2,6 +2,9 @@
 DUIM-Extended-Geometry Library
 ******************************
 
+.. current-library:: duim-extended-geometry
+.. current-module:: duim-extended-geometry
+
 Overview
 ========
 
@@ -18,43 +21,37 @@ The class hierarchy for DUIM-Extended-Geometry
 
 The DUIM-Extended-Geometry library defines no base classes itself, but
 instead subclasses two classes exposed in the DUIM-Geometry library:
-*<area>* and *<path>*. In each case, these subclasses provide more
+:class:`<area>` and :class:`<path>`. In each case, these subclasses provide more
 specialized geometrical tools.
 
 Subclasses of <area>
 ^^^^^^^^^^^^^^^^^^^^
 
-Three subclasses of *<area>* are exposed in the DUIM-Extended-Geometry
+Three subclasses of :class:`<area>` are exposed in the DUIM-Extended-Geometry
 library, each of which provides the ability to create instances of
 particular shapes. Their usage is relatively obvious.
 
--  *<rectangle>* This class is used to create rectangular shapes on a
-   drawable object.
--  *<ellipse>* This class is used to create elliptical shapes on a
-   drawable object.
--  *<polygon>* This class is used to create more general polygon shapes
-   on a drawable object.
+- :class:`<rectangle>` This class is used to create rectangular shapes on a
+  drawable object.
+- :class:`<ellipse>` This class is used to create elliptical shapes on a
+  drawable object.
+- :class:`<polygon>` This class is used to create more general polygon shapes
+  on a drawable object.
 
 Subclass of <path>
 ^^^^^^^^^^^^^^^^^^
 
-Three subclasses of *<path>* are exposed in the DUIM-Extended-Geometry
+Three subclasses of :class:`<path>` are exposed in the DUIM-Extended-Geometry
 library, each of which provides the ability to create instances of
 particular types of line. Their usage is relatively obvious.
 
--  *<line>* This class is used to create straight lines between two
-   points on a drawable object.
-
-*<elliptical-arc>*
-                  
-
-This class is used to create elliptical arcs (portions of an ellipse) on
-a drawable object.
-                                                                                           
-
--  *<polyline>* This class is used to create lines that pass through an
-   arbitrary set of coordinates. It produces a jagged line with vertices
-   at each coordinate.
+- :class:`<line>` This class is used to create straight lines between two
+  points on a drawable object.
+- :class:`<elliptical-arc>` This class is used to create elliptical arcs
+  (portions of an ellipse) on a drawable object.
+- :class:`<polyline>` This class is used to create lines that pass through an
+  arbitrary set of coordinates. It produces a jagged line with vertices
+  at each coordinate.
 
 DUIM-Extended-Geometry Module
 =============================
@@ -62,2132 +59,1205 @@ DUIM-Extended-Geometry Module
 This section contains a complete reference of all the interfaces that
 are exported from the *duim-extended-geometry* module.
 
-do-polygon-coordinates
-----------------------
+.. generic-function:: do-polygon-coordinates
 
-Generic function
-''''''''''''''''
+   Applies a function to all of the coordinates of the vertices of a
+   polygon.
 
-Summary
-       
+   :signature: do-polygon-coordinates *function* *polygon* => ()
 
-Applies a function to all of the coordinates of the vertices of a
-polygon.
+   :parameter function: An instance of type :drm:`<function>`.
+   :parameter polygon: An instance of type :class:`<polygon>`.
 
-Signature
-         
 
-*do-polygon-coordinates* *function* *polygon* => ()
+   :description:
 
-Arguments
-         
+     Applies *function* to all of the coordinates of the vertices of
+     *polygon*. *function* is a function of two arguments, the *x* and *y*
+     coordinates of the vertex. *do-polygon-coordinates* returns ``#f``.
 
--  *function* An instance of type *<function>*.
--  *polygon* An instance of type `<polygon>`_.
+   :seealso:
 
-Values
-      
+     - :gf:`do-polygon-segments`
 
-None.
+.. generic-function:: do-polygon-segments
 
-Description
-           
+   Applies a function to the segments that compose a polygon.
 
-Applies *function* to all of the coordinates of the vertices of
-*polygon*. *function* is a function of two arguments, the *x* and *y*
-coordinates of the vertex. *do-polygon-coordinates* returns *#f*.
+   :signature: do-polygon-segments *function* *polygon* => ()
 
-See also
-        
+   :parameter function: An instance of type :drm:`<function>`.
+   :parameter polygon: An instance of type :class:`<polygon>`.
 
-`do-polygon-segments`_
+   :description:
 
-do-polygon-segments
--------------------
+     Applies *function* to the segments that compose *polygon*. *function*
+     is a function of four arguments, the *x* and *y* coordinates of the
+     start of the segment, and the *x* and *y* coordinates of the end of the
+     segment. When *do-polygon-segments* is called on a closed polyline, it
+     calls *function* on the segment that connects the last point back to the
+     first point.
 
-Generic function
-''''''''''''''''
+     The function *do-polygon-segments* returns ``#f``.
 
-Summary
-       
+   :seealso:
 
-Applies a function to the segments that compose a polygon.
+     - :gf:`do-polygon-coordinates`
 
-Signature
-         
+.. generic-function:: draw-design
 
-*do-polygon-segments* *function* *polygon* => ()
+   Draws a design on a drawing surface.
 
-Arguments
-         
+   :signature: draw-design *drawable* *design* => ()
 
--  *function* An instance of type *<function>*.
--  *polygon* An instance of type `<polygon>`_.
+   :parameter drawable: An instance of type *type-union(<sheet>, <medium>)*.
+   :parameter design: A :class:`<region>` to draw.
 
-Values
-      
+   :description:
 
-None.
+     Draws *design* on the sheet medium *drawable*.
 
-Description
-           
+.. class:: <ellipse>
+   :abstract:
+   :instantiable:
 
-Applies *function* to the segments that compose *polygon*. *function*
-is a function of four arguments, the *x* and *y* coordinates of the
-start of the segment, and the *x* and *y* coordinates of the end of the
-segment. When *do-polygon-segments* is called on a closed polyline, it
-calls *function* on the segment that connects the last point back to the
-first point.
+   The class that corresponds to an ellipse.
 
-The function *do-polygon-segments* returns *#f*.
+   :superclasses: :class:`<area>`
 
-See also
-        
+   :keyword center-x: An instance of type :drm:`<real>`.
+   :keyword center-y: An instance of type :drm:`<real>`.
+   :keyword center-point: An instance of type :class:`<point>`.
+   :keyword radius-1-dx: An instance of type :drm:`<real>`
+   :keyword radius-1-dy: An instance of type :drm:`<real>`
+   :keyword radius-2-dx: An instance of type :drm:`<real>`
+   :keyword radius-2-dy: An instance of type :drm:`<real>`
+   :keyword start-angle: An instance of ``false-or(<real>)``.
+   :keyword end-angle: An instance of ``false-or(<real>)``.
 
-`do-polygon-coordinates`_
+   :description:
 
-draw-design
------------
+     An *ellipse* is an area that is the outline and interior of an ellipse.
+     Circles are special cases of ellipses.
 
-Generic function
-''''''''''''''''
+     The *center-x:* init-keyword specifies the *x* coordinate of the center
+     of the ellipse.
 
-Summary
-       
+     The *center-y:* init-keyword specifies the *y* coordinate of the center
+     of the ellipse.
 
-Draws a design on a drawing surface.
+     The *center-point:* init-keyword specifies the center of the ellipse as
+     a point.
 
-Signature
-         
+     An ellipse is specified in a manner that is easy to transform, and
+     treats all ellipses on an equal basis. An ellipse is specified by its
+     center point and two vectors that describe a bounding parallelogram of
+     the ellipse.   y*c* -dx*1* + dx*2*
 
-*draw-design* *drawable* *design* => ()
+     Note that several different parallelograms specify the same ellipse. One
+     parallelogram is bound to be a rectangle — the vectors will be
+     perpendicular and correspond to the semi-axes of the ellipse.
 
-Arguments
-         
+   :operations:
 
--  *drawable* An instance of type *type-union(<sheet>, <medium>)*.
--  *design* A *<region>* to draw.
+     The following operations are exported from the *DUIM-Extended-Geometry*
+     module.
 
-Values
-      
+     - :gf:`draw-design`
+     - :gf:`ellipse?`
+     - :gf:`ellipse-center-point`
+     - :gf:`ellipse-center-position`
+     - :gf:`ellipse-end-angle`
+     - :gf:`ellipse-radii`
+     - :gf:`ellipse-start-angle`
 
--  None.
+     The following operations are exported from the *DUIM-Geometry* module.
 
-Description
-           
+     - :gf:`box-edges`
+     - :gf:`transform-region`
 
-Draws *design* on the sheet medium *drawable*.
+   :seealso:
 
-<ellipse>
----------
+     - :class:`<area>`
+     - :gf:`make-ellipse`
 
-Abstract instantiable class
-'''''''''''''''''''''''''''
+.. generic-function:: ellipse?
 
-Summary
-       
+   Returns ``#t`` if an object is an ellipse.
 
-The class that corresponds to an ellipse.
+   :signature: ellipse? *object* => *boolean*
 
-Superclasses
-            
+   :parameter object: An instance of type :drm:`<object>`.
 
-*<area>*
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Init-keywords
-             
+   :description:
 
--  *center-x:* An instance of type *<real>*.
--  *center-y:* An instance of type *<real>*.
--  *center-point:* An instance of type `<point> <geom.htm#15734>`_.
--  *radius-1-dx:* An instance of type *<real>*
--  *radius-1-dy:* An instance of type *<real>*
--  *radius-2-dx:* An instance of type *<real>*
--  *radius-2-dy:* An instance of type *<real>*
--  *start-angle:* An instance of *false-or(<real>)*.
--  *end-angle:* An instance of *false-or(<real>)*.
+     Returns ``#t`` if *object* is an ellipse, otherwise returns ``#f``.
 
-Description
-           
+   :seealso:
 
-An *ellipse* is an area that is the outline and interior of an ellipse.
-Circles are special cases of ellipses.
+     - :class:`<ellipse>`
 
-The *center-x:* init-keyword specifies the *x* coordinate of the center
-of the ellipse.
+.. generic-function:: ellipse-center-point
 
-The *center-y:* init-keyword specifies the *y* coordinate of the center
-of the ellipse.
+   Returns the center point of an ellipse or an elliptical arc.
 
-The *center-point:* init-keyword specifies the center of the ellipse as
-a point.
+   :signature: ellipse-center-point *elliptical-object* => *point*
 
-An ellipse is specified in a manner that is easy to transform, and
-treats all ellipses on an equal basis. An ellipse is specified by its
-center point and two vectors that describe a bounding parallelogram of
-the ellipse. The bounding parallelogram is made by adding and
-subtracting the vectors from the center point in the following manner:
+   :parameter elliptical-object: An instance of type type-union(:class:`<ellipse>`, :class:`<elliptical-arc>`).
 
-.. figure:: images/ext-geom-2.png
-   :align: center
-   :alt: 
+   :value point: An instance of type :class:`<point>`.
 
-*x* coordinate
+   :description:
 
-*y* coordinate
+     Returns the center point of *ellipse-object* as a :class:`<point>` object.
 
-Center of ellipse
+   :seealso:
 
-x*c*
+     - :gf:`make-ellipse`
 
-y*c*
+.. generic-function:: ellipse-center-position
 
-Vectors
+   Returns the coordinates of the center point of an ellipse or an
+   elliptical arc.
 
-dx*1*
+   :signature: ellipse-center-position* *elliptical-object* => *x* *y*
 
-dx*2*
+   :parameter elliptical-object: An instance of type type-union(:class:`<ellipse>`, :class:`<elliptical-arc>`).
 
-dy*1*
+   :value x: An instance of type :drm:`<real>`.
+   :value y: An instance of type :drm:`<real>`.
 
-dy*2*
+   :description:
 
-Corners of parallelogram
+     Returns the coordinates of the center point of *elliptical-object*.
 
-x*c* + dx*1* + dx*2*
+     The arguments *x* and *y* represent the x and y coordinates of the
+     center of the elliptical object, respectively.
 
-x*c* + dx*1* - dx*2*
+   :seealso:
 
-x*c* - dx*1* - dx*2*
+     - :gf:`make-ellipse`
 
-x*c* - dx*1* + dx*2*
+.. generic-function:: ellipse-end-angle
 
-y*c* + dx*1* +dx*2*
+   Returns the end angle of an ellipse or an elliptical-object.
 
-y*c* + dx*1* - dx*2*
+   :signature: ellipse-end-angle *elliptical-object* => *angle*
 
-y*c* - dx*1* - dx*2*
+   :parameter elliptical-object: An instance of type ``type-union(<ellipse>, <elliptical-arc>)``.
+   :value angle: An instance of type ``false-or(<real>)``.
 
-y*c* -dx*1* + dx*2*
+   :description:
 
-Note that several different parallelograms specify the same ellipse. One
-parallelogram is bound to be a rectangle — the vectors will be
-perpendicular and correspond to the semi-axes of the ellipse.
+     Returns the end angle of *elliptical-object*. If *elliptical-object* is
+     a full ellipse or closed path then *ellipse-end-angle* returns ``#f`` ;
+     otherwise the value is a number greater than zero, and less than or
+     equal to *2p*.
 
-Operations
-          
+   :seealso:
 
-The following operations are exported from the *DUIM-Extended-Geometry*
-module.
+     - :gf:`make-ellipse`
 
-`draw-design`_ `See
-ellipse?`_ `See
-ellipse-center-point`_ `See
-ellipse-center-position`_ `See
-ellipse-end-angle`_ `See
-ellipse-radii`_ `See
-ellipse-start-angle`_
+.. generic-function:: ellipse-radii
 
-The following operations are exported from the *DUIM-Geometry* module.
+   Returns four values corresponding to the two radius vectors of an
+   elliptical arc.
 
-`box-edges <geom.htm#52858>`_ `See
-transform-region <geom.htm#33126>`_
+   :signature: ellipse-radii *elliptical-object* => *r1-dx* *r1-dy* *r2-dx* *d2-dy*
 
-See also
-        
+   :parameter elliptical-object: An instance of type ``type-union(<ellipse>, <elliptical-arc>)``.
+   :value r1-dx: An instance of type :drm:`<real>`.
+   :value r1-dy: An instance of type :drm:`<real>`.
+   :value r2-dx: An instance of type :drm:`<real>`.
+   :value d2-dy: An instance of type :drm:`<real>`.
 
-`<area> <geom.htm#53450>`_
+   :description:
 
-`make-ellipse`_
+     Returns four values corresponding to the two radius vectors of
+     *elliptical-object*. These values may be canonicalized in some way, and
+     so may not be the same as the values passed to the constructor function.
 
-ellipse?
---------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :gf:`make-ellipse`
 
-Summary
-       
+.. generic-function:: ellipse-start-angle
 
-Returns *#t* if an object is an ellipse.
+   Returns the start angle of an elliptical arc.
 
-Signature
-         
+   :signature: ellipse-start-angle *elliptical-object* => *angle*
 
-*ellipse?* *object* => *boolean*
+   :parameter elliptical-object: An instance of type ``type-union(<ellipse>, <elliptical-arc>)``.
+   :value angle: An instance of type ``false-or(<real>)``.
 
-Arguments
-         
+   :description:
 
--  *object* An instance of type *<object>*.
+     Returns the start angle of *elliptical-object*. If *elliptical-object* is
+     a full ellipse or closed path then *ellipse-start-angle* returns ``#f``;
+     otherwise the value will be a number greater than or equal to zero, and
+     less than *2p*.
 
-Values
-      
+   :seealso:
 
--  *boolean* An instance of type *<boolean>*.
+     - :gf:`make-ellipse`
 
-Description
-           
+.. class:: <elliptical-arc>
+   :abstract:
+   :instantiable:
 
-Returns *#t* if *object* is an ellipse, otherwise returns *#f.*
+   An *elliptical arc* is a path consisting of all or a portion of the
+   outline of an ellipse.
 
-See Also
-        
+   :superclasses: :class:`<path>`
 
-`<ellipse>`_
+   :keyword center-x: An instance of type :drm:`<real>`.
+   :keyword center-y: An instance of :drm:`<real>`.
+   :keyword center-point: An instance of type :class:`<point>`.
+   :keyword radius-1-dx: An instance of :drm:`<real>`.
+   :keyword radius-1-dy: An instance of :drm:`<real>`.
+   :keyword radius-2-dx: An instance of :drm:`<real>`.
+   :keyword radius-2-dy: An instance of :drm:`<real>`.
+   :keyword start-angle: An instance of ``false-or(<real>)``.
+   :keyword end-angle: An instance of ``false-or(<real>)``.
 
-ellipse-center-point
---------------------
+   :description:
 
-Generic function
-''''''''''''''''
+     An *elliptical arc* is a path consisting of all or a portion of the
+     outline of an ellipse. Circular arcs are special cases of elliptical
+     arcs.
 
-Summary
-       
+   :operations:
 
-Returns the center point of an ellipse or an elliptical arc.
+     The following operations are exported from the *DUIM-Extended-Geometry*
+     module.
 
-Signature
-         
+     - :gf:`draw-design`
+     - :gf:`ellipse-center-point`
+     - :gf:`ellipse-center-position`
+     - :gf:`ellipse-end-angle`
+     - :gf:`ellipse-radii`
+     - :gf:`ellipse-start-angle`
+     - :gf:`elliptical-arc?`
 
-*ellipse-center-poin* t *elliptical-object* => *point*
+     The following operations are exported from the *DUIM-Geometry* module.
 
-Arguments
-         
+     - :gf:`box-edges`
+     - :gf:`transform-region`
 
--  *elliptical-object* An instance of type *type-union(`See
-   <ellipse>`_, `See
-   <elliptical-arc>`_)*.
+   :seealso:
 
-Values
-      
+     - :gf:`elliptical-arc?`
+     - :gf:`make-elliptical-arc`
 
--  *point* An instance of type `<point> <geom.htm#15734>`_.
+.. generic-function:: elliptical-arc?
 
-Description
-           
+   Returns ``#t`` if an object is an elliptical arc,
 
-Returns the center point of *ellipse-object* as** a *<point>* object.
+   :signature: elliptical-arc? *object* => *boolean*
 
-See also
-        
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-`make-ellipse`_
+   :description:
 
-ellipse-center-position
------------------------
+     Returns ``#t`` if *object* is an elliptical arc, otherwise returns ``#f``.
 
-Generic function
-''''''''''''''''
+   :seealso:
 
-Summary
-       
+     - :class:`<elliptical-arc>`
 
-Returns the coordinates of the center point of an ellipse or an
-elliptical arc.
+.. class:: <line>
+   :abstract:
+   :instantiable:
 
-Signature
-         
+   The class that corresponds to a line.
 
-*ellipse-center-position* *elliptical-object* => *x* *y*
+   :superclasses: :class:`<path>`
 
-Arguments
-         
+   :keyword start-x: An instance of :drm:`<real>`.
+   :keyword start-y: An instance of :drm:`<real>`.
+   :keyword end-x: An instance of :drm:`<real>`.
+   :keyword end-y: An instance of :drm:`<real>`.
+   :keyword points: Instances of :class:`<point>`.
 
--  *elliptical-object* An instance of type *type-union(`See
-   <ellipse>`_, `See
-   <elliptical-arc>`_)*.
+   :description:
 
-Values
-      
+     The class that corresponds to a line. This is a subclass of :class:`<path>`.
 
--  *x* An instance of type *<real>*.
--  *y* An instance of type *<real>*.
+     This is the instantiable class that implements a line segment.
+     :gf:`make-line` instantiates an object of type ``<line>``.
 
-Description
-           
+   :operations:
 
-Returns the coordinates of the center point of *elliptical-object*.
+     The following operations are exported from the *DUIM-Extended-Geometry*
+     module.
 
-The arguments *x* and *y* represent the x and y coordinates of the
-center of the elliptical object, respectively.
+     - :gf:`do-polygon-coordinates`
+     - :gf:`do-polygon-segments`
+     - :gf:`draw-design`
+     - :gf:`line?`
+     - :gf:`line-end-point`
+     - :gf:`line-end-position`
+     - :gf:`line-start-point`
+     - :gf:`line-start-position`
+     - :gf:`polygon-coordinates`
+     - :gf:`polygon-points`
+     - :gf:`polyline-closed?`
 
-See also
-        
+     The following operations are exported from the *DUIM-Geometry* module.
 
-`make-ellipse`_
+     - :gf:`box-edges`
+     - :gf:`transform-region`
 
-ellipse-end-angle
------------------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :class:`<path>`
+     - :gf:`make-line`
 
-Summary
-       
+.. generic-function:: line?
 
-Returns the end angle of an ellipse or an elliptical-object.
+   Returns ``#t`` if an object is a line.
 
-Signature
-         
+   :signature: line? *object* => *boolean*
 
-*ellipse-end-angle* *elliptical-object* => *angle*
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Arguments
-         
+   :description:
 
--  *elliptical-object* An instance of type *type-union(`See
-   <ellipse>`_, `See
-   <elliptical-arc>`_)*.
+     Returns ``#t`` if *object* is a line, otherwise returns ``#f``.
 
-Values
-      
+.. generic-function:: line-end-point
 
--  *angle* An instance of type *false-or(<real>)*.
+   Returns the ending point of a line.
 
-Description
-           
+   :signature: line-end-point *line* => *point*
 
-Returns the end angle of *elliptical-object*. If *elliptical-object* is
-a full ellipse or closed path then *ellipse-end-angle* returns *#f* ;
-otherwise the value is a number greater than zero, and less than or
-equal to *2p*.
+   :parameter line: An instance of type :class:`<line>`.
+   :value point: An instance of type :class:`<point>`.
 
-See also
-        
+   :description:
 
-`make-ellipse`_
+     Returns the ending point of *line* as a :class:`<point>` object.
 
-ellipse-radii
--------------
+   :seealso:
 
-Generic function
-''''''''''''''''
+     - :gf:`line-start-point`
 
-Summary
-       
+.. generic-function:: line-end-position
 
-Returns four values corresponding to the two radius vectors of an
-elliptical arc.
+   Returns the ending point of a line.
 
-Signature
-         
+   :signature: line-end-position *line* => *x y*
 
-*ellipse-radii* *elliptical-object* => *r1-dx* *r1-dy* *r2-dx* *d2-dy*
+   :parameter line: An instance of type :class:`<line>`.
+   :value x: An instance of type :drm:`<real>`.
+   :value y: An instance of type :drm:`<real>`.
 
-Arguments
-         
+   :description:
 
--  *elliptical-object* An instance of type *type-union(`See
-   <ellipse>`_, `See
-   <elliptical-arc>`_)*.
+     Returns two real numbers representing the *x* and *y* coordinates of the
+     ending point of *line*.
 
-Values
-      
+     The arguments *x* and *y* represent the x and y coordinates of the end
+     of the line, respectively.
 
--  *r1-dx* An instance of type *<real>*.
--  *r1-dy* An instance of type *<real>*.
--  *r2-dx* An instance of type *<real>*.
--  *d2-dy* An instance of type *<real>*.
+   :seealso:
 
-Description
-           
+     - :gf:`line-start-position`
 
-Returns four values corresponding to the two radius vectors of
-*elliptical-object*. These values may be canonicalized in some way, and
-so may not be the same as the values passed to the constructor function.
+.. generic-function:: line-start-point
 
-See also
-        
+   Returns the starting point of a line.
 
-`make-ellipse`_
+   :signature: line-start-point *line* => *point*
 
-ellipse-start-angle
--------------------
+   :parameter line: An instance of type :class:`<line>`.
+   :value point: An instance of type :class:`<point>`.
 
-Generic function
-''''''''''''''''
+   :description:
 
-Summary
-       
+     Returns the starting point of *line* as a *<point>* object.
 
-Returns the start angle of an elliptical arc.
+   :seealso:
 
-Signature
-         
+     - :gf:`line-end-point`
 
-*ellipse-start-angle* *elliptical-object* => *angle*
+.. generic-function:: line-start-position
 
-Arguments
-         
+   Returns the starting point of a line.
 
--  *elliptical-object* An instance of type *type-union(`See
-   <ellipse>`_, `See
-   <elliptical-arc>`_)*.
+   :signature: line-start-position *line* => *x* *y*
 
-Values
-      
+   :parameter line: An instance of type :class:`<line>`.
 
--  *angle* An instance of type *false-or(<real>)*.
+   :value x: An instance of type :drm:`<real>`.
+   :value y: An instance of type :drm:`<real>`.
 
-Description
-           
+   :description:
 
-Returns the start angle of *elliptical-object*. If *elliptical-object*
-is a full ellipse or closed path then *ellipse-start-angle* returns *#f*
-; otherwise the value will be a number greater than or equal to zero,
-and less than *2p*.
+     Returns two real numbers representing the *x* and *y* coordinates of the
+     starting point of *line*.
 
-See also
-        
+     The arguments *x* and *y* represent the x and y coordinates of the start
+     of the line, respectively.
 
-`make-ellipse`_
+   :seealso:
 
-<elliptical-arc>
-----------------
+     - :gf:`line-end-position`
 
-Abstract instantiable class
-'''''''''''''''''''''''''''
+.. function:: make-ellipse
 
-Summary
-       
+   Returns an object of class :class:`<ellipse>`.
 
-An *elliptical arc* is a path consisting of all or a portion of the
-outline of an ellipse.
+   :signature: make-ellipse *center-x* *center-y* *radius-1-dx* *radius-1-dy* *radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *ellipse*
+   :signature: make-ellipse\* *center-point* *radius-1-dx* *radius-1-dy* *radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *ellipse*
 
-Superclasses
-            
+   :parameter radius-1-dx: An instance of type :drm:`<real>`.
+   :parameter radius-1-dy: An instance of type :drm:`<real>`.
+   :parameter radius-2-dx: An instance of type :drm:`<real>`.
+   :parameter radius-2-dy: An instance of type :drm:`<real>`.
+   :parameter start-angle: An instance of type ``false-or(<real>)``.
+   :parameter end-angle: An instance of type ``false-or(<real>)``.
+    
+   The following arguments are specific to *make-ellipse*.
 
-*<path>*
+   :parameter center-x: An instance of type :drm:`<real>`.
+   :parameter center-y: An instance of type :drm:`<real>`.
 
-Init-keywords
-             
+   The following argument is specific to *make-ellipse*.
 
--  *center-x:* An instance of type *<real>*.
--  *center-y:* An instance of *<real>*.
--  *center-point:* An instance of type `<point> <geom.htm#15734>`_.
--  *radius-1-dx:* An instance of *<real>*.
--  *radius-1-dy:* An instance of *<real>*.
--  *radius-2-dx:* An instance of *<real>*.
--  *radius-2-dy:* An instance of *<real>*.
--  *start-angle:* An instance of *false-or(<real>)*.
--  *end-angle:* An instance of *false-or(<real>)*.
+   :parameter center-point: An instance of type :class:`<point>`.
 
-Description
-           
+   :value ellipse: An instance of type :class:`<ellipse>`.
 
-An *elliptical arc* is a path consisting of all or a portion of the
-outline of an ellipse. Circular arcs are special cases of elliptical
-arcs.
+   :description:
 
-Operations
-          
+     Returns an object of class *<ellipse>*. The center of the ellipse is at
+     the position *center-x*,*center-y* or the point *center-point.*
 
-The following operations are exported from the *DUIM-Extended-Geometry*
-module.
+     Two vectors, (*radius-1-dx,radius-1-dy*) and (*radius-2-dx,radius-2-dy*
+     ) specify the bounding parallelogram of the ellipse. All of the radii
+     are real numbers. If the two vectors are colinear, the ellipse is not
+     well-defined and the *ellipse-not-well-defined* error is signalled. The
+     special case of an ellipse with its axes aligned with the coordinate
+     axes can be obtained by setting both *radius-1-dy* and *radius-2-dx* to
+     0.
 
-`draw-design`_ `See
-ellipse-center-point`_ `See
-ellipse-center-position`_ `See
-ellipse-end-angle`_ `See
-ellipse-radii`_ `See
-ellipse-start-angle`_ `See
-elliptical-arc?`_
+     If *start-angle* or *end-angle* are supplied, the ellipse is the *pie
+     slice* area swept out by a line from the center of the ellipse to a
+     point on the boundary as the boundary point moves from the angle
+     *start-angle* to *end-angle*. Angles are measured counter-clockwise
+     with respect to the positive *x* axis. If *end-angle* is supplied, the
+     default for *start-angle* is *0* ; if *start-angle* is supplied, the
+     default for *end-angle* is *2p* ; if neither is supplied then the region
+     is a full ellipse and the angles are meaningless.
 
-The following operations are exported from the *DUIM-Geometry* module.
+     The function *make-ellipse\** is identical to *make-ellipse*, except
+     that it passes composite objects, rather than separate coordinates, in
+     its arguments. You should be aware that using this function may lead to
+     a loss of performance.
 
-`box-edges <geom.htm#52858>`_ `See
-transform-region <geom.htm#33126>`_
+   :seealso:
 
-See also
-        
+     - :class:`<ellipse>`
 
-`elliptical-arc?`_
+.. function:: make-elliptical-arc
 
-`make-elliptical-arc`_
+   Returns an object of class *<elliptical-arc>*.
 
-elliptical-arc?
----------------
+   :signature: make-elliptical-arc *center-x* *center-y* *radius-1-dx* *radius-1-dy* *radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *arc*
+   :signature: make-elliptical-arc\* *center-point* *radius-1-dx* *radius-1-dy* *radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *arc*
 
-Generic function
-''''''''''''''''
+   :parameter radius-1-dx: An instance of type :drm:`<real>`.
+   :parameter radius-1-dy: An instance of type :drm:`<real>`.
+   :parameter radius-2-dx: An instance of type :drm:`<real>`.
+   :parameter radius-2-dy: An instance of type :drm:`<real>`.
+   :parameter start-angle: An instance of type ``false-or(<real>)``.
+   :parameter end-angle: An instance of type ``false-or(<real>)``.
 
-Summary
-       
+   The following arguments are specific to *make-elliptical-arc*.
 
-Returns *#t* if an object is an elliptical arc,
+   :parameter center-x: An instance of type :drm:`<real>`.
+   :parameter center-y: An instance of type :drm:`<real>`.
 
-Signature
-         
+   The following argument is specific to *make-elliptical-arc\**.
 
-*elliptical-arc?* *object* => *boolean*
+   :parameter center-point: An instance of type :class:`<point>`.
 
-Arguments
-         
+   :value arc: An instance of type :class:`<elliptical-arc>`.
 
--  *object* An instance of type *<object>*.
+   :description:
 
-Values
-      
+     Returns an object of class *<elliptical-arc>*. The center of the
+     ellipse is at the position *center-x,center-y* or the point
+     *center-point*
 
--  *boolean* An instance of type *<boolean>*.
+     Two vectors, (*radius-1-dx,radius-1-dy*) and (*radius-2-dx,radius-2-dy*
+     ), specify the bounding parallelogram of the ellipse. All of the radii
+     are real numbers. If the two vectors are colinear, the ellipse is not
+     well-defined and the *ellipse-not-well-defined* error will be signalled.
+     The special case of an elliptical arc with its axes aligned with the
+     coordinate axes can be obtained by setting both *radius-1-dy* and
+     *radius-2-dx* to *0*.
 
-Description
-           
+     If *start-angle* and *end-angle* are supplied, the arc is swept from
+     *start-angle* to *end-angle*. Angles are measured counter-clockwise
+     with respect to the positive *x* axis. If *end-angle* is supplied, the
+     default for *start-angle* is *0* ; if *start-angle* is supplied, the
+     default for *end-angle* is *2p* ; if neither is supplied then the region
+     is a closed elliptical path and the angles are meaningless.
 
-Returns *#t* if *object* is an elliptical arc, otherwise returns *#f*.
+     The function *make-elliptical-arc\** is identical to
+     *make-elliptical-arc*, except that it passes composite objects, rather
+     than separate coordinates, in its arguments. You should be aware that
+     using this function may lead to a loss of performance.
 
-See also
-        
+   :seealso:
 
-`<elliptical-arc>`_
+     - :class:`<elliptical-arc>`
 
-<line>
-------
+.. function:: make-line
 
-Abstract instantiable class
-'''''''''''''''''''''''''''
+   Returns an object of class :class:`<line>`.t
 
-Summary
-       
+   :signature: make-line *start-x* *start-y* *end-x* *end-y* => *line*
+   :signature: make-line\* *start-point* *end-point* => *line*
 
-The class that corresponds to a line.
+   :parameter start-x: An instance of type :drm:`<real>`.
+   :parameter start-y: An instance of type :drm:`<real>`.
+   :parameter end-x: An instance of type :drm:`<real>`.
+   :parameter end-y: An instance of type :drm:`<real>`.
+   :parameter start-point: An instance of type :class:`<point>`.
+   :parameter end-point: An instance of type :class:`<point>`.
 
-Superclasses
-            
+   :value line: An instance of type :class:`<line>`.
 
-*<path>*
+   :description:
 
-Init-keywords
-             
+     Returns an object of class :class:`<line>` that connects the two positions
+     (*start-x,start-y*) and (e*nd-x,end-y*) or the two points
+     *start-point* and *end-point*.
 
--  *start-x:* An instance of *<real>*.
--  *start-y:* An instance of *<real>*.
--  *end-x:* An instance of *<real>*.
--  *end-y:* An instance of *<real>*.
--  *points:* Instances of `<point> <geom.htm#15734>`_.
+.. function:: make-polygon
 
-Description
-           
+   Returns an object of class :class:`<polygon>`.
 
-The class that corresponds to a line. This is a subclass of *<path>*.
+   :signature: make-polygon *coord-seq* => *polygon*
+   :signature: make-polygon\* *point-seq* => *polygon*
 
-This is the instantiable class that implements a line segment.
-*make-line* instantiates an object of type *<line>*.
+   The following argument is specific to ``make-polygon``.
 
-Operations
-          
+   :parameter coord-seq: An instance of type *limited(<sequence>, of: <real>)*.
 
-The following operations are exported from the *DUIM-Extended-Geometry*
-module.
+   The following argument is specific to ``make-polygon*``.
 
-`do-polygon-coordinates`_ `See
-do-polygon-segments`_ `See
-draw-design`_ `line?`_
-`line-end-point`_ `See
-line-end-position`_ `See
-line-start-point`_ `See
-line-start-position`_ `See
-polygon-coordinates`_ `See
-polygon-points`_ `See
-polyline-closed?`_
+   :parameter point-seq: An instance of type ``limited(<sequence>, of: <point>)``.
 
-The following operations are exported from the *DUIM-Geometry* module.
+   :value polygon: An instance of type :class:`<polygon>`.
 
-`box-edges <geom.htm#52858>`_ `See
-transform-region <geom.htm#33126>`_
+   :description:
 
-See also
-        
+     Returns an object of class *<polygon>* consisting of the area contained
+     in the boundary that is specified by the segments connecting each of the
+     points in *point-seq* or the points represented by the coordinate pairs
+     in *coord-seq*. *point-seq* is a sequence of points; *coord-seq* is a
+     sequence of coordinate pairs, which are real numbers. It is an error if
+     *coord-seq* does not contain an even number of elements.
 
-`<path> <geom.htm#44109>`_
+     The function *make-polygon\** is identical to *make-polygon*, except
+     that it passes composite objects, rather than separate coordinates, in
+     its arguments. You should be aware that using this function may lead to
+     a loss of performance.
 
-`make-line`_
+.. function:: make-polyline
 
-line?
------
+   Returns an object of class :class:`<polyline>`.
 
-Generic function
-''''''''''''''''
+   :signature: make-polyline *coord-seq* #key *closed?* => *polyline*
+   :signature: make-polyline\* *point-seq* #key *closed?* => *polyline*
 
-Summary
-       
+   :parameter closed?: An instance of type :drm:`<boolean>`. Default value: ``#f``.
 
-Returns *#t* if an object is a line.
+   The following argument is specific to ``make-polyline``.
 
-Signature
-         
+   :parameter coord-seq: An instance of type ``limited(<sequence>, of: <real>)``.
 
-*line?* *object* => *boolean*
+   The following argument is specific to ``make-polyline\*``.
 
-Arguments
-         
+   :parameter point-seq: An instance of type ``limited(<sequence>, of: <point>)``.
 
--  *object* An instance of type *<object>*.
+   :value polyline: An instance of type :class:`<polyline>`
 
-Values
-      
+   :description:
 
--  *boolean* An instance of type *<boolean>*.
+     Returns an object of class :class:`<polyline>` consisting of the segments
+     connecting each of the points in *point-seq* or the points represented
+     by the coordinate pairs in *coord-seq*. *point-seq* is a sequence of
+     points; *coord-seq* is a sequence of coordinate pairs, which are real
+     numbers. It is an error if *coord-seq* does not contain an even number
+     of elements.
 
-Description
-           
+     If *closed?* is ``#t``, then the segment connecting the first point and
+     the last point is included in the polyline. The default for *closed?*
+     is** ``#f``.
 
-Returns *#t* if *object* is a line, otherwise returns *#f.*
+     The function ``make-polyline\*`` is identical to ``make-polyline``, except
+     that it passes composite objects, rather than separate coordinates, in
+     its arguments. You should be aware that using this function may lead to
+     a loss of performance.
 
-line-end-point
---------------
+.. function:: make-rectangle
 
-Generic function
-''''''''''''''''
+   Returns an object of class :class:`<rectangle>`.
 
-Summary
-       
+   :signature: make-rectangle *x1* *y1* *x2* *y2* => *rectangle*
+   :signature: make-rectangle\* *min-point* *max-point* => *rectangle*
 
-Returns the ending point of a line.
+   The following arguments are specific to ``make-rectangle``.
 
-Signature
-         
+   :parameter x1: An instance of type :drm:`<real>`. The *x* coordinate of the left top of the rectangle.
+   :parameter y1: An instance of type :drm:`<real>`. The *y* coordinate of the left top of the rectangle
+   :parameter x2: An instance of type :drm:`<real>`. The *x* coordinate of the bottom right of the rectangle.
+   :parameter y2: An instance of type :drm:`<real>`. The *y* coordinate of the bottom right of the rectangle.
 
-*line-end-point* *line* => *point*
+   The following arguments are specific to ``make-rectangle\*``.
 
-Arguments
-         
+   :parameter min-point: The minimum point (left top) of the rectangle.
+   :parameter max-point: The maximum point (bottom right) of the rectangle.
 
--  *line* An instance of type *<line>*.
+   :value rectangle: An instance of type :class:`<rectangle>`.
 
-Values
-      
+   :description:
 
--  *point* An instance of type `<point> <geom.htm#15734>`_.
+     Returns an object of class :class:`<rectangle>` whose edges are parallel to the
+     coordinate axes. One corner is at the point *point1* or the
+     position*x1,y1* and the opposite corner is at the point *point2* or the
+     position *x2,y2*. There are no ordering constraints among *point1* and
+     *point2* or *x1* and *x2*, and *y1* and *y2*.
 
-Description
-           
+     The function *make-rectangle\** is identical to *make-rectangle*,
+     except that it passes composite objects, rather than separate
+     coordinates, in its arguments. You should be aware that using this
+     function may lead to a loss of performance.
 
-Returns the ending point of *line* as a *<point>* object.
+.. class:: <polygon>
+   :abstract:
+   :instantiable:
 
-See also
-        
+   The class that corresponds to a polygon.
 
-`line-start-point`_
+   :superclasses: :class:`<area>`
 
-line-end-position
------------------
+   :keyword coordinates: An instance of type ``limited(<sequence>, of: <real>)``.
+   :keyword points: An instance of type ``limited(<sequence>, of: <real>)``.
 
-Generic function
-''''''''''''''''
+   :description:
 
-Summary
-       
+     The class that corresponds to a polygon. This is a subclass of :class:`<area>`.
 
-Returns the ending point of a line.
+     A polygon can be described either in terms of the individual x and y
+     coordinates that constitute its vertices, or by using composite points.
+     If the former is used, then they can be specified at the time of
+     creation using the *coordinates:* init-keyword, which is a sequence of
+     real numbers, with x and y coordinates alternating within the sequence.
 
-Signature
-         
+     To describe a polygon in terms of composite point objects, use the
+     *points:* init-keyword, which is a sequence of instances of :class:`<point>`.
+     You should be aware that using composite points may lead to a loss of
+     performance.
 
-*line-end-position* *line* => *x y*
+     Exactly one of *coordinates:* and *points:* is required.
 
-Arguments
-         
+   :operations:
 
--  *line* An instance of type *<line>*.
+     The following operations are exported from the *DUIM-Extended-Geometry*
+     module.
 
-Values
-      
+     - :gf:`do-polygon-coordinates`
+     - :gf:`do-polygon-segments`
+     - :gf:`draw-design`
+     - :gf:`polygon?`
+     - :gf:`polygon-coordinates`
+     - :gf:`polygon-points`
 
--  *x* An instance of type *<real>*.
--  *y* An instance of type *<real>*.
+     The following operations are exported from the *DUIM-Geometry* module.
 
-Description
-           
+     - :gf:`box-edges`
+     - :gf:`transform-region`
 
-Returns two real numbers representing the *x* and *y* coordinates of the
-ending point of *line*.
+   :seealso:
 
-The arguments *x* and *y* represent the x and y coordinates of the end
-of the line, respectively.
+     - :class:`<area>`
+     - :func:`make-polygon`
+     - :gf:`polygon?`
+     - :gf:`polygon-coordinates`
+     - :gf:`polygon-points`
 
-See also
-        
+.. generic-function:: polygon?
 
-`line-start-position`_
+   Returns ``#t`` if its argument is a polygon.
 
-line-start-point
-----------------
+   :signature: polygon? *object* => *boolean*
 
-Generic function
-''''''''''''''''
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Summary
-       
+   :description:
 
-Returns the starting point of a line.
+     Returns ``#t`` if *object* is a polygon, otherwise returns ``#f``.
 
-Signature
-         
+   :seealso:
 
-*line-start-point* *line* => *point*
+     - :class:`<polygon>`
+     - :gf:`polygon-coordinates`
+     - :gf:`polygon-points`
 
-Arguments
-         
+.. generic-function:: polygon-coordinates
 
--  *line* An instance of type *<line>*.
+   Returns a sequence of coordinate pairs that specify the segments in a
+   polygon or a polyline.
 
-Values
-      
+   :signature: polygon-coordinates *polygon-or-polyline* => *coordinates*
 
--  *point* An instance of type `<point> <geom.htm#15734>`_.
+   :parameter polygon-or-polyline: An instance of type ``type-union(<polygon>, <polyline>)``.
+   :value coordinates: An instance of type ``limited(<sequence>, of: <real>)``.
 
-Description
-           
+   :description:
 
-Returns the starting point of *line* as a *<point>* object.
+     Returns a sequence of coordinate pairs that specify the segments in
+     *polygon-or-polyline*.
 
-See also
-        
+   :seealso:
 
-`line-end-point`_
+     - :class:`<polygon>`
+     - :gf:`polygon?`
+     - :gf:`polygon-points`
 
-line-start-position
--------------------
+.. generic-function:: polygon-points
 
-Generic function
-''''''''''''''''
+   Returns a sequence of points that specify the segments in a polygon or a
+   polyline.
 
-Summary
-       
+   :signature: polygon-points *polygon-or-polyline* => *points*
 
-Returns the starting point of a line.
+   :parameter polygon-or-polyline: An instance of type ``type-union(<polygon>, <polyline>)``.
+   :value points: An instance of type ``limited(<sequence>, of: <point>)``
 
-Signature
-         
+   :description:
 
-*line-start-position* *line* => *x* *y*
+     Returns a sequence of points that specify the segments in
+     *polygon-or-polyline*.
 
-Arguments
-         
+   :seealso:
 
--  *line* An instance of type *<line>*.
+     - :class:`<polygon>`
+     - :gf:`polygon?`
+     - :gf:`polygon-coordinates`
 
-Values
-      
+.. class:: <polyline>
+   :abstract:
+   :instantiable:
 
--  *x* An instance of type *<real>*.
--  *y* An instance of type *<real>*.
+   The protocol class that corresponds to a polyline.
 
-Description
-           
+   :superclasses: :class:`<path>`
 
-Returns two real numbers representing the *x* and *y* coordinates of the
-starting point of *line*.
+   :keyword coordinates: An instance of type ``limited(<sequence>, of: <real>)``. Required.
+   :keyword points: An instance of type ``limited(<sequence>, of: <real>)``. Required.
 
-The arguments *x* and *y* represent the x and y coordinates of the start
-of the line, respectively.
+   :description:
 
-See also
-        
+     The protocol class that corresponds to a polyline.
 
-`line-end-position`_
+     A polyline can be described either in terms of the individual x and y
+     coordinates that constitute its vertices, or by using composite points.
+     If the former is used, then they can be specified at the time of
+     creation using the *coordinates:* init-keyword, which is a sequence of
+     real numbers, with x and y coordinates alternating within the sequence.
 
-make-ellipse
-------------
+     To describe a polyline in terms of composite point objects, use the
+     *points:* init-keyword, which is a sequence of instances of :class:`<point>`.
+     You should be aware that using composite points may lead to a loss of
+     performance.
 
-Function
-''''''''
+     Exactly one of *coordinates:* and *points:* is required.
 
-Summary
-       
+   :operations:
 
-Returns an object of class *<ellipse>*.
+     The following operations are exported from the *DUIM-Extended-Geometry*
+     module.
 
-Signature
-         
+     - :gf:`do-polygon-coordinates`
+     - :gf:`do-polygon-segments`
+     - :gf:`draw-design`
+     - :gf:`polygon-coordinates`
+     - :gf:`polygon-points`
+     - :gf:`polyline?`
+     - :gf:`polyline-closed?`
 
-*make-ellipse* *center-x* *center-y* *radius-1-dx* *radius-1-dy*
-*radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *ellipse*
+     The following operations are exported from the *DUIM-Geometry* module.
 
-*make-ellipse\** *center-point* *radius-1-dx* *radius-1-dy*
-*radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *ellipse*
+     - :gf:`box-edges`
+     - :gf:`transform-region`
 
-Arguments
-         
+   :seealso:
 
--  *radius-1-dx* An instance of type *<real>*.
--  *radius-1-dy* An instance of type *<real>*.
--  *radius-2-dx* An instance of type *<real>*.
--  *radius-2-dy* An instance of type *<real>*.
--  *start-angle* An instance of type *false-or(<real>)*.
--  *end-angle* An instance of type *false-or(<real>)*.
+     - :class:`<path>`
+     - :class:`<point>`
+     - :func:`make-polyline`
+     - :gf:`polyline?`
+     - :gf:`polyline-closed?`
 
-The following arguments are specific to *make-ellipse*.
+.. generic-function:: polyline?
 
--  *center-x* An instance of type *<real>*.
--  *center-y* An instance of type *<real>*.
+   Returns ``#t`` if an object is a polyline.
 
-The following argument is specific to *make-ellipse*.
+   :signature: polyline? *object* => *boolean*
 
--  *center-point* An instance of type `<point> <geom.htm#15734>`_.
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-Values
-      
+   :description:
 
--  *ellipse* An instance of type *`<ellipse>`_*
-   .
+     Returns ``#t`` if *object* is a polyline, otherwise returns ``#f``.
 
-Description
-           
+   :seealso:
 
-Returns an object of class *<ellipse>*. The center of the ellipse is at
-the position *center-x*,*center-y* or the point *center-point.*
+     - :class:`<polyline>`
+     - :gf:`polyline-closed?`
 
-Two vectors, (*radius-1-dx,radius-1-dy*) and (*radius-2-dx,radius-2-dy*
-) specify the bounding parallelogram of the ellipse. All of the radii
-are real numbers. If the two vectors are colinear, the ellipse is not
-well-defined and the *ellipse-not-well-defined* error is signalled. The
-special case of an ellipse with its axes aligned with the coordinate
-axes can be obtained by setting both *radius-1-dy* and *radius-2-dx* to
-0.
+.. generic-function:: polyline-closed?
 
-If *start-angle* or *end-angle* are supplied, the ellipse is the *pie
-slice* area swept out by a line from the center of the ellipse to a
-point on the boundary as the boundary point moves from the angle
-*start-angle* to *end-angle*. Angles are measured counter-clockwise
-with respect to the positive *x* axis. If *end-angle* is supplied, the
-default for *start-angle* is *0* ; if *start-angle* is supplied, the
-default for *end-angle* is *2p* ; if neither is supplied then the region
-is a full ellipse and the angles are meaningless.
+   Returns ``#t`` if the polyline is closed.
 
-The function *make-ellipse\** is identical to *make-ellipse*, except
-that it passes composite objects, rather than separate coordinates, in
-its arguments. You should be aware that using this function may lead to
-a loss of performance.
+   :signature: polyline-closed? *polyline* => *boolean*
 
-See also
-        
+   :parameter polyline: An instance of type :class:`<polyline>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-See the class `<ellipse>`_.
+   :description:
 
-make-elliptical-arc
--------------------
+     Returns ``#t`` if the polyline *polyline* is closed, otherwise returns
+     ``#f``. This function need be implemented only for polylines, not for
+     polygons.
 
-Function
-''''''''
+   :seealso:
 
-Summary
-       
+     - :class:`<polyline>`
+     - :gf:`polyline?`
 
-Returns an object of class *<elliptical-arc>*.
+.. class:: <rectangle>
+   :abstract:
+   :instantiable:
 
-Signature
-         
+   The protocol class that corresponds to a rectangle.
 
-*make-elliptical-arc* *center-x* *center-y* *radius-1-dx* *radius-1-dy*
-*radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *arc*
+   :superclasses: :class:`<area>`
 
-*make-elliptical-arc\** *center-point* *radius-1-dx* *radius-1-dy*
-*radius-2-dx* *radius-2-dy* #key *start-angle* *end-angle* => *arc*
+   :keyword min-x: An instance of type :drm:`<real>`.
+   :keyword min-y: An instance of type :drm:`<real>`.
+   :keyword max-x: An instance of type :drm:`<real>`.
+   :keyword max-y: An instance of type :drm:`<real>`.
+   :keyword points: An instance of type ``limited(<sequence>, of: <point>)``.
 
-Arguments
-         
+   :description:
 
--  *radius-1-dx* An instance of type *<real>*.
--  *radius-1-dy* An instance of type *<real>*.
--  *radius-2-dx* An instance of type *<real>*.
--  *radius-2-dy* An instance of type *<real>*.
--  *start-angle* An instance of type *false-or(<real>)*.
--  *end-angle* An instance of type *false-or(<real>)*.
+     The protocol class that corresponds to a rectangle. This is a subclass
+     of :class:`<polygon>`.
 
-The following arguments are specific to *make-elliptical-arc*.
+     Rectangles whose edges are parallel to the coordinate axes are a special
+     case of polygon that can be specified completely by four real numbers
+     *x1,y1,x2,y2*). They are *not* closed under general affine
+     transformations (although they are closed under rectilinear
+     transformations).
 
--  *center-x* An instance of type *<real>*.
--  *center-y* An instance of type *<real>*.
+   :operations:
 
-The following argument is specific to *make-elliptical-arc\**.
+     The following operations are exported from the *DUIM-Extended-Geometry*
+     module.
 
--  *center-point* An instance of type `<point> <geom.htm#15734>`_.
+     - :gf:`do-polygon-coordinates`
+     - :gf:`do-polygon-segments`
+     - :gf:`draw-design`
+     - :gf:`polygon-coordinates`
+     - :gf:`polygon-points`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-Values
-      
+     The following operations are exported from the *DUIM-Geometry* module.
 
--  *arc* An instance of type *`See
-   <elliptical-arc>`_*.
+     - :gf:`box-edges`
+     - :gf:`transform-region`
 
-Description
-           
+   :seealso:
 
-Returns an object of class *<elliptical-arc>*. The center of the
-ellipse is at the position *center-x,center-y* or the point
-*center-point*
+     - :class:`<polygon>`
+     - :gf:`make-rectangle`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-Two vectors, (*radius-1-dx,radius-1-dy*) and (*radius-2-dx,radius-2-dy*
-), specify the bounding parallelogram of the ellipse. All of the radii
-are real numbers. If the two vectors are colinear, the ellipse is not
-well-defined and the *ellipse-not-well-defined* error will be signalled.
-The special case of an elliptical arc with its axes aligned with the
-coordinate axes can be obtained by setting both *radius-1-dy* and
-*radius-2-dx* to *0*.
+.. generic-function:: rectangle?
 
-If *start-angle* and *end-angle* are supplied, the arc is swept from
-*start-angle* to *end-angle*. Angles are measured counter-clockwise
-with respect to the positive *x* axis. If *end-angle* is supplied, the
-default for *start-angle* is *0* ; if *start-angle* is supplied, the
-default for *end-angle* is *2p* ; if neither is supplied then the region
-is a closed elliptical path and the angles are meaningless.
+   Returns ``#t`` if the object is a rectangle.
 
-The function *make-elliptical-arc\** is identical to
-*make-elliptical-arc*, except that it passes composite objects, rather
-than separate coordinates, in its arguments. You should be aware that
-using this function may lead to a loss of performance.
+   :signature: rectangle? *object* => *boolean*
 
-See also
-        
+   :parameter object: An instance of type :drm:`<object>`.
+   :value boolean: An instance of type :drm:`<boolean>`.
 
-See the class `<elliptical-arc>`_.
+   :description:
 
-make-line
----------
+     Returns ``#t`` if *object* is a rectangle, otherwise returns ``#f``.
 
-Function
-''''''''
+   :seealso:
 
-Summary
-       
+     - :class:`<rectangle>`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-Returns an object of class *<line>*.t
+.. generic-function:: rectangle-edges
 
-Signature
-         
+   Returns the coordinates of the minimum and maximum of the rectangle.
 
-*make-line* *start-x* *start-y* *end-x* *end-y* => *line*
+   :signature: rectangle-edges *rectangle* => *x1* *y1* *x2* *y2*
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
 
-*make-line\** *start-point* *end-point* => *line*
+   :value min-x: An instance of type :drm:`<real>`.
+   :value min-y: An instance of type :drm:`<real>`.
+   :value max-x: An instance of type :drm:`<real>`.
+   :value max-y: An instance of type :drm:`<real>`.
 
-Arguments
-         
+   :description:
 
--  *start-x* An instance of type *<real>*.
--  *start-y* An instance of type *<real>*.
--  *end-x* An instance of type *<real>*.
--  *end-y* An instance of type *<real>*.
--  *start-point* An instance of type `<point> <geom.htm#15734>`_.
--  *end-point* An instance of type `<point> <geom.htm#15734>`_.
+     Returns the coordinates of the minimum *x* and *y* and maximum *x* and
+     *y* of the rectangle *rectangle* as four values, *min-x, min-y, max-x,*
+     and *max-y*.
 
-Values
-      
+     The argument *min-x* represents the *x* coordinate of the top left of
+     the rectangle.
 
--  *line* An instance of type *<line>*.
+     The argument *min-y* represents the *y* coordinate of the top left of
+     the rectangle.
 
-Description
-           
+     The argument *max-x* represents the *x* coordinate of the bottom right
+     of the rectangle.
 
-Returns an object of class *<line>* that connects the two positions
-(*start-x,start-y*) and (e*nd-x,end-y*) or the two points
-*start-point* and *end-point*.
+     The argument *max-y* represents the *y* coordinate of the bottom right
+     of the rectangle.
 
-make-polygon
-------------
+   :seealso:
 
-Function
-''''''''
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-Summary
-       
+.. generic-function:: rectangle-height
 
-Returns an object of class *<polygon>.*
+   Returns height of the rectangle.
 
-Signature
-         
+   :signature: rectangle-height *rectangle* => *height*
 
-*make-polygon* *coord-seq* => *polygon*
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
+   :value height: An instance of type :drm:`<real>`.
 
-*make-polygon\** *point-seq* => *polygon*
+   :description:
 
-Arguments
-         
+     Returns the height of the rectangle, which is the difference between the
+     maximum *y* and its minimum *y*.
 
-The following argument is specific to *make-polygon*.
+   :seealso:
 
--  *coord-seq* An instance of type *limited(<sequence>, of: <real>)*.
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-The following argument is specific to *make-polygon\**.
+.. generic-function:: rectangle-max-point
 
--  *point-seq* An instance of type *limited(<sequence>, of:* `See
-   <point> <geom.htm#15734>`_*)*.
+   Returns the bottom right point of the rectangle.
 
-Values
-      
+   :signature: rectangle-max-point *rectangle* => *point*
 
--  *polygon* An instance of type `<polygon>`_.
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
+   :value point: An instance of type :class:`<point>`.
 
-Description
-           
+   :description:
 
-Returns an object of class *<polygon>* consisting of the area contained
-in the boundary that is specified by the segments connecting each of the
-points in *point-seq* or the points represented by the coordinate pairs
-in *coord-seq*. *point-seq* is a sequence of points; *coord-seq* is a
-sequence of coordinate pairs, which are real numbers. It is an error if
-*coord-seq* does not contain an even number of elements.
+     Returns the bottom right point of the rectangle.
 
-The function *make-polygon\** is identical to *make-polygon*, except
-that it passes composite objects, rather than separate coordinates, in
-its arguments. You should be aware that using this function may lead to
-a loss of performance.
+   :seealso:
 
-make-polyline
--------------
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-Function
-''''''''
+.. generic-function:: rectangle-max-position
 
-Summary
-       
+   Returns the *x* and *y* coordinates of the bottom right of the
+   rectangle.
 
-Returns an object of class *<polyline>.*
+   :signature: rectangle-max-position *rectangle* => *x2* *y2*
 
-Signature
-         
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
+   :value x2: An instance of type :drm:`<real>`.
+   :value y2: An instance of type :drm:`<real>`.
 
-*make-polyline* *coord-seq* #key *closed?* => *polyline*
+   :description:
 
-*make-polyline\** *point-seq* #key *closed?* => *polyline*
+     Returns the *x* and *y* coordinates of the bottom right of the
+     rectangle.
 
-Arguments
-         
+   :seealso:
 
--  *closed?* An instance of type *<boolean>*. Default value: *#f*.
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-The following argument is specific to *make-polyline*.
+.. generic-function:: rectangle-min-point
 
--  *coord-seq* An instance of type *limited(<sequence>, of: <real>)*.
+   Returns the left top point of the rectangle.
 
-The following argument is specific to *make-polyline\**.
+   :signature: rectangle-min-point *rectangle* => *point*
 
--  *point-seq* An instance of type *limited(<sequence>, of:* `See
-   <point> <geom.htm#15734>`_*)*.
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
+   :value point: An instance of type :class:`<point>`.
 
-Values
-      
+   :description:
 
--  *polyline* An instance of type *`See
-   <polyline>`_*.
+     Returns the left top point of the rectangle.
 
-Description
-           
+   :seealso:
 
-Returns an object of class *<polyline>* consisting of the segments
-connecting each of the points in *point-seq* or the points represented
-by the coordinate pairs in *coord-seq*. *point-seq* is a sequence of
-points; *coord-seq* is a sequence of coordinate pairs, which are real
-numbers. It is an error if *coord-seq* does not contain an even number
-of elements.
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-If *closed?* is *#t,* then the segment connecting the first point and
-the last point is included in the polyline. The default for *closed?*
-is** *#f*.
+.. generic-function:: rectangle-min-position
 
-The function *make-polyline\** is identical to *make-polyline*, except
-that it passes composite objects, rather than separate coordinates, in
-its arguments. You should be aware that using this function may lead to
-a loss of performance.
+   Returns the *x* and *y* coordinates of the left top of the rectangle.
 
-make-rectangle
---------------
+   :signature: rectangle-min-position *rectangle* => *x1* *y1*
 
-Function
-''''''''
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
+   :value x1: An instance of type :drm:`<real>`.
+   :value y1: An instance of type :drm:`<real>`.
 
-Summary
-       
+   :description:
 
-Returns an object of class *<rectangle>*.
+     Returns the *x* and *y* coordinates of the left top of the rectangle.
 
-Signature
-         
+   :seealso:
 
-*make-rectangle* *x1* *y1* *x2* *y2* => *rectangle*
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-size`
+     - :gf:`rectangle-width`
 
-*make-rectangle\** *min-point* *max-point* => *rectangle*
+.. generic-function:: rectangle-size
 
-Arguments
-         
+   Returns the width and the height of the rectangle.
 
-The following arguments are specific to *make-rectangle*.
+   :signature: rectangle-size *rectangle* => *width* *height*
 
--  *x1* An instance of type *<real>*. The *x* coordinate of the left
-   top of the rectangle.
--  *y1* An instance of type *<real>*. The *y* coordinate of the left
-   top of the rectangle
--  *x2* An instance of type *<real>*. The *x* coordinate of the bottom
-   right of the rectangle.
--  *y2* An instance of type *<real>*. The *y* coordinate of the bottom
-   right of the rectangle.
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
+   :value width: An instance of type :drm:`<real>`.
+   :value height: An instance of type :drm:`<real>`.
 
-The following arguments are specific to *make-rectangle\**.
+   :description:
 
--  *min-point* The minimum point (left top) of the rectangle.
--  *max-point* The maximum point (bottom right) of the rectangle.
+     Returns two values, the width and the height.
 
-Values
-      
+   :seealso:
 
--  *rectangle* An instance of type *<rectangle>*.
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-width`
 
-Description
-           
+.. generic-function:: rectangle-width
 
-Returns an object of class *<rectangle>* whose edges are parallel to the
-coordinate axes. One corner is at the point *point1* or the
-position*x1,y1* and the opposite corner is at the point *point2* or the
-position *x2,y2*. There are no ordering constraints among *point1* and
-*point2* or *x1* and *x2*, and *y1* and *y2*.
+   Returns the width of the rectangle.
 
-The function *make-rectangle\** is identical to *make-rectangle*,
-except that it passes composite objects, rather than separate
-coordinates, in its arguments. You should be aware that using this
-function may lead to a loss of performance.
+   :signature: rectangle-width *rectangle* => *width*
 
-<polygon>
----------
+   :parameter rectangle: An instance of type :class:`<rectangle>`.
+   :value width: An instance of type :drm:`<real>`.
 
-Abstract instantiable class
-'''''''''''''''''''''''''''
+   :description:
 
-Summary
-       
+     Returns the width of the rectangle *rectangle*, which is the difference
+     between the maximum *x* and its minimum *x*.
 
-The class that corresponds to a polygon.
+   :seealso:
 
-Superclasses
-            
-
-*<area>*
-
-Init-keywords
-             
-
--  *coordinates:* An instance of type *limited(<sequence>, of: <real>)*
-   .
--  *points:* An instance of type *limited(<sequence>, of: <real>)*.
-
-Description
-           
-
-The class that corresponds to a polygon. This is a subclass of *<area>*
-.
-
-A polygon can be described either in terms of the individual x and y
-coordinates that constitute its vertices, or by using composite points.
-If the former is used, then they can be specified at the time of
-creation using the *coordinates:* init-keyword, which is a sequence of
-real numbers, with x and y coordinates alternating within the sequence.
-
-To describe a polygon in terms of composite point objects, use the
-*points:* init-keyword, which is a sequence of instances of *<point>*.
-You should be aware that using composite points may lead to a loss of
-performance.
-
-Exactly one of *coordinates:* and *points:* is required.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Extended-Geometry*
-module.
-
-`do-polygon-coordinates`_ `See
-do-polygon-segments`_ `See
-draw-design`_ `polygon?`_
-`polygon-coordinates`_ `See
-polygon-points`_
-
-The following operations are exported from the *DUIM-Geometry* module.
-
-`box-edges <geom.htm#52858>`_ `See
-transform-region <geom.htm#33126>`_
-
-See also
-        
-
-`<area> <geom.htm#53450>`_
-
-`make-polygon`_
-
-`polygon?`_
-
-`polygon-coordinates`_
-
-`polygon-points`_
-
-polygon?
---------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if its argument is a polygon.
-
-Signature
-         
-
-*polygon?* *object* => *boolean*
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if *object* is a polygon, otherwise returns
-
-*#f*.
-
-See also
-        
-
-`<polygon>`_
-
-`polygon-coordinates`_
-
-`polygon-points`_
-
-polygon-coordinates
--------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns a sequence of coordinate pairs that specify the segments in a
-polygon or a polyline.
-
-Signature
-         
-
-*polygon-coordinates* *polygon-or-polyline* => *coordinates*
-
-Arguments
-         
-
-*polygon-or-polyline*
-                     
-
--  An instance of type *type-union(* `See
-   <polygon>`_*, `See
-   <polyline>`_)*.
-
-Values
-      
-
--  *coordinates* An instance of type *limited(<sequence>, of: <real>)*.
-
-Description
-           
-
-Returns a sequence of coordinate pairs that specify the segments in
-*polygon-or-polyline*.
-
-See also
-        
-
-`<polygon>`_
-
-`polygon?`_
-
-`polygon-points`_
-
-polygon-points
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns a sequence of points that specify the segments in a polygon or a
-polyline.
-
-Signature
-         
-
-*polygon-points* *polygon-or-polyline* => *points*
-
-Arguments
-         
-
-*polygon-or-polyline*
-                     
-
--  An instance of type *type-union(* `See
-   <polygon>`_*, `See
-   <polyline>`_)*.
-
-Values
-      
-
--  *points* An instance of type *limited(<sequence>, of:* `See
-   <point> <geom.htm#15734>`_*)*.
-
-Description
-           
-
-Returns a sequence of points that specify the segments in
-*polygon-or-polyline*.
-
-See also
-        
-
-`<polygon>`_
-
-`polygon?`_
-
-`polygon-coordinates`_
-
-<polyline>
-----------
-
-Abstract instantiable class
-'''''''''''''''''''''''''''
-
-Summary
-       
-
-The protocol class that corresponds to a polyline.
-
-Superclasses
-            
-
-*<path>*
-
-Init-keywords
-             
-
--  *coordinates:* An instance of type *limited(<sequence>, of: <real>)*
-   . Required.
--  *points:* An instance of type *limited(<sequence>, of: <real>)*.
-   Required.
-
-Description
-           
-
-The protocol class that corresponds to a polyline.
-
-A polyline can be described either in terms of the individual x and y
-coordinates that constitute its vertices, or by using composite points.
-If the former is used, then they can be specified at the time of
-creation using the *coordinates:* init-keyword, which is a sequence of
-real numbers, with x and y coordinates alternating within the sequence.
-
-To describe a polyline in terms of composite point objects, use the
-*points:* init-keyword, which is a sequence of instances of *<point>*.
-You should be aware that using composite points may lead to a loss of
-performance.
-
-Exactly one of *coordinates:* and *points:* is required.
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Extended-Geometry*
-module.
-
-`do-polygon-coordinates`_ `See
-do-polygon-segments`_ `See
-draw-design`_ `See
-polygon-coordinates`_ `See
-polygon-points`_ `See
-polyline?`_ `See
-polyline-closed?`_
-
-The following operations are exported from the *DUIM-Geometry* module.
-
-`box-edges <geom.htm#52858>`_ `See
-transform-region <geom.htm#33126>`_
-
-See also
-        
-
-`<path> <geom.htm#44109>`_
-
-`make-polyline`_
-
-`polyline?`_
-
-`polyline-closed?`_
-
-polyline?
----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if an object is a polyline.
-
-Signature
-         
-
-*polyline?* *object* => *boolean*
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if *object* is a polyline, otherwise returns
-
-*#f*.
-
-See also
-        
-
-`<polyline>`_
-
-`polyline-closed?`_
-
-polyline-closed?
-----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if the polyline is closed.
-
-Signature
-         
-
-*polyline-closed?* *polyline* => *boolean*
-
-Arguments
-         
-
--  *polyline* An instance of type *`See
-   <polyline>`_*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if the polyline *polyline* is closed, otherwise returns
-*#f*. This function need be implemented only for polylines, not for
-polygons.
-
-See also
-        
-
-`<polyline>`_
-
-`polyline?`_
-
-<rectangle>
------------
-
-Abstract instantiable class
-'''''''''''''''''''''''''''
-
-Summary
-       
-
-The protocol class that corresponds to a rectangle.
-
-Superclasses
-            
-
-*<area>*
-
-Init-keywords
-             
-
--  *min-x:* An instance of type *<real>*.
--  *min-y:* An instance of type *<real>*.
--  *max-x:* An instance of type *<real>*.
--  *max-y:* An instance of type *<real>*.
--  *points:* An instance of type *limited(<sequence>, of:* `See
-   <point> <geom.htm#15734>`_*)*.
-
-Description
-           
-
-The protocol class that corresponds to a rectangle. This is a subclass
-of `<polygon>`_.
-
-Rectangles whose edges are parallel to the coordinate axes are a special
-case of polygon that can be specified completely by four real numbers
-*x1,y1,x2,y2*). They are *not* closed under general affine
-transformations (although they are closed under rectilinear
-transformations).
-
-Operations
-          
-
-The following operations are exported from the *DUIM-Extended-Geometry*
-module.
-
-`do-polygon-coordinates`_ `See
-do-polygon-segments`_ `See
-draw-design`_ `See
-polygon-coordinates`_ `See
-polygon-points`_ `See
-rectangle?`_ `See
-rectangle-edges`_ `See
-rectangle-height`_ `See
-rectangle-max-point`_ `See
-rectangle-max-position`_ `See
-rectangle-min-point`_ `See
-rectangle-min-position`_ `See
-rectangle-size`_ `See
-rectangle-width`_
-
-The following operations are exported from the *DUIM-Geometry* module.
-
-`box-edges <geom.htm#52858>`_ `See
-transform-region <geom.htm#33126>`_
-
-See also
-        
-
-`<polygon>`_
-
-`make-rectangle`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle?
-----------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns *#t* if the object is a rectangle.
-
-Signature
-         
-
-*rectangle?* *object* => *boolean*
-
-Arguments
-         
-
--  *object* An instance of type *<object>*.
-
-Values
-      
-
--  *boolean* An instance of type *<boolean>*.
-
-Description
-           
-
-Returns *#t* if *object* is a rectangle, otherwise returns *#f*.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle-edges
----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the coordinates of the minimum and maximum of the rectangle.
-
-Signature
-         
-
-*rectangle-edges* *rectangle* => *x1* *y1* *x2* *y2*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *min-x* An instance of type *<real>*.
--  *min-y* An instance of type *<real>*.
--  *max-x* An instance of type *<real>*.
--  *max-y* An instance of type *<real>*.
-
-Description
-           
-
-Returns the coordinates of the minimum *x* and *y* and maximum *x* and
-*y* of the rectangle *rectangle* as four values, *min-x, min-y, max-x,*
-and *max-y*.
-
-The argument *min-x* represents the *x* coordinate of the top left of
-the rectangle.
-
-The argument *min-y* represents the *y* coordinate of the top left of
-the rectangle.
-
-The argument *max-x* represents the *x* coordinate of the bottom right
-of the rectangle.
-
-The argument *max-y* represents the *y* coordinate of the bottom right
-of the rectangle.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle-height
-----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns height of the rectangle.
-
-Signature
-         
-
-*rectangle-height* *rectangle* => *height*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *height* An instance of type *<real>*.
-
-Description
-           
-
-Returns the height of the rectangle, which is the difference between the
-maximum *y* and its minimum *y*.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle-max-point
--------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the bottom right point of the rectangle.
-
-Signature
-         
-
-*rectangle-max-point* *rectangle* => *point*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *point* An instance of type `<point> <geom.htm#15734>`_.
-
-Description
-           
-
-Returns the bottom right point of the rectangle.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle-max-position
-----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the *x* and *y* coordinates of the bottom right of the
-rectangle.
-
-Signature
-         
-
-rectangle-max-position *rectangle* => *x2* *y2*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *x2* An instance of type *<real>*.
--  *y2* An instance of type *<real>*.
-
-Description
-           
-
-Returns the *x* and *y* coordinates of the bottom right of the
-rectangle.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle-min-point
--------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the left top point of the rectangle.
-
-Signature
-         
-
-*rectangle-min-point* *rectangle* => *point*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *point* An instance of type `<point> <geom.htm#15734>`_.
-
-Description
-           
-
-Returns the left top point of the rectangle.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle-min-position
-----------------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the *x* and *y* coordinates of the left top of the rectangle.
-
-Signature
-         
-
-*rectangle-min-position* *rectangle* => *x1* *y1*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *x1* An instance of type *<real>*.
--  *y1* An instance of type *<real>*.
-
-Description
-           
-
-Returns the *x* and *y* coordinates of the left top of the rectangle.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-size`_
-
-`rectangle-width`_
-
-rectangle-size
---------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the width and the height of the rectangle.
-
-Signature
-         
-
-*rectangle-size* *rectangle* => *width* *height*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *width* An instance of type *<real>*.
--  *height* An instance of type *<real>*.
-
-Description
-           
-
-Returns two values, the width and the height.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-width`_
-
-rectangle-width
----------------
-
-Generic function
-''''''''''''''''
-
-Summary
-       
-
-Returns the width of the rectangle.
-
-Signature
-         
-
-*rectangle-width* *rectangle* => *width*
-
-Arguments
-         
-
--  *rectangle* An instance of type *<rectangle>*.
-
-Values
-      
-
--  *width* An instance of type *<real>*.
-
-Description
-           
-
-Returns the width of the rectangle *rectangle*, which is the difference
-between the maximum *x* and its minimum *x*.
-
-See also
-        
-
-`<rectangle>`_
-
-`rectangle?`_
-
-`rectangle-edges`_
-
-`rectangle-height`_
-
-`rectangle-max-point`_
-
-`rectangle-max-position`_
-
-`rectangle-min-point`_
-
-`rectangle-min-position`_
-
-`rectangle-size`_
-
-
+     - :class:`<rectangle>`
+     - :gf:`rectangle?`
+     - :gf:`rectangle-edges`
+     - :gf:`rectangle-height`
+     - :gf:`rectangle-max-point`
+     - :gf:`rectangle-max-position`
+     - :gf:`rectangle-min-point`
+     - :gf:`rectangle-min-position`
+     - :gf:`rectangle-size`

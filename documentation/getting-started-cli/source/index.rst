@@ -22,7 +22,14 @@ guide.
    copyright
    hello-world
    source-registries
+   adding-new-libraries
    quick-tips
    dylan-compiler
    dylan-environment
+   editor-support
    dylan-mode-for-emacs
+   debugging-with-gdb-lldb
+   windows
+   environment-variables
+   cross-compilation
+   platform-specific

@@ -2,6 +2,9 @@
 The transcendentals Module
 **************************
 
+.. current-library:: common-dylan
+.. current-module:: transcendentals
+
 Introduction
 ============
 
@@ -20,739 +23,548 @@ functions is explicitly unspecified. Note, however, that a program
 expects the following, even in libraries that are implemented by calling
 foreign libraries:
 
--  Domain and range errors should be signalled as Dylan errors.
--  Floating point precision *contagion* must obey Dylan rules (that is,
-   functions called on single precision values return single precision
-   results, and functions on double precision values return double
-   precision results)
+- Domain and range errors should be signalled as Dylan errors.
+- Floating point precision *contagion* must obey Dylan rules (that is,
+  functions called on single precision values return single precision
+  results, and functions on double precision values return double
+  precision results)
 
 The Transcendentals module
 ==========================
 
 This section contains a reference entry for each item exported from the
-*common-dylan* library’s *transcendentals* module.
+*common-dylan* library's *transcendentals* module.
 
-^
-~
+.. generic-function:: ^
 
-G.f. method
------------
+   :summary: 
+     Returns its first argument, raised to the power indicated by its second
+     argument.
 
-Summary
+   :signature: ^ b x => y
 
-Returns its first argument, raised to the power indicated by its second
-argument.
+   :parameter b: An instance of type :drm:`<real>`.
+   :parameter x: An instance of type :drm:`<real>`.
+   :value y: An instance of type :drm:`<real>`.
 
-Signature
+   :description:
 
-^ *b* *x* => *y*
+     Returns ``b`` raised to the power ``x``. If ``b`` is ``0`` and ``x`` is not
+     positive, an error is signalled. If ``b`` is negative and ``x`` is not an
+     integer, an error is signalled.
 
-Arguments
+     If ``b`` and ``x`` are both integers, the result is an integer. If ``x`` is
+     negative, an error is signalled.
 
-*b* An instance of type ``<real>``.
+     The floating point precision is given by the precision of ``b``.
 
-*x* An instance of type ``<real>``.
+   :seealso:
 
-Values
+     - :gf:`exp`
 
-*y* An instance of type ``<float>``.
+.. generic-function:: acos
 
-Description
+   :summary:
+     Returns the arc cosine of its argument.
 
-Returns *b* raised to the power *x*. If *b* is *0* and *x* is not
-positive, an error is signalled. If *b* is negative and *x* is not an
-integer, an error is signalled.
+   :signature: acos x => y
 
-If *b* and *x* are both integers, the result is an integer. If *x* is
-negative, an error is signalled.
+   :parameter x: an instance of type :drm:`<real>`. The angle, in radians.
+                 If ``x`` is not in the range ``[-1,+1]``, an error is signalled.
+   :value y: An instance of type :drm:`<float>`.
 
-The floating point precision is given by the precision of *b*. The
-result is a single-float if *b* is an integer.
+   :description:
 
-See also
+     Returns the arc cosine of its argument. The floating point precision of
+     the result is given by the precision of ``x``.
 
-See the function `exp`_.
+   :seealso:
 
-acos
-----
+     - :gf:`asin`
+     - :gf:`atan`
 
-G.f. method
------------
+.. generic-function:: acosh
 
-Summary
+   :summary:
+     Returns the hyperbolic arc cosine of its argument.
 
-Returns the arc cosine of its argument.
+   :signature: acosh x => y
 
-Signature
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-acos *x* => *y*
+   :description:
 
-Arguments
+     Returns the hyperbolic arc cosine of its argument. The floating point
+     precision of the result is given by the precision of ``x``.
 
-*x* An instance of type ``<real>``. The angle, in radians. If *x* is not
-in the range *[-1,+1]*, an error is signalled.
+   :seealso:
 
-Values
+     - :gf:`asinh`
+     - :gf:`atanh`
 
-*y* An instance of type ``<float>``.
+.. generic-function:: asin
 
-Description
+   :summary:
+     Returns the arc sine of its argument.
 
-Returns the arc cosine of its argument. The floating point precision of
-the result is given by the precision of *x*. The result is a
-single-float if *x* is an integer.
+   :signature: asin x => y
 
-See also
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+                 If ``x`` is not in the range `[-1,+1]`, an error is signalled.
+   :value y: An instance of type :drm:`<float>`.
 
-See the functions `asin`_ and `atan`_.
+   :description:
 
-acosh
------
+     Returns the arc sine of its argument. The floating point precision of
+     the result is given by the precision of ``x``.
 
-G.f. method
------------
+   :seealso:
 
-Summary
+     - :gf:`acos`
+     - :gf:`atan`
 
-Returns the hyperbolic arc cosine of its argument.
+.. generic-function:: asinh
 
-Signature
+   :summary:
+     Returns the hyperbolic arc sine of its argument.
 
-acosh *x* => *y*
+   :signature: asinh x => y
 
-Arguments
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-*x* An instance of type ``<real>``. The angle, in radians.
+   :description:
 
-Values
+     Returns the hyperbolic arc sine of its argument. The floating point
+     precision of the result is given by the precision of ``x``.
 
-*y* An instance of type ``<float>``.
+   :seealso:
 
-Description
+     - :gf:`acosh`
+     - :gf:`atanh`
 
-Returns the hyperbolic arc cosine of its argument. The floating point
-precision of the result is given by the precision of *x*. The result is
-a single-float if *x* is an integer.
+.. generic-function:: atan
 
-See also
+   :summary:
+     Returns the arc tangent of its argument.
 
-See the functions `asinh`_ and `atanh`_.
+   :signature: atan x => y
 
-asin
-----
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+                 If ``x`` is not in the range `[-1,+1]`, an error is signalled.
+   :value y: An instance of type :drm:`<float>`.
 
-G.f. method
------------
+   :description:
 
-Summary
+     Returns the arc tangent of its argument. The floating point precision of
+     the result is given by the precision of *x*.
 
-Returns the arc sine of its argument.
+   :seealso:
 
-Signature
+     - :gf:`acos`
+     - :gf:`asin`
 
-asin *x* => *y*
+.. generic-function:: atan2
 
-Arguments
+   :summary:
+     Returns the arc tangent of one angle divided by another.
 
-*x* An instance of type ``<real>``. The angle, in radians. If *x* is not
-in the range *[-1,+1]*, an error is signalled.
+   :signature: atan2 x y => z
 
-Values
+   :parameter x: An instance of type :drm:`<real>`. The first angle, in radians.
+   :parameter y: An instance of type :drm:`<real>`. The second angle, in radians.
+   :value z: An instance of type :drm:`<float>`.
 
-*y* An instance of type ``<float>``.
+   :description:
 
-Description
+     Returns the arc tangent of ``x`` divided by ``y``. ``x`` may be zero if ``y``
+     is not zero. The signs of ``x`` and ``y`` are used to derive what quadrant
+     the angle falls in.
 
-Returns the arc sine of its argument. The floating point precision of
-the result is given by the precision of *x*. The result is a
-single-float if *x* is an integer.
+     The floating point precision of the result is given by the precision of
+     ``x``/``y``.
 
-See also
+.. generic-function:: atanh
 
-See the functions `acos`_ and `atan`_.
+   :summary:
+     Returns the hyperbolic arc tangent of its argument.
 
-asinh
------
+   :signature: atanh x => y
 
-G.f. method
------------
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-Summary
+   :description:
 
-Returns the hyperbolic arc sine of its argument.
+     Returns the hyperbolic arc tangent of its argument. The floating point
+     precision of the result is given by the precision of ``x``.
 
-Signature
+   :seealso:
 
-asinh *x* => *y*
+     - :gf:`acosh`
+     - :gf:`asinh`
 
-Arguments
+.. generic-function:: cos
 
-*x* An instance of type ``<real>``. The angle, in radians.
+   :summary:
+     Returns the cosine of its argument.
 
-Values
+   :signature: cos x => y
 
-*y* An instance of type ``<float>``.
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-Description
+   :description:
 
-Returns the hyperbolic arc sine of its argument. The floating point
-precision of the result is given by the precision of *x*. The result is
-a single-float if *x* is an integer.
+     Returns the cosine of its argument. The floating point precision of the
+     result is given by the precision of ``x``.
 
-See also
+   :seealso:
 
-See the functions `acosh`_ and `atanh`_.
+     - :gf:`sin`
+     - :gf:`sincos`
+     - :gf:`tan`
 
-atan
-----
+.. generic-function:: cosh
 
-G.f. method
------------
+   :summary:
+     Returns the hyperbolic cosine of its argument.
 
-Summary
+   :signature: cosh x => y
 
-Returns the arc tangent of its argument.
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-Signature
+   :description:
 
-atan *x* => *y*
+     Returns the hyperbolic cosine of its argument. The floating point
+     precision of the result is given by the precision of ``x``.
 
-Arguments
+   :seealso:
 
-*x* An instance of type ``<real>``. The angle, in radians. If *x* is not
-in the range *[-1,+1]*, an error is signalled.
+     - :gf:`sinh`
+     - :gf:`tanh`
 
-Values
 
-*y* An instance of type ``<float>``.
+.. constant:: $double-e
 
-Description
+    :summary:
+      The value of *e*, the base of natural logarithms, as a double precision
+      floating point number.
 
-Returns the arc tangent of its argument. The floating point precision of
-the result is given by the precision of *x*. The result is a
-single-float if *x* is an integer.
+    :type: <double-float>
 
-See also
+    :superclasses: :drm:`<float>`
 
-See the functions `acos`_ and `asin`_.
+    :description:
 
-atan2
------
+      The value of *e*, the base of natural logarithms, as a double precision
+      floating point number.
 
-G.f. method
------------
+   :seealso:
 
-Summary
+     - :const:`$single-e`
 
-Returns the arc tangent of one angle divided by another.
+.. constant:: $double-pi
 
-Signature
+   :summary:
+     The value of *π* as a double precision floating point number.
 
-atan2 *x* *y* => *z*
+   :type: <double-float>
 
-Arguments
+   :superclasses: :drm:`<float>`
 
-*x* An instance of type ``<real>``. The first angle, in radians.
+   :description:
 
-*y* An instance of type ``<real>``. The second angle, in radians.
+     The value of *π* as a double precision floating point number.
 
-Values
+   :seealso:
 
-*z* An instance of type ``<float>``.
+     - :const:`$single-pi`
 
-Description
+.. generic-function:: exp
 
-Returns the arc tangent of *x* divided by *y*. x may be zero if y is
-not zero. The signs of x and y are used to derive what quadrant the
-angle falls in.
+   :summary:
+     Returns *e*, the base of natural logarithms, raised to the power
+     indicated by its argument.
 
-The floating point precision of the result is given by the precision of
-*x* /y. The result is a single-float if *x/y* is an integer.
+   :signature: exp x => y
 
-atanh
------
+   :parameter x: An instance of type :drm:`<real>`.
+   :value y: An instance of type :drm:`<float>`.
 
-G.f. method
------------
+   :description:
 
-Summary
+     Returns *e*, the base of natural logarithms, raised to the power ``x``.
+     The floating point precision is given by the precision of ``x``.
 
-Returns the hyperbolic arc tangent of its argument.
+   :seealso:
 
-Signature
+     - :gf:`^`
+     - :func:`ilog2`
+     - :gf:`log`
+     - :func:`logn`
 
-atanh *x* => *y*
+.. generic-function:: hypot
 
-Arguments
+   :summary:
+     Returns the Euclidian distance.
 
-*x* An instance of type ``<real>``. The angle, in radians.
+   :signature: hypot x, y => z
 
-Values
+   :parameter x: An instance of type :drm:`<number>`.
+   :parameter y: An instance of type :drm:`<number>`.
+   :value z: An instance of type :drm:`<number>`.
 
-*y* An instance of type ``<float>``.
+   :description:
 
-Description
+     Returns the Euclidian distance without unnecessary overflow or underflow.
 
-Returns the hyperbolic arc tangent of its argument. The floating point
-precision of the result is given by the precision of *x*. The result is
-a single-float if *x* is an integer.
+     The floating point precision is given by the precision of ``x``.
 
-See also
+.. generic-function:: isqrt
 
-See the functions `acosh`_ and `asinh`_.
+   :summary:
+     Returns the integer square root of its argument.
 
-cos
----
+   :signature: isqrt x => y
 
-G.f. method
------------
+   :parameter x: An instance of type :drm:`<integer>`.
+   :value y: An instance of type :drm:`<integer>`.
 
-Summary
+   :description:
 
-Returns the cosine of its argument.
+     Returns the integer square root of ``x``, that is the greatest integer
+     less than or equal to the exact positive square root of ``x``. If ``x`` <
+     ``0``, an error is signalled.
 
-Signature
+   :seealso:
 
-cos *x* => *y*
+     - :gf:`sqrt`
 
-Arguments
+.. generic-function:: log
 
-*x* An instance of type ``<real>``. The angle, in radians.
+   :summary:
+     Returns the natural logarithm of its argument.
 
-Values
+   :signature: log x => y
 
-*y* An instance of type ``<float>``.
+   :parameter x: An instance of type :drm:`<real>`.
+   :value y: An instance of type :drm:`<float>`.
 
-Description
+   :description:
 
-Returns the cosine of its argument. The floating point precision of the
-result is given by the precision of *x*. The result is a single-float
-if *x* is an integer.
+     Returns the natural logarithm of ``x`` to the base e. If x <= 0 <= 1, an
+     error is signalled. The floating point precision of the result is given
+     by the precision of ``x``.
 
-See also
+   :seealso:
 
-See the functions `sin`_ and `tan`_.
+     - :gf:`exp`
+     - :func:`ilog2`
+     - :func:`logn`
 
-cosh
-----
+.. function:: logn
 
-G.f. method
------------
+   :summary:
+     Returns the logarithm of its argument to the given base.
 
-Summary
+   :signature: logn x b => y
 
-Returns the hyperbolic cosine of its argument.
+   :parameter x: An instance of :drm:`<number>`
+   :parameter b: The base. An instance of :drm:`<number>`.
+   :value y: An instance of :drm:`<number>`.
 
-Signature
+   :description:
 
-cosh *x* => *y*
+     Returns the logarithm of ``x`` to the base ``b``. If x <= 0 <= 1,
+     an error is signalled. The floating point precision of the result is
+     given by the precision of ``x``.
 
-Arguments
+   :seealso:
 
-*x* An instance of type ``<real>``. The angle, in radians.
+     - :gf:`exp`
+     - :gf:`log`
+     - :func:`ilog2`
 
-Values
+.. function:: ilog2
 
-*y* An instance of type ``<float>``.
+   :summary:
+     Returns the base two logarithm of its argument, truncated to an
+     integer.
 
-Description
+   :signature: ilog2 x => y
 
-Returns the hyperbolic cosine of its argument. The floating point
-precision of the result is given by the precision of *x*. The result is
-a single-float if *x* is an integer.
+   :parameter x: An instance of :drm:`<integer>`.
+   :value y: An instance of :drm:`<integer>`.
 
-See also
+   :description:
 
-See the functions `sinh`_ and `tanh`_.
+     Returns the integer base two logarithm of ``x``, that is the
+     greatest integer less than or equal to the exact base two logarithm
+     of ``x``.
 
-$double-e
----------
+   :seealso:
 
-Constant
---------
+     - :gf:`exp`
+     - :func:`logn`
+     - :gf:`log`
 
-Summary
+.. generic-function:: sin
 
-The value of *e*, the base of natural logarithms, as a double precision
-floating point number.
+   :summary:
+     Returns the sine of its argument.
 
-Type
+   :signature: sin x => y
 
-``<double-float>``
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-Superclass
+   :description:
 
-``<float>``
+     Returns the sine of its argument. The floating point precision of the
+     result is given by the precision of ``x``.
 
-Description
+   :seealso:
 
-The value of *e*, the base of natural logarithms, as a double precision
-floating point number.
+     - :gf:`cos`
+     - :gf:`sincos`
+     - :gf:`tan`
 
-See also
+.. generic-function:: sincos
 
-See the constant `$single-e`_.
+   :summary:
+     Returns both the sine and the cosine of its argument.
 
-$double-pi
-----------
+   :signature: sincos x => (s, c)
 
-Constant
---------
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value s: An instance of type :drm:`<float>`. The result of ``sin(x)``.
+   :value c: An instance of type :drm:`<float>`. The result of ``cos(x)``.
 
-Summary
+   :description:
 
-The value of π as a double precision floating point number.
+     Returns both the sine and the cosine of its argument. The floating point
+     precision of the results is given by the precision of ``x``.
 
-Type
+   :seealso:
 
-``<double-float>``
+     :gf:`cos`
+     :gf:`sin`
 
-Superclass
+.. constant:: $single-e
 
-``<float>``
+   :summary:
+     The value of *e*, the base of natural logarithms, as a single precision
+     floating point number.
 
-Description
+   :type: <single-float>
 
-The value of π as a double precision floating point number.
+   :superclasses: :drm:`<float>`
 
-See also
+   :description:
 
-See the constant `$single-pi`_.
+     The value of *e*, the base of natural logarithms, as a single precision
+     floating point number.
 
-exp
----
+   :seealso:
 
-G.f. method
------------
+     - :const:`$double-e`
 
-Summary
+.. constant:: $single-pi
 
-Returns *e*, the base of natural logarithms, raised to the power
-indicated by its argument.
+   :summary:
+     The value of *π* as a single precision floating point number.
 
-Signature
+   :type: <single-float>
 
-exp *x* => *y*
+   :superclasses: :drm:`<float>`
 
-Arguments
+   :description:
 
-*x* An instance of type ``<real>``.
+     The value of *π* as a single precision floating point number.
 
-Values
+   :seealso:
 
-*y* An instance of type ``<float>``.
+     - :const:`$double-pi`
 
-Description
+.. generic-function:: sinh
 
-Returns *e*, the base of natural logarithms, raised to the power *x*.
-The floating point precision is given by the precision of *x*.
+   :summary:
+     Returns the hyperbolic sine of its argument.
 
-See also
+   :signature: sinh x => y
 
-See the functions `^`_ and `log`_.
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-isqrt
------
+   :description:
 
-G.f. method
------------
+     Returns the hyperbolic sine of its argument. The floating point
+     precision of the result is given by the precision of ``x``.
 
-Summary
+   :seealso:
 
-Returns the integer square root of its argument.
+     - :gf:`cosh`
+     - :gf:`tanh`
 
-Signature
+.. generic-function:: sqrt
 
-isqrt *x* => *y*
+   :summary:
+     Returns the square root of its argument.
 
-Arguments
+   :signature: sqrt x => y
 
-*x* An instance of type ``<integer>``.
+   :parameter x: An instance of type :drm:`<real>`.
+   :value y: An instance of type :drm:`<float>`.
 
-Values
+   :description:
 
-*y* An instance of type ``<integer>``.
+     Returns the square root of x. If x is less than zero an error is
+     signalled. The floating point precision of the result is given by the
+     precision of ``x``.
 
-Description
+   :seealso:
 
-Returns the integer square root of *x*, that is the greatest integer
-less than or equal to the exact positive square root of *x*. If *x* <
-*0*, an error is signalled.
+     - :gf:`isqrt`
 
-See also
+.. generic-function:: tan
 
-See the function `sqrt`_.
+   :summary:
+     Returns the tangent of its argument.
 
-log
----
+   :signature: tan x => y
 
-G.f. method
------------
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :value y: An instance of type :drm:`<float>`.
 
-Summary
+   :description:
 
-Returns the natural logarithm of its argument.
+     Returns the tangent of its argument. The floating point precision of the
+     result is given by the precision of ``x``.
 
-Signature
+   :seealso:
 
-log *x* => *y*
+     - :gf:`cos`
+     - :gf:`sin`
 
-Arguments
+.. generic-function:: tanh
 
-*x* An instance of type *<real>.*
+   :summary:
+     Returns the hyperbolic tangent of its argument.
 
-Values
+   :signature: tanh x => y
 
-*y* An instance of type ``<float>``.
+   :parameter x: An instance of type :drm:`<real>`. The angle, in radians.
+   :parameter y: An instance of type :drm:`<float>`.
 
-Description
+   :description:
 
-Returns the natural logarithm of *x* to the base e. If x <= 0 <= 1, an
-error is signalled. The floating point precision of the result is given
-by the precision of *x*. The result is a single-float if *x* is an
-integer.
+     Returns the hyperbolic tangent of its argument. The floating point
+     precision of the result is given by the precision of ``x``.
 
-See also
+   :seealso:
 
-See also `exp`_, and `logn`_.
-
-logn
-----
-
-G.f. method
------------
-
-Summary
-
-Returns the logarithm of its argument to the given base.
-
-Signature
-
-logn number, base
-
-Arguments
-
-number
-
-*base* A number greater than *1*.
-
-Description
-
-Returns the logarithm of *number* to the base *base*. If x <= 0 <= 1,
-an error is signalled. The floating point precision of the result is
-given by the precision of *number*. The result is a single-float if
-*number* is an integer.
-
-See also
-
-See also `log`_, and `exp`_.
-
-sin
----
-
-G.f. method
------------
-
-Summary
-
-Returns the sine of its argument.
-
-Signature
-
-sin *x* => *y*
-
-Arguments
-
-*x* An instance of type ``<real>``. The angle, in radians.
-
-Values
-
-*y* An instance of type ``<float>``.
-
-Description
-
-Returns the sine of its argument. The floating point precision of the
-result is given by the precision of *x*. The result is a single-float
-if *x* is an integer.
-
-See also
-
-See the functions `cos`_ and `tan`_.
-
-$single-e
----------
-
-Constant
---------
-
-Summary
-
-The value of *e*, the base of natural logarithms, as a single precision
-floating point number.
-
-Type
-
-<single-float>
-
-Superclass
-
-<float>
-
-Description
-
-The value of *e*, the base of natural logarithms, as a single precision
-floating point number.
-
-See also
-
-See the constant `$double-e`_.
-
-$single-pi
-----------
-
-Constant
---------
-
-Summary
-
-The value of π as a single precision floating point number.
-
-Type
-
-<single-float>
-
-Superclass
-
-<float>
-
-Description
-
-The value of π as a single precision floating point number.
-
-See also
-
-See the constant `$double-pi`_.
-
-sinh
-----
-
-G.f. method
------------
-
-Summary
-
-Returns the hyperbolic sine of its argument.
-
-Signature
-
-sinh *x* => *y*
-
-Arguments
-
-*x* An instance of type ``<real>``. The angle, in radians.
-
-Values
-
-*y* An instance of type ``<float>``.
-
-Description
-
-Returns the hyperbolic sine of its argument. The floating point
-precision of the result is given by the precision of *x*. The result is
-a single-float if *x* is an integer.
-
-See also
-
-See the functions `cosh`_ and `tanh`_.
-
-sqrt
-----
-
-G.f. method
------------
-
-Summary
-
-Returns the square root of its argument.
-
-Signature
-
-sqrt *x* => *y*
-
-Arguments
-
-*x* An instance of type ``<real>``. The angle, in radians.
-
-Values
-
-*y* An instance of type ``<float>``.
-
-Description
-
-Returns the square root of x. If x is less than zero an error is
-signalled. The floating point precision of the result is given by the
-precision of *x*. The result is a single-float if *x* is an integer.
-
-See also
-
-See the function `isqrt`_.
-
-tan
----
-
-G.f. method
------------
-
-Summary
-
-Returns the tangent of its argument.
-
-Signature
-
-tan *x* => *y*
-
-Arguments
-
-*x* An instance of type ``<real>``. The angle, in radians.
-
-Values
-
-*y* An instance of type ``<float>``.
-
-Description
-
-Returns the tangent of its argument. The floating point precision of the
-result is given by the precision of *x*. The result is a single-float
-if *x* is an integer.
-
-tanh
-----
-
-G.f. method
------------
-
-Summary
-
-Returns the hyperbolic tangent of its argument.
-
-Signature
-
-tanh *x* => *y*
-
-Arguments
-
-*x* An instance of type ``<real>``. The angle, in radians.
-
-Values
-
-*y* An instance of type ``<float>``.
-
-Description
-
-Returns the hyperbolic tangent of its argument. The floating point
-precision of the result is given by the precision of *x*. The result is
-a single-float if *x* is an integer.
-
-See also
-
-See the functions `cosh`_ and `sinh`_.
+     - :gf:`cosh`
+     - :gf:`sinh`

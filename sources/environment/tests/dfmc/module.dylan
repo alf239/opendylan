@@ -8,7 +8,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define module dfmc-environment-test-suite
   use common-dylan;
-  use simple-io;
+  use simple-format;
   use locators;
 
   use source-records;
@@ -18,7 +18,7 @@ define module dfmc-environment-test-suite
 
   use environment-protocols,
     exclude: { application-filename,
-	       application-arguments };
+               application-arguments };
   use environment-commands;
   use environment-test-suite;
 

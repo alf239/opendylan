@@ -211,6 +211,7 @@ define module llvm
     llvm-module-aliases,
     llvm-module-named-metadata,
     llvm-module-dependent-libraries,
+    llvm-module-add-flag,
     llvm-type-table,
     llvm-global-table,
 
@@ -229,18 +230,23 @@ define module llvm-builder
     llvm-builder-dbg,
     llvm-builder-dbg-setter,
 
+    with-builder-function,
+
     llvm-builder-value,
     llvm-builder-value-function,
 
     llvm-builder-define-global,
     llvm-builder-declare-global,
     llvm-builder-global,
+    llvm-builder-global-defined?,
 
     <llvm-local-value>,
     ins--local,
     llvm-builder-local,
-    
+    llvm-builder-local-defined?,
+
     ins--block,
+    with-insert-before-terminator,
 
     ins--dbg,
 
@@ -315,6 +321,7 @@ define module llvm-builder
     ins--shufflevector,
     
     ins--phi,
+    ins--phi*,
     ins--landingpad,
     
     ins--call,
@@ -343,9 +350,13 @@ define module llvm-builder
     ins--ret,
     ins--br,
     ins--switch,
+    ins--switch*,
     ins--invoke,
     ins--resume,
-    ins--unreachable;
+    ins--unreachable,
+
+    ins--if,
+    ins--iterate;
 end module;
 
 define module llvm-debug
@@ -453,8 +464,21 @@ define module llvm-debug
     $DW-LANG-ObjC-plus-plus,
     $DW-LANG-UPC,
     $DW-LANG-D,
-    $DW-LANG-lo-user,
+    $DW-LANG-Python,
+    $DW-LANG-OpenCL,
+    $DW-LANG-Go,
+    $DW-LANG-Modula3,
+    $DW-LANG-Haskell,
+    $DW-LANG-C-plus-plus-03,
+    $DW-LANG-C-plus-plus-11,
+    $DW-LANG-OCaml,
+    $DW-LANG-Rust,
+    $DW-LANG-C11,
+    $DW-LANG-Swift,
+    $DW-LANG-Julia,
     $DW-LANG-Dylan,
+    $DW-LANG-lo-user,
+    $DW-LANG-Mips-Assembler,
     $DW-LANG-hi-user,
 
     llvm-make-dbg-compile-unit,
@@ -465,7 +489,9 @@ define module llvm-debug
     llvm-make-dbg-local-variable,
     llvm-make-dbg-basic-type,
     llvm-make-dbg-derived-type,
-    llvm-make-dbg-composite-type;
+    llvm-make-dbg-composite-type,
+    llvm-make-dbg-unspecified-parameters,
+    llvm-make-dbg-value-metadata;
 end module;
 
 define module llvm-internals
@@ -475,7 +501,7 @@ define module llvm-internals
               encode-single-float, encode-double-float,
               debug-name, address-of };
   use machine-word-lowlevel;
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use streams;
   use format;
   use print;

@@ -28,36 +28,78 @@ define side-effect-free stateless dynamic-extent mapped-result &runtime-primitiv
 end;
 
 define macro raw-accessor-primitive-definer
-  { define raw-accessor-primitive (?be:name, ?:name, ?raw-value-type:name) }
-     => { define side-effect-free stateless dynamic-extent &unimplemented-primitive-descriptor "primitive-" ## ?name ## "-at"
+  { define raw-accessor-primitive (?be:name, ?:name, ?raw-value-type:name,
+                                   ?sext:expression) }
+     => { define side-effect-free stateless dynamic-extent &primitive-descriptor "primitive-" ## ?name ## "-at"
               (pointer :: <raw-pointer>,
                offset :: <raw-integer>,
 	       byte-offset :: <raw-integer>)
            => (value :: ?raw-value-type);
-            //---*** Fill this in...
+            let pointer
+              = if (instance?(pointer.llvm-value-type, <llvm-integer-type>))
+                  ins--inttoptr(?be, pointer, $llvm-i8*-type)
+                else
+                  pointer
+                end;
+            let type = llvm-reference-type(?be, dylan-value(?#"raw-value-type"));
+            let pointer-byte-off = ins--gep(?be, pointer, byte-offset);
+            let pointer-cast
+              = ins--bitcast(?be, pointer-byte-off, llvm-pointer-to(?be, type));
+            let pointer-off = ins--gep(?be, pointer-cast, offset);
+            let value = ins--load(?be, pointer-off);
+            if (instance?(type, <llvm-integer-type>)
+                  & type.llvm-integer-type-width < back-end-word-size(?be) * 8)
+              if (?sext)
+                ins--sext(?be, value, ?be.%type-table["iWord"])
+              else
+                ins--zext(?be, value, ?be.%type-table["iWord"])
+              end if
+            else
+              value
+            end if;
           end;
-         define side-effecting stateless dynamic-extent &unimplemented-primitive-descriptor 
+         define side-effecting stateless dynamic-extent &primitive-descriptor 
              "primitive-" ## ?name ## "-at-setter"
              (new :: ?raw-value-type,
               pointer :: <raw-pointer>,
               offset :: <raw-integer>,
 	      byte-offset :: <raw-integer>)
-          => (value :: ?raw-value-type);
-           //---*** Fill this in...
+          => (new :: ?raw-value-type);
+            let pointer
+              = if (instance?(pointer.llvm-value-type, <llvm-integer-type>))
+                  ins--inttoptr(?be, pointer, $llvm-i8*-type)
+                else
+                  pointer
+                end;
+            let type = llvm-reference-type(?be, dylan-value(?#"raw-value-type"));
+            let pointer-byte-off = ins--gep(?be, pointer, byte-offset);
+            let pointer-cast
+              = ins--bitcast(?be, pointer-byte-off, llvm-pointer-to(?be, type));
+            let pointer-off = ins--gep(?be, pointer-cast, offset);
+            if (instance?(type, <llvm-integer-type>)
+                  & type.llvm-integer-type-width < back-end-word-size(?be) * 8)
+              let new-trunc = ins--trunc(?be, new, type);
+              ins--store(?be, new-trunc, pointer-off);
+            else
+              ins--store(?be, new, pointer-off);
+            end if;
+            new
          end }
 end;
 
-define raw-accessor-primitive(be, c-double, <raw-c-double>);
-define raw-accessor-primitive(be, c-float, <raw-c-float>);
-define raw-accessor-primitive(be, c-pointer, <raw-c-pointer>);
-define raw-accessor-primitive(be, c-signed-char, <raw-c-signed-char>);
-define raw-accessor-primitive(be, c-signed-int, <raw-c-signed-int>);
-define raw-accessor-primitive(be, c-signed-long, <raw-c-signed-long>);
-define raw-accessor-primitive(be, c-signed-short, <raw-c-signed-long>);
-define raw-accessor-primitive(be, c-unsigned-char, <raw-c-unsigned-char>);
-define raw-accessor-primitive(be, c-unsigned-int, <raw-c-unsigned-int>);
-define raw-accessor-primitive(be, c-unsigned-long, <raw-c-unsigned-long>);
-define raw-accessor-primitive(be, c-unsigned-short, <raw-c-unsigned-short>);
+define raw-accessor-primitive(be, c-double, <raw-c-double>, #f);
+define raw-accessor-primitive(be, c-float, <raw-c-float>, #f);
+define raw-accessor-primitive(be, c-pointer, <raw-c-pointer>, #f);
+define raw-accessor-primitive(be, c-signed-char, <raw-c-signed-char>, #t);
+define raw-accessor-primitive(be, c-signed-int, <raw-c-signed-int>, #t);
+define raw-accessor-primitive(be, c-signed-long, <raw-c-signed-long>, #t);
+define raw-accessor-primitive(be, c-signed-short, <raw-c-signed-short>, #t);
+define raw-accessor-primitive(be, c-ssize-t, <raw-c-ssize-t>, #t);
+define raw-accessor-primitive(be, c-unsigned-char, <raw-c-unsigned-char>, #f);
+define raw-accessor-primitive(be, c-unsigned-int, <raw-c-unsigned-int>, #f);
+define raw-accessor-primitive(be, c-unsigned-long, <raw-c-unsigned-long>, #f);
+define raw-accessor-primitive(be, c-unsigned-short, <raw-c-unsigned-short>, #f);
+define raw-accessor-primitive(be, c-size-t, <raw-c-size-t>, #f);
 
 define macro raw-field-primitive-definer
   { define raw-field-primitive (?be:name, ?:name, ?raw-value-type:name) }

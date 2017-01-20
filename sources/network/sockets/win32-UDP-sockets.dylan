@@ -75,7 +75,7 @@ define method accessor-read-into!
         with-stack-structure (size-pointer :: <C-int*>)
           pointer-value(size-pointer) := size-of(<SOCKADDR-IN>);
           let nread = win32-recv-buffer-from(the-descriptor,
-                                             buffer-offset(the-buffer, offset),
+                                             byte-storage-offset-address(the-buffer, offset),
                                              count,
                                              0,
                                              addr,
@@ -121,12 +121,12 @@ define method accessor-write-from
         inaddr.sin-family-value := the-remote-host.address-family;
         inaddr.sin-addr-value := the-remote-host.numeric-host-address.network-order;
         inaddr.sin-port-value := accessor-htons(remote-port(accessor));
-        let remaining = count;
+        let remaining :: <buffer-index> = count;
         let addr = pointer-cast(<LPSOCKADDR>, inaddr);
         while (remaining > 0)
           let nwritten =
           win32-send-buffer-to(accessor.socket-descriptor,
-                               buffer-offset(buffer, offset + count - remaining),
+                               byte-storage-offset-address(buffer, offset + count - remaining),
                                remaining,
                                0,
                                addr,

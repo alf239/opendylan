@@ -49,25 +49,26 @@ define module operating-system
     import: { application-name,
               application-filename,
               application-arguments,
-              tokenize-command-string,
               exit-application,
               register-application-exit-function },
     export: all;
 
   create $architecture-little-endian?,
-	 $os-name, $os-variant, $os-version,
-	 $platform-name, $machine-name,
-	 login-name, login-group, owner-name, owner-organization,
-	 environment-variable, environment-variable-setter,
-	 tokenize-environment-variable,
-	 run-application,
+         $os-name, $os-variant, $os-version,
+         $platform-name, $machine-name,
+         login-name, login-group, owner-name, owner-organization,
+         environment-variable, environment-variable-setter,
+         tokenize-environment-variable,
+         run-application,
          <application-process>,
          wait-for-application-process,
          \with-application-output,
-	 create-application-event,
-	 wait-for-application-event,
-	 signal-application-event,
-	 load-library;
+         create-application-event,
+         wait-for-application-event,
+         signal-application-event,
+         load-library,
+         current-process-id,
+         parent-process-id;
 
   create command-line-option-prefix;
 end module operating-system;
@@ -192,7 +193,7 @@ define module locators-internals
          locator-might-have-links?,
          locator-test,
          prefix-equal?;
-  
+
   // Paths
   create canonicalize-path,
          parse-path,
@@ -217,7 +218,7 @@ define module file-system
               type-for-file-stream,
               stream-locator,
               writable-file-stream-position-setter,
-             
+
               <buffer-vector>,
               <multi-buffered-stream>,
               multi-buffered-stream-position-setter,
@@ -256,28 +257,28 @@ define module file-system
 
   // File and directory operations
   create <pathname>,
-	 <file-type>,
-	 <copy/rename-disposition>,
-	 expand-pathname,
-	 shorten-pathname,
-	 file-exists?,
-	 file-type,
-	 link-target,
-	 delete-file,
-	 copy-file,
-	 rename-file,
-	 file-properties,
-	 file-property, file-property-setter,
-	 do-directory,
-	 directory-contents,
-	 create-directory,
-	 delete-directory,
-	 ensure-directories-exist,
-	 directory-empty?,
-	 home-directory,
-	 working-directory, working-directory-setter,
-	 temp-directory,
-	 root-directories;
+         <file-type>,
+         <copy/rename-disposition>,
+         expand-pathname,
+         shorten-pathname,
+         file-exists?,
+         file-type,
+         link-target,
+         delete-file,
+         copy-file,
+         rename-file,
+         file-properties,
+         file-property, file-property-setter,
+         do-directory,
+         directory-contents,
+         create-directory,
+         delete-directory,
+         ensure-directories-exist,
+         directory-empty?,
+         home-directory,
+         working-directory, working-directory-setter,
+         temp-directory,
+         root-directories;
 end module file-system;
 
 define module file-system-internals
@@ -295,28 +296,28 @@ end module file-system-internals;
 
 define module settings
   create \settings-definer,
-	 \settings-class-definer,
-	 \settings-key-definer,
-	 \settings-slots-definer,
-	 \settings-slot-definer,
-	 $settings-table;
+         \settings-class-definer,
+         \settings-key-definer,
+         \settings-slots-definer,
+         \settings-slot-definer,
+         $settings-table;
   create remove-value!;
   create <settings>,
-	 <system-settings>,
-	 <site-settings>,
-	 <site-software-settings>,
-	 <local-settings>,
-	 <local-software-settings>,
-	 <local-hardware-settings>,
-	 <default-user-settings>,
-	 <default-user-software-settings>,
-	 <current-user-settings>,
-	 <current-user-software-settings>;
+         <system-settings>,
+         <site-settings>,
+         <site-software-settings>,
+         <local-settings>,
+         <local-software-settings>,
+         <local-hardware-settings>,
+         <default-user-settings>,
+         <default-user-software-settings>,
+         <current-user-settings>,
+         <current-user-software-settings>;
   //--- Work around emulator macro hygiene problems
   create $uninitialized,
-	 <uninitialized>,
-	 initialized?, uninitialized?,
-	 \uninitialized-or;
+         <uninitialized>,
+         initialized?, uninitialized?,
+         \uninitialized-or;
 end module settings;
 
 define module settings-internals
@@ -324,22 +325,22 @@ define module settings-internals
 
   export initialize-settings,
          invalidate-settings-caches,
-	 settings-parent,
-	 settings-handle,
-	 settings-key-name, settings-key-name-setter,
-	 make-key,
-	 register-key, unregister-key,
-	 get-value, set-value,
-	 do-remove-value!;
+         settings-parent,
+         settings-handle,
+         settings-key-name, settings-key-name-setter,
+         make-key,
+         register-key, unregister-key,
+         get-value, set-value,
+         do-remove-value!;
 
-  //---*** BOOTSTRAPPING: Remove these exports and declare 
+  //---*** BOOTSTRAPPING: Remove these exports and declare
   //---*** the generics dynamic after 2.1a1 is released...
   export invalidate-settings-caches,
-         %settings-key-name-setter; 
+         %settings-key-name-setter;
 end module settings-internals;
 
 define module system-internals
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use dylan-extensions;
   use dylan-direct-c-ffi;
   use threads;

@@ -130,7 +130,6 @@ define module access-path
       remote-value-<,
       remote-value-<=,
       as-integer-losing-precision,
-      as-remote-value-losing-precision,
       remote-value-as-string,
       string-as-remote-value,
       remote-value-low-order-bits,
@@ -528,7 +527,7 @@ define module access-path-nub
 end module;
 
 define module access-path-implementation
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use dylan-extensions,
      import: {<machine-word>, 
               <double-integer>, 

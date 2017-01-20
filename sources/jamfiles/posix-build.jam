@@ -35,17 +35,22 @@ SUFDLL  ?= .so ;                # shared library suffix
 SUFMKF  ?= .mkf ;               # build-system files
 
 if $(COMPILER_BACK_END) = llvm {
-  CC      = clang ;
+  CCFLAGS += $(LLVM_GC_CFLAGS) -fexceptions ;
   SUFOUT  ?= .bc ;             # DFMC output suffix
 } else if $(COMPILER_BACK_END) = c {
+  CCFLAGS += $(C_GC_CFLAGS) ;
   SUFOUT  ?= .c ;
 } else {
+  CCFLAGS += $(HARP_GC_CFLAGS) ;
   SUFOUT  ?= $(SUFOBJ) ;
-  LINKFLAGSDLL += -T $(SYSTEM_LIBDIR)/dylan-elf-dll.script ;
-  LINKFLAGSEXE += -T $(SYSTEM_LIBDIR)/dylan-elf-exe.script ;
+  LINKFLAGSDLL += -Wl,-T,$(SYSTEM_LIBDIR)/dylan-elf-dll.script ;
+  LINKFLAGSEXE += -Wl,-T,$(SYSTEM_LIBDIR)/dylan-elf-exe.script ;
 }
 
-CCFLAGS   += -fPIC $(GC_CFLAGS) ;
+OBJCOPY   ?= objcopy ;
+STRIP     ?= strip ;
+
+CCFLAGS   += -fPIC ;
 
 LINK      ?= $(CC) ;
 LINKFLAGS ?= $(CCFLAGS) ;
@@ -54,7 +59,7 @@ LINKFLAGS ?= $(CCFLAGS) ;
 # Runtime
 #
 
-RUNTIMEDIR ?= $(COMPILER_BACK_END)-$(OSPLAT)-$(OS) ;
+RUNTIMEDIR ?= $(COMPILER_BACK_END)-$(TARGET_PLATFORM) ;
 
 SUPOBJS_harp ?= dylan-support.o ;
 
@@ -64,30 +69,36 @@ SUPPORT = $(SYSTEM_LIBDIR)/runtime/$(RUNTIMEDIR)/$(SUPOBJS_$(COMPILER_BACK_END))
 
 RTOBJS_harp ?= $(SYSTEM_LIBDIR)/runtime/$(RUNTIMEDIR)/libdylan-harp-runtime.a ;
 
-RTOBJS_llvm ?= ;
+RTOBJS_llvm ?= $(SYSTEM_LIBDIR)/runtime/$(RUNTIMEDIR)/libdylan-llvm-runtime.a ;
 
 RTOBJS_c    ?= $(SYSTEM_LIBDIR)/runtime/$(RUNTIMEDIR)/libdylan-c-runtime.a ;
 
-if $(GC_USE_STATIC_BOEHM) = true {
+RTCLIBS_harp ?= $(HARP_GC_LIBS) ;
+
+if $(C_GC_STATIC) {
   RTOBJS_c += $(SYSTEM_LIBDIR)/runtime/$(RUNTIMEDIR)/libgc.a ;
+} else {
+  RTCLIBS_c ?= $(C_GC_LIBS) ;
+}
+
+if $(LLVM_GC_STATIC) {
+  RTOBJS_llvm += $(SYSTEM_LIBDIR)/runtime/$(RUNTIMEDIR)/libgc.a ;
+} else {
+  RTCLIBS_llvm ?= $(LLVM_GC_LIBS) ;
 }
 
 LINKFLAGS += -L$(SYSTEM_LIBDIR)/runtime/$(RUNTIMEDIR)/ ;
 
 # These are passed to the link rules by way of the dylan.lid file
 rtlibs  ?= $(RTOBJS_$(COMPILER_BACK_END)) ;
-rtclibs ?= -lm ;
-
-if $(GC_USE_STATIC_BOEHM) = false {
-  rtclibs += $(GC_LFLAGS) ;
-}
+rtclibs ?= $(RTCLIBS_$(COMPILER_BACK_END)) -lm ;
 
 guilflags ?= ;
 
 #
 # Jambase
 #
-include $(SYSTEM_LIBDIR)/mini-jambase.jam ;
+include $(SYSTEM_BUILD_SCRIPTS)/mini-jambase.jam ;
 
 #
 # Pseudo-targets
@@ -207,18 +218,18 @@ rule DylanLibraryFiles image : files {
     if $(SEPARATE) {
       local _i ;
       for _i in $(_out) {
-	local _mobj = [ FGristFiles $(_i:S=$(SUFOBJ)) ] ;
-	MakeLocate $(_mobj) : $(LOCATE_TARGET) ;
-	if $(SUFOUT) != $(SUFOBJ) {
-	  Cc $(_mobj) : $(_i) ;
-	}
-	LinkDLL $(_dll) : $(_mobj) ;
+        local _mobj = [ FGristFiles $(_i:S=$(SUFOBJ)) ] ;
+        MakeLocate $(_mobj) : $(LOCATE_TARGET) ;
+        if $(SUFOUT) != $(SUFOBJ) {
+          Cc $(_mobj) : $(_i) ;
+        }
+        LinkDLL $(_dll) : $(_mobj) ;
       }
     } else {
       LinkDLL $(_dll) : $(_out) ;
 
       if $(COMPILER_BACK_END) = c {
-	LINKFLAGS on $(_dll) += [ on $(_dll) FIncludes $(HDRS) ] ;
+        LINKFLAGS on $(_dll) += [ on $(_dll) FIncludes $(HDRS) ] ;
       }
     }
   }
@@ -261,17 +272,17 @@ rule DylanLibraryCLibraries image : libraries {
   for lib in $(libraries) {
     switch $(lib) {
       case -L* : _clib_$(image[1]:L) += $(lib) ;
-		 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
+                 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
       case -l* : _clib_$(image[1]:L) += $(lib) ;
-		 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
+                 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
       case -F* : _clib_$(image[1]:L) += $(lib) ;
-		 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
+                 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
       case -framework* : _clib_$(image[1]:L) += $(lib) ;
-		 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
+                 LINKLIBS on $(_dll) $(_exe) += $(lib) ;
       case *.a : lib = [ FGristFiles $(lib) ] ;
-		 SEARCH on $(lib) = $(SEARCH_SOURCE) ;
-		 Depends $(_dll) : $(lib) ;
-		 NEEDLIBS on $(_dll) += $(lib) ;
+                 SEARCH on $(lib) = $(SEARCH_SOURCE) ;
+                 Depends $(_dll) : $(lib) ;
+                 NEEDLIBS on $(_dll) += $(lib) ;
       case * :   Exit Unknown C library $(lib) ;
     }
   }
@@ -305,6 +316,28 @@ rule DylanLibraryCSources image : sources {
       MakeLocate $(_obj) : $(LOCATE_TARGET) ;
 
       Cc $(_obj) : $(_i) ;
+
+      LinkDLL $(_dll) : $(_obj) ;
+    }
+  }
+}
+
+rule DylanLibraryC++Sources image : sources {
+  # DylanLibraryC++Sources image : sources ;
+  #Echo DylanLibraryC++Sources $(image) ":" $(sources) ;
+
+  # Link C++ source files into the shared library.
+  if ! $(SYSTEM) {
+    local _dll = [ FDLLName $(image) ] ;
+    local _exe = [ FEXEName $(image) ] ;
+
+    local _i ;
+    for _i in [ FGristFiles $(sources) ] {
+      SEARCH on $(_i) = $(SEARCH_SOURCE) ;
+      local _obj = [ FGristFiles $(_i:S=$(SUFOBJ)) ] ;
+      MakeLocate $(_obj) : $(LOCATE_TARGET) ;
+
+      C++ $(_obj) : $(_i) ;
 
       LinkDLL $(_dll) : $(_obj) ;
     }
@@ -364,16 +397,16 @@ rule DylanLibraryUses image : library : dir {
       # Another personal library; read its mkf from its build directory.
 
       local SEARCH_SOURCE LOCATE_SOURCE LOCATE_TARGET
-	= $(dir:R=$(LOCATE_TARGET:E=$(.))) ;
+        = $(dir:R=$(LOCATE_TARGET:E=$(.))) ;
       local SOURCE_GRIST ;
 
       local LIBDIR BINDIR ;
       {
-	local _lib = lib ;
-	local _bin = bin ;
+        local _lib = lib ;
+        local _bin = bin ;
 
-	LIBDIR = $(_lib:P=$(PERSONAL_ROOT:E=$(LOCATE_TARGET:P))) ;
-	BINDIR = $(_bin:P=$(PERSONAL_ROOT:E=$(LOCATE_TARGET:P))) ;
+        LIBDIR = $(_lib:P=$(PERSONAL_ROOT:E=$(LOCATE_TARGET:P))) ;
+        BINDIR = $(_bin:P=$(PERSONAL_ROOT:E=$(LOCATE_TARGET:P))) ;
       }
 
       local _mkf = $(MKF:G=$(library:L)) ;
@@ -411,7 +444,10 @@ rule LinkDLL {
 }
 
 actions together LinkDLL bind NEEDLIBS {
-  $(LINK) -shared -o $(<) $(LINKFLAGS) $(>) -L"$(LIBPATH)" $(NEEDLIBS) $(LINKLIBS)
+  $(LINK) -shared -o $(<:Q) $(LINKFLAGS) $(>:Q) -L"$(LIBPATH)" $(NEEDLIBS:Q) $(LINKLIBS)
+  $(OBJCOPY) $(<:Q) $(<:Q).dbg
+  $(OBJCOPY) --add-gnu-debuglink=$(<:Q).dbg $(<:Q)
+  $(STRIP) -s $(<:Q)
 }
 
 rule LinkEXE {
@@ -420,7 +456,10 @@ rule LinkEXE {
 }
 
 actions LinkEXE bind NEEDLIBS {
-  $(LINK) -o $(<) $(LINKFLAGS) $(>) -L"$(LIBPATH)" $(NEEDLIBS) $(LINKLIBS)
+  $(LINK) -o $(<:Q) $(LINKFLAGS) $(>:Q) -L"$(LIBPATH)" $(NEEDLIBS:Q) $(LINKLIBS)
+  $(OBJCOPY) $(<:Q) $(<:Q).dbg
+  $(OBJCOPY) --add-gnu-debuglink=$(<:Q).dbg $(<:Q)
+  $(STRIP) -s $(<:Q)
 }
 
 #

@@ -7,5 +7,25 @@ License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define method format-out (format-string :: <string>, #rest args) => ()
-  apply(format, *standard-output*, format-string, args)
+  with-stream-locked (*standard-output*)
+    apply(format, *standard-output*, format-string, args);
+  end;
+end method;
+
+define method force-out () => ()
+  with-stream-locked (*standard-output*)
+    force-output(*standard-output*);
+  end;
+end method;
+
+define method format-err (format-string :: <string>, #rest args) => ()
+  with-stream-locked (*standard-error*)
+    apply(format, *standard-error*, format-string, args);
+  end;
+end method;
+
+define method force-err () => ()
+  with-stream-locked (*standard-error*)
+    force-output(*standard-error*);
+  end;
 end method;

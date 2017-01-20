@@ -9,10 +9,10 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define library common-dylan
   use dylan,
-    export: { dylan, 
-	      finalization,
-	      threads };
-  export 
+    export: { dylan,
+              finalization,
+              threads };
+  export
     common-dylan,
     common-extensions,
     streams-protocol,
@@ -20,6 +20,8 @@ define library common-dylan
     machine-words,
     simple-random,
     simple-profiling,
+    simple-timers,
+    simple-format,
     simple-io,
     byte-vector,
     transcendentals;
@@ -30,19 +32,31 @@ define module simple-profiling
 
   create \profiling,
          <profiling-state>,
+         start-profiling,
          start-profiling-type,
+         stop-profiling,
          stop-profiling-type,
          profiling-type-result;
 end module simple-profiling;
 
+define module simple-timers
+  create <profiling-timer>,
+         timer-start,
+         timer-stop,
+         timer-accumulated-time,
+         timer-running?;
+end module simple-timers;
+
 define module byte-vector
-  use dylan-extensions, 
+  use dylan-extensions,
     export: { <byte> };
   create <byte-vector>,
          byte-vector-fill,
          byte-vector-ref,
          byte-vector-ref-setter,
-         copy-bytes; 
+         copy-bytes,
+         byte-storage-address,
+         byte-storage-offset-address,
 end module byte-vector;
 
 define module common-extensions
@@ -50,8 +64,9 @@ define module common-extensions
     export: { <bottom>,
               <format-string-condition>,
                 <stack-overflow-error>,
-	        <arithmetic-error>,
+                <arithmetic-error>,
                   <division-by-zero-error>,
+                  <arithmetic-domain-error>,
                   <arithmetic-overflow-error>,
                   <arithmetic-underflow-error>,
               <stretchy-object-vector>,
@@ -67,21 +82,25 @@ define module common-extensions
               remove-all-keys!,
               rest,
               subclass,
-	      \when,
+              \when,
               register-application-exit-function };
   use simple-debugging,
     export: { \assert,
-	      \debug-assert,
-	      debug-message };
+              \debug-assert,
+              debug-message };
   use simple-profiling,
-    export: { \profiling, 
-	      profiling-type-result };
+    export: { \profiling,
+              profiling-type-result };
   use byte-vector,
-    export: { <byte-vector> };
+    export: { <byte-vector>,
+              byte-storage-address,
+              byte-storage-offset-address};
   create <closable-object>,
          <stream>,
          close,
          integer-length,
+         <float-classification>,
+         classify-float,
          decode-float,
          scale-float,
          float-radix,
@@ -96,23 +115,22 @@ define module common-extensions
          $unsupplied, unsupplied, unsupplied?, supplied?,
          $unfound,    unfound,    unfound?,    found?,
          true?, false?,
-	 concatenate!,
-	 condition-to-string,
-	 difference,
-	 position,
-	 split,
+         concatenate!,
+         condition-to-string,
+         difference,
+         position,
+         split,
          join,
-	 fill-table!,
-	 find-element,
-	 find-value,
-         format-to-string,
-	 float-to-string,
-	 integer-to-string,
-	 number-to-string,
-	 string-to-integer,
-	 machine-word-to-string,
-	 string-to-machine-word,
-	 \table-definer,
+         fill-table!,
+         find-element,
+         find-value,
+         float-to-string,
+         integer-to-string,
+         number-to-string,
+         string-to-integer,
+         machine-word-to-string,
+         string-to-machine-word,
+         \table-definer,
          application-name,
          application-filename,
          application-arguments,
@@ -125,8 +143,13 @@ define module common-dylan
   use common-extensions, export: all;
 end module common-dylan;
 
+define module simple-format
+  create format-out,
+         format-to-string;
+end module simple-format;
+
 define module simple-io
-  create format-out;
+  use simple-format, export: all;
 end module simple-io;
 
 define module simple-random
@@ -142,7 +165,7 @@ define module locators-protocol
          list-locator;
 
   create <server-locator>,
-	 <physical-locator>;
+         <physical-locator>;
 end module locators-protocol;
 
 define module streams-protocol
@@ -194,35 +217,38 @@ define module transcendentals
   use dylan-primitives;
   export $single-pi, $double-pi, // $extended-pi,
          $single-e,  $double-e,  // $extended-e,
-	 sqrt,
+         sqrt,
          isqrt,
          log,
          exp,
          logn,
+         ilog2,
          sin,
          cos,
          tan,
+         sincos,
          asin,
          acos,
          atan,
          atan2,
-	 sinh,
-	 cosh,
-	 tanh,
-	 asinh,
-	 acosh,
-	 atanh;
+         sinh,
+         cosh,
+         tanh,
+         asinh,
+         acosh,
+         atanh,
+         hypot;
 end module transcendentals;
 
 define module machine-words
   use dylan-extensions,
     export: {<machine-word>,
-	     $machine-word-size,
-	     $maximum-signed-machine-word,
-	     $minimum-signed-machine-word,
-	     $maximum-unsigned-machine-word,
-	     $minimum-unsigned-machine-word,
-	     as-unsigned };
+             $machine-word-size,
+             $maximum-signed-machine-word,
+             $minimum-signed-machine-word,
+             $maximum-unsigned-machine-word,
+             $minimum-unsigned-machine-word,
+             as-unsigned };
   create %logior,
          %logxor,
          %logand,
@@ -280,5 +306,6 @@ define module common-dylan-internals
   use locators-protocol;
   use simple-random;
   use simple-profiling;
-  use simple-io;
+  use simple-timers;
+  use simple-format;
 end module common-dylan-internals;

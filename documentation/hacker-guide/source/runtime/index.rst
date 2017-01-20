@@ -1,6 +1,6 @@
-#########################
-Open Dylan Runtime Design
-#########################
+###########
+The Runtime
+###########
 
 Originally written by:
 
@@ -15,4 +15,4 @@ Tony Mann, Jonathan Bachrach at Harlequin, Ltd.
    special-features
    mangling
    threads
-   primitives
+   startup

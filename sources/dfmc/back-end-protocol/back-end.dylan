@@ -7,14 +7,14 @@ License:      See License.txt in this distribution for details.
 Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 
-define abstract open class <back-end> (<object>) 
+define abstract open class <back-end> (<object>)
   constant slot mangler = make(<mangler>);
 end class;
 
-define abstract open class <lambda-compiled-data> (<object>) 
+define abstract open class <lambda-compiled-data> (<object>)
 end class;
 
-define abstract open class <local-variable> (<object>) 
+define abstract open class <local-variable> (<object>)
 end class;
 
 define constant $back-end-registry = make(<stretchy-vector>);
@@ -26,44 +26,39 @@ define class <back-end-registry-entry> (<object>)
     required-init-keyword: back-end-class:;
   constant slot back-end-type :: <symbol>,
     required-init-keyword: back-end-type:;
-  constant slot target-architecture :: false-or(<symbol>),
-    required-init-keyword: target-architecture:;
-  constant slot target-os :: false-or(<symbol>),
-    required-init-keyword: target-os:;
+  constant slot back-end-platform-name :: false-or(<symbol>),
+    required-init-keyword: back-end-platform-name:;
 end;
 
 define function register-back-end (class :: <class>,
                                    type :: <symbol>,
-                                   architecture :: false-or(<symbol>),
-                                   os :: false-or(<symbol>)) => ();
+                                   platform-name :: false-or(<symbol>)) => ();
     add!($back-end-registry,
        make(<back-end-registry-entry>,
             back-end-class: class,
             back-end-type: type,
-            target-architecture: architecture,
-            target-os: os));
+            back-end-platform-name: platform-name));
 end;
 
-define function find-back-end (type :: <symbol>,
-                               architecture :: <symbol>,
-                               os :: <symbol>) => (entry);
+define function find-back-end
+    (type :: <symbol>, platform-name :: <symbol>)
+ => (entry)
   choose(method (x)
-           x.back-end-type == type 
-             & (~ x.target-architecture | x.target-architecture == architecture)
-             & (~ x.target-os | x.target-os == os)
+           x.back-end-type == type
+             & (~ x.back-end-platform-name | x.back-end-platform-name == platform-name)
          end, $back-end-registry)
 end;
 
-define function find-back-end-object (name :: <symbol>,
-                                      architecture :: <symbol>,
-                                      os :: <symbol>) => (back-end)
+define function find-back-end-object
+    (name :: <symbol>, platform-name :: <symbol>)
+ => (back-end)
   if (name ~== *cached-back-end-name*)
-    let entries = find-back-end(name, architecture, os);
+    let entries = find-back-end(name, platform-name);
     if (~ empty?(entries))
       *cached-back-end* := make(back-end-class(first(entries)));
       *cached-back-end-name* := name;
     else
-      error("Compiler back-end %s is not available for %s-%s", name, architecture, os);
+      error("Compiler back-end %s is not available for %s", name, platform-name);
     end;
   end;
   *cached-back-end*
@@ -72,8 +67,7 @@ end;
 define sideways method current-back-end () => (back-end)
   if (current-library-description())
     let name = current-back-end-name();
-    let arch = current-processor-name();
-    let os = current-os-name();
-    find-back-end-object(name, arch, os)
+    let platform-name = target-platform-name();
+    find-back-end-object(name, platform-name)
   end;
 end;

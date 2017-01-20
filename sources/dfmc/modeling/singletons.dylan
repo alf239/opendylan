@@ -53,12 +53,19 @@ define method ^subtype? (t1 :: <&type>, t2 :: <&singleton>)
   #f
 end method ^subtype?;
 
+// Tiebreaker
+
+define method ^subtype? (t1 :: <&limited-collection-type>, t2 :: <&singleton>)
+ => (subtype? :: <boolean>)
+  #f
+end method ^subtype?;
+
 //// Disjointness relationships.
 
-define method ^known-disjoint? 
+define method ^known-disjoint?
     (t1 :: <&singleton>, t2 :: <&singleton>)
  => (known-disjoint? :: <boolean>)
-  t1.^singleton-object ~== t2.^singleton-object 
+  t1.^singleton-object ~== t2.^singleton-object
 end method ^known-disjoint?;
 
 // "A singleton type is disjoint from another type if the singleton's object
@@ -72,4 +79,16 @@ end method ^known-disjoint?;
 define method ^known-disjoint? (t1 :: <&type>, t2 :: <&singleton>)
  => (known-disjoint? :: <boolean>)
   ~^instance?(t2.^singleton-object, t1);
+end method ^known-disjoint?;
+
+// Tiebreaker methods
+
+define method ^known-disjoint? (t1 :: <&singleton>, t2 :: <&union>)
+ => (known-disjoint? :: <boolean>)
+  ^known-disjoint?(t1, t2.^union-type1) & ^known-disjoint?(t1, t2.^union-type2)
+end method ^known-disjoint?;
+
+define method ^known-disjoint? (t1 :: <&union>, t2 :: <&singleton>)
+ => (known-disjoint? :: <boolean>)
+  ^known-disjoint?(t1.^union-type1, t2) & ^known-disjoint?(t1.^union-type2, t2)
 end method ^known-disjoint?;

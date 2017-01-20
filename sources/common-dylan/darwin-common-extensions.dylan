@@ -15,47 +15,50 @@ define constant $KERN_PROCARGS2 = 49;
 define function darwin-sysctl
   (mib :: <vector>) => (ret :: false-or(<byte-string>))
   let wsize = raw-as-integer(primitive-word-size());
-  let rmib = make(<byte-string>, size: size(mib) * wsize, fill: '\0');
+  let mib-size :: <integer> = size(mib);
+  let rmib-size :: <integer> = mib-size * 4;
+  let rmib = make(<byte-string>, size: rmib-size, fill: '\0');
   let rosize = make(<byte-string>, size: wsize, fill: '\0');
 
   // create the real mib vector
-  for (i from 0 below size(mib))
+  for (i from 0 below mib-size)
+    let mibval :: <integer> = mib[i];
     primitive-c-signed-int-at
-      (primitive-cast-raw-as-pointer(primitive-string-as-raw(rmib)),
-        integer-as-raw(0), integer-as-raw(i * wsize)) := integer-as-raw(mib[i])
+      (primitive-string-as-raw(rmib),
+       integer-as-raw(0), integer-as-raw(i * 4)) := integer-as-raw(mibval)
   end for;
 
   // get the size of the available data
   when (raw-as-integer(%call-c-function ("sysctl")
     (mib :: <raw-byte-string>, cnt :: <raw-c-unsigned-int>,
      out :: <raw-byte-string> , osize :: <raw-byte-string>,
-     in :: <raw-byte-string>, isize :: <raw-byte-string>)
+     in :: <raw-byte-string>, isize :: <raw-c-size-t>)
     => (ret :: <raw-c-signed-int>)
-    (primitive-string-as-raw(rmib), integer-as-raw(size(rmib)),
-     primitive-unwrap-machine-word($machine-word-zero),
+    (primitive-string-as-raw(rmib), integer-as-raw(rmib-size),
+     primitive-cast-raw-as-pointer(integer-as-raw(0)),
      primitive-string-as-raw(rosize),
-     primitive-unwrap-machine-word($machine-word-zero),
-     primitive-unwrap-machine-word($machine-word-zero)) end) >= 0)
+     primitive-cast-raw-as-pointer(integer-as-raw(0)),
+     integer-as-raw(0)) end) >= 0)
 
-    let osize = raw-as-integer(primitive-c-unsigned-long-at
-      (primitive-cast-raw-as-pointer(primitive-string-as-raw(rosize)),
+    let osize = raw-as-integer(primitive-c-size-t-at
+      (primitive-string-as-raw(rosize),
        integer-as-raw(0), integer-as-raw(0))) + 1;
     let out = make(<byte-string>, size: osize, fill: '\0');
 
-    primitive-c-unsigned-long-at(primitive-cast-raw-as-pointer
-      (primitive-string-as-raw(rosize)), integer-as-raw(0), integer-as-raw(0))
+    primitive-c-size-t-at(primitive-string-as-raw(rosize),
+                          integer-as-raw(0), integer-as-raw(0))
       := integer-as-raw(osize);
 
     // do the actual sysctl
     when(raw-as-integer(%call-c-function ("sysctl")
       (mib :: <raw-byte-string>, cnt :: <raw-c-unsigned-int>,
        out :: <raw-byte-string>, osize :: <raw-byte-string>,
-       in :: <raw-byte-string>, isize :: <raw-byte-string>)
+       in :: <raw-byte-string>, isize :: <raw-c-size-t>)
       => (ret :: <raw-c-signed-int>)
-      (primitive-string-as-raw(rmib), integer-as-raw(size(mib)),
+      (primitive-string-as-raw(rmib), integer-as-raw(mib-size),
        primitive-string-as-raw(out), primitive-string-as-raw(rosize),
-       primitive-unwrap-machine-word($machine-word-zero),
-       primitive-unwrap-machine-word($machine-word-zero)) end) >= 0)
+       primitive-cast-raw-as-pointer(integer-as-raw(0)),
+       integer-as-raw(0)) end) >= 0)
       out
     end when;
   end when;
@@ -65,7 +68,7 @@ end function;
 /// to get the process's filename. It only works on OS X > 10.3.
 /// The data format returned by KERN_PROCARGS2 is:
 /// [int32] <--- argc
-/// [string] <--- cmd name
+/// [string] <--- cmd name (relative to current directory)
 /// [NUL]* <--- 1-3 padding NUL's, to align next string
 /// [string] <--- cmd name (again)
 /// [NUL]* <--- more padding NUL's
@@ -80,7 +83,7 @@ define inline-only function get-application-commandline
   if (cmdline)
     let argc =
       raw-as-integer(primitive-c-signed-int-at
-                       (primitive-cast-raw-as-pointer(primitive-string-as-raw(cmdline)),
+                       (primitive-string-as-raw(cmdline),
                         integer-as-raw(0), integer-as-raw(0)));
     // tokenize the returned buffer
     let tokens = make(<stretchy-vector>);
@@ -103,7 +106,9 @@ define inline-only function get-application-commandline
         add!(tokens, token);
       end;
     end while;
-    *application-filename* := tokens[0];
+    // tokens[0] is the command name, but we want the absolute path
+    // for *application-filename* so we get that through other means
+    // we used to get it here, but that was wrong.
     let name = make(<byte-string>);
     for (x in tokens[1])
       if (x == '/')
@@ -118,42 +123,20 @@ define inline-only function get-application-commandline
   end
 end function;
 
-define function get-application-filename
-    () => (location :: false-or(<string>))
-  let bufsiz :: <integer> = 128;
-  let size = primitive-wrap-machine-word
-    (primitive-cast-pointer-as-raw
-       (%call-c-function ("GC_malloc")
-          (nbytes :: <raw-c-unsigned-long>) => (p :: <raw-c-pointer>)
-          (integer-as-raw(4))
-       end));
-  let err = -1;
-  block (return)
-    while (err == -1)
-      let buffer = make(<byte-string>, size: bufsiz, fill: '\0');
-      primitive-c-unsigned-int-at-setter(integer-as-raw(bufsiz), size,
-                                         integer-as-raw(0), integer-as-raw(0));
-      if (raw-as-integer
-            (%call-c-function ("_NSGetExecutablePath")
-               (buf :: <raw-byte-string>, siz :: <raw-c-pointer> /* uint32_t */)
-               => (result :: <raw-c-signed-int>)
-               (primitive-string-as-raw(buffer), size)
-            end) == 0)
-        let real-size = raw-as-integer(primitive-c-unsigned-int-at
-                                         (size,
-                                          integer-as-raw(0),
-                                          integer-as-raw(0)));
-        return(copy-sequence(buffer, end: real-size))
-      else
-        bufsiz := raw-as-integer(primitive-c-unsigned-int-at
-                                   (size, integer-as-raw(0), integer-as-raw(0)));
-      end
-    end;
-    #f
-  cleanup
-    %call-c-function ("GC_free") (p :: <raw-c-pointer>) => (void :: <raw-c-void>)
-      (primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(size)))
-    end
-  end
-end function;
+define inline-only function get-application-filename () => (res :: <string>)
+  let length = raw-as-integer(%call-c-function("application_filename_length")
+                                ()
+                                => (length :: <raw-c-unsigned-int>)
+                                ()
+                             end);
 
+  let buffer = make(<byte-string>, size: length, fill: '\0');
+  let len = raw-as-integer(%call-c-function("application_filename_name")
+                             (buffer :: <raw-byte-string>,
+                              length :: <raw-c-unsigned-int>)
+                             => (res :: <raw-c-unsigned-int>)
+                             (primitive-string-as-raw(buffer),
+                              integer-as-raw(length))
+                          end);
+  copy-sequence(buffer, end: len);
+end;

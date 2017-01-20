@@ -233,7 +233,7 @@ define llvm-builder function-test ins--dbg ()
   let dbg-compile-unit
     = llvm-make-dbg-compile-unit($DW-LANG-C99, "test.c", ".", "test");
   let dbg-file
-    = llvm-make-dbg-file(dbg-compile-unit, "test.c", ".");
+    = llvm-make-dbg-file("test.c", ".");
   let dbg-function-type
     = llvm-make-dbg-function-type(dbg-file, #f, #[]);
   let dbg-function
@@ -1023,6 +1023,10 @@ define llvm-builder function-test ins--shufflevector ()
 end function-test ins--shufflevector;
 
 define llvm-builder function-test ins--phi ()
+  //---*** Fill this in...
+end function-test ins--phi;
+
+define llvm-builder function-test ins--phi* ()
   with-test-unit ("ins--phi valid")
     let builder = make-builder-with-test-function();
     let entry = builder.llvm-builder-basic-block;
@@ -1031,13 +1035,13 @@ define llvm-builder function-test ins--phi ()
 
     ins--block(builder, loop);
     let indvar0
-      = ins--phi(builder,
-                 0, entry,
-                 llvm-builder-local(builder, "nextindvar0"), loop);
+      = ins--phi*(builder,
+		  0, entry,
+		  llvm-builder-local(builder, "nextindvar0"), loop);
     let indvar1
-      = ins--phi(builder,
-                 40, entry,
-                 llvm-builder-local(builder, "nextindvar1"), loop);
+      = ins--phi*(builder,
+		  40, entry,
+		  llvm-builder-local(builder, "nextindvar1"), loop);
     ins--local(builder, "nextindvar0", ins--add(builder, indvar0, 1));
     ins--local(builder, "nextindvar1", ins--add(builder, indvar1, 1));
     ins--br(builder, loop);
@@ -1053,7 +1057,7 @@ define llvm-builder function-test ins--phi ()
                 builder-test-function-disassembly(builder));
   end;
 
-  with-test-unit ("ins--phi invalid")
+  with-test-unit ("ins--phi* invalid")
     check-condition
       ("ins--phi must be grouped at basic block beginning",
        <error>,
@@ -1064,19 +1068,19 @@ define llvm-builder function-test ins--phi ()
          ins--br(builder, loop);
          ins--block(builder, loop);
          let indvar0
-           = ins--phi(builder,
-                      0, entry,
-                      llvm-builder-local(builder, "nextindvar0"), loop);
+           = ins--phi*(builder,
+		       0, entry,
+		       llvm-builder-local(builder, "nextindvar0"), loop);
          ins--local(builder, "nextindvar0", ins--add(builder, indvar0, 1));
          let indvar1
-           = ins--phi(builder,
-                      40, entry,
-                      llvm-builder-local(builder, "nextindvar1"), loop);
+           = ins--phi*(builder,
+		       40, entry,
+		       llvm-builder-local(builder, "nextindvar1"), loop);
          ins--local(builder, "nextindvar1", ins--add(builder, indvar1, 1));
          ins--br(builder, loop);
        end);
   end;
-end function-test ins--phi;
+end function-test ins--phi*;
 
 define llvm-builder function-test ins--call ()
   //---*** Fill this in...
@@ -1419,13 +1423,17 @@ define llvm-builder function-test ins--br ()
 end function-test ins--br;
 
 define llvm-builder function-test ins--switch ()
+  //---*** Fill this in...
+end function-test ins--switch;
+
+define llvm-builder function-test ins--switch* ()
   let builder = make-builder-with-test-function();
   let bb1 = make(<llvm-basic-block>, name: "bb.1");
   let bb2 = make(<llvm-basic-block>, name: "bb.2");
   let bb3 = make(<llvm-basic-block>, name: "bb.3");
-  ins--switch(builder, 17, bb3,
-              1, bb1,
-              2, bb2);
+  ins--switch*(builder, 17, bb3,
+	       1, bb1,
+	       2, bb2);
   ins--block(builder, bb1);
   ins--br(builder, bb2);
   ins--block(builder, bb2);
@@ -1433,7 +1441,7 @@ define llvm-builder function-test ins--switch ()
   ins--block(builder, bb3);
   ins--ret(builder);
 
-  check-equal("ins--switch disassembly",
+  check-equal("ins--switch* disassembly",
               #("entry:",
                 "switch i32 17, label %bb.3 [",
                 "  i32 1, label %bb.1",
@@ -1443,7 +1451,7 @@ define llvm-builder function-test ins--switch ()
                 "bb.2:", "br label %bb.1",
                 "bb.3:", "ret void"),
               builder-test-function-disassembly(builder));
-end function-test ins--switch;
+end function-test ins--switch*;
 
 define llvm-builder function-test ins--invoke ()
   //---*** Fill this in...
@@ -1503,3 +1511,200 @@ define llvm-builder function-test ins--landingpad ()
                 "        cleanup"),
               builder-test-function-disassembly(builder));
 end function-test ins--landingpad;
+
+define llvm-builder macro-test ins--if-test ()
+  with-test-unit ("ins--if, no else, no value")
+    let builder = make-builder-with-test-function();
+
+    let float-type = make(<llvm-primitive-type>, kind: #"FLOAT");
+    let ptr = ins--alloca(builder, float-type, 1, alignment: 4);
+
+    let cmp = ins--icmp-uge(builder, 1, 2);
+    ins--if(builder, cmp)
+      ins--store(builder, 1.0s0, ptr, alignment: 4);
+    end ins--if;
+
+    check-equal("ins--if disassembly",
+                #("entry:",
+                  "%0 = alloca float, align 4",
+                  "%1 = icmp uge i32 1, 2",
+                  "br i1 %1, label %2, label %3",
+                  "store float 1.000000e+00, float* %0, align 4",
+                  "br label %3"),
+                builder-test-function-disassembly(builder));
+  end;
+
+  with-test-unit ("ins--if with else, no value")
+    let builder = make-builder-with-test-function();
+
+    let float-type = make(<llvm-primitive-type>, kind: #"FLOAT");
+    let ptr = ins--alloca(builder, float-type, 1, alignment: 4);
+
+    let cmp = ins--icmp-uge(builder, 1, 2);
+    ins--if(builder, cmp)
+      ins--store(builder, 1.0s0, ptr, alignment: 4);
+    ins--else
+      ins--store(builder, 2.0s0, ptr, alignment: 4);
+    end ins--if;
+
+    check-equal("ins--if disassembly",
+                #("entry:",
+                  "%0 = alloca float, align 4",
+                  "%1 = icmp uge i32 1, 2",
+                  "br i1 %1, label %2, label %3",
+                  "store float 1.000000e+00, float* %0, align 4",
+                  "br label %4",
+                  "store float 2.000000e+00, float* %0, align 4",
+                  "br label %4"),
+                builder-test-function-disassembly(builder));
+  end;
+
+  with-test-unit ("ins--if, no else, with value")
+    let builder = make-builder-with-test-function();
+
+    let cmp = ins--icmp-uge(builder, 1, 2);
+    ins--if(builder, cmp)
+      ins--add(builder, 1111, 2222);
+    end ins--if;
+
+    check-equal("ins--if disassembly",
+                #("entry:",
+                  "%0 = icmp uge i32 1, 2",
+                  "br i1 %0, label %1, label %3",
+                  "%2 = add i32 1111, 2222",
+                  "br label %3",
+                  "%4 = phi i32 [ %2, %1 ], [ undef, %entry ]"),
+                builder-test-function-disassembly(builder));
+  end;
+
+  with-test-unit ("ins--if with else, with value")
+    let builder = make-builder-with-test-function();
+
+    let cmp = ins--icmp-uge(builder, 1, 2);
+    ins--if(builder, cmp)
+      ins--add(builder, 1111, 2222);
+    ins--else
+      ins--add(builder, 3333, 4444);
+    end ins--if;
+
+    check-equal("ins--if disassembly",
+                #("entry:",
+                  "%0 = icmp uge i32 1, 2",
+                  "br i1 %0, label %1, label %3",
+                  "%2 = add i32 1111, 2222",
+                  "br label %5",
+                  "%4 = add i32 3333, 4444",
+                  "br label %5",
+                  "%6 = phi i32 [ %2, %1 ], [ %4, %3 ]"),
+                builder-test-function-disassembly(builder));
+  end;
+
+  with-test-unit ("ins--if with else, no fall-through")
+    let builder = make-builder-with-test-function();
+
+    let cmp = ins--icmp-uge(builder, 1, 2);
+    ins--if(builder, cmp)
+      ins--add(builder, 1111, 2222);
+    ins--else
+      ins--call-intrinsic(builder, "llvm.trap", vector());
+      ins--unreachable(builder);
+    end ins--if;
+
+    check-equal("ins--if disassembly",
+                #("entry:",
+                  "%0 = icmp uge i32 1, 2",
+                  "br i1 %0, label %1, label %3",
+                  "%2 = add i32 1111, 2222",
+                  "br label %4",
+                  "call void @llvm.trap() #1",
+                  "unreachable"),
+                builder-test-function-disassembly(builder));
+  end;
+
+  with-test-unit ("ins--if with else, no successor block")
+    let builder = make-builder-with-test-function();
+
+    let cmp = ins--icmp-uge(builder, 1, 2);
+    ins--if(builder, cmp)
+      ins--call-intrinsic(builder, "llvm.trap", vector());
+      ins--unreachable(builder);
+    ins--else
+      ins--call-intrinsic(builder, "llvm.trap", vector());
+      ins--unreachable(builder);
+    end ins--if;
+    check-false("no active block", builder.llvm-builder-basic-block);
+
+    check-equal("ins--if disassembly",
+                #("entry:",
+                  "%0 = icmp uge i32 1, 2",
+                  "br i1 %0, label %1, label %2",
+                  "call void @llvm.trap() #1",
+                  "unreachable",
+                  "call void @llvm.trap() #1",
+                  "unreachable"),
+                builder-test-function-disassembly(builder));
+  end;
+end macro-test;
+
+define llvm-builder macro-test ins--iterate-test ()
+  with-test-unit ("ins--iterate with no loop variables")
+    let builder = make-builder-with-test-function();
+
+    ins--iterate loop (builder)
+      ins--call-intrinsic(builder, "llvm.trap", vector());
+      loop();
+    end ins--iterate;
+
+    check-equal("ins--iterate disassembly",
+                #("entry:",
+                  "br label %0",
+                  "call void @llvm.trap() #1",
+                  "br label %0"),
+                builder-test-function-disassembly(builder));
+  end;
+
+  with-test-unit ("ins--iterate with one loop variable")
+    let builder = make-builder-with-test-function();
+
+    ins--iterate loop (builder, a = 0)
+      loop(ins--add(builder, a, 1));
+    end ins--iterate;
+
+    check-equal("ins--iterate disassembly",
+                #("entry:",
+                  "br label %0",
+                  "%1 = phi i32 [ 0, %entry ], [ %2, %0 ]",
+                  "%2 = add i32 %1, 1",
+                  "br label %0"),
+                builder-test-function-disassembly(builder));
+  end;
+
+  with-test-unit ("ins--iterate with two loop variable and complex control flow")
+    let builder = make-builder-with-test-function();
+
+    ins--iterate loop (builder, sum = 0, i = 0)
+      let cmp = ins--icmp-ult(builder, i, 14);
+      ins--if (builder, cmp)
+        let sum = ins--add(builder, sum, i);
+        let inc = ins--add(builder, i, 1);
+        loop(sum, inc)
+      ins--else
+        sum
+      end ins--if
+    end ins--iterate;
+
+    check-equal("ins--iterate disassembly",
+                #("entry:",
+                  "br label %0",
+                  "%1 = phi i32 [ 0, %entry ], [ %5, %4 ]",
+                  "%2 = phi i32 [ 0, %entry ], [ %6, %4 ]",
+                  "%3 = icmp ult i32 %2, 14",
+                  "br i1 %3, label %4, label %7",
+                  "%5 = add i32 %1, %2",
+                  "%6 = add i32 %2, 1",
+                  "br label %0",
+                  "br label %8"),
+                builder-test-function-disassembly(builder));
+  end;
+
+end macro-test;

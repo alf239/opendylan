@@ -19,9 +19,10 @@ define library llvm-test-suite
 end library;
 
 define module llvm-test-suite
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use testworks;
   use testworks-specs;
+  use %testworks, import: { <test>, make-suite };
   use streams;
   use file-system;
   use locators;

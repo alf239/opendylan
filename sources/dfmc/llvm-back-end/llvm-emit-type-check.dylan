@@ -33,6 +33,14 @@ end method;
 
 define method do-emit-type-check
     (back-end :: <llvm-back-end>, object :: <llvm-value>,
+     type :: <&raw-type>, type-ref :: <llvm-value>)
+ => (true? :: <llvm-value>)
+  // Do nothing
+  emit-reference(back-end, back-end.llvm-builder-module, &true)
+end method;
+
+define method do-emit-type-check
+    (back-end :: <llvm-back-end>, object :: <llvm-value>,
      type, type-ref :: <llvm-value>)
  => (true? :: <llvm-value>)
   let module = back-end.llvm-builder-module;
@@ -41,7 +49,7 @@ define method do-emit-type-check
   let result-bb = make(<llvm-basic-block>);
 
   let cmp = do-emit-instance-cmp(back-end, object, type, type-ref);
-  ins--br(back-end, cmp, result-bb, error-bb);
+  ins--br(back-end, op--likely(back-end, cmp), result-bb, error-bb);
 
   // Not an instance: throw an error
   ins--block(back-end, error-bb);
@@ -56,22 +64,18 @@ define method op--type-check-error
     (back-end :: <llvm-back-end>, object :: <llvm-value>,
      type-ref :: <llvm-value>)
  => ();
-  let module = back-end.llvm-builder-module;
-
-  let tce-iep = dylan-value(#"type-check-error").^iep;
-  let tce-name = emit-name(back-end, module, tce-iep);
-  let tce-global = llvm-builder-global(back-end, tce-name);
-  let undef = make(<llvm-undef-constant>, type: $llvm-object-pointer-type);
-  ins--tail-call(back-end, tce-global,
-                 vector(object, type-ref, undef, undef),
-                 type: llvm-reference-type(back-end, back-end.%mv-struct-type),
-                 calling-convention:
-                   llvm-calling-convention(back-end, tce-iep));
-  ins--unreachable(back-end);
+  op--call-error-iep(back-end, #"type-check-error", object, type-ref);
 end method;
 
 
 /// Instance testing
+
+define method do-emit-instance-cmp
+    (back-end :: <llvm-back-end>, object :: <llvm-value>,
+     type :: <object-reference>, type-ref :: <llvm-value>)
+ => (cmp :: <llvm-value>)
+  do-emit-instance-cmp(back-end, object, type.reference-value, type-ref)
+end method;
 
 // Default dynamic instance check using the function stored in the
 // instance?-iep slot of the <type> object.
@@ -100,10 +104,10 @@ define method do-emit-instance-cmp
   // Call it and return the truth value
   let undef = make(<llvm-undef-constant>, type: $llvm-object-pointer-type);
   let call
-    = ins--call(back-end, iep-func, vector(object, type-ref, undef, undef),
-                calling-convention:
-                  llvm-calling-convention(back-end,
-                                          typical-instance?-iep));
+    = op--call(back-end, iep-func, vector(object, type-ref, undef, undef),
+               calling-convention:
+                 llvm-calling-convention(back-end,
+                                         typical-instance?-iep));
   let result = ins--extractvalue(back-end, call, 0);
   ins--icmp-ne(back-end, result, emit-reference(back-end, module, &false));
 end method;
@@ -137,23 +141,15 @@ define method do-emit-instance-cmp
       emit-tag-cmp(back-end, object, $dylan-tag-unichar);
 
     type == dylan-value(#"<boolean>") =>
-      let nonfalse-bb = make(<llvm-basic-block>);
-      let result-bb = make(<llvm-basic-block>);
-
       // Compare against #f
-      let false-cmp = ins--icmp-eq(back-end, object,
-                                   emit-reference(back-end, m, &false));
-      ins--br(back-end, false-cmp, result-bb, nonfalse-bb);
-
-      // Compare against #t
-      ins--block(back-end, nonfalse-bb);
-      let true-cmp = ins--icmp-eq(back-end, object,
-                                  emit-reference(back-end, m, &true));
-      ins--br(back-end, result-bb);
-
-      // Result
-      ins--block(back-end, result-bb);
-      ins--phi(back-end, $llvm-false, entry-bb, true-cmp, nonfalse-bb);
+      let false-cmp
+        = ins--icmp-eq(back-end, object, emit-reference(back-end, m, &false));
+      ins--if (back-end, false-cmp)
+        $llvm-true
+      ins--else
+        // Compare against #t
+        ins--icmp-eq(back-end, object, emit-reference(back-end, m, &true))
+      end ins--if;
 
     ^sealed-with-no-subclasses?(type) =>
       let result-bb = make(<llvm-basic-block>);
@@ -181,7 +177,7 @@ define method do-emit-instance-cmp
 
       // Result
       ins--block(back-end, result-bb);
-      ins--phi(back-end, $llvm-false, entry-bb, wrapper-cmp, obj-bb);
+      ins--phi*(back-end, $llvm-false, entry-bb, wrapper-cmp, obj-bb);
 
     // One of the designated system classes with a reserved subtype bit:
     ^class-subtype-bit(type) ~== 0 =>
@@ -207,7 +203,7 @@ define method do-emit-instance-cmp
         = ins--ptrtoint(back-end, object, back-end.%type-table["iWord"]);
       let tag-bits
         = ins--and(back-end, object-word, ash(1, $dylan-tag-bits) - 1);
-      apply(ins--switch, back-end, tag-bits, result-bb,
+      apply(ins--switch*, back-end, tag-bits, result-bb,
             $dylan-tag-pointer, tag-pointer-bb,
             switch-cases);
 
@@ -217,34 +213,17 @@ define method do-emit-instance-cmp
         ins--br(back-end, result-bb);
       end unless;
 
-      // Retrieve the <mm-wrapper> object from the object header
+      // Check using the mask in the wrapper
       ins--block(back-end, tag-pointer-bb);
-      let object-cast = op--object-pointer-cast(back-end, object, #"<object>");
-      let wrapper-slot-ptr
-        = ins--gep-inbounds(back-end, object-cast, 0, i32(0));
-      let wrapper
-        = ins--load(back-end, wrapper-slot-ptr, alignment: word-size);
-
-      // Retrieve the mm-wrapper-subtype-mask value (which is a tagged integer)
-      let mask-slot-ptr
-        = op--getslotptr(back-end, wrapper,
-                         #"<mm-wrapper>", #"mm-wrapper-subtype-mask");
-      let mask = ins--load(back-end, mask-slot-ptr, alignment: word-size);
-      let mask-int
-        = ins--ptrtoint(back-end, mask, back-end.%type-table["iWord"]);
-
-      // Compare against the mask for this class type
-      let masked
-        = ins--and(back-end, mask-int,
-                   ash(^class-subtype-bit(type), $dylan-tag-bits));
-      let mask-cmp = ins--icmp-ne(back-end, masked, 0);
+      let mask-cmp
+        = op--heap-object-subtype-bit-instance-cmp(back-end, object, type);
       ins--br(back-end, result-bb);
 
       // Result
       ins--block(back-end, result-bb);
       let true-operands
         = if (empty?(switch-cases)) #[] else vector($llvm-true, true-bb) end;
-      apply(ins--phi, back-end,
+      apply(ins--phi*, back-end,
             $llvm-false, entry-bb,
             mask-cmp, tag-pointer-bb,
             true-operands);
@@ -255,42 +234,51 @@ define method do-emit-instance-cmp
   end case
 end method;
 
-// Compile-time instance check against a <union> instance
-define method do-emit-instance-cmp
-    (back-end :: <llvm-back-end>, object :: <llvm-value>,
-     type :: <&union>, type-ref :: <llvm-value>)
- => (cmp :: <llvm-value>)
+define method op--heap-object-subtype-mask
+    (back-end :: <llvm-back-end>, object :: <llvm-value>)
+ => (mask :: <llvm-value>)
   let word-size = back-end-word-size(back-end);
-  let class :: <&class> = dylan-value(#"<union>");
 
-  // Basic blocks
-  let type2-bb = make(<llvm-basic-block>);
-  let result-bb = make(<llvm-basic-block>);
+  // Retrieve the <mm-wrapper> object from the object header
+  let object-cast = op--object-pointer-cast(back-end, object, #"<object>");
+  let wrapper-slot-ptr
+    = ins--gep-inbounds(back-end, object-cast, 0, i32(0));
+  let wrapper
+    = ins--load(back-end, wrapper-slot-ptr, alignment: word-size);
 
-  let union-type = op--object-pointer-cast(back-end, type-ref, class);
+  // Retrieve the mm-wrapper-subtype-mask value (which is a tagged integer)
+  let mask-slot-ptr
+    = op--getslotptr(back-end, wrapper,
+                     #"<mm-wrapper>", #"mm-wrapper-subtype-mask");
+  let mask = ins--load(back-end, mask-slot-ptr, alignment: word-size);
+  ins--ptrtoint(back-end, mask, back-end.%type-table["iWord"])
+end method;
 
-  // Check against union-type1
-  let type1-slot-ptr
-    = op--getslotptr(back-end, union-type, class, #"union-type1");
-  let type1-ref = ins--load(back-end, type1-slot-ptr, alignment: word-size);
-  let cmp1
-    = do-emit-instance-cmp(back-end, object, type.^union-type1, type1-ref);
-  let type1-branch-bb = back-end.llvm-builder-basic-block;
-  ins--br(back-end, cmp1, result-bb, type2-bb);
+define method op--heap-object-subtype-bit-instance-cmp
+    (back-end :: <llvm-back-end>, object :: <llvm-value>,
+     type :: <&class>)
+ => (cmp :: <llvm-value>)
+  let mask-int
+  = op--heap-object-subtype-mask(back-end, object);
 
-  // cmp1 failed, check against union-type2
-  ins--block(back-end, type2-bb);
-  let type2-slot-ptr
-    = op--getslotptr(back-end, union-type, class, #"union-type2");
-  let type2-ref = ins--load(back-end, type2-slot-ptr, alignment: word-size);
-  let cmp2
-    = do-emit-instance-cmp(back-end, object, type.^union-type2, type2-ref);
-  let type2-branch-bb = back-end.llvm-builder-basic-block;
-  ins--br(back-end, result-bb);
+  // Compare against the mask for this class type
+  let type-mask = ash(^class-subtype-bit(type), $dylan-tag-bits);
+  let masked = ins--and(back-end, mask-int, type-mask);
+  ins--icmp-ne(back-end, masked, 0)
+end method;
 
-  // Result
-  ins--block(back-end, result-bb);
-  ins--phi(back-end, $llvm-true, type1-branch-bb, cmp2, type2-branch-bb)
+define method op--heap-object-subtype-bit-instance-cmp
+    (back-end :: <llvm-back-end>, object :: <llvm-value>,
+     types :: <sequence>)
+ => (cmp :: <llvm-value>)
+  let mask-int
+  = op--heap-object-subtype-mask(back-end, object);
+
+  // Compare against the mask for these class types
+  let type-mask = ash(reduce1(logior, map(^class-subtype-bit, types)),
+                      $dylan-tag-bits);
+  let masked = ins--and(back-end, mask-int, type-mask);
+  ins--icmp-ne(back-end, masked, 0)
 end method;
 
 // Compile-time instance check against a <singleton> instance
@@ -300,8 +288,9 @@ define method do-emit-instance-cmp
  => (cmp :: <llvm-value>);
   let word-size = back-end-word-size(back-end);
   let module = back-end.llvm-builder-module;
+  let o = type.^singleton-object;
   let singleton-ref
-    = if (type.^singleton-object)
+    = if (o & ~load-bound-object?(o))
         emit-indirect-reference(back-end, module, type.^singleton-object);
       else
         let class :: <&class> = dylan-value(#"<singleton>");
@@ -350,18 +339,13 @@ define method do-emit-instance-cmp
   case
     // Both limits
     tagged-min & tagged-max =>
-      let above-bb = make(<llvm-basic-block>);
-      let min-cmp = ins--icmp-sge(back-end, object-word, tagged-min);
-      ins--br(back-end, min-cmp, above-bb, result-bb);
-
-      ins--block(back-end, above-bb);
-      let max-cmp = ins--icmp-sle(back-end, object-word, tagged-max);
+      let bound = ins--sub(back-end, tagged-max, tagged-min);
+      let val = ins--sub(back-end, object-word, tagged-min);
+      let cmp = ins--icmp-ule(back-end, val, bound);
       ins--br(back-end, result-bb);
 
       ins--block(back-end, result-bb);
-      ins--phi(back-end, $llvm-false, entry-bb,
-                         $llvm-false, integer-bb,
-                         max-cmp, above-bb);
+      ins--phi*(back-end, $llvm-false, entry-bb, cmp, integer-bb);
 
     // Lower limit only
     tagged-min =>
@@ -369,8 +353,7 @@ define method do-emit-instance-cmp
       ins--br(back-end, result-bb);
 
       ins--block(back-end, result-bb);
-      ins--phi(back-end, $llvm-false, entry-bb,
-                         min-cmp, integer-bb);
+      ins--phi*(back-end, $llvm-false, entry-bb, min-cmp, integer-bb);
 
     // Upper limit only
     tagged-max =>
@@ -378,8 +361,7 @@ define method do-emit-instance-cmp
       ins--br(back-end, result-bb);
 
       ins--block(back-end, result-bb);
-      ins--phi(back-end, $llvm-false, entry-bb,
-                         max-cmp, integer-bb);
+      ins--phi*(back-end, $llvm-false, entry-bb, max-cmp, integer-bb);
 
     otherwise =>
       error("Neither min nor max set for limited-integer type check");

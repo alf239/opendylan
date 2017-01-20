@@ -8,10 +8,12 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 /// TODO: SHOULD BE SPLIT OUT TO ALLOW C-FUNCTION TO INHERIT SELECTIVELY
 
 define virtual-compiler-model-class <primitive> (<callable-object>, <object>) (<object>)
-  constant slot primitive-descriptor-getter-name :: <symbol>,   
+  constant slot primitive-descriptor-getter-name :: <symbol>,
     init-keyword: getter-name:;
-  constant slot primitive-signature :: <&signature>,   
+  constant slot primitive-signature :: <&signature>,
     init-keyword: signature:;
+  lazy constant slot primitive-signature-spec :: <signature-spec>,
+    init-value: #f, init-keyword: signature-spec:;
   constant slot primitive-value = #f,
     init-keyword: value:;
   slot primitive-properties :: <integer> = 0;
@@ -44,12 +46,12 @@ end method;
 
 do-define-raw-type(#"<raw-object>", #f, raw-object);
 
-define method ^subtype? (t1 :: <&class>, t2 :: <&raw-type>) 
+define method ^subtype? (t1 :: <&class>, t2 :: <&raw-type>)
  => (subtype? :: <boolean>)
   #f
 end method;
 
-define method ^subtype? (t1 :: <&raw-type>, t2 :: <&class>) 
+define method ^subtype? (t1 :: <&raw-type>, t2 :: <&class>)
  => (subtype? :: <boolean>)
   #f
 end method;
@@ -110,10 +112,10 @@ define compiler-open generic raw-type-unboxer-name (raw-type) => (res);
 define compiler-open generic raw-type-c-name (raw-type) => (res);
 
 define property-delegation-getters (<&raw-type>, raw-type-descriptor)
-  raw-type-size, raw-type-alignment, 
-  raw-type-getter, raw-type-setter, 
+  raw-type-size, raw-type-alignment,
+  raw-type-getter, raw-type-setter,
   raw-type-boxed-class, raw-type-boxer, raw-type-unboxer,
-  raw-type-getter-name, raw-type-setter-name, 
+  raw-type-getter-name, raw-type-setter-name,
   raw-type-boxed-class-name, raw-type-boxer-name, raw-type-unboxer-name,
   raw-type-c-name
 end property-delegation-getters;
@@ -168,6 +170,8 @@ define &raw-machine-word-subtypes-and-accessors
     c-unsigned-int,
     c-signed-long,
     c-unsigned-long,
+    c-size-t,
+    c-ssize-t,
     c-signed-long-long,
     c-unsigned-long-long,
     c-pointer;
@@ -181,7 +185,7 @@ define &dylan-raw-machine-word-subtypes
     // dylan raw types
 
     boolean,
-    byte-character, 
+    byte-character,
     unicode-character,
     byte,
     double-byte,
@@ -203,6 +207,8 @@ define &raw-machine-word-subtypes
 end;
 
 define abstract class <raw-aggregate-member> (<object>)
+  constant slot member-name :: <object>,
+    init-keyword: name:, init-value: #f;
   constant slot member-raw-type, required-init-keyword: raw-type:;
 end;
 
@@ -226,7 +232,7 @@ define class <raw-struct-bitfield-member> (<raw-aggregate-member>)
 end;
 
 define class <raw-aggregate-array-member> (<raw-aggregate-member>)
-  constant slot member-array-length :: <integer>, 
+  constant slot member-array-length :: <integer>,
     required-init-keyword: array-length:;
 end;
 
@@ -266,16 +272,16 @@ define method compute-raw-aggregate-layout
     let next-bitfield-offset = running-bitfield-offset + member-width;
     if (member-width = 0)  // not a bitfield
       running-size := round-up-to-mod(running-size, adjusted-alignment)
-	                + member-size;
+                        + member-size;
       running-bitfield-offset := 0;
       next-bitfield-offset := 0;
       force-new-member? := #t;
     elseif (force-new-member?
-	    | member-size ~= previous-member-size  // change in type size
-	    // this field would spill over into the next member
-	    | (next-bitfield-offset > member-size * address-unit-bit-size()))
+            | member-size ~= previous-member-size  // change in type size
+            // this field would spill over into the next member
+            | (next-bitfield-offset > member-size * address-unit-bit-size()))
       running-size := round-up-to-mod(running-size, adjusted-alignment)
-	                + member-size;
+                        + member-size;
       running-bitfield-offset := 0;
       next-bitfield-offset := member-width;
       force-new-member? := #f;
@@ -321,7 +327,7 @@ end;
 /// but this overrides that when packing struct members.
 /// this might better be done as a method on the current back end.
 define function get-default-pack-option () => (x :: <integer>)
-  if (current-processor-name() == #"x86" & current-os-name() == #"win32")
+  if (target-architecture-name() == #"x86" & target-os-name() == #"win32")
     8
   else
     // anything harmlessly large
@@ -400,7 +406,7 @@ end method;
 //// REPEATED SLOT REPRESENTATION TYPES
 ////
 
-define inline method repeated-representation-byte? 
+define inline method repeated-representation-byte?
      (type :: <&type>) => (res :: <boolean>)
   repeated-representation-size(type) = 1
 end method;
@@ -415,7 +421,7 @@ define method repeated-representation-size
   repeated-representation-size(^object-class(^singleton-object(type)))
 end method;
 
-define method repeated-representation-size 
+define method repeated-representation-size
     (type :: <&class>) => (res :: <integer>)
   select (type)
     dylan-value(#"<byte-character>")    => 1;
@@ -426,13 +432,13 @@ define method repeated-representation-size
   end select;
 end method;
 
-define inline function in-range? 
+define inline function in-range?
     (x :: <integer>, min :: <integer>, max :: <integer>) => (res :: <boolean>)
   x >= min & x <= max
 end function;
 
-define inline function subrange? 
-    (min :: <integer>, max :: <integer>, 
+define inline function subrange?
+    (min :: <integer>, max :: <integer>,
      in-min :: <integer>, in-max :: <integer>)
  => (res :: <boolean>)
   in-range?(min, in-min, in-max) & in-range?(max, in-min, in-max)
@@ -444,11 +450,11 @@ define inline function fits-in-bits?
   let unsigned-max = 2 ^ n - 1;
   let signed-min   = - (2 ^ (n - 1));
   let signed-max   = 2 ^ (n - 1) - 1;
-  subrange?(min, max, unsigned-min, unsigned-max) 
+  subrange?(min, max, unsigned-min, unsigned-max)
     | subrange?(min, max, signed-min, signed-max)
 end function;
 
-define method repeated-representation-size 
+define method repeated-representation-size
      (type :: <&limited-integer>) => (res :: <integer>)
   let min = ^limited-integer-min(type);
   let max = ^limited-integer-max(type);
@@ -465,31 +471,31 @@ end method;
 
 define constant <boxer> = false-or(type-union(<&primitive>, <&method>));
 
-define method raw-repeated-representation? 
+define method raw-repeated-representation?
     (type :: <&type>)
- => (well? :: <boolean>, 
+ => (well? :: <boolean>,
      boxer :: <boxer>, unboxer :: <boxer>,
      raw-type :: false-or(<&raw-type>))
   values(#f, #f, #f, #f)
 end method;
 
-define method raw-repeated-representation? 
+define method raw-repeated-representation?
     (type :: <&limited-integer>)
- => (well? :: <boolean>, 
+ => (well? :: <boolean>,
      boxer :: <boxer>, unboxer :: <boxer>,
      raw-type :: false-or(<&raw-type>))
   let size = repeated-representation-size(type);
   let raw-type-name :: false-or(<symbol>)
     = select (size)
-	1         => #"<raw-byte>";
-	2         => #"<raw-double-byte>";
-	otherwise => #f;
+        1         => #"<raw-byte>";
+        2         => #"<raw-double-byte>";
+        otherwise => #f;
       end;
   if (raw-type-name)
     let raw-type = dylan-value(raw-type-name);
-    values(#t, 
-           raw-type-boxer(raw-type), 
-           raw-type-unboxer(raw-type), 
+    values(#t,
+           raw-type-boxer(raw-type),
+           raw-type-unboxer(raw-type),
            raw-type)
   else
     values(#f, #f, #f, #f)
@@ -497,21 +503,21 @@ define method raw-repeated-representation?
 end method;
 
 define constant $raw-repeated-class-names
-  = #[#"<single-float>", #"<double-float>", 
-      #"<machine-word>", 
+  = #[#"<single-float>", #"<double-float>",
+      #"<machine-word>",
       #"<byte-character>", #"<unicode-character>"];
 
-define method raw-repeated-representation? 
+define method raw-repeated-representation?
     (type :: <&singleton>)
- => (well? :: <boolean>, 
+ => (well? :: <boolean>,
      boxer :: <boxer>, unboxer :: <boxer>,
      raw-type :: false-or(<&raw-type>))
   raw-repeated-representation?(^object-class(^singleton-object(type)))
 end method;
 
-define method raw-repeated-representation? 
+define method raw-repeated-representation?
     (type :: <&class>)
- => (well? :: <boolean>, 
+ => (well? :: <boolean>,
      boxer :: <boxer>, unboxer :: <boxer>,
      raw-type :: false-or(<&raw-type>))
   block (return)
@@ -519,9 +525,9 @@ define method raw-repeated-representation?
       let class = dylan-value(class-name);
       if (type == class)
         let raw-type = dylan-value(raw-representation-name(class-name));
-        return(#t, 
-               raw-type-boxer(raw-type), 
-               raw-type-unboxer(raw-type), 
+        return(#t,
+               raw-type-boxer(raw-type),
+               raw-type-unboxer(raw-type),
                raw-type)
       end if;
     end for;
@@ -529,7 +535,7 @@ define method raw-repeated-representation?
   end block;
 end method;
 
-define sealed method repeated-representation 
+define sealed method repeated-representation
     (type :: <&type>) => (type :: <&type>)
   let (raw?, boxer, unboxer, raw-type)
     = raw-repeated-representation?(type);
@@ -540,7 +546,7 @@ define sealed method repeated-representation
   end if;
 end method;
 
-define sealed method cell-representation 
+define sealed method cell-representation
     (type :: <&type>) => (type :: <&type>)
   repeated-representation(type)
 end method;

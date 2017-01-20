@@ -17,18 +17,22 @@ define constant $high-priority        =  1000;
 
 define sealed class <thread> (<portable-double-container>)
 
-  constant slot priority :: <integer>, 
+  constant slot priority :: <integer>,
     init-value: $normal-priority, init-keyword: priority:;
 
-  constant slot thread-name :: <optional-name>,
+  constant slot thread-name :: false-or(<byte-string>),
     init-value: #f, init-keyword: name:;
-  
-  constant slot function :: <function>, 
+
+  constant slot function :: <function>,
     required-init-keyword: function:;
 
   slot function-results :: <simple-object-vector> = #[];
 
+  constant slot thread-id :: <integer> = 0;
+
 end class;
+
+ignore(priority);
 
 define sealed class <synchronous-thread> (<thread>)
 end class;
@@ -58,9 +62,9 @@ define function trampoline-function (thread :: <thread>) => (result :: <function
 end;
 
 
-// Special-thread-function is a dummy function object. It's sole purpose 
+// Special-thread-function is a dummy function object. It's sole purpose
 // is to uniquely identify the very first thread at object initialization
-// time - to give the illusion that the first thread was created by this 
+// time - to give the illusion that the first thread was created by this
 // library.
 // [actually, now it's also used for foreign threads]
 define function special-thread-function () => ()
@@ -74,10 +78,9 @@ define sealed method initialize (thr :: <thread>, #key) => ()
     primitive-initialize-special-thread(thr); // This is the first thread
   else
     let res =
-      primitive-make-thread(thr, thr.thread-name, thr.priority, 
-			    thr.trampoline-function,
-			    primitive-boolean-as-raw
-			      (instance?(thr, <synchronous-thread>)));
+      primitive-make-thread(thr, thr.trampoline-function,
+                            primitive-boolean-as-raw
+                              (instance?(thr, <synchronous-thread>)));
     if  (res ~= $success)
       let class = select (res)
                     $creation-error => <thread-creation-error>;
@@ -104,13 +107,13 @@ define variable *master-thread* = #f;
 *master-thread* := make-first-thread();
 
 
-// make-foreign-thread may be called by the runtime system to 
-// create a Dylan <thread> object, and initialize any Dylan thread-local 
-// data, when a thread created by foreign code calls into Dylan for the 
+// make-foreign-thread may be called by the runtime system to
+// create a Dylan <thread> object, and initialize any Dylan thread-local
+// data, when a thread created by foreign code calls into Dylan for the
 // first time.
 //
 define function make-foreign-thread () => (thread :: <thread>)
-  let thread = make(<thread>, name: "Foreign thread", 
+  let thread = make(<thread>, name: "Foreign thread",
                     function: special-thread-function);
   internal-initialize-thread();
   thread
@@ -118,8 +121,8 @@ end;
 
 define function join-thread (thread1 :: <thread>, #rest more-threads)
  => (thread :: <thread>, #rest thread-values)
-  let signal-join-error 
-    = method (res :: <integer>, thread) 
+  let signal-join-error
+    = method (res :: <integer>, thread)
         error(make(<duplicate-join-error>, thread: thread))
       end method;
   let joined-thread
@@ -152,6 +155,9 @@ define function current-thread () => (thread :: <thread>)
   primitive-current-thread();
 end;
 
+define function current-thread-id () => (thread-id :: <integer>)
+  current-thread().thread-id
+end;
 
 
 ///// Sleep

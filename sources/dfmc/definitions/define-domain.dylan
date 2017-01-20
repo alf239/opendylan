@@ -17,9 +17,9 @@ end dood-class;
 
 define leaf packed-slots form-properties (<domain-definition>, <modifying-form>)
   boolean slot form-sealed? = #t,    // vs. open
-    init-keyword: sealed?:;  
+    init-keyword: sealed?:;
   boolean slot form-sideways? = #f, // vs. upwards (maybe!)
-    init-keyword: sideways?:;  
+    init-keyword: sideways?:;
 end packed-slots;
 
 define inline method domain-definition? (object) => (well? :: <boolean>)
@@ -41,12 +41,24 @@ define &definition domain-definer
     => do-define-domain(form, mods, name, domain-types);
 end &definition;
 
+define serious-program-warning <domain-missing-sealed-adjective>
+  slot condition-variable,
+    required-init-keyword: variable:;
+  format-string "This domain on %s is missing the 'sealed' adjective.";
+  format-arguments variable;
+end serious-program-warning;
+
 define function do-define-domain
     (form, mods, name, domain-types) => (forms)
   let (options, adjectives) = parse-domain-adjectives(name, mods);
+  if (~member?(#"sealed", adjectives))
+    note(<domain-missing-sealed-adjective>,
+         source-location: fragment-source-location(form),
+         variable: name);
+  end if;
   let domain-types = parse-domain-types(domain-types);
-  let tlf 
-    = apply(make, <domain-definition>, 
+  let tlf
+    = apply(make, <domain-definition>,
             source-location:         fragment-source-location(form),
             variable-name:           name,
             adjectives:              adjectives,
@@ -57,7 +69,7 @@ end function;
 
 define function parse-domain-types (types-form)
   macro-case (types-form)
-    { ?types:* } 
+    { ?types:* }
       => types;
   types:
     { }
@@ -82,13 +94,14 @@ define property <domain-sideways-property> => sideways?: = #f
   value sideways = #t;
   // The following becomes #f when the compiler is being compiled as a
   // single component.
-  value compiler-sideways = #t; 
+  value compiler-sideways = #t;
 end property;
 
 define constant domain-adjectives
   = list(<domain-sealed-property>, <domain-sideways-property>);
 
-define function parse-domain-adjectives (name, adjectives-form) => (initargs)
+define function parse-domain-adjectives (name, adjectives-form)
+ => (initargs, adjectives)
   parse-property-adjectives
     (domain-adjectives, adjectives-form, name)
 end function;
@@ -99,7 +112,7 @@ end function;
 define serious-program-warning <domain-not-on-generic-function>
   slot condition-definition,
     required-init-keyword: definition:;
-  format-string 
+  format-string
     "This domain extends the definition %= which does not define a "
     "generic function - ignoring.";
   format-arguments definition;
@@ -115,7 +128,7 @@ define serious-program-warning <domain-on-undefined-variable>
 end serious-program-warning;
 
 define method add-local-definition
-    (definitions :: <definitions>, definition :: <domain-definition>) 
+    (definitions :: <definitions>, definition :: <domain-definition>)
  => (new-definitions :: <definitions>)
   add-in-order(definitions, definition, test: defined-before?)
 end method;
@@ -134,13 +147,13 @@ define method install-top-level-form-bindings
   let def = binding-definition(binding, default: #f);
   if (~def & binding-imported-into-library?(binding))
     note(<domain-on-undefined-variable>,
-	 source-location: form-source-location(form),
-	 variable: binding);
+         source-location: form-source-location(form),
+         variable: binding);
     ignore-modifying-definition(name, form);
   elseif (def & ~instance?(def, <generic-definition>))
     note(<domain-not-on-generic-function>,
-	 source-location: form-source-location(form),
-	 definition:      def);
+         source-location: form-source-location(form),
+         definition:      def);
     ignore-modifying-definition(name, form);
   else
     add-modifying-definition(name, form);

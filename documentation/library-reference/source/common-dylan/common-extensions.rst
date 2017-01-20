@@ -19,13 +19,21 @@ The extensions are:
 - Condition system extensions: :class:`<format-string-condition>`,
   :class:`<simple-condition>`, and :gf:`condition-to-string`.
 - Program constructs: :macro:`iterate` and :macro:`when`.
-- Application development conveniences: :macro:`iterate`,
-  :func:`debug-message`, :func:`ignore`, :func:`ignorable`,
-  :macro:`timing`, :func:`$unsupplied`, :func:`unsupplied?`,
-  :func:`unsupplied`, :macro:`when`, :const:`$unfound`, :func:`one-of`,
-  :func:`unfound?`, and :func:`found?`.
+- Application development conveniences:
+
+  - :func:`debug-message`
+  - :func:`ignore`, :func:`ignorable`
+  - :const:`$unsupplied`, :func:`unsupplied?`, :func:`unsupplied`,
+    :func:`supplied?`
+  - :const:`$unfound` :func:`unfound?`, :func:`found?`, :func:`unfound`
+  - :func:`one-of`
+
+- Performance analysis: :macro:`timing`, :macro:`profiling`.
 - Type conversion functions: :func:`integer-to-string`,
   :func:`string-to-integer`, and :func:`float-to-string`.
+- Byte storage access functions: :gf:`byte-storage-address`,
+  :gf:`byte-storage-offset-address`, which are re-exported from
+  the :doc:`byte-vector module <byte-vector>`.
 
 .. macro:: assert
    :statement:
@@ -52,7 +60,7 @@ The extensions are:
 
      Signals an error if *expression* evaluates to ``#f``.
 
-     An assertion or “assert” is a simple tool for testing that
+     An assertion or "assert" is a simple tool for testing that
      conditions hold in program code.
 
      The *format-string* is a format string as defined on page 112 of
@@ -62,38 +70,38 @@ The extensions are:
      If *expression* is not ``#f``, ``assert`` does not evaluate
      *format-string* or any instances of *format-arg*.
 
-   See also
+   :seealso:
 
-   - :macro:`debug-assert`
+     - :macro:`debug-assert`
 
 .. class:: <byte-character>
    :sealed:
 
-   The class of 8-bit characters that instances of ``<byte-string>`` can
+   The class of 8-bit characters that instances of :drm:`<byte-string>` can
    contain.
 
-   :superclasses: <character>
+   :superclasses: :drm:`<character>`
 
    :description:
 
-     The class of 8-bit characters that instances of ``<byte-string>``
+     The class of 8-bit characters that instances of :drm:`<byte-string>`
      can contain.
 
 .. generic-function:: concatenate!
    :open:
 
-   A destructive version of the Dylan language’s :drm:`concatenate`;
+   A destructive version of the Dylan language's :drm:`concatenate`;
    that is, one that might modify its first argument.
 
    :signature: concatenate! *sequence* #rest *more-sequences* => *result-sequence*
 
-   :parameter sequence: An instance of ``<sequence>``.
-   :parameter #rest more-sequences: Instances of ``<sequence>``.
-   :value result-sequence: An instance of ``<sequence>``.
+   :parameter sequence: An instance of :drm:`<sequence>`.
+   :parameter #rest more-sequences: Instances of :drm:`<sequence>`.
+   :value result-sequence: An instance of :drm:`<sequence>`.
 
    :description:
 
-     A destructive version of the Dylan language’s :drm:`concatenate`;
+     A destructive version of the Dylan language's :drm:`concatenate`;
      that is, one that might modify its first argument.
 
      It returns the concatenation of one or more sequences, in a
@@ -123,13 +131,13 @@ The extensions are:
 
    :signature: condition-to-string *condition* => *string*
 
-   :parameter condition: An instance of ``<condition>``.
-   :value string: An instance of ``<string>``.
+   :parameter condition: An instance of :drm:`<condition>`.
+   :value string: An instance of :drm:`<string>`.
 
    :description:
 
      Returns a string representation of a general instance of
-     ``<condition>``. There is a method on
+     :drm:`<condition>`. There is a method on
      :class:`<format-string-condition>` and method on
      :drm:`<type-error>`.
 
@@ -158,17 +166,21 @@ The extensions are:
      Signals an error if *expression* evaluates to false — but only when
      the code is compiled in debugging mode.
 
-     An assertion or “assert” is a simple and popular development tool
+     An assertion or "assert" is a simple and popular development tool
      for testing conditions in program code.
 
-     This macro is identical to *assert*, except that the assert is
+     This macro is identical to :macro:`assert`, except that the assert is
      defined to take place only while debugging.
 
      The Open Dylan compiler removes debug-assertions when it compiles
-     code in “production” mode as opposed to “debugging” mode.
+     code in "production" mode as opposed to "debugging" mode.
 
      The *format-string* is a format string as defined on page 112 of
      the DRM.
+
+   :seealso:
+
+     - :macro:`assert`
 
 .. function:: debug-message
 
@@ -176,8 +188,8 @@ The extensions are:
 
    :signature: debug-message *format-string* #rest *format-args* => ()
 
-   :parameter format-string:An instance of ``<string>``.
-   :parameter #rest format-args: Instances of ``<object>``.
+   :parameter format-string: An instance of :drm:`<string>`.
+   :parameter #rest format-args: Instances of :drm:`<object>`.
 
    :description:
 
@@ -190,7 +202,7 @@ The extensions are:
    :specializer: <warning>
 
    Prints the message of a warning instance to the Open Dylan debugger
-   window’s messages pane.
+   window's messages pane.
 
    :signature: default-handler *warning* => *false*
 
@@ -200,15 +212,15 @@ The extensions are:
    :description:
 
      Prints the message of a warning instance to the Open Dylan debugger
-     window’s messages pane. It uses :func:`debug-message`, to do so.
+     window's messages pane. It uses :func:`debug-message`, to do so.
 
      This method is a required, predefined method in the Dylan language,
-     described on page 361 of the DRM as printing the warning’s message
+     described on page 361 of the DRM as printing the warning's message
      in an implementation-defined way. We document this method here
      because our implementation of it uses the function
      :func:`debug-message`, which is defined in the *common-dylan*
      library. Thus to use this :drm:`default-handler` method on
-     ``<warning>``, your library needs to use the *common-dylan* library
+     :drm:`<warning>`, your library needs to use the *common-dylan* library
      or a library that uses it, rather than simply using the Dylan
      library.
 
@@ -238,10 +250,10 @@ The extensions are:
 
      Where ``{<my-warning>}`` means an instance of ``<my-warning>``.
 
-   See also
+   :seealso:
 
-   - :func:`debug-message`.
-   - :drm:`default-handler`, page 361 of the DRM.
+     - :func:`debug-message`.
+     - :drm:`default-handler`, page 361 of the DRM.
 
 .. function:: default-last-handler
 
@@ -250,13 +262,13 @@ The extensions are:
 
    :signature: default-last-handler *serious-condition* *next-handler* => ()
 
-   :parameter serious-condition: A object of class ``<serious-condition>``.
+   :parameter serious-condition: A object of class :drm:`<serious-condition>`.
    :parameter next-handler: A function.
 
    :description:
 
      A handler utility function defined on objects of class
-     ``<serious-condition>`` that can be by bound dynamically around a
+     :drm:`<serious-condition>` that can be by bound dynamically around a
      computation via :drm:`let handler <handler>` or installed globally
      via :macro:`define last-handler`.
 
@@ -282,16 +294,16 @@ The extensions are:
        define last-handler <serious-condition>
          = default-last-handler;
 
-   See also
+   :seealso:
 
-   - :macro:`define last-handler`
-   - *win32-last-handler* in the *C FFI and Win32* library reference, under
-     library *win32-user* and module *win32-default-handler*.
+     - :macro:`define last-handler`
+     - *win32-last-handler* in the *C FFI and Win32* library reference, under
+       library *win32-user* and module *win32-default-handler*.
 
 .. macro:: define last-handler
    :defining:
 
-   Defines a “last-handler” to be used after any dynamic handlers and
+   Defines a "last-handler" to be used after any dynamic handlers and
    before calling :drm:`default-handler`.
 
    :macrocall:
@@ -309,12 +321,12 @@ The extensions are:
    :parameter test: A Dylan expression *bnf*. A function of one argument
      called on the condition to test applicability of the handler.
    :parameter init-args: A Dylan expression *bnf*. A sequence of
-     initialization arguments used to make an instance of the handler’s
+     initialization arguments used to make an instance of the handler's
      condition class.
    :parameter handler: A Dylan expression *bnf*. A function of two
      arguments,
    :parameter condition: and *next-handler*, that is called on a
-     condition which matches the handler’s condition class and test
+     condition which matches the handler's condition class and test
      function.
 
    :description:
@@ -344,17 +356,17 @@ The extensions are:
 
      The following form defines a last-handler function called
      *default-last-handler* that is invoked on conditions of class
-     ``<serious-condition>``:
+     :drm:`<serious-condition>`:
 
      .. code-block:: dylan
 
        define last-handler <serious-condition>
          = default-last-handler;
 
-   See also
+   :seealso:
 
-   - *win32-last-handler* in the *C FFI and Win32* library reference,
-     under library *win32-user* and module *win32-default-handler*.
+     - *win32-last-handler* in the *C FFI and Win32* library reference,
+       under library *win32-user* and module *win32-default-handler*.
 
 .. macro:: define table
    :defining:
@@ -368,7 +380,7 @@ The extensions are:
        define table *name* [ :: *type* ] = { [ *key* => *element* ]* }
 
    :parameter name: A Dylan name *bnf*.
-   :parameter type: A Dylan operand *bnf*. Default value: ``<table>``.
+   :parameter type: A Dylan operand *bnf*. Default value: :drm:`<table>`.
    :parameter key: A Dylan expression *bnf*.
    :parameter element: A Dylan expression *bnf*.
 
@@ -379,9 +391,9 @@ The extensions are:
      elements specified.
 
      If the argument *type* is supplied, the new table created is an
-     instance of that type. Therefore *type* must be ``<table>`` or a
+     instance of that type. Therefore *type* must be :drm:`<table>` or a
      subclass thereof. If *type* is not supplied, the new table created
-     is an instance of a concrete subclass of ``<table>``.
+     is an instance of a concrete subclass of :drm:`<table>`.
 
    :example:
 
@@ -400,10 +412,10 @@ The extensions are:
 
    :signature: difference *sequence-1* *sequence-2* #key *test* => *result-sequence*
 
-   :parameter sequence-1: An instance of ``<sequence>``.
-   :parameter sequence-2: An instance of ``<sequence>``.
-   :parameter test: An instance of ``<function>``. Default value: ``\==``.
-   :value result-sequence: An instance of ``<sequence>``.
+   :parameter sequence-1: An instance of :drm:`<sequence>`.
+   :parameter sequence-2: An instance of :drm:`<sequence>`.
+   :parameter test: An instance of :drm:`<function>`. Default value: ``\==``.
+   :value result-sequence: An instance of :drm:`<sequence>`.
 
    :description:
 
@@ -425,9 +437,9 @@ The extensions are:
 
    :signature: false-or *type* #rest *more-types* => *result-type*
 
-   :parameter type: An instance of ``<type>``.
-   :parameter #rest more-types: Instances of ``<type>``.
-   :value result-type: An instance of ``<type>``.
+   :parameter type: An instance of :drm:`<type>`.
+   :parameter #rest more-types: Instances of :drm:`<type>`.
+   :value result-type: An instance of :drm:`<type>`.
 
    :description:
 
@@ -455,9 +467,9 @@ The extensions are:
 
    :signature: fill-table! *table* *keys-and-elements* => *table*
 
-   :parameter table: An instance of ``<table>``.
-   :parameter keys-and-elements: An instance of ``<sequence>``.
-   :value table: An instance of ``<table>``.
+   :parameter table: An instance of :drm:`<table>`.
+   :parameter keys-and-elements: An instance of :drm:`<sequence>`.
+   :value table: An instance of :drm:`<table>`.
 
    :description:
 
@@ -482,17 +494,17 @@ The extensions are:
 
    :signature: find-element *collection* *function* #key *skip* *failure* => *element*
 
-   :parameter collection: An instance of ``<collection>``.
-   :parameter predicate: An instance of ``<function>``.
-   :parameter #key skip: An instance of ``<integer>``. Default value: 0.
-   :parameter #key failure: An instance of ``<object>``. Default value: ``#f``.
-   :value element: An instance of ``<object>``.
+   :parameter collection: An instance of :drm:`<collection>`.
+   :parameter predicate: An instance of :drm:`<function>`.
+   :parameter #key skip: An instance of :drm:`<integer>`. Default value: 0.
+   :parameter #key failure: An instance of :drm:`<object>`. Default value: ``#f``.
+   :value element: An instance of :drm:`<object>`.
 
    :description:
 
      Returns a collection element that satisfies *predicate*.
 
-     This function is identical to Dylan’s :drm:`find-key`, but it
+     This function is identical to Dylan's :drm:`find-key`, but it
      returns the element that satisfies *predicate* rather than the key
      that corresponds to the element.
 
@@ -503,7 +515,7 @@ The extensions are:
    :signature: float-to-string *float* => *string*
 
    :parameter float: An instance of ``<float>``.
-   :value string: An instance of ``<string>``.
+   :value string: An instance of :drm:`<string>`.
 
    :description:
 
@@ -516,57 +528,18 @@ The extensions are:
 
    The class of conditions that take a format string.
 
-   :superclasses: <condition>
+   :superclasses: :drm:`<condition>`
 
    :description:
 
      The class of conditions that take a format string, as defined by
      the DRM.
 
-     It is the superclass of Dylan’s :class:`<simple-condition>`.
+     It is the superclass of Dylan's :class:`<simple-condition>`.
 
-   See also
+   :seealso:
 
-   The Format library.
-
-.. function:: format-to-string
-
-   Returns a formatted string constructed from its arguments.
-
-   :signature: format-to-string *format-string* #rest *format-arguments* => *string*
-
-   :parameter format-string: An instance of ``<byte-string>``.
-   :parameter #rest format-arguments: Instances of ``<object>``.
-   :value result-string: An instance of ``<byte-string>``.
-
-   :conditions:
-
-     This function signals an error if any of the format directives in
-     *format-string* are invalid.
-
-   :description:
-
-     Returns a formatted string constructed from its arguments, which
-     include a *format-string* of formatting directives and a series of
-     *format-arguments* to be formatted according to those directives.
-
-     The *format-string* must be a Dylan format string as described on
-     :drm:`pages 112–114 of the DRM <Condition_Messages>`.
-
-.. function:: found?
-
-   Returns true if *object* is not equal to :const:`$unfound`, and false otherwise.
-
-   :signature: found? *object* => *boolean*
-
-   :parameter object: An instance of ``<object>``.
-   :value boolean: An instance of ``<boolean>``.
-
-   :description:
-
-     Returns true if *object* is not equal to :const:`$unfound`, and false otherwise.
-
-     It uses ``\=`` as the equivalence predicate.
+     - The :doc:`Format module <../io/format>` in the :doc:`IO library <../io/index>`.
 
 .. function:: ignore
 
@@ -614,9 +587,9 @@ The extensions are:
        let (x,y,z) = fn();
        ignore(y);
 
-   See also
+   :seealso:
 
-   - :func:`ignorable`
+     - :func:`ignorable`
 
 .. function:: ignorable
 
@@ -666,9 +639,9 @@ The extensions are:
        let (x,y,z) = fn();
        ignorable(y);
 
-   See also
+   :seealso:
 
-   - :func:`ignore`
+     - :func:`ignore`
 
 .. function:: integer-to-string
 
@@ -676,11 +649,11 @@ The extensions are:
 
    :signature: integer-to-string *integer* #key *base* *size* *fill* => *string*
 
-   :parameter integer: An instance of ``<integer>``.
-   :parameter base: An instance of ``<integer>``. Default value: 10.
-   :parameter size: An instance of ``<integer>`` or ``#f``. Default value: ``#f``.
-   :parameter fill: An instance of ``<character>``. Default value: 0.
-   :value string: An instance of ``<byte-string>``.
+   :parameter integer: An instance of :drm:`<integer>`.
+   :parameter base: An instance of :drm:`<integer>`. Default value: 10.
+   :parameter size: An instance of :drm:`<integer>` or ``#f``. Default value: ``#f``.
+   :parameter fill: An instance of :drm:`<character>`. Default value: 0.
+   :value string: An instance of :drm:`<byte-string>`.
 
    :description:
 
@@ -706,7 +679,7 @@ The extensions are:
    :parameter argument: A Dylan variable-name *bnf*.
    :parameter init-value: A Dylan expression *bnf*.
    :parameter body: A Dylan body *bnf*.
-   :value value: Zero or more instances of ``<object>``.
+   :value value: Zero or more instances of :drm:`<object>`.
 
    :description:
 
@@ -733,9 +706,9 @@ The extensions are:
 
    :signature: one-of *object* #rest *more-objects* => *type*
 
-   :parameter object: An instance of ``<object>``.
-   :parameter #rest more-objects: Instances of ``<object>``.
-   :value type: An instance of ``<type>``.
+   :parameter object: An instance of :drm:`<object>`.
+   :parameter #rest more-objects: Instances of :drm:`<object>`.
+   :value type: An instance of :drm:`<type>`.
 
    :description:
 
@@ -759,13 +732,13 @@ The extensions are:
 
    :signature: position *sequence* *target* #key *test* *start* *end* *skip* *count* => *position*
 
-   :parameter sequence: An instance of ``<sequence>``.
-   :parameter target: An instance of ``<object>``.
-   :parameter #key test: An instance of ``<function>``. Default value: ``\==``.
-   :parameter #key start: An instance of ``<integer>``. Default value: 0.
-   :parameter #key end: An instance of ``<object>``. Default value: ``#f``.
-   :parameter #key skip: An instance of ``<integer>``. Default value: 0.
-   :parameter #key count: An instance of ``<object>``. Default value: ``#f``.
+   :parameter sequence: An instance of :drm:`<sequence>`.
+   :parameter target: An instance of :drm:`<object>`.
+   :parameter #key test: An instance of :drm:`<function>`. Default value: ``\==``.
+   :parameter #key start: An instance of :drm:`<integer>`. Default value: 0.
+   :parameter #key end: An instance of :drm:`<object>`. Default value: ``#f``.
+   :parameter #key skip: An instance of :drm:`<integer>`. Default value: 0.
+   :parameter #key count: An instance of :drm:`<object>`. Default value: ``#f``.
    :value position: An instance of ``false-or(<integer>)``.
 
    :description:
@@ -773,11 +746,11 @@ The extensions are:
      Returns the position at which *target* occurs in *sequence*.
 
      If *test* is supplied, *position* uses it as an equivalence
-     predicate for comparing *sequence* ’s elements to *target*. It should
+     predicate for comparing *sequence* 's elements to *target*. It should
      take two objects and return a boolean. The default predicate used is
      ``\==``.
 
-     The *skip* argument is interpreted as it is by Dylan’s :drm:`find-key`
+     The *skip* argument is interpreted as it is by Dylan's :drm:`find-key`
      function: *position* ignores the first *skip* elements that match
      *target*, and if *skip* or fewer elements satisfy *test*, it
      returns ``#f``.
@@ -792,12 +765,12 @@ The extensions are:
 
    :signature: remove-all-keys! *mutable-collection* => ()
 
-   :parameter mutable-collection: An instance of ``<mutable-collection>``.
+   :parameter mutable-collection: An instance of :drm:`<mutable-collection>`.
 
    :description:
 
      Modifies *mutable-collection* by removing all its keys and leaving it
-     empty. There is a predefined method on ``<table>``.
+     empty. There is a predefined method on :drm:`<table>`.
 
 .. class:: <simple-condition>
    :sealed:
@@ -809,8 +782,8 @@ The extensions are:
 
    :description:
 
-     The class of simple conditions. It is the superclass of ``<simple-error>``,
-     ``<simple-warning>``, and ``<simple-restart>``.
+     The class of simple conditions. It is the superclass of :drm:`<simple-error>`,
+     :drm:`<simple-warning>`, and :drm:`<simple-restart>`.
 
    :operations:
 
@@ -823,7 +796,7 @@ The extensions are:
 
    The class of stretchy sequences.
 
-   :superclasses: <sequence> <stretchy-collection>
+   :superclasses: :drm:`<sequence>`, :drm:`<stretchy-collection>`
 
    :description:
 
@@ -835,17 +808,17 @@ The extensions are:
 
    The class of tables that use strings for keys.
 
-   :superclasses: <table>
+   :superclasses: :drm:`<table>`
 
    :description:
 
-     The class of tables that use instances of ``<string>`` for their
+     The class of tables that use instances of :drm:`<string>` for their
      keys. It is an error to use a key that is not an instance of
-     ``<string>``.
+     :drm:`<string>`.
 
      Keys are compared with the equivalence predicate ``\=``.
 
-     The elements of the table are instances of ``<object>``.
+     The elements of the table are instances of :drm:`<object>`.
 
      It is an error to modify a key once it has been used to add an element
      to a ``<string-table>``. The effects of modification are not defined.
@@ -860,13 +833,13 @@ The extensions are:
 
    :signature: string-to-integer *string* #key *base* *start* *end* *default* => *integer* *next-key*
 
-   :parameter string: An instance of ``<byte-string>``.
-   :parameter #key base: An instance of ``<integer>``. Default value: 10.
-   :parameter #key start: An instance of ``<integer>``. Default value: 0.
-   :parameter #key end: An instance of ``<integer>``. Default value: ``sizeof(*string*)``.
-   :parameter #key default: An instance of ``<integer>``. Default value: :const:`$unsupplied`.
-   :value integer: An instance of ``<integer>``.
-   :value next-key: An instance of ``<integer>``.
+   :parameter string: An instance of :drm:`<byte-string>`.
+   :parameter #key base: An instance of :drm:`<integer>`. Default value: 10.
+   :parameter #key start: An instance of :drm:`<integer>`. Default value: 0.
+   :parameter #key end: An instance of :drm:`<integer>`. Default value: ``sizeof(*string*)``.
+   :parameter #key default: An instance of :drm:`<integer>`. Default value: :const:`$unsupplied`.
+   :value integer: An instance of :drm:`<integer>`.
+   :value next-key: An instance of :drm:`<integer>`.
 
    :description:
 
@@ -882,7 +855,7 @@ The extensions are:
      string, this function returns *default*, if specified. If you do
      not give a value for *default*, this function signals an error.
 
-     This function is similar to C’s ``strtod`` function.
+     This function is similar to C's ``strtod`` function.
 
 .. function:: subclass
 
@@ -890,8 +863,8 @@ The extensions are:
 
    :signature: subclass *class* => *subclass-type*
 
-   :parameter class: An instance of ``<class>``.
-   :value subclass-type: An instance of ``<type>``.
+   :parameter class: An instance of :drm:`<class>`.
+   :value subclass-type: An instance of :drm:`<type>`.
 
    :description:
 
@@ -902,7 +875,7 @@ The extensions are:
      The ``subclass`` function is allowed to return an existing type if
      that type is type equivalent to the subclass type requested.
 
-     Without ``subclass``, methods on generic functions (such as Dylan’s
+     Without ``subclass``, methods on generic functions (such as Dylan's
      standard :drm:`make` and :drm:`as`) that take types as arguments
      are impossible to reuse without resorting to ad hoc techniques. In
      the language defined by the DRM, the only mechanism available for
@@ -933,22 +906,22 @@ The extensions are:
        Always false.
 
      **SUBTYPE-4**: ``subtype?(subclass(*X*), *Y*)``
-       where *Y* is not a subclass type. True if *Y* is ``<class>`` or
-       any proper superclass of ``<class>`` (including ``<object>``, any
+       where *Y* is not a subclass type. True if *Y* is :drm:`<class>` or
+       any proper superclass of :drm:`<class>` (including :drm:`<object>`, any
        implementation-defined supertypes, and unions involving any of
        these). There may be other implementation-defined combinations of
        types *X* and *Y* for which this is also true.
 
      **SUBTYPE-5**: ``subtype?(*X*, subclass(*Y*))``
-       where *X* is not a subclass type. True if *Y* is ``<object>`` or any
-       proper supertype of ``<object>`` and *X* is a subclass of ``<class>``.
+       where *X* is not a subclass type. True if *Y* is :drm:`<object>` or any
+       proper supertype of :drm:`<object>` and *X* is a subclass of :drm:`<class>`.
 
      Note that by subclass relationships *SUBTYPE-4* and *SUBTYPE-5*, we get
-     this correspondence: ``<class>`` and ``subclass(<object>)`` are type
+     this correspondence: :drm:`<class>` and ``subclass(<object>)`` are type
      equivalent.
 
      Where the :drm:`subtype?` test has not been sufficient to determine an
-     ordering for a method’s argument position, the following further
+     ordering for a method's argument position, the following further
      method-ordering rules apply to cases involving subclass types (note that
      a rule applies only when no preceding rule matches):
 
@@ -966,8 +939,8 @@ The extensions are:
      preceding rule matches):
 
      - **DISJOINTNESS+1**. A subclass type ``subclass(*X*)`` and a
-       type *Y* are disjoint if *Y* is disjoint from ``<class>``, or if
-       *Y* is a subclass of ``<class>`` without instance classes that
+       type *Y* are disjoint if *Y* is disjoint from :drm:`<class>`, or if
+       *Y* is a subclass of :drm:`<class>` without instance classes that
        are also subclasses of *X*.
 
      - **DISJOINTNESS+2**. Two subclass types ``subclass(*X*)`` and
@@ -1057,63 +1030,6 @@ The extensions are:
        Making an <A>
        {instance of <D>}
 
-.. function:: supplied?
-
-   Returns true if its argument is not equal to the unique “unsupplied”
-   value, :const:`$unsupplied`, and false if it is.
-
-   :signature: supplied? *object* => *supplied?*
-
-   :parameter object: An instance of ``<object>``.
-   :value supplied?: An instance of ``<boolean>``.
-
-   :description:
-
-     Returns true if *object* is not equal to the unique “unsupplied”
-     value, :const:`$unsupplied`, and false if it is. It uses ``\=`` as
-     the equivalence predicate.
-
-   See also
-
-   - :const:`$unsupplied`
-   - :func:`unsupplied`
-   - :func:`unsupplied?`
-
-.. macro:: timing
-   :statement:
-
-   Returns the time, in seconds and microseconds, spent executing the body
-   of code it is wrapped around.
-
-   :macrocall:
-     .. code-block:: dylan
-
-       timing () [ *body* ] end [ timing ]
-
-   :parameter body: A Dylan body *bnf*
-   :value seconds: An instance of ``<integer>``.
-   :value microseconds: An instance of ``<integer>``.
-
-   :description:
-
-     Returns the time, in seconds and microseconds, spent executing the
-     body of code it is wrapped around.
-
-     The first value returned is the number of whole seconds spent in
-     *body*. The second value returned is the number of microseconds
-     spent in *body* in addition to *seconds*.
-
-   :example:
-
-     .. code-block:: dylan
-
-       timing ()
-         for (i from 0 to 200)
-           format-to-string("%d %d", i, i + 1)
-         end
-       end;
-       => 1 671000
-
 .. constant:: $unfound
 
    A unique value that can be used to indicate that a search operation
@@ -1127,15 +1043,25 @@ The extensions are:
      A unique value that can be used to indicate that a search operation
      failed.
 
-  See also
+   :example:
 
-  - :func:`found?`
-  - :func:`unfound?`
-  - :func:`unfound`
+     .. code-block:: dylan
+
+        if (unfound?(element(section-index-table, section-name,
+                             default: $unfound)))
+          section-index-table[section-name] := section-index-table.size + 1;
+          write-record(stream, #"SECTIONNAME", section-name);
+        end if;
+
+   :seealso:
+
+     - :func:`found?`
+     - :func:`unfound?`
+     - :func:`unfound`
 
 .. function:: unfound
 
-   Returns the unique “unfound” value, :const:`$unfound`.
+   Returns the unique "unfound" value, :const:`$unfound`.
 
    :signature: unfound () => *unfound-marker*
 
@@ -1143,35 +1069,68 @@ The extensions are:
 
    :description:
 
-   Returns the unique “unfound” value, :const:`$unfound`.
+   Returns the unique "unfound" value, :const:`$unfound`.
 
-   See also
+   :example:
 
-   - :func:`found?`
-   - :func:`unfound?`
-   - :const:`$unfound`
+      See :const:`$unfound`.
+
+   :seealso:
+
+     - :func:`found?`
+     - :func:`unfound?`
+     - :const:`$unfound`
+
+.. function:: found?
+
+   Returns true if *object* is not equal to :const:`$unfound`, and false otherwise.
+
+   :signature: found? *object* => *boolean*
+
+   :parameter object: An instance of :drm:`<object>`.
+   :value boolean: An instance of :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if *object* is not equal to :const:`$unfound`, and false otherwise.
+
+     It uses ``\=`` as the equivalence predicate.
+
+   :example:
+
+      See :const:`$unfound`.
+
+   :seealso:
+
+     - :const:`$unfound`
+     - :func:`unfound?`
+     - :func:`unfound`
 
 .. function:: unfound?
 
-   Returns true if its argument is equal to the unique “unfound” value,
+   Returns true if its argument is equal to the unique "unfound" value,
    :const:`$unfound`, and false if it is not.
 
    :signature: unfound? *object* => *unfound?*
 
-   :parameter object: An instance of ``<object>``.
-   :value unfound?: An instance of ``<boolean>``.
+   :parameter object: An instance of :drm:`<object>`.
+   :value unfound?: An instance of :drm:`<boolean>`.
 
    :description:
 
-     Returns true if *object* is equal to the unique “unfound” value,
+     Returns true if *object* is equal to the unique "unfound" value,
      :const:`$unfound`, and false if it is not. It uses ``\=``
      as the equivalence predicate.
 
-   See also
+   :example:
 
-   - :func:`found?`
-   - :const:`$unfound`
-   - :func:`unfound`
+      See :const:`$unfound`.
+
+   :seealso:
+
+     - :func:`found?`
+     - :const:`$unfound`
+     - :func:`unfound`
 
 .. constant:: $unsupplied
 
@@ -1186,15 +1145,33 @@ The extensions are:
      A unique value that can be used to indicate that a keyword was not
      supplied.
 
-   See also
+   :example:
 
-   - :func:`supplied?`
-   - :func:`unsupplied`
-   - :func:`unsupplied?`
+     .. code-block:: dylan
+
+        define method find-next-or-previous-string
+            (frame :: <editor-state-mixin>,
+             #key reverse? = $unsupplied)
+         => ()
+          let editor :: <basic-editor> = frame-editor(frame);
+          let reverse?
+            = if (supplied?(reverse?))
+                reverse?
+              else
+                editor-reverse-search?(editor)
+              end;
+          ...
+        end;
+
+   :seealso:
+
+     - :func:`supplied?`
+     - :func:`unsupplied`
+     - :func:`unsupplied?`
 
 .. function:: unsupplied
 
-   Returns the unique “unsupplied” value, :const:`$unsupplied`.
+   Returns the unique "unsupplied" value, :const:`$unsupplied`.
 
    :signature: unsupplied () => *unsupplied-marker*
 
@@ -1202,35 +1179,69 @@ The extensions are:
 
    :description:
 
-     Returns the unique “unsupplied” value, :const:`$unsupplied`.
+     Returns the unique "unsupplied" value, :const:`$unsupplied`.
 
-   See also
+   :example:
 
-   - :func:`supplied?`
-   - :const:`$unsupplied`
-   - :func:`unsupplied?`
+      See :const:`$unsupplied`.
+
+   :seealso:
+
+     - :func:`supplied?`
+     - :const:`$unsupplied`
+     - :func:`unsupplied?`
+
+.. function:: supplied?
+
+   Returns true if its argument is not equal to the unique "unsupplied"
+   value, :const:`$unsupplied`, and false if it is.
+
+   :signature: supplied? *object* => *supplied?*
+
+   :parameter object: An instance of :drm:`<object>`.
+   :value supplied?: An instance of :drm:`<boolean>`.
+
+   :description:
+
+     Returns true if *object* is not equal to the unique "unsupplied"
+     value, :const:`$unsupplied`, and false if it is. It uses ``\=`` as
+     the equivalence predicate.
+
+   :example:
+
+      See :const:`$unsupplied`.
+
+   :seealso:
+
+     - :const:`$unsupplied`
+     - :func:`unsupplied`
+     - :func:`unsupplied?`
 
 .. function:: unsupplied?
 
-   Returns true if its argument is equal to the unique “unsupplied”
+   Returns true if its argument is equal to the unique "unsupplied"
    value, :const:`$unsupplied`, and false if it is not.
 
    :signature: unsupplied? *value* => *boolean*
 
-   :parameter value: An instance of ``<object>``.
-   :value boolean: An instance of ``<boolean>``.
+   :parameter value: An instance of :drm:`<object>`.
+   :value boolean: An instance of :drm:`<boolean>`.
 
    :description:
 
-     Returns true if its argument is equal to the unique “unsupplied”
+     Returns true if its argument is equal to the unique "unsupplied"
      value, :const:`$unsupplied`, and false if it is not. It uses ``\=``
      as the equivalence predicate.
 
-   See also
+   :example:
 
-   - :func:`supplied?`
-   - :const:`$unsupplied`
-   - :func:`unsupplied`
+      See :const:`$unsupplied`.
+
+   :seealso:
+
+     - :func:`supplied?`
+     - :const:`$unsupplied`
+     - :func:`unsupplied`
 
 .. macro:: when
    :statement:
@@ -1245,14 +1256,14 @@ The extensions are:
 
    :parameter test: A Dylan expression *bnf*.
    :parameter consequent: A Dylan body *bnf*.
-   :value value: Zero or more instances of ``<object>``.
+   :value value: Zero or more instances of :drm:`<object>`.
 
    :description:
 
      Executes *consequent* if *test* is true, and does nothing if *test*
      is false.
 
-     This macro behaves identically to Dylan’s standard :drm:`if`
+     This macro behaves identically to Dylan's standard :drm:`if`
      statement macro, except that there is no alternative flow of
      execution when the test is false.
 
@@ -1266,22 +1277,22 @@ The extensions are:
 
 .. function:: split
 
-   Split a sequence (e.g., a string) into subsequences deliniated by a
+   Split a sequence (e.g., a string) into subsequences delineated by a
    given separator.
 
    :signature: split *sequence* *separator* #key *start* *end* *count* *remove-if-empty?* => *parts*
 
-   :parameter sequence: An instance of ``<sequence>``.
-   :parameter separator: An instance of ``<object>``.
-   :parameter #key start: An instance of ``<integer>``.  Default value: 0.
-   :parameter #key end: An instance of ``<integer>``.  Default value: ``sequence.size``.
-   :parameter #key count: An instance of ``<integer>``.  Default value: no limit.
-   :parameter #key remove-if-empty?: An instance of ``<boolean>``.  Default value: #f.
-   :value parts: An instance of ``<sequence>``.
+   :parameter sequence: An instance of :drm:`<sequence>`.
+   :parameter separator: An instance of :drm:`<object>`.
+   :parameter #key start: An instance of :drm:`<integer>`.  Default value: 0.
+   :parameter #key end: An instance of :drm:`<integer>`.  Default value: ``sequence.size``.
+   :parameter #key count: An instance of :drm:`<integer>`.  Default value: no limit.
+   :parameter #key remove-if-empty?: An instance of :drm:`<boolean>`.  Default value: #f.
+   :value parts: An instance of :drm:`<sequence>`.
 
    :description:
 
-     Splits *sequence* into subsequences, splitting at each occurrance
+     Splits *sequence* into subsequences, splitting at each occurrence
      of *separator*.  The *sequence* is searched from left to right,
      starting at *start* and ending at ``end - 1``.
 
@@ -1291,7 +1302,7 @@ The extensions are:
      subsequences that are empty.
 
      There are methods specialized on various types of *separator*.
-     The most basic *separator* type is ``<function>``, with which all
+     The most basic *separator* type is :drm:`<function>`, with which all
      of the others may be implemented.
 
      ``split(seq :: <sequence>, separator :: <function>, ...)``
@@ -1310,12 +1321,12 @@ The extensions are:
         possible when the separator is a regex.)
 
      ``split(seq :: <sequence>, separator :: <object>, #key test = \==, ...)``
-        Splits 'seq' around occurrances of 'separator' using 'test' to check
+        Splits 'seq' around occurrences of 'separator' using 'test' to check
         for equality.  This method handles the relatively common case where
         'seq' is a string and 'separator' is a character.
 
      ``split(seq :: <sequence>, separator :: <sequence>, #key test = \==, ...)``
-        Splits 'seq' around occurrances of the 'separator'
+        Splits 'seq' around occurrences of the 'separator'
         subsequence.  This handles the relatively common case where
         'seq' and 'separator' are both strings.
 
@@ -1323,7 +1334,7 @@ The extensions are:
         is a single element of another sequence it won't work because
         this method is more specific than the previous one.  That is
         considered to be an uncommon case and can be handled by using
-        the method on ``<function>``.
+        the method on :drm:`<function>`.
 
    :example:
 
@@ -1331,9 +1342,9 @@ The extensions are:
 
        split("a.b.c", '.') => #("a", "b", "c")
 
-   See also
+   :seealso:
 
-   - :gf:`join`
+     - :gf:`join`
 
 .. generic-function:: join
    :open:
@@ -1342,11 +1353,11 @@ The extensions are:
    between each pair of adjacent sequences.
 
    :signature: join *sequences* *separator* #key *key* *conjunction* => *joined*
-   :parameter sequences: An instance of ``<sequence>``.
-   :parameter separator: An instance of ``<sequence>``.
+   :parameter sequences: An instance of :drm:`<sequence>`.
+   :parameter separator: An instance of :drm:`<sequence>`.
    :parameter #key key: Transformation to apply to each item. Default value: ``identity``.
    :parameter #key conjunction: Last separator. Default value: #f
-   :value joined: An instance of ``<sequence>``.
+   :value joined: An instance of :drm:`<sequence>`.
 
    :description:
 
@@ -1371,10 +1382,10 @@ The extensions are:
           key: integer-to-string, conjunction: " and ")
      => "1, 2 and 3"
 
-   See also
+   :seealso:
 
-   - :meth:`join <join(<sequence>, <sequence>)>`
-   - :func:`split`
+     - :meth:`join <join(<sequence>, <sequence>)>`
+     - :func:`split`
 
 .. method:: join
    :specializer: <sequence>, <sequence>
@@ -1383,13 +1394,13 @@ The extensions are:
    adjacent sequences.
 
    :signature: join *sequences* *separator* #key *key* *conjunction* => *joined*
-   :parameter items: An instance of ``<sequence>``.
-   :parameter separator: An instance of ``<sequence>``.
-   :parameter #key key: Transformation to apply to each item. An instance of ``<function>``.
+   :parameter items: An instance of :drm:`<sequence>`.
+   :parameter separator: An instance of :drm:`<sequence>`.
+   :parameter #key key: Transformation to apply to each item. An instance of :drm:`<function>`.
    :parameter #key conjunction: Last separator. An instance of ``false-or(<sequence>)``.
-   :value joined: An instance of ``<sequence>``.
+   :value joined: An instance of :drm:`<sequence>`.
 
-   See also
+   :seealso:
 
-   - :gf:`join`
-   - :func:`split`
+     - :gf:`join`
+     - :func:`split`

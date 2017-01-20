@@ -22,15 +22,8 @@ define sealed method process-next-event
  => (timed-out? :: <boolean>)
   //--- We should do something with the timeout
   ignore(timeout);
-  if ($os-name == #"win32")
-    with-gdk-lock
-      gtk-main-iteration();
-    end;
-  else
-    sleep(3);
-    with-gdk-lock
-      gtk-main();
-    end;
+  with-gdk-lock
+    gtk-main-iteration();
   end;
   #f;
 end method process-next-event;
@@ -53,30 +46,30 @@ define method handle-gtk-motion-event
   when (_port)
     ignoring("motion modifiers");
     let (unused-widget, native-x, native-y, native-state)
-    = if (event.GdkEventMotion-is-hint ~= 0)
-         gdk-window-get-pointer(event.GdkEventMotion-window)
+    = if (event.gdk-event-motion-is-hint ~= 0)
+         gdk-window-get-pointer(event.gdk-event-motion-window)
       else
-        values(event.GdkEventMotion-window, event.GdkEventMotion-x, event.GdkEventMotion-y, event.GdkEventMotion-state)
+        values(event.gdk-event-motion-window, event.gdk-event-motion-x, event.gdk-event-motion-y, event.gdk-event-motion-state)
       end;
     let modifiers = 0;
-    let state = key-flags->button-state(native-state); 
+    let state = key-flags->button-state(native-state);
     let (x, y)
       = untransform-position(sheet-native-transform(sheet), native-x, native-y);
     if (logand(state, logior($left-button,$middle-button,$right-button))  ~= 0)
       distribute-event(_port,
         make(<pointer-drag-event>,
-          sheet: sheet,
-          pointer: port-pointer(_port),
-          modifier-state: modifiers,
-          button: state,
-          x: round(x), y: round(y)));
+             sheet: sheet,
+             pointer: port-pointer(_port),
+             modifier-state: modifiers,
+             button: state,
+             x: round(x), y: round(y)));
     else
       distribute-event(_port,
         make(<pointer-motion-event>,
-          sheet: sheet,
-          pointer: port-pointer(_port),
-          modifier-state: modifiers,
-          x: round(x), y: round(y)));
+             sheet: sheet,
+             pointer: port-pointer(_port),
+             modifier-state: modifiers,
+             x: round(x), y: round(y)));
     end;
   end;
   #t
@@ -103,20 +96,20 @@ define sealed method handle-gtk-crossing-event
  => (handled? :: <boolean>)
   let _port = port(sheet);
   when (_port)
-    let native-x  = event.GdkEventCrossing-x;
-    let native-y  = event.GdkEventCrossing-y;
-    let state     = event.GdkEventCrossing-state;
+    let native-x  = event.gdk-event-crossing-x;
+    let native-y  = event.gdk-event-crossing-y;
+    let state     = event.gdk-event-crossing-state;
     let modifiers = 0;  //--- Do this properly!
-    let detail    = event.GdkEventCrossing-detail;
+    let detail    = event.gdk-event-crossing-detail;
     let (x, y)
       = untransform-position(sheet-native-transform(sheet), native-x, native-y);
     distribute-event(_port,
-         make(event-class,
-        sheet: sheet,
-        pointer: port-pointer(_port),
-        kind: gtk-detail->duim-crossing-kind(detail),
-        modifier-state: modifiers,
-        x: x, y: y));
+                     make(event-class,
+                          sheet: sheet,
+                          pointer: port-pointer(_port),
+                          kind: gtk-detail->duim-crossing-kind(detail),
+                          modifier-state: modifiers,
+                          x: x, y: y));
     #t
   end
 end method handle-gtk-crossing-event;
@@ -137,11 +130,11 @@ define method handle-gtk-button-event
  => (handled? :: <boolean>)
   let _port = port(sheet);
   when (_port)
-    let native-x  = event.GdkEventButton-x;
-    let native-y  = event.GdkEventButton-y;
-    let button    = gtk-button->duim-button(event.GdkEventButton-button);
-    let state     = event.GdkEventButton-state;
-    let type      = event.GdkEventButton-type;
+    let native-x  = event.gdk-event-button-x;
+    let native-y  = event.gdk-event-button-y;
+    let button    = gtk-button->duim-button(event.gdk-event-button-button);
+    let state     = event.gdk-event-button-state;
+    let type      = event.gdk-event-button-type;
     let modifiers = 0;  //--- Do this!
     let event-class
       = select (type)
@@ -178,30 +171,21 @@ define function gtk-button->duim-button
   end
 end function gtk-button->duim-button;
 
-define method handle-gtk-expose-event
-    (sheet :: <sheet>, event :: <GdkEventExpose>)
+define method handle-gtk-draw-event
+    (sheet :: <sheet>, gcontext :: <CairoContext>)
  => (handled? :: <boolean>)
-  
+
   let _port = port(sheet);
   when (_port)
-    let area = event.GdkEventExpose-area;
-    let native-x = area.GdkRectangle-x;
-    let native-y = area.GdkRectangle-y;
-    let native-width = area.GdkRectangle-width;
-    let native-height = area.GdkRectangle-height;
-    let native-transform = sheet-native-transform(sheet);
-    let (x, y)
-      = untransform-position(native-transform, native-x, native-y);
-    let (width, height)
-      = untransform-distance(native-transform, native-width, native-height);
-    let region = make-bounding-box(x, y, x + width, y + height);
+    let (x1, y1, x2, y2) = cairo-clip-extents(gcontext);
+    let region = make-bounding-box(x1, y1, x2, y2);
     distribute-event(_port,
                      make(<window-repaint-event>,
                           sheet:  sheet,
                           region: region));
     #f
   end;
-end method handle-gtk-expose-event;
+end method handle-gtk-draw-event;
 
 /*---*** Not handling state changes yet
 define xt/xt-event-handler state-change-callback
@@ -219,11 +203,11 @@ define sealed method handle-gtk-state-change-event
     let type = event.x/type-value;
     select (type)
       #"configure-notify" =>
-  handle-gtk-configuration-change-event(_port, sheet, event);
+        handle-gtk-configuration-change-event(_port, sheet, event);
       #"map-notify"       =>
-  note-mirror-enabled/disabled(_port, sheet, #t);
+        note-mirror-enabled/disabled(_port, sheet, #t);
       #"unmap-notify"     =>
-  note-mirror-enabled/disabled(_port, sheet, #f);
+        note-mirror-enabled/disabled(_port, sheet, #f);
       #"circulate-notify" => #f;
       #"destroy-notify"   => #f;
       #"gravity-notify"   => #f;
@@ -248,7 +232,7 @@ define sealed method handle-gtk-state-change-config-event
     let type = event.x/type-value;
     select (type)
       #"configure-notify" =>
-  handle-gtk-configuration-change-event(_port, sheet, event);
+        handle-gtk-configuration-change-event(_port, sheet, event);
       #"map-notify"       => #f;
       #"unmap-notify"     => #f;
       #"circulate-notify" => #f;
@@ -275,9 +259,9 @@ define sealed method handle-gtk-state-change-no-config-event
     let type = event.x/type-value;
     select (type)
       #"map-notify"       =>
-  note-mirror-enabled/disabled(_port, sheet, #t);
+        note-mirror-enabled/disabled(_port, sheet, #t);
       #"unmap-notify"     =>
-  note-mirror-enabled/disabled(_port, sheet, #f);
+        note-mirror-enabled/disabled(_port, sheet, #f);
       #"configure-notify" => #f;
       #"circulate-notify" => #f;
       #"destroy-notify"   => #f;
@@ -291,21 +275,23 @@ end method handle-gtk-state-change-no-config-event;
 define method handle-gtk-configure-event
     (sheet :: <sheet>, widget :: <GtkWidget>, event :: <GdkEventConfigure>)
  => (handled? :: <boolean>)
-  let allocation = widget.gtk-widget-get-allocation;
-  let native-x  = event.GdkEventConfigure-x;
-  let native-y  = event.GdkEventConfigure-y;
-  let native-width  = allocation.GdkRectangle-width;
-  let native-height = allocation.GdkRectangle-height;
-  let native-transform = sheet-native-transform(sheet);
-  let (x, y)
-    = untransform-position(native-transform, native-x, native-y);
-  let (width, height)
-    = untransform-distance(native-transform, native-width, native-height);
-  let region = make-bounding-box(x, y, x + width, y + height);
-  distribute-event(port(sheet),
-       make(<window-configuration-event>,
-      sheet:  sheet,
-      region: region));
+  with-stack-structure (allocation :: <cairoRectangleInt>)
+    gtk-widget-get-allocation(widget, allocation);
+    let native-x  = event.gdk-event-configure-x;
+    let native-y  = event.gdk-event-configure-y;
+    let native-width  = allocation.cairo-rectangle-int-width;
+    let native-height = allocation.cairo-rectangle-int-height;
+    let native-transform = sheet-native-transform(sheet);
+    let (x, y)
+      = untransform-position(native-transform, native-x, native-y);
+    let (width, height)
+      = untransform-distance(native-transform, native-width, native-height);
+    let region = make-bounding-box(x, y, x + width, y + height);
+    distribute-event(port(sheet),
+                     make(<window-configuration-event>,
+                          sheet:  sheet,
+                          region: region));
+  end with-stack-structure;
   #t
 end method handle-gtk-configure-event;
 

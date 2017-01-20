@@ -6,7 +6,7 @@ Warranty:     Distributed WITHOUT WARRANTY OF ANY KIND
 
 define library c-ffi
   use dylan;
-  use common-dylan, import: { machine-words, simple-io };
+  use common-dylan, import: { machine-words };
   export c-ffi;
   export win32-core;
 end;
@@ -39,6 +39,10 @@ define module c-ffi-interface
     C-signed-int-at-setter,
     C-unsigned-int-at,
     C-unsigned-int-at-setter,
+    C-size-t-at,
+    C-size-t-at-setter,
+    C-ssize-t-at,
+    C-ssize-t-at-setter,
 
     C-float-at,
     C-float-at-setter,
@@ -66,6 +70,15 @@ define module c-ffi-interface
     <C-unsafe-char*>,
     <C-both-char*>,
 
+    <C-size-t>,
+    <C-unsafe-size-t>,
+    <C-both-size-t>,
+    <C-size-t*>,
+    <C-ssize-t>,
+    <C-unsafe-ssize-t>,
+    <C-both-ssize-t>,
+    <C-ssize-t*>,
+
     <C-unsigned-long>,
     <C-unsafe-unsigned-long>,
     <C-both-unsigned-long>,
@@ -79,7 +92,7 @@ define module c-ffi-interface
     <C-signed-long*>,
     <C-unsafe-signed-long*>,
     <C-both-signed-long*>,
-    
+
     <C-long>,
     <C-unsafe-long>,
     <C-both-long>,
@@ -240,5 +253,4 @@ define module c-ffi-implementation
   use dylan-primitives;
   use dylan-c-ffi;
   use machine-words;
-  use simple-io;
 end;

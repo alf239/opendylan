@@ -12,11 +12,8 @@ define constant $release-full-copyright =
   "are subject to the following license terms.\n"
   "\n";
 
-define constant $release-support-address
-  = "bugs@opendylan.org";
-
 define constant $release-web-address
-  = "http://www.opendylan.org/";
+  = "http://opendylan.org/";
 
 define constant $bug-report-template-filename = "bug-report.txt";
 define constant $license-agreement-filename   = "License.txt";
@@ -24,19 +21,24 @@ define constant $help-filename                = "opendylan.chm";
 
 
 /// Release constants
-define constant $release-product-name     = "Open Dylan";
-define constant $release-version          = "2013.1pre1";
+define constant $release-product-name       = "Open Dylan";
+define constant $release-product-identifier = "opendylan";
+define constant $release-version            = "2016.1pre";
 
 define constant $release-copyright
   = "Copyright (c) 1997-2004, Functional Objects, Inc.\n"
-    "Portions Copyright (c) 2004-2013, Dylan Hackers\n"
-    "Portions Copyright (c) 2001-2012, Ravenbrook Ltd.";
+    "Portions Copyright (c) 2004-2016, Dylan Hackers\n"
+    "Portions Copyright (c) 2001-2013, Ravenbrook Ltd.";
 
 
 /// Release info querying functions
 define method release-product-name () => (name :: <string>)
   $release-product-name
 end method release-product-name;
+
+define method release-product-identifier () => (name :: <string>)
+  $release-product-identifier
+end method release-product-identifier;
 
 define method release-short-version () => (version :: <string>)
   $release-version
@@ -55,23 +57,18 @@ end method release-copyright;
 define function release-full-name
     () => (full-name :: <string>)
   format-to-string("%s %s",
-		   release-product-name(),
-		   release-version())
+                   release-product-name(),
+                   release-version())
 end function release-full-name;
 
 define function release-full-copyright
     () => (full-copyright :: <string>)
   format-to-string("%s\n%s\n%s\n\n%s",
-		   release-product-name(),
-		   release-copyright(),
-		   release-version(),
-		   $release-full-copyright)
+                   release-product-name(),
+                   release-copyright(),
+                   release-version(),
+                   $release-full-copyright)
 end function release-full-copyright;
-
-define function release-support-address
-    () => (address :: <string>)
-  $release-support-address
-end function release-support-address;
 
 define function release-web-address
     () => (address :: <string>)
@@ -186,7 +183,7 @@ end function release-sources-directory;
 define function release-library-packs-directory
     () => (directory :: <directory-locator>)
   merge-locators(as(<directory-locator>, "Library-Packs/"),
-		 release-sources-directory())
+                 release-sources-directory())
 end function release-library-packs-directory;
 
 define function release-templates-directory
@@ -201,14 +198,14 @@ end function release-runtime-directory;
 
 define function release-source-templates-directory
     () => (directory :: <directory-locator>)
-  release-subdirectory("Source/", 
-		   directory: release-templates-directory())
+  release-subdirectory("Source/",
+                   directory: release-templates-directory())
 end function release-source-templates-directory;
 
 define function release-bug-report-template-location
     () => (location :: <file-locator>)
   release-file($bug-report-template-filename,
-	       directory: release-templates-directory())
+               directory: release-templates-directory())
 end function release-bug-report-template-location;
 
 define function release-license-agreement-location
