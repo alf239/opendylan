@@ -1,6 +1,7 @@
 *~
 *.pyc
 Makefile
+.idea
 /aclocal.m4
 /Bootstrap.*/
 /config.log
@@ -8,6 +9,7 @@ Makefile
 /configure
 /build-aux/
 /autom4te*.cache/
+/rts/build
 /sources/bootstrap1-registry/
 /sources/corba/scepter/front-end/file/parser.dylan
 /sources/corba/orb/iop-protocol/
